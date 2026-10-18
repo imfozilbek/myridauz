@@ -1,4 +1,6 @@
 import {
+  botStartLink,
+  CARD_PICTURE_PATH,
   LOOP_CARD_PATH,
   loopVia,
   requestsBoardLink,
@@ -18,7 +20,7 @@ import { rateLimit } from '../../shared/http/rate-limit';
 import { storiesOf } from '../../shared/storage/stories';
 import { prepareCard } from '../../shared/telegram/prepared-card';
 import { placesOf } from '../locations';
-import { bookingForShare } from '../bookings';
+import { bookingForShare, driverTripView } from '../bookings';
 import { requestFacts } from '../ride-requests';
 import { blockedGuard, joinedAtOf, peopleOf } from '../users';
 import { growthRoutes, type Wiring } from './http/growth-routes';
@@ -30,7 +32,6 @@ const growthDeps = (env: Bindings): Wiring | null => {
   const db = env.DB;
   if (!db) return null;
   const brand = brandOf(env);
-  const placeName = async (id: string) => (await placesOf(env)).get(id)?.name ?? id;
   return {
     store: d1Growth(db),
     joinedAt: (userId) => joinedAtOf(env, userId),
@@ -46,6 +47,7 @@ const growthDeps = (env: Bindings): Wiring | null => {
         message.text,
         link,
         message.words,
+        message.photo,
       ),
     request: async (id) => {
       const request = await requestFacts(env, id);
@@ -65,11 +67,22 @@ const growthDeps = (env: Bindings): Wiring | null => {
         tripId: trip.id,
       };
     },
-    loopMessage: (input) => loopMessage(input, placeName),
+    trip: async (id) => {
+      const found = await driverTripView(env, id);
+      if (!found) return undefined;
+      const { trip, driverId } = found;
+      // The car still takes people: open for booking, not on the way, not offered to one passenger
+      // only (G64), G88 docs/193.
+      const takes = trip.status === 'active' && !trip.departedAt && !trip.private;
+      const { from, to, departAt, price } = trip;
+      return { driverId, tripId: trip.id, from, to, departAt, price, seatsLeft: takes ? trip.seatsLeft : 0 };
+    },
+    loopMessage: async (input) => loopMessage(brand, input, await placesOf(env)),
     links: {
       requests: (request, via) =>
         requestsBoardLink(brand.bots.driver, requestsLinkValue(request.from, request.to, request.date), via),
       trip: (tripId, via) => tripBookLink(brand.bots.passenger, tripId, via),
+      start: (via) => botStartLink(brand.bots.passenger, via),
     },
     stories: storiesOf(env),
     newId: () => crypto.randomUUID(),
@@ -84,6 +97,7 @@ export const growthModule = new Hono<AppEnv>()
   .use(MOMENT_STORY_PATH, blockedGuard, rateLimit('ACTIONS_LIMIT', 'action'))
   .use(LOOP_CARD_PATH, blockedGuard, rateLimit('ACTIONS_LIMIT', 'action'))
   .use(QR_PICTURE_PATH, blockedGuard, rateLimit('ACTIONS_LIMIT', 'action'))
+  .use(CARD_PICTURE_PATH, blockedGuard, rateLimit('ACTIONS_LIMIT', 'action'))
   .route('/', growthRoutes(growthDeps));
 
 // The mark of a link a person shares outside the cards (docs/123): «Yaqinlarimga», the free seats,

@@ -23,8 +23,8 @@ function arrivedLines(trip: Trip, route: string): string[] {
   const people = peopleOf(trip);
   const time = cameAt(trip);
   if (people === 0) return [t('bot.channel.arrivedAlone', { route, time })];
-  const values = { route, people: String(people), time };
-  return [t('bot.channel.arrivedLine', values), t('bot.channel.split', values)];
+  // No words about sharing the costs (owner decision 18.10.2026, docs/193): who went and when.
+  return [t('bot.channel.arrivedLine', { route, people: String(people), time })];
 }
 
 // The life of a post (G68, mockup g68/5 «Post hayoti»): no seats, on the road, arrived, cancelled.

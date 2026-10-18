@@ -72,6 +72,8 @@ export type DriverNewsWiring = {
   readonly places: () => Promise<Places>;
   readonly show: (cards: readonly Card[], rings: readonly Ring[]) => Promise<void>;
   readonly trip: (tripId: string) => Promise<DriverTrip | undefined>;
+  // The mark of the driver's trip link with the driver's code (G88, docs/193).
+  readonly via: (driverId: number) => Promise<string>;
   readonly now: () => number;
 };
 
@@ -80,14 +82,22 @@ export type DriverNews = (tripId: string, about?: string, ring?: DriverRing) => 
 
 // The trip changed: its card shows it without sound; the request card and a ring when there is news.
 export const driverNews =
-  ({ brand, places, show, trip: tripOf, now }: DriverNewsWiring): DriverNews =>
+  ({ brand, places, show, trip: tripOf, via, now }: DriverNewsWiring): DriverNews =>
   async (tripId, about, ring) => {
     const loaded = await tripOf(tripId);
     if (!loaded) return;
     const { trip, chatId, bookings } = loaded;
     const time = now();
     const quiet = quietFor(trip, ring, time);
-    const card = driverCard({ brand, chatId, trip, bookings, places: await places(), now: time });
+    const card = driverCard({
+      brand,
+      chatId,
+      trip,
+      bookings,
+      places: await places(),
+      now: time,
+      via: await via(chatId),
+    });
     const booking = bookings.find((item) => item.id === about);
     const ask = booking && askCard({ brand, chatId, booking, quiet });
     // Only «asked» sends a request anew; any other news edits the one sent before.

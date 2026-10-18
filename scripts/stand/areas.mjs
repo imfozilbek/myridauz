@@ -28,6 +28,7 @@ export const AREAS = {
     'g60',
     'g69',
     'g69-driver',
+    'g88',
     'g49-system',
   ],
   requests: ['passenger-requests', 'requests-review', 'g64', 'g64-salon'],

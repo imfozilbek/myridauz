@@ -26,8 +26,8 @@
 | Сверху по центру | Логотип, «Rida», «Manzil sari» | Как сейчас |
 | Убрано | «Safar toping» и «Safaringizga yoʻlovchi toping» под логотипом | Решение владельца |
 | Середина | Заголовок «Nima uchun Rida», под ним строки с иконкой в плитке (как плитки главного) | Вариант A |
-| Попутчик | «Haydovchilar tekshirilgan.», «Yoʻl xarajatini birga boʻlamiz.», «Raqamingiz hech kimga koʻrinmaydi.» | Готовые тексты |
-| Водитель | «Yoʻl xarajatingiz qaytadi.», бонус, «Yoʻlovchilar sizni oʻzi topadi.» | Готовые тексты, янтарный цвет |
+| Попутчик | «Haydovchilar tekshirilgan.», «Mashinada ayol bor.» (G88, `194`), «Raqamingiz hech kimga koʻrinmaydi.» | Готовые тексты |
+| Водитель | «Narxni oʻzingiz belgilaysiz.» (G88, `194`), бонус, «Yoʻlovchilar sizni oʻzi topadi.» | Готовые тексты, янтарный цвет |
 | Снизу | 2 галочки, кнопка «Davom etish» неактивна, пока не стоят обе | Вариант C |
 
 - Галочка 1: «Ommaviy oferta**ni** qabul qilaman.»

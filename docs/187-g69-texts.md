@@ -12,7 +12,7 @@
 | Блок «выгода» | Жирно | Дальше |
 |---|---|---|
 | Регистрация | Doʻstlaringiz ham shunday borsin. | Havolangiz orqali ular ham {brand} ga qoʻshiladi va viloyatga birga boradi. |
-| Водитель | Joy toʻlsa, yoʻl xarajati koʻproq boʻlinadi. | Doimiy yoʻlovchilaringiz va guruhingiz safarlaringizni bir bosishda topadi. |
+| Водитель | Yoʻlovchilar sizni topadi. (G88, `194`) | Doimiy yoʻlovchilaringiz va guruhingiz safarlaringizni bir bosishda topadi. |
 
 - Подписи: «Qaysi soʻz sizniki?», «Doʻstlaringiz shuni koʻradi».
 - Кнопки: «Hikoyamga joylash»; кнопка с адресатом: «Doʻstlarimga yuborish» (регистрация), «Yoʻlovchilarimga yuborish» (водитель); «Keyinroq».
@@ -28,7 +28,7 @@
 
 | Где | Текст |
 |---|---|
-| Факт на карточке | Birga borish, xarajatni boʻlish · {brand} haydovchisi |
+| Факт на карточке | Viloyatlararo birga safarlar (G88, `194`) · {brand} haydovchisi |
 | Кто | {name} |
 | Слова ссылки | Men ham qoʻshilaman · {name} bilan yoʻlga chiqish |
 | Фраза в кавычках | «{phrase}» |

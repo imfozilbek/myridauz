@@ -73,6 +73,12 @@ export const chatMemberOf = (env: Bindings, key: string, userId: number) =>
 export const chatAboutOf = (env: Bindings, key: string, userId: number) =>
   chatAbout(bookingsDeps(env), key, userId);
 export const bookingForShare = (env: Bindings, id: string) => passengerView(bookingsDeps(env), id);
+// The driver's trip as people see it, with its seats left: the card of the loop trip (G88, docs/193).
+export const driverTripView = async (env: Bindings, tripId: string) => {
+  const deps = bookingsDeps(env);
+  const [[trip], facts] = await Promise.all([deps.trips.views([tripId]), deps.trips.find(tripId)]);
+  return trip && facts ? { trip, driverId: facts.driverId } : undefined;
+};
 
 // The live trip cards (G68, docs/122) and the confirmed bookings the reminders tell (G10).
 export {

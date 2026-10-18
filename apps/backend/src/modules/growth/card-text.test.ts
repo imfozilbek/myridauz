@@ -7,12 +7,15 @@ const brand = loadBrand();
 
 // The ready message of «Doʻstlarimga yuborish» (docs/123, goals/g69/1-share-cards.png 4).
 describe('the chat card of a moment', () => {
-  it('speaks in the voice of the person: the phrase, the name, the fact, one button', () => {
+  it('speaks in the voice of the person: the phrase, the name, the fact, why the brand, one button', () => {
     const { text, words } = cardMessage(brand, { name: 'Jasur', moment: 'driver', phrase: 0 });
     expect(text).toBe(
-      `«Men ${brand.name} haydovchisiman»\nJasur\n${brand.name} haydovchisi\n\nSiz ham Jasur bilan yoʻlga chiqing:`,
+      `«Men ${brand.name} haydovchisiman»\nJasur\n${brand.name} haydovchisi\n\n` +
+        'Raqamingiz yashirin. Telegramda ochiladi. Ilova yuklab olish shart emas.\n' +
+        `Siz ham ${brand.name} bilan yoʻlga chiqing:`,
     );
-    expect(words).toEqual({ title: `Men ${brand.name} bilan`, button: 'Jasur bilan yoʻlga chiqish' });
+    // The link opens the passenger bot: the button says so (G88, docs/193).
+    expect(words).toEqual({ title: `Men ${brand.name} bilan`, button: 'Safar topish' });
   });
 
   it('gives a new passenger the words of the registration', () => {
@@ -20,7 +23,7 @@ describe('the chat card of a moment', () => {
     expect(text.split('\n').slice(0, 3)).toEqual([
       '«Viloyatga endi birga boraman»',
       'Jasur',
-      'Birga borish, xarajatni boʻlish',
+      'Viloyatlararo birga safarlar',
     ]);
     expect(words).toEqual({ title: `Men ${brand.name} bilan`, button: 'Men ham qoʻshilaman' });
   });

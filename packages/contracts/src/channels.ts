@@ -33,7 +33,8 @@ export type Channel = z.infer<typeof channelSchema>;
 export const channelsResponseSchema = z.object({ channels: z.array(channelSchema) });
 
 // What the driver sees right after the publishing (G63, docs/119): the channels of the trip and
-// whether its post is there, how many different people opened it in the app, and the link to send.
+// whether its post is there and how many different people opened it in the app. The link to send is
+// a card of the loop trip (G88, docs/193).
 export const driverTripPublicityPath = (tripId: string) => `${DRIVER_TRIPS_PATH}/${tripId}/publicity`;
 export const tripPublicitySchema = z.object({
   channels: z.array(
@@ -45,7 +46,6 @@ export const tripPublicitySchema = z.object({
     }),
   ),
   views: z.number().int().min(0),
-  link: z.string().startsWith('https://t.me/'),
 });
 export type TripPublicity = z.infer<typeof tripPublicitySchema>;
 // The trip page of the passenger app says it was opened: from the search, a post button or a link.

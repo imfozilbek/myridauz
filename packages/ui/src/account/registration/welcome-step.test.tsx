@@ -16,7 +16,7 @@ vi.mock('../../telegram/permissions', () => permissions);
 const welcome = {
   logo: 'logo-driver.svg',
   points: [
-    { icon: 'wallet', textKey: 'common.welcome.costsBack' },
+    { icon: 'price', textKey: 'common.welcome.ownPrice' },
     { icon: 'bonus', textKey: 'common.welcome.bonus' },
     { icon: 'passengers', textKey: 'common.welcome.passengersFind' },
   ],
@@ -50,7 +50,7 @@ describe('Registration, screen 1: the welcome with two ticks (G58)', () => {
     expect(container.querySelector('img.welcome-logo')?.getAttribute('src')).toMatch(/logo-driver\.svg$/);
     expect(screen.getByText(brand.name)).toBeTruthy();
     expect(screen.getByText(`Nima uchun ${brand.name}`)).toBeTruthy();
-    expect(screen.getByText('Yoʻl xarajatingiz qaytadi.')).toBeTruthy();
+    expect(screen.getByText('Narxni oʻzingiz belgilaysiz.')).toBeTruthy();
     const bonus = `Boshlash uchun ${formatMoney(brand.promo.amount)} bonus.`;
     expect(screen.getByText(bonus, { normalizer: (text) => text })).toBeTruthy();
     expect(screen.getByText('Yoʻlovchilar sizni oʻzi topadi.')).toBeTruthy();

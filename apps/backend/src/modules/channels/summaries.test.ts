@@ -55,6 +55,10 @@ describe('the summaries of a channel (G68)', () => {
     expect(card).toMatchObject({ key: 'week:2026-10-05', once: true, loud: true });
     expect(card?.preview).toBe('https://site.test/yonalish/toshkent-samarqand/');
     expect(JSON.stringify(card?.markup)).toContain('📤 Doʻstlarga ulashish');
+    // The shared words end with why the brand (G88, docs/193).
+    expect(decodeURIComponent(JSON.stringify(card?.markup))).toContain(
+      'ta safar\n\nTekshirilgan haydovchilar. Raqamingiz yashirin.',
+    );
   });
 });
 

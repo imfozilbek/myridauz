@@ -7,18 +7,18 @@ import { Icon } from '../icons';
 import { usePlaces } from '../market/places-gate';
 import { useRegionArt } from '../places/region-art';
 import { openInTelegram } from '../telegram/feedback';
-import { shareCard } from '../telegram/share-card';
 import { regionOf } from '../way/way-end';
+import { TripCardButton } from './trip-card-button';
 import { useTripPublicity } from './use-trip-publicity';
 import './trip-publicity.css';
 
-// The chevron of the channel and the paper plane of the link (mockup g59/7-channels-3 phone 1).
+// The chevron of the channel (mockup g59/7-channels-3 phone 1).
 const CHEVRON = 15;
-const SEND = 18;
 
 // «Safaringiz kanalda chiqdi» on «Mening safarim» (owner decision 08.10.2026, docs/119 row 1): the
-// channel of the direction that posted the trip, how many people opened it in the app, and the link
-// of the trip for the passengers the driver knows. The channel part waits for the first post.
+// channel of the direction that posted the trip, how many people opened it in the app, and the card of
+// the trip for the passengers the driver knows while it has free seats (G88, docs/193). The channel
+// part waits for the first post.
 export function TripPublicity({ trip }: { readonly trip: Trip }) {
   const { t, formatNumber } = useI18n();
   const brand = useBrand();
@@ -48,14 +48,7 @@ export function TripPublicity({ trip }: { readonly trip: Trip }) {
           <Icon name="next" size={CHEVRON} />
         </button>
       ) : null}
-      <button
-        type="button"
-        className="own-channel-share"
-        onClick={() => void shareCard(null, publicity.link)}
-      >
-        <Icon name="send" size={SEND} />
-        <span>{t('driverTrip.channel.share')}</span>
-      </button>
+      {trip.seatsLeft > 0 ? <TripCardButton trip={trip} /> : null}
     </div>
   );
 }

@@ -12,7 +12,7 @@
 
 ## Как это работает
 
-1. Бронь подтверждена → на экране брони кнопка «Yaqinlarimga yuborish».
+1. Бронь подтверждена → на экране брони плитка «Yaqinlarimga».
 2. Открывается родное окно Telegram для выбора чата (`shareMessage`, `21`).
    Попутчик выбирает маму, мужа, подругу.
 3. Близкий получает карточку поездки с кнопкой «Safarni kuzatish».
@@ -64,14 +64,14 @@
 - Всё описано в «Maxfiylik siyosati» (G14, `30`).
 - Водитель тоже делится своей поездкой с семьёй: **сделано** (G18, `57`).
 
-## Тексты (черновик, проверяет носитель)
+## Тексты (как в коде, G88 `193`, `194`)
 
 | Где | Текст |
 |---|---|
-| Кнопка на экране брони | Yaqinlarimga yuborish |
-| Карточка | {ism} Rida bilan yoʻlga chiqadi: {qayerdan} → {qayerga}, {sana} {vaqt}. Mashina: {mashina}, {raqam}. Haydovchi: {haydovchi}. |
-| Кнопка карточки | Safarni kuzatish |
-| Экран близкого | Safar holati · Xabar olish |
+| Плитка на экране брони и в «Mening safarim» | Yaqinlarimga |
+| Карточка | {ism} {brand} bilan yoʻlga chiqadi: {qayerdan} → {qayerga}, {sana} {vaqt}. Mashina: {mashina}, {raqam}. Haydovchi: {haydovchi}. · Siz ham {brand} bilan yoʻlga chiqing. · Raqamingiz yashirin. Telegramda ochiladi. Ilova yuklab olish shart emas. |
+| Кнопки карточки | Safarni kuzatish · Men ham yoʻlga chiqaman |
+| Экран близкого | Holati · Xabar olish |
 | Кнопки попутчика | Yetib keldim · Ulashishni toʻxtatish |
 | Сообщения близким | {ism} mashinaga chiqdi: {mashina}, {raqam}. · {ism} yetib keldi. · Safar bekor qilindi. |
 | Вопрос попутчику | Yetib keldingizmi? |
@@ -79,7 +79,7 @@
 ## Техника
 
 - Bot API `savePreparedInlineMessage` и Mini App `shareMessage`: родное окно
-  Telegram. Запасной путь: ссылка `https://t.me/share/url`.
+  Telegram. Запасной путь: окно `https://t.me/share/url` с текстом карточки (G88).
 - Кнопка карточки: `https://t.me/<бот попутчиков>?start=follow_<токен>`: бот отвечает кнопкой Mini App (как сделано: `53`).
 - Таблицы: `trip_shares` (бронь, хэш токена, срок, отзыв) и
   `share_followers` (кто получает сообщения).

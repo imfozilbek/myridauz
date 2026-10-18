@@ -36,7 +36,6 @@ const [longest] = [...loadBrand().channels].sort((a, b) => b.name.length - a.nam
 const PUBLICITY = {
   channels: [{ chat: longest?.chat, title: longest?.title, link: longest?.link, posted: true }],
   views: 3200,
-  link: 'https://t.me/test_bot?startapp=trip_7__driver',
 };
 for (const width of [...WIDTHS, 360])
   test(`${width}px: the trip in the channel fits`, async ({ page }) => {
