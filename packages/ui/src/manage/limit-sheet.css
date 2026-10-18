@@ -39,3 +39,12 @@
   font-weight: 700;
   text-align: center;
 }
+
+/* The range of the limit under its box (G45): «1 soat … 72 soat». */
+.limit-range {
+  margin: 8px 16px 0;
+  color: var(--reg-muted);
+  font-size: 13px;
+  line-height: 18px;
+  text-align: center;
+}

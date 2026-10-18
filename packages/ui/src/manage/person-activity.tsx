@@ -28,11 +28,8 @@ function ActivityGroups({ activity }: { readonly activity: PersonActivity }) {
   return (
     <>
       <ManageGroup title={t('manage.person.cancels')}>
-        <ManageRow
-          icon="close"
-          title={t('manage.person.cancelsHint')}
-          value={t('manage.person.tripsValue', { trips: cancels.asDriver, rides: cancels.asPassenger })}
-        />
+        <ManageRow icon="close" title={t('manage.person.asDriver')} value={String(cancels.asDriver)} />
+        <ManageRow icon="close" title={t('manage.person.asPassenger')} value={String(cancels.asPassenger)} />
       </ManageGroup>
       {trips.length > 0 ? (
         <ManageGroup title={t('manage.person.lastTrips')}>

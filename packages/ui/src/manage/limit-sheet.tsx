@@ -94,7 +94,7 @@ function LimitForm({ limitKey, value, onClose, onSaved }: FormProps) {
           />
         )}
       </div>
-      <p className="manage-hint">
+      <p className="limit-range">
         {t('manage.limitRange', { min: valueOf(limitKey, rule.min), max: valueOf(limitKey, rule.max) })}
       </p>
       <ActionFailure error={failure} />

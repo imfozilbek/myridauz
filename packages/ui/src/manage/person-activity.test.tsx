@@ -23,8 +23,9 @@ describe('what a person did lately', () => {
   it('shows the cancels, the newest trips, seats and complaints', async () => {
     const clients = testClients({ team: { person: async () => CARD, activity: async () => ACTIVITY } });
     renderInShell(<PeopleScreen person={PERSON} onBack={() => undefined} />, false, true, locations, clients);
-    expect(await screen.findByText('Tasdiqlangan joyni bekor qilgan')).toBeTruthy();
-    expect(screen.getByText('Haydovchi: 2 · yoʻlovchi: 1')).toBeTruthy();
+    expect(await screen.findByText('Tasdiqdan keyin bekor qilgan')).toBeTruthy();
+    expect(screen.getByText('Haydovchi sifatida').closest('div')?.textContent).toContain('2');
+    expect(screen.getByText('Yoʻlovchi sifatida').closest('div')?.textContent).toContain('1');
     expect(await screen.findAllByText('Chilonzor → Fargʻona shahri')).toHaveLength(2);
     expect(screen.getByText(/Yakunlangan$/u)).toBeTruthy();
     expect(screen.getByText(/Bekor qilingan$/u)).toBeTruthy();
