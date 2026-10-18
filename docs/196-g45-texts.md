@@ -24,7 +24,7 @@
 | «Boshqaruv», строка | Sharhlar · Barcha baholar va sharhlar, yangilari tepada |
 | «Sharhlar» | строка «⭐ {звёзды} · {автор} → {о ком}»; под ней дата и текст или «Matnsiz», скрытый: «Yashirilgan»; пусто: «Hali sharh yoʻq» |
 | Шторка отзыва | «Sharh profildan va reytingdan olinadi», кнопка «Yashirish» |
-| «Odamlar», новые блоки | «Tasdiqdan keyin bekor qilgan»: «Haydovchi sifatida», «Yoʻlovchi sifatida»; «Soʻnggi safarlari»; «Soʻnggi bronlari»; «Unga soʻnggi shikoyatlar» |
+| «Odamlar», новые блоки | «Tasdiqdan keyin bekor qilgan»: «Haydovchi sifatida», «Yoʻlovchi sifatida»; «Soʻnggi safarlari»; «Soʻnggi bronlari»; «Unga soʻnggi shikoyatlar»; «Yordam xizmati bilan suhbat», пусто: «Hali murojaat yoʻq» |
 | Статус жалобы | Yangi · Koʻrilmoqda · Hal qilindi |
 | Поездка, строка и шторка | «Safarni bekor qilish»; «Sababni haydovchi oʻqiydi. Yoʻlovchilarga safarni jamoa bekor qilgani aytiladi, komissiya qaytadi.»; поле «Sabab»; кнопка «Bekor qilish» |
 | Вопрос перед отменой | Safar bekor qilinsinmi? Buni qaytarib boʻlmaydi. |

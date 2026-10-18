@@ -43,6 +43,8 @@
   "person.lastTrips": "Soʻnggi safarlari",
   "person.lastRides": "Soʻnggi bronlari",
   "person.lastComplaints": "Unga soʻnggi shikoyatlar",
+  "person.support": "Yordam xizmati bilan suhbat",
+  "person.supportNone": "Hali murojaat yoʻq",
   "complaintStatus.new": "Yangi",
   "complaintStatus.in_review": "Koʻrilmoqda",
   "complaintStatus.resolved": "Hal qilindi",

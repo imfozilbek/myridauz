@@ -11,6 +11,7 @@ import { haptic } from '../telegram/feedback';
 import { DriverWallet } from '../wallet/driver-wallet';
 import { ManageGroup, ManagePage, ManageRow } from './manage-page';
 import { PersonActivityGroups } from './person-activity';
+import { PersonSupport } from './person-support';
 
 type ViewProps = { readonly card: PersonCard; readonly onBack: () => void; readonly onChanged: () => void };
 
@@ -91,6 +92,7 @@ export function PersonView({ card, onBack, onChanged }: ViewProps) {
       </ManageGroup>
       <ActionFailure error={failure} />
       <PersonActivityGroups id={card.id} />
+      <PersonSupport id={card.id} />
       <BlockJournal userId={card.id} />
       {card.blocked ? null : (
         <MainButton text={t('moderation.block')} destructive onClick={() => setBlocking(true)} />

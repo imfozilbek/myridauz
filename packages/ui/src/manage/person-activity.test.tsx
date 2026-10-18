@@ -21,7 +21,14 @@ const ACTIVITY: PersonActivity = {
 // are counted (docs/81 A07).
 describe('what a person did lately', () => {
   it('shows the cancels, the newest trips, seats and complaints', async () => {
-    const clients = testClients({ team: { person: async () => CARD, activity: async () => ACTIVITY } });
+    const talk = [
+      { author: 'person' as const, name: 'Jasur', kind: 'text' as const, text: 'Pulim qaytmadi', at: AT },
+      { author: 'team' as const, name: 'Operator 1', kind: 'text' as const, text: 'Tekshiramiz', at: AT + 1 },
+    ];
+    const support = async () => ({ name: 'Jasur', appeal: false, talk });
+    const clients = testClients({
+      team: { person: async () => CARD, activity: async () => ACTIVITY, support },
+    });
     renderInShell(<PeopleScreen person={PERSON} onBack={() => undefined} />, false, true, locations, clients);
     expect(await screen.findByText('Tasdiqdan keyin bekor qilgan')).toBeTruthy();
     expect(screen.getByText('Haydovchi sifatida').closest('div')?.textContent).toContain('2');
@@ -31,5 +38,8 @@ describe('what a person did lately', () => {
     expect(screen.getByText(/Bekor qilingan$/u)).toBeTruthy();
     expect(screen.getByText('Kelmadi')).toBeTruthy();
     expect(screen.getByText(/Hal qilindi$/u)).toBeTruthy();
+    // The talk with support, the newest first (G45).
+    const [answer, question] = await screen.findAllByText(/^(Tekshiramiz|Pulim qaytmadi)$/u);
+    expect([answer?.textContent, question?.textContent]).toEqual(['Tekshiramiz', 'Pulim qaytmadi']);
   });
 });
