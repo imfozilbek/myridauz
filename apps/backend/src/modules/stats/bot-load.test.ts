@@ -21,14 +21,19 @@ describe('the bots under load', () => {
       serverDataPoint({ name: 'server_error', source: 'poster', code: 'notification_dead' }, at(60)),
       serverDataPoint({ name: 'queue_ops', source: 'write', count: 30 }, at(70)),
       serverDataPoint({ name: 'queue_ops', source: 'read', count: 40 }, at(70)),
+      // G87 V1: two people blocked the driver bot, one came back.
+      serverDataPoint({ name: 'bot_member', source: 'driver', code: 'blocked' }, at(80)),
+      serverDataPoint({ name: 'bot_member', source: 'driver', code: 'blocked' }, at(81)),
+      serverDataPoint({ name: 'bot_member', source: 'driver', code: 'returned' }, at(82)),
       // Older than the period: not counted.
       send('driver', 'sent', 3 * 24 * 3600),
     ];
     const events = await memoryEvents(rows, () => NOW).bots(2);
     expect(botLoadOf(events, 2)).toEqual({
       bots: [
-        { bot: 'passenger', sent: 4, limited: 1, dead: 0, peak: 3 },
-        { bot: 'poster', sent: 1, limited: 0, dead: 1, peak: 1 },
+        { bot: 'passenger', sent: 4, limited: 1, dead: 0, peak: 3, blocked: 0, returned: 0 },
+        { bot: 'driver', sent: 0, limited: 0, dead: 0, peak: 0, blocked: 2, returned: 1 },
+        { bot: 'poster', sent: 1, limited: 0, dead: 1, peak: 1, blocked: 0, returned: 0 },
       ],
       queueOps: 35,
     });

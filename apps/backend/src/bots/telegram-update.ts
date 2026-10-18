@@ -29,9 +29,15 @@ const callbackSchema = z.object({
 });
 export type BotCallback = z.infer<typeof callbackSchema>;
 
+// The person blocked the bot («kicked») or came back («member»): only the statuses (G87 V1, docs/191).
+const memberStatus = z.object({ status: z.string() });
+const botMemberSchema = z.object({ old_chat_member: memberStatus, new_chat_member: memberStatus });
+export type BotMember = z.infer<typeof botMemberSchema>;
+
 export const telegramUpdateSchema = z.object({
   message: messageSchema.optional(),
   callback_query: callbackSchema.optional(),
+  my_chat_member: botMemberSchema.optional(),
 });
 export type TelegramUpdate = z.infer<typeof telegramUpdateSchema>;
 

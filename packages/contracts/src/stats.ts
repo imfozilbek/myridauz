@@ -85,14 +85,17 @@ export type Arrivals = z.infer<typeof arrivalsSchema>;
 
 // G85 T1 (docs/122): the bots under load. sent: what Telegram took; limited: its 429 answers; dead:
 // the messages lost after the last try; peak: the most messages of the bot in one second. queueOps:
-// the operations of the queue a day (a write, a read, a delete).
-export const MESSAGE_BOTS = ['passenger', 'driver', 'admin', 'poster', 'main'] as const;
+// the operations of the queue a day (a write, a read, a delete). support: the bot of the help desk.
+export const MESSAGE_BOTS = ['passenger', 'driver', 'admin', 'poster', 'main', 'support'] as const;
 export const botLoadSchema = z.object({
   bot: z.enum(MESSAGE_BOTS),
   sent: count,
   limited: count,
   dead: count,
   peak: count,
+  // G87 V1: the people who blocked the bot in the period, and who came back after a block.
+  blocked: count,
+  returned: count,
 });
 export type BotLoad = z.infer<typeof botLoadSchema>;
 

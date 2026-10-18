@@ -36,6 +36,9 @@ describe('Statistika of the team (docs/29)', () => {
     expect(passenger.className).toContain('manage-danger');
     expect(screen.getByText('429: 0 · yoʻqoldi: 0 · soniyada: 6').className).not.toContain('manage-danger');
     expect(screen.getByText('Navbat amallari, kuniga')).toBeTruthy();
+    // G87 V1: who blocked a bot and who came back.
+    expect(screen.getByText('Botni bloklaganlar')).toBeTruthy();
+    expect(screen.getByText('qaytdi: 1')).toBeTruthy();
     await tap('7 kun');
     expect(await screen.findByText('158')).toBeTruthy();
     expect(get.mock.calls.map(([period]) => period)).toEqual(['day', 'week']);

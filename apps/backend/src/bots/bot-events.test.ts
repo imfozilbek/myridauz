@@ -30,4 +30,18 @@ describe('botEventOf (G12)', () => {
     expect(botEventOf('passenger', message('salom'))).toBeUndefined();
     expect(botEventOf('passenger', message())).toBeUndefined();
   });
+
+  // G87 V1 (docs/191): a block and a return are counted by the bot, never who.
+  it('counts a block and a return after a block; a first start is no event', () => {
+    const member = (before: string, now: string) => ({
+      my_chat_member: { old_chat_member: { status: before }, new_chat_member: { status: now } },
+    });
+    expect(botEventOf('passenger', member('member', 'kicked'))).toEqual({
+      name: 'bot_member',
+      source: 'passenger',
+      code: 'blocked',
+    });
+    expect(botEventOf('support', member('kicked', 'member'))?.code).toBe('returned');
+    expect(botEventOf('driver', member('left', 'member'))).toBeUndefined();
+  });
 });

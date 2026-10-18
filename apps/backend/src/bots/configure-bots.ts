@@ -13,6 +13,10 @@ import { menuButton } from './start-reply';
 import { SUPPORT_BOT } from './support-bot';
 
 const BOTS: readonly BotName[] = [...BOT_ROLES, SUPPORT_BOT];
+// What Telegram sends the bots of people: messages, buttons, and a block or a return (G87 V1). The bot
+// of the posts hears who joins or leaves the channels and the reactions to its posts (docs/176, V6).
+const PEOPLE_UPDATES = ['message', 'callback_query', 'my_chat_member'];
+const POSTER_UPDATES = ['chat_member'];
 
 // The team menu is not shown to everyone: admins open their Mini App from the /start button.
 // The support bot has no Mini App: people only write there (docs/50).
@@ -40,7 +44,7 @@ export async function configureBots(env: Bindings, fetch: Fetch, secret: string)
       url: hook,
       secret_token: secret,
       // Buttons of the moderation card come as callback queries (docs/04).
-      allowed_updates: ['message', 'callback_query'],
+      allowed_updates: PEOPLE_UPDATES,
       drop_pending_updates: true,
     });
     await setTextsWhenChanged(fetch, token, profile);
@@ -61,7 +65,7 @@ export async function configureBots(env: Bindings, fetch: Fetch, secret: string)
     await callTelegram(fetch, poster, 'setWebhook', {
       url: `https://${apiHost(brandOf(env))}${POSTER_WEBHOOK_PATH}`,
       secret_token: secret,
-      allowed_updates: ['chat_member'],
+      allowed_updates: POSTER_UPDATES,
       drop_pending_updates: true,
     });
     configured.push('poster');
@@ -79,7 +83,8 @@ export async function setupStamp(env: Bindings): Promise<string> {
     avatar,
     menu,
   ]);
-  const text = JSON.stringify([plans, Boolean(env.POSTER_BOT_TOKEN), apiHost(brandOf(env))]);
+  const updates = [PEOPLE_UPDATES, POSTER_UPDATES];
+  const text = JSON.stringify([plans, Boolean(env.POSTER_BOT_TOKEN), apiHost(brandOf(env)), updates]);
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
   return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
 }

@@ -73,9 +73,33 @@ export const statsOf = (period: StatsPeriod, events: Stats['events'] = 'on'): St
   bots:
     events === 'on'
       ? [
-          { bot: 'passenger', sent: period === 'day' ? 412 : 2730, limited: 1, dead: 0, peak: 18 },
-          { bot: 'driver', sent: period === 'day' ? 160 : 1104, limited: 0, dead: 0, peak: 6 },
-          { bot: 'poster', sent: period === 'day' ? 31 : 214, limited: 0, dead: 1, peak: 2 },
+          {
+            bot: 'passenger',
+            sent: period === 'day' ? 412 : 2730,
+            limited: 1,
+            dead: 0,
+            peak: 18,
+            blocked: 3,
+            returned: 1,
+          },
+          {
+            bot: 'driver',
+            sent: period === 'day' ? 160 : 1104,
+            limited: 0,
+            dead: 0,
+            peak: 6,
+            blocked: 0,
+            returned: 0,
+          },
+          {
+            bot: 'poster',
+            sent: period === 'day' ? 31 : 214,
+            limited: 0,
+            dead: 1,
+            peak: 2,
+            blocked: 0,
+            returned: 0,
+          },
         ]
       : [],
   queueOps: events === 'on' ? 96 : 0,

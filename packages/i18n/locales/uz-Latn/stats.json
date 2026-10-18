@@ -73,5 +73,8 @@
   "bots.bot.poster": "Kanallar boti",
   "bots.bot.main": "Kutish roʻyxati boti",
   "bots.hint": "429: {limited} · yoʻqoldi: {dead} · soniyada: {peak}",
-  "bots.queue": "Navbat amallari, kuniga"
+  "bots.queue": "Navbat amallari, kuniga",
+  "bots.bot.support": "Yordam boti",
+  "bots.blocks": "Botni bloklaganlar",
+  "bots.returned": "qaytdi: {returned}"
 }

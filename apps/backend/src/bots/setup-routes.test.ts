@@ -80,6 +80,16 @@ describe('POST /telegram/setup', () => {
     });
   });
 
+  // G87 V1: the bots of people hear a block and a return, so the dashboard counts them.
+  it('lets the bots of people hear a block and a return after a block', async () => {
+    const { request, calls } = setup('hook');
+    await request;
+    const hooks = calls.filter((call) => call.url.endsWith('/setWebhook'));
+    expect(hooks.length).toBeGreaterThan(0);
+    for (const hook of hooks)
+      expect(hook.body).toMatchObject({ allowed_updates: ['message', 'callback_query', 'my_chat_member'] });
+  });
+
   it('gives every bot its name, the text of an empty chat and the profile line in Telegram limits', async () => {
     const { request, calls } = setup('hook');
     await request;
