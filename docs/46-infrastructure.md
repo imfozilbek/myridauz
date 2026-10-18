@@ -27,7 +27,7 @@
 | Analytics Engine | `rida_analytics` | `ANALYTICS` |
 | Workers Logs | включены | `observability` |
 | Durable Objects | `ChatRoom` (SQLite), один на чат брони (G09) | `CHATS` |
-| Queues | `rida-notifications`, сообщения ботов (G09) | `NOTIFICATIONS` |
+| Queues | `rida-notifications`: сообщения ботов (G09) и напоминания поездок, ждущие свою минуту (G85, `122`) | `NOTIFICATIONS` |
 
 - Настройки: `brands/rida/wrangler.toml`; деплой дописывает адрес, id базы и среду (`179`). Миграции: `apps/backend/migrations`
   (таблицы `users`, `blocked_phones` с G04, `47`).
@@ -35,6 +35,7 @@
 - Картинки историй в R2: `stories/<id поездки>`, одна на поездку. API отдаёт их без подписи по `/stories/<id>`: Telegram читает картинку сам. В картинке только маршрут, время, места и цена (`88` L19). Живут 1 день: правило R2 `stories-1-day` ставит деплой (G57); новая история загружает картинку заново.
 - Карта в R2 `rida-map`: `map/uzbekistan-<дата>.pmtiles` и `map/fonts/...`, кладёт workflow «Map data» (среда на выбор), отдаёт `map.<домен>` без Worker (G22, G57, `67`).
 - База D1, очередь и R2 `rida-media` на пустом аккаунте создаёт деплой (`179`). Cron каждые 15 минут (G07).
+- Smart Placement (G85, `85`): Cloudflare запускает Worker ближе к базе D1 в Западной Европе.
 - Резервные копии D1: Time Travel 7 дней на бесплатном тарифе (`03`).
 
 ## Боты
