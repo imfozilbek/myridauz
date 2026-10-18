@@ -17,7 +17,7 @@ const approved: Driver = {
   application: {
     status: 'approved',
     car: { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 },
-    photos: { front: true, side: true, interior: true },
+    photos: { front: true },
     reasons: [],
   },
   editCar: () => undefined,

@@ -27,19 +27,17 @@ export async function fillCar(page: Page, shot: Shot = async () => undefined) {
   await shot('2-car');
 }
 
-// The 3 car photos: the first by its tile, then the camera opens by itself for the next (G40, K7).
+// The photo of the car from the front with its plate (one photo since 18.10.2026).
 async function takeCarPhotos(page: Page, shot: Shot = async () => undefined) {
   await tile(page, TEXT.photoFront).click();
-  for (const label of [TEXT.photoFront, TEXT.photoSide, TEXT.photoInside]) {
-    await cameraReady(page);
-    if (label === TEXT.photoFront) await shot('3-photos-camera');
-    await page.getByRole('dialog').getByLabel(TEXT.shutter).click();
-    await expect(tile(page, label)).toHaveAttribute('data-taken', 'true');
-  }
-  await expect(page.locator('.photo-tile img')).toHaveCount(3);
+  await cameraReady(page);
+  await shot('3-photos-camera');
+  await page.getByRole('dialog').getByLabel(TEXT.shutter).click();
+  await expect(tile(page, TEXT.photoFront)).toHaveAttribute('data-taken', 'true');
+  await expect(page.locator('.photo-tile img')).toHaveCount(1);
 }
 
-// The driver application in 2 screens (G62, docs/118 path 5): the car, then its 3 photos and the
+// The driver application in 2 screens (G62, docs/118 path 5): the car, then its photo and the
 // sending; the main screen says it is checked, no «Ariza yuborildi».
 export async function applyAsDriver(page: Page, shot: Shot = async () => undefined) {
   const mainButton = page.locator('#tg-main-button');

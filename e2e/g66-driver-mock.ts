@@ -28,7 +28,7 @@ const dilnoza = {
   avatarReason: null,
 };
 const car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
-const photos = { front: true, side: true, interior: true };
+const photos = { front: true };
 const pitak = { id: 'chilonzor', name: 'Chilonzor pitagi', point: { lat: 41.2856, lng: 69.2034 } };
 
 const at = (day: string, time: string) => tashkent(`2026-10-${day}T${time}`);

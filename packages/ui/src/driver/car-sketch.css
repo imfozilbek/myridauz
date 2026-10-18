@@ -1,0 +1,28 @@
+/* The driver's own car drawn from the front, its plate in the place of the photo's plate. */
+.car-sketch {
+  position: relative;
+  width: 84%;
+  container-type: inline-size;
+}
+
+.car-sketch svg {
+  display: block;
+  width: 100%;
+}
+
+.car-sketch-plate {
+  position: absolute;
+  top: 74.5%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* The plate at the scale of the drawing; a phone without container units keeps the small plate. */
+.car-sketch .uz-plate {
+  --plate-h: 7.6cqw;
+  --plate-border: 0.4cqw;
+  --plate-region: 8cqw;
+  --plate-font: 4.4cqw;
+  --plate-flag: 3cqw;
+  --plate-country: 1.6cqw;
+}

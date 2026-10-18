@@ -29,7 +29,7 @@ type ApplicationFlowProps = {
   readonly tapped?: boolean;
 };
 
-const NO_PHOTOS = { front: false, side: false, interior: false };
+const NO_PHOTOS = { front: false };
 
 // The application in 2 screens (G62, docs/118 path 5): the car, then its photos and the sending.
 // A fix opens on the car when the team asked about it, else on the photos.

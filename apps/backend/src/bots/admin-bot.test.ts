@@ -1,3 +1,4 @@
+import { CAR_PHOTO_KINDS } from '@platform/contracts';
 import { loadBrand } from '@platform/brands';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { call, pid, registerUser } from '../test-api';
@@ -51,7 +52,7 @@ describe('admin bot: «Navbat» of the team (G68, docs/122)', () => {
     await registerUser(APPLICANT);
     const jpeg = { body: new Uint8Array(9), headers: { 'content-type': 'image/jpeg' } };
     await call('/me/avatar', APPLICANT, { method: 'PUT', ...jpeg });
-    for (const kind of ['front', 'side', 'interior'])
+    for (const kind of CAR_PHOTO_KINDS)
       await call(`/driver/application/photos/${kind}`, APPLICANT, { method: 'PUT', app: 'driver', ...jpeg });
     const car = { make: 'Chevrolet', model: 'Nexia', color: 'black', plate: '10 123 ABC', seats: 4 };
     await call('/driver/application', APPLICANT, {

@@ -21,7 +21,7 @@ export const car = {
 export const application = (patch: Partial<DriverApplication>): DriverApplication => ({
   status: 'draft',
   car: null,
-  photos: { front: false, side: false, interior: false },
+  photos: { front: false },
   reasons: [],
   ...patch,
 });
@@ -78,7 +78,7 @@ function TestAccount({ face, children }: { readonly face: boolean; readonly chil
 }
 
 export function renderGate(initial: DriverApplication | null, face = true) {
-  let photos = initial?.photos ?? { front: false, side: false, interior: false };
+  let photos = initial?.photos ?? { front: false };
   const submit = vi.fn(async () => application({ status: 'pending', car }));
   let reasons = initial?.reasons ?? [];
   const uploadPhoto = vi.fn(async (kind: 'front' | 'side' | 'interior') => {

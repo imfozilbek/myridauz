@@ -22,9 +22,9 @@ test('driver: the fix opens at once, the retaken photo goes again with «Qayta y
   const api = await mockApi(page, 'active', 'changes');
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
-  const side = page.locator('.photo-tile-problem', { hasText: TEXT.reasonSide });
-  await expect(side).toBeVisible();
-  await side.click();
+  const front = page.locator('.photo-tile-problem', { hasText: TEXT.reasonFront });
+  await expect(front).toBeVisible();
+  await front.click();
   await page.getByRole('dialog').getByLabel(TEXT.shutter).click();
   await expect(page.locator('.photo-tile-problem')).toHaveCount(0);
   await page.locator('#tg-main-button', { hasText: TEXT.resend }).click();

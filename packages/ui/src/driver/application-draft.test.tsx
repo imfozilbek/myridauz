@@ -8,7 +8,7 @@ afterEach(() => {
   localStorage.clear();
 });
 
-const allPhotos = { front: true, side: true, interior: true };
+const allPhotos = { front: true };
 const pressed = (name: string) => screen.getByRole('button', { name }).getAttribute('aria-pressed');
 
 describe('the application not sent yet: the tile of the main screen and the draft (G62, docs/94 F3)', () => {

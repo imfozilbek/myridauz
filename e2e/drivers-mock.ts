@@ -2,12 +2,12 @@ import { readFileSync } from 'node:fs';
 import { loadBrand } from '@platform/brands';
 import type { Page } from '@playwright/test';
 
-// changes: the team asked to retake the side photo (mockup g62/1 screen 5).
+// changes: the team asked to retake the photo from the front (mockup g62/1 screen 5).
 export type DriverStart = 'none' | 'pending' | 'approved' | 'changes';
 
 const DAY = 24 * 60 * 60 * 1000;
 const car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
-const allPhotos = { front: true, side: true, interior: true };
+const allPhotos = { front: true };
 export const summary = {
   userId: '00000000000000000000000000000005',
   firstName: 'Jasur',
@@ -21,7 +21,7 @@ const CHANGES = {
   status: 'changes_requested',
   car,
   photos: allPhotos,
-  reasons: ['side_unclear'],
+  reasons: ['front_unclear'],
 };
 const START = {
   none: null,
@@ -38,7 +38,7 @@ export async function mockDrivers(page: Page, start: DriverStart) {
   let application: object | null = START[start];
   const submitted: unknown[] = [];
   // A fix keeps its photos: only the retaken one is new (G62).
-  const photos = { front: false, side: false, interior: false, ...START[start]?.photos };
+  const photos = { front: false, ...START[start]?.photos };
   await page.route('**/api/driver/application', async (route) => {
     if (route.request().method() === 'POST') {
       submitted.push(route.request().postDataJSON());

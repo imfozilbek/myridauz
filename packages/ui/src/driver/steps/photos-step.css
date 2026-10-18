@@ -1,4 +1,4 @@
-/* «Mashina rasmlari» (G62, mockup g62/1 screens 3 and 5). */
+/* «Mashina rasmi» (G62, mockup g62/1 screens 3 and 5; one photo since 18.10.2026). */
 .car-head {
   display: flex;
   align-items: center;
@@ -56,12 +56,36 @@
 }
 
 .photo-tile-frame {
+  position: relative;
   display: grid;
   place-items: center;
   box-sizing: border-box;
   height: 92px;
   overflow: hidden;
   background: var(--reg-face);
+  color: var(--reg-text);
+}
+
+/* The photo of the car: the whole width, a frame of a phone photo 4:3 (owner decision 18.10.2026). */
+.photo-tile-car {
+  grid-column: 1 / -1;
+}
+
+.photo-tile-car .photo-tile-frame {
+  height: auto;
+  aspect-ratio: 4 / 3;
+}
+
+.photo-tile-camera {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--reg-card);
   color: var(--reg-text);
 }
 

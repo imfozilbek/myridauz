@@ -17,7 +17,7 @@ afterEach(cleanup);
 const approved = application({
   status: 'approved',
   car,
-  photos: { front: true, side: true, interior: true },
+  photos: { front: true },
 });
 
 // The app of a driver with «Profil» opened from the main screen.
