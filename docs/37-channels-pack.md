@@ -51,7 +51,7 @@
 **Описание канала:**
 
 ```text
-{from} safarlar. Haydovchilar oʻz safariga yoʻlovchi oladi, yoʻl xarajati birga koʻtariladi. Bu taksi emas. Joy band qilish: @{passenger_bot}
+{from} safarlar. Haydovchilar oʻz safariga yoʻlovchi oladi. Bu taksi emas. Joy band qilish: @{passenger_bot}
 ```
 
 **Пост «Tez orada» (до запуска):**
@@ -61,7 +61,7 @@ Rida | {title}
 
 Tez orada bu kanalda {from} safarlar chiqadi.
 
-Haydovchi oʻz safariga yoʻlovchi oladi, yoʻl xarajati birga koʻtariladi.
+Haydovchi oʻz safariga yoʻlovchi oladi.
 
 Kanalga obuna boʻlib turing.
 

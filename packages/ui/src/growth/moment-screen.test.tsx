@@ -40,7 +40,11 @@ describe('the celebration of a moment', () => {
   });
 
   it('sends the card with the chosen phrase to the friends', async () => {
-    const momentCard = vi.fn<GrowthClient['momentCard']>(async () => ({ prepared: null, link: JOIN.link }));
+    const momentCard = vi.fn<GrowthClient['momentCard']>(async () => ({
+      prepared: null,
+      link: JOIN.link,
+      text: '«Viloyatga endi birga boraman»',
+    }));
     const opened = vi.spyOn(window, 'open').mockReturnValue(null);
     const { tracked } = open(JOIN, { momentCard });
     await tap('Viloyatga endi birga boraman');

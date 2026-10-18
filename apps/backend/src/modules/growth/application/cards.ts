@@ -34,16 +34,16 @@ export async function momentCard(
   if (!offered.includes(moment) && (await reachedMoment(deps, userId, side)) !== moment) return null;
   const { link } = await momentFacts(deps, userId, moment);
   const message = deps.message({ moment, phrase, name: (await deps.nameOf(userId)) ?? '' });
-  return { prepared: await deps.prepare(side, userId, message, link), link };
+  return { prepared: await deps.prepare(side, userId, message, link), link, text: message.text };
 }
 
 // The moment was shown: whatever the answer, it is not offered again (docs/123: no pressure).
 export const offerMoment = (deps: GrowthDeps, userId: number, moment: ShareMoment) =>
   deps.store.offer(userId, moment, deps.now());
 
-// «Sizning taʼsiringiz»: who came by the person's links, who of them rode, the link to share again.
+// «Sizning taʼsiringiz»: who came by the person's links, who of them rode, the QR of a driver.
+// «Yana ulashish» is a card of the loop share-join (G88).
 export async function myGrowth(deps: GrowthDeps, userId: number): Promise<MyGrowth> {
   const [impact, code] = await Promise.all([deps.store.impactOf(userId), deps.store.codeOf(userId)]);
-  const link = (loop: 'share-join' | 'qr') => botStartLink(deps.passengerBot, loopVia(loop, code));
-  return { ...impact, link: link('share-join'), qr: link('qr') };
+  return { ...impact, qr: botStartLink(deps.passengerBot, loopVia('qr', code)) };
 }

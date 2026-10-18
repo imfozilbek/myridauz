@@ -16,7 +16,7 @@
   "when.halfHours": "Soat yarimida",
   "when.none": "Bu kunda boʻsh vaqt yoʻq. Boshqa kunni tanlang.",
   "price.title": "Bir joy narxi",
-  "price.hint": "Tavsiya: {price}. Bu yoʻl xarajatining bir kishiga toʻgʻri keladigan qismi.",
+  "price.hint": "Tavsiya: {price}.",
   "price.commission": "Har bir joy uchun {amount} komissiya",
   "price.less": "Kamaytirish",
   "price.more": "Oshirish",

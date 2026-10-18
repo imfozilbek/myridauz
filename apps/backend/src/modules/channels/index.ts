@@ -1,5 +1,5 @@
 import { channelOf, type BrandConfig } from '@platform/brands';
-import { channelVia, tripBookLink, TRIPS_PATH, VIA_DRIVER, type Trip } from '@platform/contracts';
+import { channelVia, TRIPS_PATH, type Trip } from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
 import { placesOf } from '../locations';
@@ -123,7 +123,6 @@ const publicityDeps = (env: Bindings, tripOf: TripFactsOf): PublicityDeps => ({
   appLinks: () => appLinks(healthStoreOf(env)),
   posts: postsOf(env),
   views: viewsOf(env),
-  link: (tripId) => tripBookLink(brandOf(env).bots.passenger, tripId, VIA_DRIVER),
   now: () => Date.now(),
 });
 

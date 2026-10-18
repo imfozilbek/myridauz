@@ -1,6 +1,6 @@
 {
   "soon": "Tez orada ochiladi",
-  "about": "Yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi.",
+  "about": "Yoʻli bir odamlar bir mashinada boradi.",
   "role.title": "Kim boʻlib yoʻlga chiqasiz?",
   "role.passenger": "Yoʻlovchiman",
   "role.passengerHint": "Safarga joy kerak",
@@ -69,7 +69,7 @@
   "edit.driverHint": "Mashinangiz boʻlsa",
   "edit.passenger": "Yoʻlovchi sifatida ham yozilish",
   "edit.passengerHint": "Safarga joy kerak boʻlsa",
-  "closed.about": "{brand} ochildi: yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi.",
+  "closed.about": "{brand} ochildi: yoʻli bir odamlar bir mashinada boradi.",
   "closed.find": "Safar topish",
   "closed.publish": "Safar eʼlon qilish",
   "pain.passenger.chats": "Telegram guruhlaridagi tartibsizlik",

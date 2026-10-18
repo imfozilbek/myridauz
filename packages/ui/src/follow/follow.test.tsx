@@ -64,6 +64,7 @@ describe('the passenger shares the trip; in the car by the driver «Keldi» (doc
     const share = vi.fn<ChatClient['share']>(async () => ({
       preparedMessageId: null,
       link: 'https://t.me/x',
+      text: 'Ali yoʻlga chiqadi',
     }));
     const inCar = { ...confirmed, boardedAt: TRIP_DAY };
     const arrived = vi.fn<ChatClient['arrived']>(async () => ({ ...inCar, arrivedAt: TRIP_DAY }));
@@ -81,6 +82,8 @@ describe('the passenger shares the trip; in the car by the driver «Keldi» (doc
     await tap('Yaqinlarimga');
     expect(share).toHaveBeenCalledWith(confirmed.id);
     await vi.waitFor(() => expect(open.mock.calls[0]?.[0]).toContain('t.me/share/url'));
+    // The words of the card for an old Telegram (G88, docs/193).
+    expect(open.mock.calls[0]?.[0]).toContain(encodeURIComponent('Ali yoʻlga chiqadi'));
     await tap('Yetib keldim');
     expect(await screen.findByText('Yaqinlaringizga xabar berildi')).toBeTruthy();
     expect(screen.queryByText('Yetib keldim')).toBeNull();
