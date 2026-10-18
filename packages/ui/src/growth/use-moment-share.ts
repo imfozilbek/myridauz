@@ -5,6 +5,7 @@ import { useI18n } from '../context/i18n-context';
 import { haptic } from '../telegram/feedback';
 import { shareCard } from '../telegram/share-card';
 import { canShareStory, openStory } from '../telegram/story';
+import { PICTURE_FONT } from '../media/story-paint';
 import { drawMomentStory } from './moment-picture';
 import type { MomentWords } from './moment-words';
 import { useShareTrack } from './use-share-track';
@@ -30,7 +31,7 @@ export function useMomentShare(found: Moment & { readonly moment: ShareMoment },
         checks: [t('share.picture.hidden'), t('share.picture.telegram')],
       },
       brand.theme.colors,
-      getComputedStyle(document.body).fontFamily,
+      PICTURE_FONT,
     );
     if (!picture) throw new Error('ui.story_not_drawn');
     const imageUrl = await growth.momentStory(picture);

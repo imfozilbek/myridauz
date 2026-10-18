@@ -1,5 +1,5 @@
 // Everything that differs between brands (docs/22). Code reads brands only through these types.
-import type { AppName, BrandTheme } from './brand-theme';
+import type { AppName, BrandColors, BrandTheme } from './brand-theme';
 import type { PeopleRules } from './people-rules';
 
 export type { AppName, BrandColors, BrandTheme, HexColor } from './brand-theme';
@@ -115,6 +115,7 @@ export type BrandConfig = PeopleRules & {
   // Photos of the 14 regions in public/regions (docs/48); the apps show their drawings (docs/118).
   readonly regionPhotos: boolean;
   readonly app?: AppName; // set by brandForApp: the colors and the drawings of one Mini App
+  readonly commonColors?: BrandColors; // set by brandForApp: the colors before those of the app
   // Telegram usernames of the bots (docs/02, docs/46): deep links between them; support answers people (docs/50).
   readonly bots: BotNames;
   // The version of every welcome picture, from its drawing: a new look, a new address (lesson №311).

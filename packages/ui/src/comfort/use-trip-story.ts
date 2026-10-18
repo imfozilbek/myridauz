@@ -1,10 +1,10 @@
 import type { Trip } from '@platform/contracts';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
-import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { useShareTrack } from '../growth/use-share-track';
-import { useTripTexts } from '../media/use-trip-texts';
+import { PICTURE_FONT } from '../media/story-paint';
+import { usePassengerColors, useTripTexts } from '../media/use-trip-texts';
 import { haptic } from '../telegram/feedback';
 import { openStory } from '../telegram/story';
 import { drawStory } from './story-picture';
@@ -19,12 +19,12 @@ export function useTripStory(trip: Trip) {
   const { t, formatDate, formatTime } = useI18n();
   const { track } = useAnalytics();
   const { chat } = useApiClients();
-  const brand = useBrand();
+  const colors = usePassengerColors();
   const texts = useTripTexts();
   const done = useShareTrack('story', SCREEN);
   return async () => {
     const words = texts(trip);
-    const picture = await drawStory(words, brand.theme.colors, getComputedStyle(document.body).fontFamily);
+    const picture = await drawStory(words, colors, PICTURE_FONT);
     if (!picture) throw new Error('ui.story_not_drawn');
     const story = await chat.putTripStory(trip.id, picture);
     const day = new Date(trip.departAt);

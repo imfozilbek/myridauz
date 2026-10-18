@@ -55,8 +55,10 @@ export function loadBrand(
   return config;
 }
 
-// The brand as one Mini App sees it: its own main color over the common colors (docs/20).
+// The brand as one Mini App sees it: its own main color over the common colors (docs/20). The common
+// colors stay with it: another app's colors come from them too (a driver's card for passengers, G88).
 export function brandForApp(brand: BrandConfig, app: AppName): BrandConfig {
-  const colors = { ...brand.theme.colors, ...brand.theme.apps[app] };
-  return { ...brand, app, theme: { ...brand.theme, colors } };
+  const common = brand.commonColors ?? brand.theme.colors;
+  const colors = { ...common, ...brand.theme.apps[app] };
+  return { ...brand, app, commonColors: common, theme: { ...brand.theme, colors } };
 }

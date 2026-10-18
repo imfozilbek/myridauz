@@ -1,8 +1,8 @@
 import type { Trip } from '@platform/contracts';
 import { useApiClients } from '../context/api-clients';
-import { useBrand } from '../context/brand-context';
 import { useShareTrack } from '../growth/use-share-track';
-import { useTripTexts } from '../media/use-trip-texts';
+import { PICTURE_FONT } from '../media/story-paint';
+import { usePassengerColors, useTripTexts } from '../media/use-trip-texts';
 import { haptic } from '../telegram/feedback';
 import { shareCard } from '../telegram/share-card';
 import { drawTripCardPicture } from './trip-card-picture';
@@ -12,12 +12,11 @@ import { drawTripCardPicture } from './trip-card-picture';
 // card goes as text. A card that cannot be made shakes the phone and stays quiet.
 export function useTripCard(trip: Trip) {
   const { growth } = useApiClients();
-  const brand = useBrand();
+  const colors = usePassengerColors();
   const texts = useTripTexts();
   const done = useShareTrack('trip', 'market.own_trip');
   const pictureId = async () => {
-    const font = getComputedStyle(document.body).fontFamily;
-    const picture = await drawTripCardPicture(texts(trip), brand.theme.colors, font);
+    const picture = await drawTripCardPicture(texts(trip), colors, PICTURE_FONT);
     return picture ? growth.cardPicture(picture) : null;
   };
   return async () => {

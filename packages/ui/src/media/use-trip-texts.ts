@@ -1,3 +1,4 @@
+import { brandForApp } from '@platform/brands';
 import type { Trip } from '@platform/contracts';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
@@ -5,6 +6,11 @@ import { usePlaceLabel } from '../market/places-gate';
 import type { TripPictureTexts } from './trip-paint';
 
 // The words of a picture of a trip in the language of the app (docs/88 L19, G88 docs/193).
+// A picture of a trip goes to passengers: the colors of the passenger app their tap opens (docs/20).
+export function usePassengerColors() {
+  return brandForApp(useBrand(), 'passenger').theme.colors;
+}
+
 export function useTripTexts() {
   const { t, formatDate, formatTime, formatMoney } = useI18n();
   const brand = useBrand();
