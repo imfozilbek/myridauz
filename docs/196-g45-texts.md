@@ -41,7 +41,7 @@
 
 | Настройка | Текст |
 |---|---|
-| Komissiya | Haydovchi har bir tasdiqlangan joy uchun toʻlaydigan ulush. Rida shu pul bilan ishlaydi. |
+| Komissiya | Haydovchi har bir tasdiqlangan joy uchun toʻlaydigan ulush. Xizmat shu pul bilan ishlaydi. |
 | Bir joy uchun eng kam komissiya | Arzon safarda ham bir joy komissiyasi shu summadan kam boʻlmaydi. |
 | Aksiya summasi | Yangi haydovchiga beriladigan bonus. Birinchi safarlarda komissiyani toʻlaydi. |
 | Aksiya necha marta beriladi | Bonus bitta haydovchiga necha marta beriladi. |

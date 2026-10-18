@@ -72,11 +72,14 @@ test('Q8. the support copy has the public id and «Profilni ochish»; the link o
   page,
 }) => {
   await say('support', PASSENGER, 'Haydovchi javob bermayapti');
+  // The copy goes to the one member support is assigned to (docs/92): «Profilni ochish» only when it
+  // is an owner, as «Odamlar» is the owner's.
   const copy = (await botMessages()).findLast((message) =>
     message.text.includes('Haydovchi javob bermayapti'),
   );
   expect(copy?.text).toContain(passengerId);
-  expect(copy?.buttons.map((button) => button.text)).toContain(t('bot.supportCard.openProfile'));
+  const profile = copy?.buttons.some((button) => button.text === t('bot.supportCard.openProfile'));
+  expect(profile).toBe(copy?.chatId === OWNER.id);
   await openAs(page, 'admin', OWNER, { search: `?open=people&person=${passengerId}` });
   await expect(page.getByText(t('manage.person.asPassenger'))).toBeVisible();
   await expect(page.getByText(t('manage.person.lastRides'))).toBeVisible();

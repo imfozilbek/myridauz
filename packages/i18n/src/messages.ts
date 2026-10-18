@@ -41,6 +41,8 @@ import driverAfter from '../locales/uz-Latn/driver-after.json' with { type: 'jso
 import team from '../locales/uz-Latn/team.json' with { type: 'json' };
 import navbat from '../locales/uz-Latn/navbat.json' with { type: 'json' };
 import manage from '../locales/uz-Latn/manage.json' with { type: 'json' };
+// What each limit of «Cheklovlar» changes and why (G45, Q3 of docs/111).
+import manageLimits from '../locales/uz-Latn/manage-limits.json' with { type: 'json' };
 // The questionnaire of the waitlist (G83, docs/182).
 import waitlist from '../locales/uz-Latn/waitlist.json' with { type: 'json' };
 import waitlistTeam from '../locales/uz-Latn/waitlist-team.json' with { type: 'json' };
@@ -87,7 +89,7 @@ const REFERENCE = {
   driverAfter,
   team,
   navbat,
-  manage,
+  manage: { ...manage, ...manageLimits },
   waitlist,
   // The waitlist of the team and the links of the ads (G83, docs/183, docs/184).
   waitlistTeam,

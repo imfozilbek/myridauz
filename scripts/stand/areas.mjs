@@ -42,7 +42,7 @@ export const AREAS = {
     'g63',
     'g49-driver',
   ],
-  team: ['team', 'team-moderation', 'screens-team', 'all-admin'],
+  team: ['team', 'team-moderation', 'screens-team', 'all-admin', 'g45-team', 'g45-screens'],
   bots: ['bots', 'bots-team', 'complaints-time', 'g68-bots', 'g83'],
   channels: ['system-channels', 'system-cron', 'system-cron-team', 'system-people'],
 };

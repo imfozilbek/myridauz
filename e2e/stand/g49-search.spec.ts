@@ -8,10 +8,11 @@ import { openAs, signedAs, type Person } from './stand-kit';
 import { runCron, standRows, standSql } from './stand-tools';
 
 // G49 (docs/77 P17, P18, docs/81 V11): the search of a passenger on the whole local Rida. The routes
-// to Urganch and Termiz are this file's own: no other scenario of the stand goes there.
+// to Xiva shahri and Hazorasp are this file's own: no other scenario of the stand goes there (checked
+// by id and by name, lesson 334); Urganch and Termiz are the empty days of other scenarios.
 test.describe.configure({ mode: 'serial' });
-const URGANCH = '1733401';
-const TERMIZ = '1722401';
+const XIVA = '1733406';
+const HAZORASP = '1733220';
 const LAYLO: Person = { id: 900908, name: 'Laylo', phone: '998901110908' };
 const XURSHID: Person = { id: 900909, name: 'Xurshid', phone: '998901110909' };
 const ILHOM: Person = { id: 900910, name: 'Ilhom', phone: '998901110910' };
@@ -30,8 +31,8 @@ test('P17. «Qayerga» of the main screen opens the list of «Qayerga» at once'
 
 test('P18. a route link of the landing opens the trips of the route at once', async ({ page }) => {
   await approvedDriver(XURSHID, '01G909XU');
-  await publishTrip(XURSHID, CHILONZOR, URGANCH, 'door');
-  await openAs(page, 'passenger', LAYLO, { search: `?tgWebAppStartParam=find_${CHILONZOR}_${URGANCH}` });
+  await publishTrip(XURSHID, CHILONZOR, XIVA, 'door');
+  await openAs(page, 'passenger', LAYLO, { search: `?tgWebAppStartParam=find_${CHILONZOR}_${XIVA}` });
   await expect(page.locator('.search-trip').filter({ hasText: XURSHID.name })).toBeVisible();
 });
 
@@ -45,13 +46,13 @@ function holiday(source: string, count: number) {
 
 test('V11. a holiday: hundreds of trips on one day; the search finds them all at once, the Cron keeps up', async () => {
   await approvedDriver(ILHOM, '01G910IL');
-  const trip = await publishTrip(ILHOM, CHILONZOR, TERMIZ, 'door', 3);
+  const trip = await publishTrip(ILHOM, CHILONZOR, HAZORASP, 'door', 3);
   holiday(trip.id, HOLIDAY_TRIPS);
   try {
     const market = createMarketClient(await signedAs('passenger', LAYLO));
     const date = tashkentDate(trip.departAt);
     const started = Date.now();
-    const found = await market.searchTrips({ from: CHILONZOR, to: TERMIZ, date });
+    const found = await market.searchTrips({ from: CHILONZOR, to: HAZORASP, date });
     expect(Date.now() - started).toBeLessThan(SEARCH_MS);
     expect(found).toHaveLength(HOLIDAY_TRIPS + 1);
     const cron = Date.now();
