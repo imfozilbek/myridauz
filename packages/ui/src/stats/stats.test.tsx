@@ -32,11 +32,9 @@ describe('Statistika of the team (docs/29)', () => {
     // The bots under load (G85 T1): a 429 and a lost post are marked.
     expect(screen.getByText('Botlar xabarlari')).toBeTruthy();
     expect(screen.getByText('412')).toBeTruthy();
-    const passenger = screen.getByText('429: 1 · yetib bormadi: 0 · eng koʻp: 18 / soniya');
+    const passenger = screen.getByText('429: 1 · yoʻqoldi: 0 · soniyada: 18');
     expect(passenger.className).toContain('manage-danger');
-    expect(screen.getByText('429: 0 · yetib bormadi: 0 · eng koʻp: 6 / soniya').className).not.toContain(
-      'manage-danger',
-    );
+    expect(screen.getByText('429: 0 · yoʻqoldi: 0 · soniyada: 6').className).not.toContain('manage-danger');
     expect(screen.getByText('Navbat amallari, kuniga')).toBeTruthy();
     await tap('7 kun');
     expect(await screen.findByText('158')).toBeTruthy();

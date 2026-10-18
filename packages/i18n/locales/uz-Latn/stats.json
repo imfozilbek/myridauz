@@ -72,6 +72,6 @@
   "bots.bot.admin": "Admin bot",
   "bots.bot.poster": "Kanallar boti",
   "bots.bot.main": "Kutish roʻyxati boti",
-  "bots.hint": "429: {limited} · yetib bormadi: {dead} · eng koʻp: {peak} / soniya",
+  "bots.hint": "429: {limited} · yoʻqoldi: {dead} · soniyada: {peak}",
   "bots.queue": "Navbat amallari, kuniga"
 }
