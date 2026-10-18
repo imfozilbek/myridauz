@@ -25,7 +25,12 @@ export const SHARE_TOKEN = /^[A-Za-z0-9_-]{43}$/u;
 export const shareTokenSchema = z.string().regex(SHARE_TOKEN);
 
 // Telegram's own "send to a chat" window (shareMessage), or a plain link when it is not there.
-export const shareSchema = z.object({ preparedMessageId: z.string().nullable(), link: z.string() });
+// text: the words of the card for an old Telegram without shareMessage (t.me/share/url, G88).
+export const shareSchema = z.object({
+  preparedMessageId: z.string().nullable(),
+  link: z.string(),
+  text: z.string(),
+});
 export type Share = z.infer<typeof shareSchema>;
 
 export const SHARE_STATUSES = [

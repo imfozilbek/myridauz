@@ -27,6 +27,7 @@ export function useMomentShare(found: Moment & { readonly moment: ShareMoment },
         fact: words.fact,
         link: words.link,
         slogan: brand.slogan,
+        checks: [t('share.picture.hidden'), t('share.picture.telegram')],
       },
       brand.theme.colors,
       getComputedStyle(document.body).fontFamily,
@@ -40,7 +41,7 @@ export function useMomentShare(found: Moment & { readonly moment: ShareMoment },
   };
   const chat = async (phrase: number) => {
     const card = await growth.momentCard(found.moment, phrase);
-    if (!(await shareCard(card.prepared, card.link))) return;
+    if (!(await shareCard(card.prepared, card.link, card.text))) return;
     done('chat');
     haptic.success();
   };

@@ -1,7 +1,9 @@
 import { channelVia, routeFindLink, tripBookLink, type Trip } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { endNames, type Places } from '../../../shared/places/end-names';
+import { serviceValue, withValue } from '../../../shared/share/value-lines';
 import { bold, escapeHtml as escape, quote } from '../../../shared/telegram/html';
+import { shareLink } from '../../../shared/telegram/share-link';
 import { postState, regionOf } from '../domain/route-channels';
 import { lifePost, type Post } from './post-life';
 import { hashtagOf, whenLine } from './post-parts';
@@ -36,7 +38,8 @@ function carLine(trip: Trip): string {
   return t('bot.channel.car', { car, rating });
 }
 
-// «Toshkent shahri → Samarqand viloyati, 2-oktabr, juma: boʻsh joy bor.» under the shared link.
+// «Toshkent shahri → Samarqand viloyati, 2-oktabr, juma: boʻsh joy bor.» under the shared link, then
+// why the brand (G88, docs/193).
 function shareUrl(bookUrl: string, trip: Trip, places: Places): string {
   const departAt = new Date(trip.departAt);
   const text = t('bot.channel.shareText', {
@@ -44,7 +47,7 @@ function shareUrl(bookUrl: string, trip: Trip, places: Places): string {
     to: places.get(regionOf(trip.to, places))?.name ?? trip.to,
     date: `${formatDate(departAt)}, ${formatWeekday(departAt)}`,
   });
-  return `https://t.me/share/url?url=${encodeURIComponent(bookUrl)}&text=${encodeURIComponent(text)}`;
+  return shareLink(bookUrl, withValue(text, serviceValue()));
 }
 
 // A trip with seats, as the bot shows it (G68, docs/122, mockup g68/5 «Safar posti»): 🟢 and 🔴 in

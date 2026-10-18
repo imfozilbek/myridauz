@@ -29,16 +29,14 @@ export type PublicityDeps = {
   readonly appLinks: () => Promise<ReadonlyMap<string, string>>;
   readonly posts: Pick<ChannelPostStore, 'byTrip'>;
   readonly views: TripViewStore;
-  // The link the driver sends to people: it carries its own mark (docs/116).
-  readonly link: (tripId: string) => string;
   readonly now: () => number;
 };
 
-// «Safaringiz kanalda chiqdi», «N koʻrdi» and «Havolani yoʻlovchilarga yuborish» (G63, docs/119):
-// only for the driver of the trip. The channels are those the server posts to: both ends of the trip
-// and the team's channels. A post is there only once Telegram gave it an id (channel_posts): the posts
-// go out at the publishing, so a trip published while they were off, a channel added later or a send
-// Telegram refused shows no post.
+// «Safaringiz kanalda chiqdi» and «N koʻrdi» (G63, docs/119): only for the driver of the trip; the link
+// to send is a card of the loop trip (G88, docs/193). The channels are those the server posts to: both
+// ends of the trip and the team's channels. A post is there only once Telegram gave it an id
+// (channel_posts): the posts go out at the publishing, so a trip published while they were off, a
+// channel added later or a send Telegram refused shows no post.
 export async function tripPublicity(
   deps: PublicityDeps,
   driverId: number,
@@ -63,7 +61,7 @@ export async function tripPublicity(
       link: links.get(chat) ?? link,
       posted: deps.enabled && saved.has(chat),
     }));
-  return { channels, views, link: deps.link(tripId) };
+  return { channels, views };
 }
 
 // A person opened the trip in the app: each person counts once, the driver never (G63, docs/119).

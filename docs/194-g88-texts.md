@@ -59,6 +59,13 @@
 | Карточка «Yaqinlarimga» (`bot.share.invite`) | `value.passenger` |
 | «Doʻstga», доска дня, итог недели (`bot.channel.shareText`, `bot.board.shareText`, `bot.weekSum.shareText`) | `value.service` |
 
+## «Rost» в админке (`growth.json`, новые)
+
+| Ключ | Текст |
+|---|---|
+| `rost.loop.trip` | Haydovchi havolasi |
+| `rost.loop.story` | Safar hikoyasi |
+
 ## Удалено
 
 - `share.sendHint` («Yaqinlaringiz safarni kuzatib boradi»): нигде не показывается.

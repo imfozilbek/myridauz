@@ -8,11 +8,10 @@ const ID = '6f1c2f7e-3c1b-4f5e-9a3d-2b8c1d0e4f5a';
 const publicity = {
   channels: [{ chat: '-1004328825984', title: 'Samarqand', link: 'https://t.me/+abcdefghij', posted: true }],
   views: 4,
-  link: `https://t.me/test_bot?startapp=trip_${ID}__driver`,
 };
 
 describe('the publicity of a trip in the driver app (G63, docs/119)', () => {
-  it('reads the channels, the people who opened it and the link, signed', async () => {
+  it('reads the channels and the people who opened it, signed', async () => {
     const fetch = vi.fn<Fetch>(async () => Response.json(publicity));
     expect(await createChannelsClient({ ...options, fetch }).tripPublicity(ID)).toEqual(publicity);
     expect(fetch.mock.calls[0]?.[0]).toBe(`https://api.test/driver/trips/${ID}/publicity`);

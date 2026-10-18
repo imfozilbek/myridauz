@@ -8,7 +8,8 @@ const STATUS = { 'shares.not_found': 404, 'shares.wrong_status': 409, 'shares.in
 // Telegram reads the picture once when the story is posted; a day of cache is enough.
 const CACHE = 'public, max-age=86400';
 
-type Wiring = StoriesDeps & { readonly bookLink: (tripId: string) => string };
+// bookLink: the trip in the passenger bot with the mark of the driver's story (G88, docs/193).
+type Wiring = StoriesDeps & { readonly bookLink: (tripId: string, driverId: number) => Promise<string> };
 
 // «Hikoyaga joylash» (docs/88 L19): the driver uploads the picture; Telegram reads it without a signature.
 export function storyRoutes(deps: (env: Bindings) => Wiring) {
@@ -20,11 +21,13 @@ export function storyRoutes(deps: (env: Bindings) => Wiring) {
       const tripId = context.req.param('id');
       const wiring = deps(context.env);
       const image = { body, type: context.req.header('content-type') ?? '' };
-      const result = await saveStory(wiring, context.get('session').user.id, tripId, image);
+      const driverId = context.get('session').user.id;
+      const result = await saveStory(wiring, driverId, tripId, image);
       if (!result.ok) return fail(result.error);
       // The time in the link: Telegram never takes an older picture of the same trip from a cache.
       const imageUrl = `${new URL(context.req.url).origin}${storyImagePath(tripId)}?v=${Date.now()}`;
-      return context.json({ imageUrl, bookLink: wiring.bookLink(tripId) } satisfies Story, 201);
+      const bookLink = await wiring.bookLink(tripId, driverId);
+      return context.json({ imageUrl, bookLink } satisfies Story, 201);
     })
     .get('/stories/:id', async (context) => {
       const tripId = context.req.param('id');

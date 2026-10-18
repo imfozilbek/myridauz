@@ -53,11 +53,13 @@ const sharesDeps = (env: Bindings, bookingOf: BookingOf, driverTripOf: DriverTri
   now: Date.now,
 });
 
-// The story opens the trip in the passenger bot, like the button of a channel post (docs/15).
+// The story opens the trip in the passenger bot, like the button of a channel post (docs/15), with the
+// driver's code (loop story, G88); no D1 (local runs): the plain mark of a story (docs/116).
 const storiesDeps = (env: Bindings, driverTripOf: DriverTripOf) => ({
   driverTrip: (id: string) => driverTripOf(env, id),
   stories: storiesOf(env),
-  bookLink: (tripId: string) => tripBookLink(brandOf(env).bots.passenger, tripId, VIA_STORY),
+  bookLink: async (tripId: string, driverId: number) =>
+    tripBookLink(brandOf(env).bots.passenger, tripId, (await personVia(env, driverId, 'story')) ?? VIA_STORY),
 });
 
 export const sharesModule = (bookingOf: BookingOf, driverTripOf: DriverTripOf) =>

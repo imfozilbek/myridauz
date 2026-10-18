@@ -32,7 +32,6 @@ const channel = channelOf(loadBrand(), SAMARQAND);
 const PUBLICITY = {
   channels: [{ chat: channel?.chat, title: channel?.title, link: channel?.link, posted: true }],
   views: 3200,
-  link: 'https://t.me/test_bot?startapp=trip_7__driver',
 };
 
 type Phone = {

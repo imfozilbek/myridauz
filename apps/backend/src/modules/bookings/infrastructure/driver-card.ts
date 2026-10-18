@@ -4,7 +4,6 @@ import {
   onTheWay,
   tashkentDate,
   tripBookLink,
-  VIA_DRIVER,
   type Booking,
   type Trip,
 } from '@platform/contracts';
@@ -12,8 +11,10 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Card } from '../../notifications';
 import { endNames, type Places } from '../../../shared/places/end-names';
 import { bold, escapeHtml, italic, quote } from '../../../shared/telegram/html';
+import { tripShareText } from '../../../shared/share/trip-text';
 import { driverTripCard } from '../../../shared/telegram/card-keys';
 import { appButton } from '../../../shared/telegram/open-button';
+import { shareLink } from '../../../shared/telegram/share-link';
 import { whenLines } from './card-when';
 import { roadLines } from './road-order';
 
@@ -68,11 +69,18 @@ function passengerLines(bookings: readonly Booking[]): string[] {
   return [quote([t('bot.dcard.passengers'), ...lines])];
 }
 
-function buttons(brand: BrandConfig, trip: Trip, stage: Stage) {
+// «🔗 Havolani yuborish» while the trip has free seats: the words of the trip with the link that carries
+// the driver's code (G88, docs/193).
+function shareButton(brand: BrandConfig, trip: Trip, places: Places, via: string) {
+  const link = tripBookLink(brand.bots.passenger, trip.id, via);
+  return { text: t('bot.dcard.share'), url: shareLink(link, tripShareText(trip, places)) };
+}
+
+type Button = ReturnType<typeof shareButton>;
+
+function buttons(brand: BrandConfig, trip: Trip, stage: Stage, share: Button | null) {
   const open = (text: string) => appButton(brand, 'driver', text, { name: MY_TRIP_LINK, id: trip.id });
-  const link = tripBookLink(brand.bots.passenger, trip.id, VIA_DRIVER);
-  const share = { text: t('bot.dcard.share'), url: `https://t.me/share/url?url=${encodeURIComponent(link)}` };
-  if (stage === 'published') return [[open(t('bot.dcard.open')), share]];
+  if (stage === 'published') return [[open(t('bot.dcard.open')), ...(share ? [share] : [])]];
   if (stage === 'onWay') return [[open(t('bot.dcard.arrive'))]];
   return stage === 'arrived' ? [[open(t('bot.dcard.open'))]] : null;
 }
@@ -85,11 +93,13 @@ type Facts = {
   readonly bookings: readonly Booking[];
   readonly places: Places;
   readonly now: number;
+  // The mark of the driver's link: the loop trip with the code (G88).
+  readonly via: string;
 };
 
 // The live card of a trip in the driver bot, on top of the chat (G68, mockup g68/3). It shows the trip now: published with its passengers, the order of the road on the day
 // of the trip, arrived or cancelled. On the road it says that the bot keeps quiet (docs/122).
-export function driverCard({ brand, chatId, trip, bookings, places, now }: Facts): Card {
+export function driverCard({ brand, chatId, trip, bookings, places, now, via }: Facts): Card {
   const stage = stageOf(trip, now);
   const onWay = stage === 'onWay';
   const tripDay = onWay || tashkentDate(trip.departAt) === tashkentDate(now);
@@ -102,7 +112,8 @@ export function driverCard({ brand, chatId, trip, bookings, places, now }: Facts
     t('bot.dcard.price', { price: bold(formatMoney(trip.price)) }),
     ...(onWay ? [italic(t('bot.dcard.quiet'))] : []),
   ].join('\n');
-  const keyboard = buttons(brand, trip, stage);
+  const free = stage === 'published' && trip.seatsLeft > 0;
+  const keyboard = buttons(brand, trip, stage, free ? shareButton(brand, trip, places, via) : null);
   return {
     bot: 'driver',
     chatId,

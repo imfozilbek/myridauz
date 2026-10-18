@@ -24,6 +24,7 @@ async function driverBot(at: (booking: Booking) => number = dayBefore) {
     places: async () => new Map(),
     show: async (cards, rings) => void shown.push({ cards: [...cards], rings: [...rings] }),
     trip: async () => ({ trip: booking.trip, chatId: DRIVER_CHAT, bookings: [booking] }),
+    via: async () => 'trip-a1b2c3',
     now: () => at(booking),
   });
   const notifier = telegramNotifier({

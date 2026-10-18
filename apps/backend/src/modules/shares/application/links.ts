@@ -20,7 +20,7 @@ export async function issueLink(
   const bot = subject.kind === 'booking' ? 'passenger' : 'driver';
   // «Men ham yoʻlga chiqaman» under the card: the loop «Yaqinlarimga» (G69, docs/123).
   const via = await deps.via(userId);
-  return { preparedMessageId: await deps.prepare(bot, userId, text, link, via), link };
+  return { preparedMessageId: await deps.prepare(bot, userId, text, link, via), link, text };
 }
 
 // Every close person of the subject hears the same message from the passenger bot.

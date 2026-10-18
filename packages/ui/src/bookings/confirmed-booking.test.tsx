@@ -76,6 +76,7 @@ describe('the page of a confirmed seat (G60, mockup g60/1)', () => {
     const loopCard = vi.fn<GrowthClient['loopCard']>(async () => ({
       prepared: null,
       link: 'https://t.me/p',
+      text: 'Birga boramizmi?',
     }));
     const opened = vi.spyOn(window, 'open').mockReturnValue(null);
     open({ ...confirmed, trip: { ...confirmed.trip, seatsLeft: 2 } }, {}, { loopCard });
@@ -84,6 +85,8 @@ describe('the page of a confirmed seat (G60, mockup g60/1)', () => {
     await tap('Doʻstingni chaqir');
     await vi.waitFor(() => expect(opened).toHaveBeenCalled());
     expect(loopCard).toHaveBeenCalledWith({ loop: 'seats', bookingId: confirmed.id });
+    // An old Telegram gets the words of the card too (G88, docs/193).
+    expect(String(opened.mock.calls[0]?.[0])).toContain(`&text=${encodeURIComponent('Birga boramizmi?')}`);
     opened.mockRestore();
     cleanup();
     open({ ...confirmed, trip: { ...confirmed.trip, seatsLeft: 0, status: 'full' } });

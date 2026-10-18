@@ -27,6 +27,7 @@
 | Голос людей (G87) | `leave_reason`: вид (`booking`, `trip`, `account`) и id причины после отмены места, поездки или удаления данных; одно нажатие, можно пропустить (`191`) |
 | Сервер | `driver_approved` |
 | Близкие (`43`) | `trip_shared`, `share_opened`, `share_follow`, `share_join`, `boarded` («Keldi» водителя, G76), `arrived` |
+| Петли роста (G69, G88) | `share_shown` (кнопка «поделиться» на экране) и `share_done` (карточка ушла): кнопка = петля (`qr`, `req-share`, `seats`, `follow`, `share-join`, `share-driver`, `trip`, `story`), куда `chat` или `story`; у QR куда нет (скачивание); у «Yaqinlarimga» только `share_done` (`193`) |
 
 - Каждое событие: время, Mini App, экран, версия, ID сессии (одно открытие Mini App).
 - **Без личных данных:** без имени, телефона, текста чата, точных координат.

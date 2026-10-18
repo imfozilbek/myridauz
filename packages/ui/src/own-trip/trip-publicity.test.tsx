@@ -1,5 +1,5 @@
 import { channelOf, loadBrand } from '@platform/brands';
-import type { ChannelsClient } from '@platform/api-client';
+import type { ChannelsClient, GrowthClient } from '@platform/api-client';
 import type { Trip, TripPublicity } from '@platform/contracts';
 import { activity, counted } from '@platform/api-client';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
@@ -24,23 +24,31 @@ afterEach(() => {
 });
 
 const MINUTE = 60 * 1000;
-const LINK = 'https://t.me/test_bot?startapp=trip_t1__driver';
+const CARD = {
+  prepared: null,
+  link: 'https://t.me/test_bot?startapp=trip_t1__trip-a1b2c3',
+  text: 'Safarimda 3 ta boʻsh joy bor',
+};
 const publicity: TripPublicity = {
   channels: [
     { chat: '@yol_toshkent', title: 'Toshkent yoʻli', link: 'https://t.me/yol_toshkent', posted: false },
     { chat: FARGONA?.chat ?? '', title: FARGONA?.title ?? '', link: 'https://t.me/+fargona', posted: true },
   ],
   views: 12,
-  link: LINK,
 };
 
-function open(shown: Trip, tripPublicity: ChannelsClient['tripPublicity']) {
-  renderMarket(
+function open(
+  shown: Trip,
+  tripPublicity: ChannelsClient['tripPublicity'],
+  loopCard: GrowthClient['loopCard'] = async () => CARD,
+) {
+  return renderMarket(
     <MyTripsScreen onBack={() => undefined} />,
     testClients({
       market: { myTrips: async () => [shown] },
       bookings: { driverBookings: async () => [], driverOffers: async () => [] },
       channels: { tripPublicity },
+      growth: { loopCard },
     }),
   );
 }
@@ -68,10 +76,30 @@ describe('the trip in the channel on «Mening safarim» (owner decision 08.10.20
     const opened = vi.spyOn(window, 'open').mockReturnValue(null);
     fireEvent.click(screen.getByText('Safaringiz kanalda chiqdi'));
     expect(opened.mock.calls[0]?.[0]).toBe('https://t.me/+fargona');
-    fireEvent.click(screen.getByText('Havolani yoʻlovchilarga yuborish'));
-    await vi.waitFor(() =>
-      expect(opened.mock.calls[1]?.[0]).toBe(`https://t.me/share/url?url=${encodeURIComponent(LINK)}`),
+  });
+
+  it('sends the ready card of the trip with the driver code while it has free seats (G88)', async () => {
+    const loopCard = vi.fn<GrowthClient['loopCard']>(async () => CARD);
+    const { tracked } = open(trip, async () => publicity, loopCard);
+    await openTrip();
+    const opened = vi.spyOn(window, 'open').mockReturnValue(null);
+    fireEvent.click(await screen.findByText('Havolani yoʻlovchilarga yuborish'));
+    await vi.waitFor(() => expect(opened).toHaveBeenCalled());
+    // No canvas here: the card goes as text, an old Telegram gets its words.
+    expect(loopCard).toHaveBeenCalledWith({ loop: 'trip', tripId: 't1' });
+    expect(opened.mock.calls[0]?.[0]).toBe(
+      `https://t.me/share/url?url=${encodeURIComponent(CARD.link)}&text=${encodeURIComponent(CARD.text)}`,
     );
+    // The story tile of the page has its own share_shown.
+    expect(tracked.filter((event) => 'button' in event && event.button === 'trip')).toMatchObject([
+      { name: 'share_shown', button: 'trip' },
+      { name: 'share_done', button: 'trip', target: 'chat' },
+    ]);
+    cleanup();
+    open({ ...trip, seatsLeft: 0 }, async () => publicity);
+    await openTrip();
+    expect(await screen.findByText('Safaringiz kanalda chiqdi')).toBeTruthy();
+    expect(screen.queryByText('Havolani yoʻlovchilarga yuborish')).toBeNull();
   });
 
   it('shows only the channel while nobody opened the trip yet, a channel of the team by its title', async () => {

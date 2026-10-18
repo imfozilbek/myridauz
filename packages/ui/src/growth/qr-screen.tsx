@@ -38,7 +38,8 @@ export function QrScreen({ onBack }: { readonly onBack: () => void }) {
     setFailure(null);
     try {
       const font = getComputedStyle(document.body).fontFamily;
-      const picture = await drawQrPicture(value.qr, { brandName: brand.name, caption }, colors, font);
+      const checks = [t('share.picture.hidden'), t('share.picture.telegram')];
+      const picture = await drawQrPicture(value.qr, { brandName: brand.name, caption, checks }, colors, font);
       if (!picture) throw new Error('ui.qr_not_drawn');
       await downloadPicture(await growth.qrPicture(picture), `${brand.id}-qr.png`);
       done();

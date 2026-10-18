@@ -17,7 +17,8 @@ import { useShareTrack } from './use-share-track';
 import './impact.css';
 
 // «Sizning taʼsiringiz» (docs/123, mockup g69/2 phone 3): who came by the person's links, who of them
-// rode, the badges 1, 5 and 25; «Yana ulashish» sends the own link again.
+// rode, the badges 1, 5 and 25; «Yana ulashish» sends the ready card «Men {brand} bilan» with the own
+// link (G88, docs/193).
 export function ImpactScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenView('growth.impact');
   useScreenBackground();
@@ -30,7 +31,8 @@ export function ImpactScreen({ onBack }: { readonly onBack: () => void }) {
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   const next = GROWTH_BADGES.find((badge) => badge.people > value.joined);
   const share = async () => {
-    if (!(await shareCard(null, value.link))) return;
+    const card = await growth.loopCard({ loop: 'share-join' });
+    if (!(await shareCard(card.prepared, card.link, card.text))) return;
     done('chat');
     haptic.success();
   };

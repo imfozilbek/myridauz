@@ -1,5 +1,4 @@
 {
-  "sendHint": "Yaqinlaringiz safarni kuzatib boradi",
   "arrived": "Yetib keldim",
   "told": "Yaqinlaringizga xabar berildi",
   "stop": "Ulashishni toʻxtatish",
@@ -19,9 +18,9 @@
   "follow.closed": "Bu safar endi koʻrinmaydi",
   "follow.closedHint": "Ulashish toʻxtatilgan yoki safar tugaganiga bir kun boʻlgan.",
   "follow.join": "Men ham yoʻlga chiqaman",
-  "storyTitle": "Yangi safar",
+  "storyTitle": "Boʻsh joy bor",
   "storyWhen": "{date} • {time}",
-  "storyCaption": "{from} → {to}, {date} soat {time}. {seats} ta joy bor. Joy band qilish: {link}",
+  "storyCaption": "{from} → {to}, {date} soat {time}. Joy band qilish: {link}",
   "follow.big.waiting": "{name} hali yoʻlga chiqmadi",
   "follow.big.boarded": "{name} mashinaga chiqdi",
   "follow.big.on_the_way": "{name} yoʻlda",
@@ -32,5 +31,13 @@
   "follow.arrivedAt": "{place} · {time}",
   "follow.ended": "Kuzatish tugadi: havola yetib borgandan 24 soat keyin yopiladi.",
   "follow.role": "haydovchi",
-  "follow.moved": "Vaqt oʻzgardi: {from} → {to}"
+  "follow.moved": "Vaqt oʻzgardi: {from} → {to}",
+  "value.passenger": "Raqamingiz yashirin. Telegramda ochiladi. Ilova yuklab olish shart emas.",
+  "value.driver": "Narxni oʻzingiz belgilaysiz. Har 10 daqiqada yozish shart emas.",
+  "value.bonus": "Yangi haydovchilarga {bonus}gacha bonus.",
+  "value.service": "Tekshirilgan haydovchilar. Raqamingiz yashirin.",
+  "trip.title": "Safarimda boʻsh joy bor",
+  "trip.text": "Safarimda {seats} ta boʻsh joy bor\n🟢 {from}\n🔴 {to}\n🗓 {date}, soat {time}\n💰 Bir joy {price}",
+  "picture.hidden": "Raqamingiz yashirin",
+  "picture.telegram": "Telegram ichida"
 }

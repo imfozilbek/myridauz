@@ -12,13 +12,14 @@ export type StoryDeps = {
 type Saved =
   { readonly ok: true; readonly id: string } | { readonly ok: false; readonly error: PictureError };
 type PictureError = 'growth.not_found' | 'growth.invalid_image';
-// The story of a moment for a person who was offered one; the QR on the glass for an approved driver.
-export type PictureKind = 'moment' | 'qr';
-const TYPE: Record<PictureKind, string> = { moment: STORY_TYPE, qr: QR_TYPE };
+// The story of a moment for a person who was offered one; the QR on the glass and the picture of the
+// trip's chat card (G88) for an approved driver.
+export type PictureKind = 'moment' | 'qr' | 'card';
+const TYPE: Record<PictureKind, string> = { moment: STORY_TYPE, qr: QR_TYPE, card: STORY_TYPE };
 
 async function allowed(deps: StoryDeps, userId: number, kind: PictureKind) {
-  if (kind === 'qr') return (await deps.store.approvedAt(userId)) !== null;
-  return (await deps.store.offered(userId)).length > 0;
+  if (kind === 'moment') return (await deps.store.offered(userId)).length > 0;
+  return (await deps.store.approvedAt(userId)) !== null;
 }
 
 // A picture the Mini App drew, kept a day under a new id (docs/123, docs/117): Telegram reads it for a

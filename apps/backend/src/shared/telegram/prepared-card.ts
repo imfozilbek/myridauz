@@ -9,8 +9,18 @@ type Fetch = (input: string, init?: RequestInit) => Promise<Response>;
 type Button = { readonly text: string; readonly url: string };
 type Words = { readonly title: string; readonly button: string; readonly second?: Button };
 
+// The card as Telegram keeps it: a picture with the text under it (the driver's trip, G88), or text.
+function resultOf(text: string, link: string, words: Words, photo: string | undefined) {
+  const reply_markup = {
+    inline_keyboard: [[{ text: words.button, url: link }], ...(words.second ? [[words.second]] : [])],
+  };
+  const base = { id: crypto.randomUUID(), title: words.title, reply_markup };
+  if (photo) return { ...base, type: 'photo', photo_url: photo, thumbnail_url: photo, caption: text };
+  return { ...base, type: 'article', input_message_content: { message_text: text } };
+}
+
 // Telegram keeps the card, and the Mini App opens its own "send to a chat" window (shareMessage,
-// docs/21, docs/43). When Telegram says no, the Mini App falls back to a plain share link.
+// docs/21, docs/43). When Telegram says no, the Mini App falls back to the window t.me/share/url.
 export async function prepareCard(
   fetch: Fetch,
   token: string | undefined,
@@ -18,17 +28,10 @@ export async function prepareCard(
   text: string,
   link: string,
   words: Words = { title: t('bot.share.title'), button: t('bot.share.follow') },
+  photo?: string,
 ): Promise<string | null> {
   if (!token) return null;
-  const result = {
-    type: 'article',
-    id: crypto.randomUUID(),
-    title: words.title,
-    input_message_content: { message_text: text },
-    reply_markup: {
-      inline_keyboard: [[{ text: words.button, url: link }], ...(words.second ? [[words.second]] : [])],
-    },
-  };
+  const result = resultOf(text, link, words, photo);
   try {
     const response = await fetch(telegramUrl(token, 'savePreparedInlineMessage'), {
       method: 'POST',

@@ -4,9 +4,12 @@ import { useApiClients } from '../context/api-clients';
 import { haptic } from '../telegram/feedback';
 import { shareCard } from '../telegram/share-card';
 
+const SCREEN = 'market.own_trip';
+
 // «Yaqinlarimga» of the driver (docs/43, G18): the card of the trip goes to the family the same way
 // a passenger sends it, never a phone; then «Ulashishni toʻxtatish» under the tiles. One action at a
-// time: a second tap while the first runs sends nothing (docs/65 A4).
+// time: a second tap while the first runs sends nothing (docs/65 A4). share_done of the loop follow
+// once it went (G88, docs/29).
 export function useCloseShare(tripId: string, fail: (caught: unknown) => void) {
   const { track } = useAnalytics();
   const { chat } = useApiClients();
@@ -30,9 +33,10 @@ export function useCloseShare(tripId: string, fail: (caught: unknown) => void) {
     told,
     share: () =>
       run(async () => {
-        const { preparedMessageId, link } = await chat.shareTrip(tripId);
-        track({ name: 'driver_trip_shared', screen: 'market.own_trip' });
-        await shareCard(preparedMessageId, link);
+        const { preparedMessageId, link, text } = await chat.shareTrip(tripId);
+        track({ name: 'driver_trip_shared', screen: SCREEN });
+        if (await shareCard(preparedMessageId, link, text))
+          track({ name: 'share_done', button: 'follow', screen: SCREEN, target: 'chat' });
       }, 'told'),
     stop: () => run(() => chat.stopTripSharing(tripId), 'stopped'),
   };

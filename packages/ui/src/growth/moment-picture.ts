@@ -1,5 +1,6 @@
 import type { BrandColors } from '@platform/brands';
 import { box, fitted, STORY, storyCanvas, storyJpeg, write, type Paint } from '../media/story-paint';
+import { drawChecks } from '../media/trip-paint';
 
 // The words of the story of a moment (docs/123): only text, no emoji (owner decision 06.10.2026).
 export type MomentStoryTexts = {
@@ -10,6 +11,8 @@ export type MomentStoryTexts = {
   readonly fact: string;
   readonly link: string;
   readonly slogan: string;
+  // The lines of value of the flyer under the card (G88, docs/193).
+  readonly checks: readonly string[];
 };
 
 const CENTER = STORY.width / 2;
@@ -61,7 +64,8 @@ function drawCard(paint: Paint, texts: MomentStoryTexts, main: string, colors: B
 }
 
 // The card of «Men Rida bilan» as a story: the main color of the app (the passenger teal, the driver
-// amber, docs/20), the white card of the screen, the slogan under it. null: the browser cannot draw.
+// amber, docs/20), the white card of the screen, the lines of value and the slogan under it. null: the
+// browser cannot draw.
 export async function drawMomentStory(
   texts: MomentStoryTexts,
   colors: BrandColors,
@@ -74,7 +78,18 @@ export async function drawMomentStory(
   paint.fillStyle = main;
   paint.fillRect(0, 0, STORY.width, STORY.height);
   drawCard(paint, texts, main, colors, font);
+  const below = CARD.y + CARD.height;
+  const checks = {
+    x: CENTER,
+    y: below + 85,
+    size: 46,
+    line: 66,
+    align: 'center',
+    color: colors.bg,
+    mark: main,
+  } as const;
+  drawChecks(paint, texts.checks, checks, font);
   paint.font = `600 56px ${font}`;
-  write(paint, texts.slogan, CENTER, 1640, colors.bg, 'center');
+  write(paint, texts.slogan, CENTER, below + 290, colors.bg, 'center');
   return storyJpeg(canvas);
 }

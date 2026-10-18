@@ -1,0 +1,28 @@
+import type { Trip } from '@platform/contracts';
+import { useBrand } from '../context/brand-context';
+import { useI18n } from '../context/i18n-context';
+import { usePlaceLabel } from '../market/places-gate';
+import type { TripPictureTexts } from './trip-paint';
+
+// The words of a picture of a trip in the language of the app (docs/88 L19, G88 docs/193).
+export function useTripTexts() {
+  const { t, formatDate, formatTime, formatMoney } = useI18n();
+  const brand = useBrand();
+  const place = usePlaceLabel();
+  return (trip: Trip): TripPictureTexts => {
+    const day = new Date(trip.departAt);
+    const values = { date: formatDate(day), time: formatTime(day), seats: String(trip.seatsLeft) };
+    return {
+      title: t('share.storyTitle'),
+      from: place(trip.from),
+      to: place(trip.to),
+      when: t('share.storyWhen', values),
+      seats: t('drivers.seats.count', values),
+      price: formatMoney(trip.price),
+      button: t('market.trip.book'),
+      brandName: brand.name,
+      slogan: brand.slogan,
+      checks: [t('share.picture.hidden'), t('share.picture.telegram')],
+    };
+  };
+}
