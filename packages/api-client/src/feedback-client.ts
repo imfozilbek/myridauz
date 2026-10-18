@@ -40,8 +40,9 @@ export function createFeedbackClient(options: SignedOptions) {
     target: async (bookingId: string): Promise<ReviewTarget> =>
       reviewTargetSchema.parse(await (await request(reviewPath(bookingId))).json()),
     review: async (input: ReviewInput): Promise<void> => void (await post(REVIEWS_PATH, input)),
-    reviewsOf: async (userId: PersonId): Promise<UserReviews> =>
-      userReviewsSchema.parse(await (await request(userReviewsPath(userId))).json()),
+    // before: the moment of the last review shown, for the next page (G46).
+    reviewsOf: async (userId: PersonId, before?: number): Promise<UserReviews> =>
+      userReviewsSchema.parse(await (await request(userReviewsPath(userId, before))).json()),
     complain: async (input: ComplaintInput): Promise<void> => void (await post(COMPLAINTS_PATH, input)),
     // Out of the search, a warning of the team: said in the Mini App too (G75, docs/158 З).
     notes: async (): Promise<ComplaintNotes> =>

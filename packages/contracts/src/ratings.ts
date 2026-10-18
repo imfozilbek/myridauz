@@ -3,7 +3,8 @@ import { personIdSchema, type PersonId } from './person-id';
 
 // Ratings and blind reviews after a trip (docs/24). G11.
 export const REVIEWS_PATH = '/reviews';
-export const userReviewsPath = (userId: PersonId) => `/users/${userId}/reviews`;
+export const userReviewsPath = (userId: PersonId, before?: number) =>
+  `/users/${userId}/reviews${before === undefined ? '' : `?before=${String(before)}`}`;
 export const adminReviewHidePath = (reviewId: string) => `/admin/reviews/${reviewId}/hide`;
 
 export const STARS = [1, 2, 3, 4, 5] as const;
@@ -43,7 +44,12 @@ export const ratingSchema = z.object({ average: z.number().nullable(), count: z.
 export type Rating = z.infer<typeof ratingSchema>;
 export const NO_RATING: Rating = { average: null, count: 0 };
 
-export const userReviewsSchema = z.object({ rating: ratingSchema, reviews: z.array(reviewSchema) });
+// more: older reviews wait for «Yana koʻrsatish» (G46); an older server sends all it shows at once.
+export const userReviewsSchema = z.object({
+  rating: ratingSchema,
+  reviews: z.array(reviewSchema),
+  more: z.boolean().default(false),
+});
 export type UserReviews = z.infer<typeof userReviewsSchema>;
 
 // «Sharhlar» of the team (G45, docs/24): every review, the newest first, the blind and the hidden ones
