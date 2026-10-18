@@ -16,6 +16,7 @@
 - Адреса строятся из домена среды: `brands/hosts.ts`, `brands/rida/environments.ts` (`22`, `179`).
 - `myrida.uz` зарегистрирован в Eskiz, DNS в Cloudflare (OPS-01). `ridaone.uz`: DNS в новом аккаунте.
 - Почта компании: `myrida.llc@gmail.com` (владелец, 02.10.2026). Хранится в конфиге бренда (`company.email`), стоит в оферте и политике (`30`, версия 1.1).
+- `support@ridaone.uz` пересылает письма на почту компании (G85 R5, решение владельца 18.10.2026): Cloudflare Email Routing на аккаунте прода, записи MX и SPF зоны `ridaone.uz` поставил Cloudflare сам.
 
 ## Ресурсы Cloudflare (одинаковые имена в обоих аккаунтах)
 
