@@ -32,7 +32,7 @@ const COPY = {
   driver: {
     role: 'Haydovchi', title: 'Haydovchimisiz?', sub: 'Safaringizga yoʻlovchi toping',
     steps: [[['Safaringizni', 'eʼlon qiling'], 0], [['Yoʻlovchilar', 'sizni topadi'], 0], [['Tasdiqlang,', 'joylar toʻladi'], 0]],
-    facts: [['Banknote', ['Yoʻl xarajatini', 'birga koʻtaring']], ['Clock', ['Pitakda kutish', 'shart emas']], ['Repeat', ['Qaytishda ham', 'yoʻlovchi']],
+    facts: [['Banknote', ['Narxni oʻzingiz', 'belgilaysiz']], ['Clock', ['Pitakda kutish', 'shart emas']], ['MessageSquareOff', ['Har 10 daqiqada', 'yozish shart emas']],
       ['Gift', ['Yangi haydovchilarga', `${sum(PROMO.amount * PROMO.grants)}gacha bonus`], true]],
   },
 };
