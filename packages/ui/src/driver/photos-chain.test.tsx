@@ -21,31 +21,34 @@ const account = {
   onProfileChanged: () => undefined,
 } as unknown as Account;
 
+const photosStep = (hasCamera: boolean, uploadPhoto: DriversClient['uploadPhoto'] = vi.fn()) =>
+  renderInShell(
+    <AccountContext.Provider value={account}>
+      <PhotosStep
+        car={car}
+        photos={{ front: false }}
+        reasons={[]}
+        fixing={false}
+        failure={null}
+        onPhotos={vi.fn()}
+        onChange={vi.fn()}
+        onBack={vi.fn()}
+        onSend={vi.fn()}
+      />
+    </AccountContext.Provider>,
+    false,
+    hasCamera,
+    undefined,
+    testClients({ drivers: { uploadPhoto } }),
+  );
+
 // One photo of the car since 18.10.2026 (owner decision): no camera opens after it (before: G40).
 describe('the car photo', () => {
   it('opens the camera once, sends the photo and opens no camera after it', async () => {
     const uploadPhoto = vi.fn<DriversClient['uploadPhoto']>(async (kind) =>
       application({ photos: { front: kind === 'front' } }),
     );
-    const { container } = renderInShell(
-      <AccountContext.Provider value={account}>
-        <PhotosStep
-          car={car}
-          photos={{ front: false }}
-          reasons={[]}
-          fixing={false}
-          failure={null}
-          onPhotos={vi.fn()}
-          onChange={vi.fn()}
-          onBack={vi.fn()}
-          onSend={vi.fn()}
-        />
-      </AccountContext.Provider>,
-      false,
-      true,
-      undefined,
-      testClients({ drivers: { uploadPhoto } }),
-    );
+    const { container } = photosStep(true, uploadPhoto);
     const input = container.querySelector('input[type=file][capture=environment]') as HTMLInputElement;
     const opened = vi.spyOn(input, 'click');
     fireEvent.click(screen.getByText('Old tomondan', { exact: true }).closest('button') as HTMLElement);
@@ -54,5 +57,14 @@ describe('the car photo', () => {
     await waitFor(() => expect(uploadPhoto).toHaveBeenCalledWith('front', expect.anything()));
     expect(uploadPhoto).toHaveBeenCalledOnce();
     expect(opened).toHaveBeenCalledOnce();
+  });
+
+  // D04 (docs/78): a computer has no camera; the step says to add the photo from the phone.
+  it('says to add the photo from the phone where there is no camera', () => {
+    const { container } = photosStep(false);
+    expect(screen.getByText('Rasmlarni telefondan qoʻshing: bu yerda kamera yoʻq.')).toBeTruthy();
+    expect(container.querySelector('input[capture=environment]')).toBeNull();
+    const tile = screen.getByText('Old tomondan', { exact: true }).closest('button') as HTMLButtonElement;
+    expect(tile.disabled).toBe(true);
   });
 });
