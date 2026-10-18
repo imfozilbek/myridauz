@@ -3,6 +3,7 @@ import { z } from 'zod';
 import type { AppEnv, Bindings } from '../../../env';
 import { fromTelegram } from '../../../shared/telegram/webhook-secret';
 import { heard, type HeardDeps, type MemberChange } from '../application/my-channels';
+import { countReactions } from '../application/post-reactions';
 
 export const POSTER_WEBHOOK_PATH = '/telegram/poster';
 const UNAUTHORIZED = 401;
@@ -29,11 +30,21 @@ const updateSchema = z.object({
       invite_link: z.object({ invite_link: z.string() }).optional(),
     })
     .optional(),
+  // G87 V6: the reactions on a post, anonymous: each kind with its total, grouped by Telegram.
+  message_reaction_count: z
+    .object({
+      chat: z.object({ id: z.number(), username: z.string().optional() }),
+      message_id: z.number(),
+      date: z.number(),
+      reactions: z.array(z.object({ total_count: z.number().int().min(0) })),
+    })
+    .optional(),
 });
 // Anyone else who hears a join or a leave: the ad links of the waitlist (G83).
 export type ChannelChange = MemberChange & { readonly invite: string | null };
 
-// The bot of the posts hears who joins or leaves a channel (docs/176). Only requests with our
+// The bot of the posts hears who joins or leaves a channel (docs/176) and the reactions on its posts
+// (G87 V6). Only requests with our
 // secret_token are taken (docs/32); anything else is still answered 200, Telegram retries errors.
 export const posterRoutes = (
   deps: (env: Bindings) => HeardDeps,
@@ -44,6 +55,16 @@ export const posterRoutes = (
     if (!secret || !context.env.POSTER_BOT_TOKEN) return context.body(null, NOT_FOUND);
     if (!fromTelegram(context.req, secret)) return context.body(null, UNAUTHORIZED);
     const update = updateSchema.safeParse(await context.req.json().catch(() => null));
+    const heardDeps = deps(context.env);
+    const reaction = update.success ? update.data.message_reaction_count : undefined;
+    if (reaction)
+      await countReactions(heardDeps.reactions, {
+        chatId: reaction.chat.id,
+        username: reaction.chat.username ?? null,
+        messageId: reaction.message_id,
+        totals: reaction.reactions.map((one) => one.total_count),
+        at: reaction.date * SECOND_MS,
+      });
     const change = update.success ? update.data.chat_member : undefined;
     const person = change?.new_chat_member;
     if (change && person && person.user.is_bot !== true) {
@@ -55,7 +76,7 @@ export const posterRoutes = (
       };
       // Without the old state a change is taken as a move (G87 V5).
       const was = change.old_chat_member ? inChannel(change.old_chat_member) : !heardChange.member;
-      await heard(deps(context.env), heardChange, was);
+      await heard(heardDeps, heardChange, was);
       await changed(context.env, { ...heardChange, invite: change.invite_link?.invite_link ?? null });
     }
     return context.json({});

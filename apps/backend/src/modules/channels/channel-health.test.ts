@@ -6,6 +6,7 @@ import { arrivalsByChannelVia } from '../users/infrastructure/channel-arrivals';
 import { appLinks, channelHealth, checkChannels, type HealthDeps } from './application/health';
 import { createMemoryChannelDays } from './infrastructure/d1-channel-days';
 import { createMemoryHealth, d1Health } from './infrastructure/d1-health';
+import { createMemoryPostReactions } from './infrastructure/post-reactions';
 
 const NOW = Date.parse('2026-10-12T05:00:00Z');
 const DAY = 24 * 60 * 60 * 1000;
@@ -27,6 +28,7 @@ function setup(): HealthDeps & { readonly asked: string[]; readonly linked: stri
     channels: async () => CHANNELS,
     store: createMemoryHealth(),
     days: createMemoryChannelDays(),
+    reactions: createMemoryPostReactions(),
     count: async (chat) => {
       asked.push(chat);
       return chat === '@zone_navoiy' ? null : 1200;
@@ -132,5 +134,6 @@ function row(name: string) {
     arrivals: 0,
     joined: 0,
     left: 0,
+    topPost: null,
   };
 }

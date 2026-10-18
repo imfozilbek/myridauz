@@ -65,6 +65,7 @@ export async function mockManagement(page: Page) {
     arrivals: 3,
     joined: 0,
     left: 0,
+    topPost: null,
   });
   await json(page, '**/api/admin/channel-health', {
     channels: Array.from({ length: 20 }, (_, n) => health(n, n === 0 ? 41_200 - 19 * 2000 : 2000)),

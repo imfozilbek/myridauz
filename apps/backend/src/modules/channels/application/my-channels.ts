@@ -2,6 +2,7 @@ import type { BrandChannel } from '@platform/brands';
 import type { MyChannel } from '@platform/contracts';
 import { countMove, type ChannelDays } from './channel-days';
 import type { HealthRow } from './health';
+import type { PostReactions } from './post-reactions';
 
 // One join or leave the bot of the posts heard in a channel (chat_member, docs/176).
 export type MemberChange = {
@@ -44,6 +45,8 @@ export type HeardDeps = {
   readonly registered: (userId: number) => Promise<boolean>;
   // The joins and leaves of each day, counted for anyone (G87 V5).
   readonly days: ChannelDays;
+  // The reactions on the posts of trips (G87 V6).
+  readonly reactions: PostReactions;
 };
 
 // Only the channels of the brand and only the people of the brand are kept: the id of anyone else

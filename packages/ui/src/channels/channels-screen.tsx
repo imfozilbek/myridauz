@@ -14,6 +14,7 @@ import { MainButton } from '../telegram/bottom-button';
 import { openInTelegram } from '../telegram/feedback';
 import { ChannelEdit } from './channel-edit';
 import { ChannelMoves } from './channel-moves';
+import { ChannelReactions } from './channel-reactions';
 import { channelName } from './channel-name';
 
 type Props = { readonly onBack: () => void; readonly readOnly?: boolean };
@@ -83,6 +84,7 @@ export function ChannelsScreen({ onBack, readOnly = false }: Props) {
         <ManageGroup>{[...team, ...value.filter((channel) => channel.fixed)].map(row)}</ManageGroup>
       ) : null}
       {health ? <ChannelMoves health={health} /> : null}
+      {health ? <ChannelReactions health={health} /> : null}
       {readOnly ? null : <MainButton text={t('channels.add')} onClick={() => setOpen('new')} />}
     </ManagePage>
   );

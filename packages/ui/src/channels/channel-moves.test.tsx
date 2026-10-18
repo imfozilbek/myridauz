@@ -16,6 +16,7 @@ const row = (chat: string, joined: number, left: number, subscribers: number | n
   arrivals: 0,
   joined,
   left,
+  topPost: null,
 });
 
 // G87 V5 (docs/176): who came to a channel and left it this week, the busiest channel first.
@@ -27,7 +28,7 @@ describe('the joins and leaves of the channels', () => {
     const busy = screen.getByText('12 keldi · 3 ketdi');
     const small = screen.getByText('1 keldi · 0 ketdi');
     expect(busy.compareDocumentPosition(small) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(screen.queryByText('Kanal | quiet')).toBeNull();
+    expect(screen.queryByText(/quiet/u)).toBeNull();
     expect(screen.getByText(/^1\s?250$/u)).toBeTruthy();
   });
 

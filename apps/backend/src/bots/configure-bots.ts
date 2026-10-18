@@ -16,7 +16,7 @@ const BOTS: readonly BotName[] = [...BOT_ROLES, SUPPORT_BOT];
 // What Telegram sends the bots of people: messages, buttons, and a block or a return (G87 V1). The bot
 // of the posts hears who joins or leaves the channels and the reactions to its posts (docs/176, V6).
 const PEOPLE_UPDATES = ['message', 'callback_query', 'my_chat_member'];
-const POSTER_UPDATES = ['chat_member'];
+const POSTER_UPDATES = ['chat_member', 'message_reaction_count'];
 
 // The team menu is not shown to everyone: admins open their Mini App from the /start button.
 // The support bot has no Mini App: people only write there (docs/50).

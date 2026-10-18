@@ -79,7 +79,7 @@ describe('POST /telegram/setup', () => {
       expect.objectContaining({
         url: `https://api.${brand.domain}/telegram/poster`,
         secret_token: 'hook',
-        allowed_updates: ['chat_member'],
+        allowed_updates: ['chat_member', 'message_reaction_count'],
       }),
     ]);
     for (const hook of hooks.filter((call) => !poster.includes(call)))

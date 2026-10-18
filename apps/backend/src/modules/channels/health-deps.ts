@@ -6,6 +6,7 @@ import type { HealthDeps } from './application/health';
 import { allChannels } from './application/team';
 import { createMemoryChannelDays, d1ChannelDays } from './infrastructure/d1-channel-days';
 import { createMemoryHealth, d1Health } from './infrastructure/d1-health';
+import { createMemoryPostReactions, d1PostReactions } from './infrastructure/post-reactions';
 import { createAppLink, memberCount } from './infrastructure/bot-admin';
 import { teamDeps } from './team-deps';
 import { brandOf } from '../../shared/brand/brand-of';
@@ -17,6 +18,9 @@ export const healthStoreOf = (env: Bindings) => (env.DB ? d1Health(env.DB) : loc
 const localDays = createMemoryChannelDays();
 // The joins, leaves and people of each channel by day (G87 V5).
 export const channelDaysOf = (env: Bindings) => (env.DB ? d1ChannelDays(env.DB) : localDays);
+const localReactions = createMemoryPostReactions();
+// The reactions on the posts of trips (G87 V6).
+export const postReactionsOf = (env: Bindings) => (env.DB ? d1PostReactions(env.DB) : localReactions);
 
 // The health of the channels (G75): Telegram through the bot of the channels, the lost posts from the
 // notifications, the arrivals from the users.
@@ -28,6 +32,7 @@ export async function healthDeps(env: Bindings): Promise<HealthDeps> {
     channels: () => allChannels(team),
     store: healthStoreOf(env),
     days: channelDaysOf(env),
+    reactions: postReactionsOf(env),
     count: memberCount(call, env.POSTER_BOT_TOKEN),
     canPost: team.botIsAdmin,
     appLink: createAppLink(call, env.POSTER_BOT_TOKEN, name),

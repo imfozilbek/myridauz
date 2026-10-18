@@ -104,5 +104,7 @@
   "channel.noPost": "Bot yoza olmaydi",
   "channel.failed": "{count} post bormadi",
   "channel.movesTitle": "7 kunda kelgan va ketganlar",
-  "channel.moves": "{joined} keldi · {left} ketdi"
+  "channel.moves": "{joined} keldi · {left} ketdi",
+  "channel.reactionsTitle": "7 kunda koʻp reaksiya olgan postlar",
+  "channel.reactions": "{count} ta reaksiya"
 }

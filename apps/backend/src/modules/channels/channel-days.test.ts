@@ -6,6 +6,7 @@ import { heard } from './application/my-channels';
 import { createMemoryChannelMembers } from './infrastructure/channel-members';
 import { d1ChannelDays } from './infrastructure/d1-channel-days';
 import { createMemoryHealth } from './infrastructure/d1-health';
+import { createMemoryPostReactions } from './infrastructure/post-reactions';
 
 // 10:00 in Tashkent on 18.10.2026.
 const NOW = Date.parse('2026-10-18T05:00:00Z');
@@ -22,11 +23,13 @@ function setup() {
     chats: new Set([CHAT, OTHER]),
     registered: async () => false,
     days,
+    reactions: createMemoryPostReactions(),
   };
   const health: HealthDeps = {
     channels: async () => [channel(CHAT), channel(OTHER)],
     store: createMemoryHealth(),
     days,
+    reactions: createMemoryPostReactions(),
     count: async () => 1200,
     canPost: async () => true,
     appLink: async () => null,

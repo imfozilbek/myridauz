@@ -11,6 +11,12 @@ export const adminChannelPath = (username: string) => `${ADMIN_CHANNELS_PATH}/${
 export const CHANNEL_USERNAME = /^[A-Za-z][A-Za-z0-9_]{4,31}$/u;
 // A channel as the bot names it (docs/176): the number of a private channel or "@" and a public name.
 export const CHANNEL_CHAT = /^(-100\d{6,16}|@[A-Za-z][A-Za-z0-9_]{4,31})$/u;
+// A post of a channel (G87 V6): t.me/<name>/<id> of a public one; t.me/c/<number>/<id> of a private
+// one, it opens for its members.
+export const channelPostLink = (chat: string, messageId: number) =>
+  chat.startsWith('@')
+    ? `https://t.me/${chat.slice(1)}/${messageId}`
+    : `https://t.me/c/${chat.replace(/^-100/u, '')}/${messageId}`;
 // Where a person opens it: an invite link or the public name.
 const channelLinkSchema = z.string().startsWith('https://t.me/');
 export const CHANNEL_TITLE_MAX = 64;

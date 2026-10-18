@@ -1,14 +1,16 @@
 import {
   CHANNEL_ARRIVALS_DAYS,
-  CHANNEL_MOVES_DAYS,
+  CHANNEL_LIFE_DAYS,
   channelVia,
   DAY_MS,
   FAILED_POSTS_DAYS,
   tashkentDate,
+  tashkentDayStart,
   type Channel,
   type ChannelHealth,
 } from '@platform/contracts';
 import type { ChannelDays } from './channel-days';
+import type { PostReactions } from './post-reactions';
 
 // What the Cron last read from Telegram about a channel (G75).
 export type HealthRow = {
@@ -30,6 +32,8 @@ export type HealthDeps = {
   readonly store: HealthStore;
   // The people of each check by day, the joins and leaves of a week (G87 V5).
   readonly days: ChannelDays;
+  // The post with the most reactions of each channel this week (G87 V6).
+  readonly reactions: PostReactions;
   readonly count: (chat: string) => Promise<number | null>;
   readonly canPost: (chat: string) => Promise<boolean>;
   // Makes the invite link «Rida ilovasi» of a channel; null when Telegram did not.
@@ -74,13 +78,15 @@ export async function appLinks(store: HealthStore): Promise<ReadonlyMap<string, 
 // «Kanallar» of the owner: every channel with its people, its bot, its lost posts and its arrivals.
 export async function channelHealth(deps: HealthDeps): Promise<ChannelHealth> {
   const now = deps.now();
-  const [channels, rows, failed, arrivals, moves] = await Promise.all([
+  const week = now - (CHANNEL_LIFE_DAYS - 1) * DAY_MS;
+  const [channels, rows, failed, arrivals, moves, top] = await Promise.all([
     deps.channels(),
     deps.store.rows(),
     deps.failed(now - FAILED_POSTS_DAYS * DAY_MS),
     deps.arrivals(now - CHANNEL_ARRIVALS_DAYS * DAY_MS),
     // Today and the six days before it.
-    deps.days.movesSince(tashkentDate(now - (CHANNEL_MOVES_DAYS - 1) * DAY_MS)),
+    deps.days.movesSince(tashkentDate(week)),
+    deps.reactions.top(tashkentDayStart(tashkentDate(week))),
   ]);
   const byChannel = new Map(rows.map((row) => [row.channel, row]));
   const moved = new Map(moves.map((move) => [move.chat, move]));
@@ -97,6 +103,7 @@ export async function channelHealth(deps: HealthDeps): Promise<ChannelHealth> {
         arrivals: arrivals.get(channelVia(chat)) ?? 0,
         joined: moved.get(chat)?.joined ?? 0,
         left: moved.get(chat)?.gone ?? 0,
+        topPost: top.get(chat) ?? null,
       };
     }),
   };

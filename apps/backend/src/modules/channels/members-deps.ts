@@ -2,7 +2,7 @@ import type { Bindings } from '../../env';
 import { joinedAtOf } from '../users';
 import { brandOf } from '../../shared/brand/brand-of';
 import type { HeardDeps, MyChannelsDeps } from './application/my-channels';
-import { channelDaysOf, healthStoreOf } from './health-deps';
+import { channelDaysOf, healthStoreOf, postReactionsOf } from './health-deps';
 import { createMemoryChannelMembers, d1ChannelMembers } from './infrastructure/channel-members';
 
 const localMembers = createMemoryChannelMembers();
@@ -28,4 +28,5 @@ export const heardDeps = (env: Bindings): HeardDeps => ({
   registered: async (userId) =>
     (await joinedAtOf(env, userId)) !== undefined || (await knownElsewhere(env, userId)),
   days: channelDaysOf(env),
+  reactions: postReactionsOf(env),
 });

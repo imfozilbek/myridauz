@@ -7,8 +7,9 @@ import { CHANNEL_CHAT } from './channels';
 export const ADMIN_CHANNEL_HEALTH_PATH = '/admin/channel-health';
 export const FAILED_POSTS_DAYS = 7;
 export const CHANNEL_ARRIVALS_DAYS = 30;
-// G87 V5: the people who came to each channel and left it this week, as the bot of the posts heard.
-export const CHANNEL_MOVES_DAYS = 7;
+// G87 V5, V6: the week of a channel: the people who came and left, as the bot of the posts heard, and
+// its post with the most reactions.
+export const CHANNEL_LIFE_DAYS = 7;
 
 export const channelHealthSchema = z.object({
   channels: z.array(
@@ -23,6 +24,9 @@ export const channelHealthSchema = z.object({
       arrivals: z.number().int().min(0),
       joined: z.number().int().min(0),
       left: z.number().int().min(0),
+      topPost: z
+        .object({ messageId: z.number().int().positive(), reactions: z.number().int().positive() })
+        .nullable(),
     }),
   ),
 });
