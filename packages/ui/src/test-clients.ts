@@ -24,7 +24,7 @@ export const testClients = (overrides: Overrides): ApiClients => ({
     faces: NOT_USED,
     facePhoto: NOT_USED,
     // A person with no public name: the line says so (owner, 17.10.2026).
-    telegramAccount: async () => ({ telegramId: 1, username: null }),
+    telegramAccount: async () => ({ username: null, profileLink: 'https://t.me/passenger_bot' }),
     decideFace: NOT_USED,
     ...overrides.moderation,
   },

@@ -29,7 +29,8 @@ describe('the cases of «Navbat»', () => {
 
   // Owner, 17.10.2026: the team sees who the person is in Telegram; the public name opens the profile.
   it('shows the Telegram account of the person in the check of a face', async () => {
-    const telegramAccount = vi.fn(async () => ({ telegramId: 5, username: 'madina_uz' }));
+    const profileLink = 'https://t.me/passenger_bot?start=profile_1';
+    const telegramAccount = vi.fn(async () => ({ username: 'madina_uz', profileLink }));
     renderNavbat({ filter: 'face', kind: 'face', id: MADINA.id }, [MADINA], {
       moderation: { facePhoto: async () => new Blob(['x']), telegramAccount },
     });
@@ -38,6 +39,20 @@ describe('the cases of «Navbat»', () => {
     expect(open.mock.calls[0]?.[0]).toBe('https://t.me/madina_uz');
     open.mockRestore();
     expect(telegramAccount).toHaveBeenCalledWith(MADINA.id);
+  });
+
+  // Owner, 18.10.2026: without a public name the profile opens through the bot the person knows.
+  it('opens the profile of a person without a public name through their bot', async () => {
+    const profileLink = 'https://t.me/passenger_bot?start=profile_1';
+    const telegramAccount = vi.fn(async () => ({ username: null, profileLink }));
+    renderNavbat({ filter: 'face', kind: 'face', id: MADINA.id }, [MADINA], {
+      moderation: { facePhoto: async () => new Blob(['x']), telegramAccount },
+    });
+    expect(await screen.findByText('Telegram: username yoʻq')).toBeTruthy();
+    const open = vi.spyOn(window, 'open').mockReturnValue(null);
+    fireEvent.click(screen.getByText('Profilni ochish'));
+    expect(open.mock.calls[0]?.[0]).toBe(profileLink);
+    open.mockRestore();
   });
 
   it('shows who, why and the words of a complaint, warns with the main button, blocks for 7 days', async () => {
