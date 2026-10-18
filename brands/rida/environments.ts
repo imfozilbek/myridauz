@@ -3,6 +3,15 @@ import type { BrandEnvironment, EnvironmentName } from '../brand-config';
 // several of them; Toshkent shahri has none (docs/15).
 import channels from './channels.json' with { type: 'json' };
 
+// The bots of production (docs/181: the main one, owner decision 15.10.2026).
+const PRODUCTION_BOTS = {
+  passenger: 'rida1uz_bot',
+  driver: 'rida1uz_haydovchi_bot',
+  admin: 'rida1uz_admin_bot',
+  support: 'rida1uz_yordam_bot',
+  main: 'ridauz_bot',
+};
+
 // Two environments (owner, 13.10.2026, docs/179): production for people on its own Cloudflare account,
 // the internal one of the team on the first account, with its own bots and channels.
 export const environments: Readonly<Record<EnvironmentName, BrandEnvironment>> = {
@@ -19,6 +28,8 @@ export const environments: Readonly<Record<EnvironmentName, BrandEnvironment>> =
       // The main bot «MyRida» of the waitlist (owner decision 14.10.2026, docs/181).
       main: 'myridauz_bot',
     },
+    // Only the team works here; anyone else is sent to the bots of production (owner, 17.10.2026).
+    teamOnly: PRODUCTION_BOTS,
     // One private channel of every direction (owner, 13.10.2026): a trip from any place goes there. The
     // avatar of a region stands in for its own picture (G84).
     channels: [
@@ -39,14 +50,8 @@ export const environments: Readonly<Record<EnvironmentName, BrandEnvironment>> =
     name: 'Rida',
     domain: 'ridaone.uz',
     indexed: true,
-    bots: {
-      passenger: 'rida1uz_bot',
-      driver: 'rida1uz_haydovchi_bot',
-      admin: 'rida1uz_admin_bot',
-      support: 'rida1uz_yordam_bot',
-      // The main bot of production: owner decision 15.10.2026 (docs/181).
-      main: 'ridauz_bot',
-    },
+    bots: PRODUCTION_BOTS,
+    teamOnly: null,
     channels,
     mainChannel: 'rida1uz',
     // The owner said yes to the posts for people (17.10.2026, docs/33): the trips go to the channels.

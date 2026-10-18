@@ -38,7 +38,13 @@ type Wiring = {
 export function meRoutes({ deps, forget, registered }: Wiring) {
   return (
     new Hono<AppEnv>()
-      .get(ME_PATH, async (context) => context.json(await getMe(deps(context.env), callerOf(context))))
+      .get(ME_PATH, async (context) => {
+        const usersDeps = deps(context.env);
+        // The public name of the account, for the checks of the team (owner, 17.10.2026).
+        const { user } = context.get('session');
+        await usersDeps.names.keep(user.id, user.username, usersDeps.now());
+        return context.json(await getMe(usersDeps, callerOf(context)));
+      })
       // "Maʼlumotlarimni oʻchirish" (docs/30).
       .delete(ME_PATH, async (context) => {
         const deleted = await deleteAccount(deps(context.env), forget(context.env), callerOf(context));

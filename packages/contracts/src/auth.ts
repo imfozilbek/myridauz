@@ -19,6 +19,8 @@ export const API_ERRORS = [
   'auth.invalid',
   'auth.expired',
   'auth.not_admin',
+  // The internal environment is for the team only (owner, 17.10.2026): the app shows the way out.
+  'auth.moved',
   'users.blocked',
   'users.not_registered',
   'users.already_registered',

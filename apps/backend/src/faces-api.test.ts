@@ -29,7 +29,12 @@ describe('the face photo check over HTTP (docs/118, G51)', () => {
     expect(card?.body).toMatchObject({
       photo: 'file',
       caption: expect.stringContaining('Yangi yuz rasmi: Ali'),
+      parse_mode: 'HTML',
     });
+    // Who the person is in Telegram, with the link to the profile (owner, 17.10.2026).
+    expect(String(card?.body.caption)).toContain(
+      `Telegram: username yoʻq · <a href="tg://user?id=${PERSON}">Profilni ochish</a>`,
+    );
     expect(String(card?.body.reply_markup)).toMatch(
       new RegExp(`"callback_data":"face:${PERSON}:[0-9a-z]+:ok"`, 'u'),
     );

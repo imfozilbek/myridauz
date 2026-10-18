@@ -13,6 +13,7 @@ export async function deleteAccount(deps: UsersDeps, forget: Forget, caller: Cal
   const { holdPhone } = await forget(user.id);
   if (holdPhone) await deps.users.holdPhone(user.id, user.phone, deps.now());
   if (user.avatarKey) await deps.avatars.delete(user.avatarKey);
+  await deps.names.forget(user.id);
   await deps.users.erase(user.id, deps.now());
   return true;
 }

@@ -9,6 +9,7 @@ import {
 } from '@platform/contracts';
 import type { MiddlewareHandler } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
+import { brandOf } from '../brand/brand-of';
 import { botToken } from '../telegram/bot-config';
 import { readTelegramUser } from './telegram-fields';
 import { verifySignedParams } from './verify-signed-params';
@@ -45,6 +46,8 @@ export function telegramAuth(now: () => number, teamRole: TeamLookup): Middlewar
     const isAdmin = role !== null;
     // The admin Mini App is only for the team (docs/02).
     if (app === 'admin' && !isAdmin) return context.json({ error: 'auth.not_admin' }, FORBIDDEN);
+    // The internal environment is for the team only: anyone else is shown the way to production.
+    if (!isAdmin && brandOf(context.env).teamOnly) return context.json({ error: 'auth.moved' }, FORBIDDEN);
     // The questionnaire of the main bot reads and writes only the waitlist, and only it (G83).
     if ((app === 'main') !== context.req.path.startsWith(WAITLIST_PATH))
       return context.json({ error: 'auth.invalid' }, FORBIDDEN);

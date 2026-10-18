@@ -41,7 +41,7 @@ export async function sendPhoto(
   token: string,
   chatId: number,
   photo: Photo,
-  card: { readonly caption: string; readonly markup: object },
+  card: { readonly caption: string; readonly markup: object; readonly html?: boolean },
 ): Promise<void> {
   const form = new FormData();
   form.append('chat_id', String(chatId));
@@ -51,6 +51,7 @@ export async function sendPhoto(
     'photo',
   );
   form.append('caption', card.caption);
+  if (card.html) form.append('parse_mode', 'HTML');
   form.append('reply_markup', JSON.stringify(card.markup));
   const response = await fetch(telegramUrl(token, 'sendPhoto'), { method: 'POST', body: form });
   if (!response.ok) throw new Error(`telegram.sendPhoto_${response.status}`);

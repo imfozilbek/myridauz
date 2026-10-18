@@ -78,6 +78,14 @@ describe('AccountGate', () => {
     expect(screen.getByText('Raqamni yuborish')).toBeTruthy();
   });
 
+  // Owner, 17.10.2026: the internal environment shows anyone outside the team the way to production.
+  it('shows the way out to a person outside the team of the internal environment', async () => {
+    gate(fakeClient(new ApiError(403, 'auth.moved')));
+    expect(await screen.findByText('Bu ilova faqat jamoa uchun')).toBeTruthy();
+    expect(screen.getByText(/Safarlar yangi botda/u)).toBeTruthy();
+    expect(screen.queryByText('inside')).toBeNull();
+  });
+
   it('shows the block with its end date, or for good', async () => {
     gate(fakeClient({ state: 'blocked', until: Date.UTC(2026, 9, 27, 12) }));
     expect(await screen.findByText('Hisobingiz bloklangan')).toBeTruthy();

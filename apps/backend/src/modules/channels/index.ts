@@ -26,12 +26,14 @@ import { channelPost } from './infrastructure/post-text';
 import { createMemoryTripViews, d1TripViews } from './infrastructure/trip-views';
 import { zoneMessage } from './infrastructure/zone-message';
 import { teamDeps } from './team-deps';
+import { teamOnlyFirst } from './team-only';
 import { brandOf } from '../../shared/brand/brand-of';
 
-// A join or a leave the bot of the posts heard, for the ads of the waitlist (G83): set by the app.
+// A join or a leave the bot of the posts heard, for the ads of the waitlist (G83), set by the app;
+// an outsider in a channel of the team is taken out first (owner, 17.10.2026).
 type ChangeHandler = (env: Bindings, change: ChannelChange) => Promise<void>;
-let onChange: ChangeHandler = async () => undefined;
-export const wireChannelChanges = (handler: ChangeHandler) => void (onChange = handler);
+let onChange: ChangeHandler = teamOnlyFirst(async () => undefined);
+export const wireChannelChanges = (handler: ChangeHandler) => void (onChange = teamOnlyFirst(handler));
 const localPosts = createMemoryChannelPosts();
 const localViews = createMemoryTripViews();
 const postsOf = (env: Bindings) => (env.DB ? d1ChannelPosts(env.DB) : localPosts);

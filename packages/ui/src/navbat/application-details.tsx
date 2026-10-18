@@ -2,6 +2,7 @@ import { formatPlate, type ApplicationDetail, type Car } from '@platform/contrac
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 import { UzPlate } from '../plate/uz-plate';
+import { TelegramLine } from './telegram-line';
 
 const WARN = 18;
 
@@ -26,6 +27,9 @@ export function ApplicationDetails({ detail }: { readonly detail: ApplicationDet
         <div className="case-row">
           <span className="case-muted">{t('navbat.application.driver')}</span>
           <b>{t('navbat.application.who', { name: detail.firstName, gender })}</b>
+        </div>
+        <div className="case-row">
+          <TelegramLine id={detail.userId} />
         </div>
         {was ? (
           <div className="case-row">

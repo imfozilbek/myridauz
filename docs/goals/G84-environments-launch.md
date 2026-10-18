@@ -101,6 +101,13 @@ D. Проверка владельца
 | `ads.inBot` | одна ссылка, шаг | «Roʻyxatdan oʻtdi» | да, 17.10.2026 |
 | `ads.perRegistered` | одна ссылка, цена | «Bitta roʻyxatdan oʻtgan odam» | да, 17.10.2026 |
 | `ads.costNote` | список, подпись внизу | «Oʻngda: bitta odam qanchaga tushdi. Narx kiritilmagan boʻlsa, boʻsh.» (было «bitta yozilgan odam») | да, 17.10.2026 |
+| `bot.face.changed` | админ-бот, старая карточка фото | «Rasm almashdi: yangisi keyingi kartochkada.» | да, 18.10.2026 |
+| `bot.moved.text` | внутренние боты, человек не из команды | «Bu bot faqat jamoa uchun. Safarlar yangi botda: pastdagi tugmani bosing.» | да, 18.10.2026 |
+| `bot.moved.button, account.moved.button` | кнопка | «Yangi botni ochish» | да, 18.10.2026 |
+| `account.moved.title` | Mini App внутренней среды | «Bu ilova faqat jamoa uchun» | да, 18.10.2026 |
+| `account.moved.text` | Mini App внутренней среды | «Safarlar yangi botda. Tugmani bosing va oʻsha yerda davom eting.» | да, 18.10.2026 |
+| `navbat.telegram.*, bot.face.telegram*` | проверки команды | «Telegram: @{username}», «Telegram: username yoʻq», «Profilni ochish» | да, 18.10.2026 |
+| `legal privacy.2.text` | «Maxfiylik siyosati», редакция 1.8 | «Telegram foydalanuvchi nomi (username): faqat jamoa koʻradi, moderatsiya uchun.» | да, 18.10.2026 |
 
 ## Ждёт решения владельца
 

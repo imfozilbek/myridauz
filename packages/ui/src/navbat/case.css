@@ -135,3 +135,15 @@
 .case-row-plate {
   min-height: 44px;
 }
+
+/* Who the person is in Telegram (owner, 17.10.2026): one line, the public name a link of the brand. */
+.case-telegram {
+  align-self: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 15px;
+  color: var(--reg-strong);
+}

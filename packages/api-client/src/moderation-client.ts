@@ -4,6 +4,7 @@ import {
   ADMIN_ME_PATH,
   adminFaceDecisionPath,
   adminFacePhotoPath,
+  adminTelegramPath,
   adminApplicationPath,
   adminBlockPath,
   adminBlocksPath,
@@ -15,6 +16,7 @@ import {
   applicationSummarySchema,
   blockJournalSchema,
   faceQueueSchema,
+  telegramAccountSchema,
   type ApplicationDetail,
   type ApplicationSummary,
   type BlockJournal,
@@ -56,6 +58,9 @@ export function createModerationClient(options: SignedOptions) {
     faces: async (): Promise<FaceSummary[]> =>
       faceQueueSchema.parse(await (await request(ADMIN_FACES_PATH)).json()).faces,
     facePhoto: async (userId: PersonId): Promise<Blob> => (await request(adminFacePhotoPath(userId))).blob(),
+    // The Telegram account of the person under a check (owner, 17.10.2026).
+    telegramAccount: async (userId: PersonId) =>
+      telegramAccountSchema.parse(await (await request(adminTelegramPath(userId))).json()),
     decideFace: async (userId: PersonId, decision: FaceDecision): Promise<void> => {
       await post(adminFaceDecisionPath(userId), decision);
     },

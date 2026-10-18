@@ -55,12 +55,22 @@ export type FaceNotifier = {
 // How two people are linked by trips (G07). Used only for photo visibility (docs/05).
 export type TripRelations = { relation(viewerId: number, ownerId: number): Promise<TripRelation> };
 
+// The public name of the Telegram account of a person, for the team only (owner, 17.10.2026).
+export type TelegramNames = {
+  // Kept on each opening of a Mini App; written only when it changed.
+  keep(userId: number, username: string | null, at: number): Promise<void>;
+  find(userId: number): Promise<string | null>;
+  // «Maʼlumotlarimni oʻchirish» (docs/30).
+  forget(userId: number): Promise<void>;
+};
+
 export type UsersDeps = {
   readonly users: UserRepository;
   readonly avatars: ImageStore;
   readonly trips: TripRelations;
   readonly faceLog: { add(entry: FaceDecided): Promise<void> };
   readonly faces: FaceNotifier;
+  readonly names: TelegramNames;
   // In a trip on the way now: a blocked person finishes it (owner decision 10.10.2026).
   readonly riding: (userId: number) => Promise<boolean>;
   readonly now: () => number;

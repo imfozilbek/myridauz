@@ -10,6 +10,7 @@ import { useFailure } from '../states/use-failure';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { CaseHeader } from './case-header';
+import { TelegramLine } from './telegram-line';
 import type { CaseProps } from './case-props';
 import './face-case.css';
 
@@ -49,6 +50,7 @@ export function FaceCase({ id, item, progress, onBack, onDone }: CaseProps) {
       <CaseHeader title={t('navbat.face.title')} progress={progress} />
       <div className="face-case-photo">{url ? <img src={url} alt={name} /> : null}</div>
       <p className="face-case-who">{t('navbat.face.who', { name })}</p>
+      <TelegramLine id={id} />
       {item ? <p className="face-case-wait">{waited(item.minutes)}</p> : null}
       <div className="case-card">
         {FACE_REASONS.map((reason) => {

@@ -32,8 +32,20 @@ describe('loadBrand', () => {
     expect(bots(internal).filter((bot) => bots(production).includes(bot))).toEqual([]);
     const chats = new Set(production.channels.map((channel) => channel.chat));
     expect(internal.channels.filter((channel) => chats.has(channel.chat))).toEqual([]);
-    const shared = { name: 0, domain: 0, indexed: 0, bots: 0, channels: 0, mainChannel: 0, posts: 0 };
+    const shared = {
+      name: 0,
+      domain: 0,
+      indexed: 0,
+      bots: 0,
+      teamOnly: 0,
+      channels: 0,
+      mainChannel: 0,
+      posts: 0,
+    };
     expect({ ...internal, ...shared }).toEqual({ ...production, ...shared });
+    // Owner, 17.10.2026: the internal environment sends anyone outside the team to production.
+    expect(internal.teamOnly).toEqual(production.bots);
+    expect(production.teamOnly).toBeNull();
   });
 
   // G84: the team sees a trip of any direction in its one channel «MyRida | Viloyatlar».

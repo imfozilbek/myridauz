@@ -4,6 +4,7 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { NotificationJob } from '../../notifications';
 import type { QueueNews } from '../../team-queue';
 import type { ImageStore } from '../../../shared/storage/image-store';
+import { escapeHtml } from '../../../shared/telegram/html';
 import { openButton } from '../../../shared/telegram/open-button';
 import { sendPhoto, type Fetch } from '../../../shared/telegram/telegram-api';
 import type { FaceNotifier } from '../application/ports';
@@ -21,7 +22,17 @@ type Wiring = {
   readonly send: (jobs: readonly NotificationJob[]) => Promise<void>;
   // «Navbat» of the team (G68, docs/122): a new photo is a case.
   readonly queue: (news?: QueueNews) => Promise<void>;
+  // The public name of the Telegram account: the team sees who it is (owner, 17.10.2026).
+  readonly nameOf: (userId: number) => Promise<string | null>;
 };
+
+// The card: the name, what to check, and the Telegram account with the link to its profile.
+async function cardCaption(wiring: Wiring, user: { readonly id: number; readonly firstName: string }) {
+  const username = await wiring.nameOf(user.id);
+  const who = username ? t('bot.face.telegram', { username }) : t('bot.face.telegramNone');
+  const profile = `<a href="tg://user?id=${user.id}">${escapeHtml(t('bot.face.profile'))}</a>`;
+  return `${escapeHtml(faceCardText(user.firstName))}\n${escapeHtml(who)} · ${profile}`;
+}
 
 // A new face goes to the team as a photo with «Rasm mos» and «Mos emas» (docs/120); a photo that
 // does not fit is told to the person in the bot of their role, with a button to put a new one (docs/118).
@@ -35,7 +46,7 @@ export function telegramFaces(wiring: Wiring): FaceNotifier {
       // The photo is read once: each member gets the same bytes.
       const bytes = { body: await new Response(photo.body).arrayBuffer(), type: photo.type };
       const markup = faceMenu({ userId: user.id, at: user.face?.at ?? null });
-      const card = { caption: faceCardText(user.firstName), markup };
+      const card = { caption: await cardCaption(wiring, user), markup, html: true };
       for (const chatId of await wiring.recipients(user.id)) {
         // A member who never opened the bot must not stop the upload of the photo.
         await sendPhoto(wiring.fetch, wiring.adminToken, chatId, bytes, card).catch((error: unknown) =>

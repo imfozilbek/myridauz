@@ -7,9 +7,11 @@ import { people } from './application/people';
 import type { UsersDeps } from './application/ports';
 import { accessGuard } from './http/access-guard';
 import { faceRoutes } from './http/face-routes';
+import { telegramRoutes } from './http/telegram-routes';
 import { meRoutes, type Registered } from './http/me-routes';
 import { userRoutes } from './http/user-routes';
 import { d1FaceLog } from './infrastructure/d1-face-log';
+import { createMemoryTelegramNames, d1TelegramNames } from './infrastructure/telegram-names';
 import { d1Users } from './infrastructure/d1-users';
 import { telegramFaces } from './infrastructure/telegram-faces';
 import { notify } from '../notifications';
@@ -36,6 +38,9 @@ let ridingOf: RidingOf = async () => false;
 export const wireRiding = (next: RidingOf) => void (ridingOf = next);
 
 const avatarsOf = (env: Bindings) => (env.MEDIA ? r2Images(env.MEDIA) : localAvatars);
+// Without D1 (tests and the stand) the names stay in memory.
+const localNames = createMemoryTelegramNames();
+const namesOf = (env: Bindings) => (env.DB ? d1TelegramNames(env.DB) : localNames);
 const usersDeps = (env: Bindings): UsersDeps => ({
   users: env.DB ? d1Users(env.DB) : localUsers,
   avatars: avatarsOf(env),
@@ -54,7 +59,9 @@ const usersDeps = (env: Bindings): UsersDeps => ({
     avatars: avatarsOf(env),
     send: (jobs) => notify(env, jobs),
     queue: (news) => showQueue(env, news),
+    nameOf: (userId) => namesOf(env).find(userId),
   }),
+  names: namesOf(env),
   riding: (userId) => ridingOf(env, userId),
   now: Date.now,
   newId: () => crypto.randomUUID(),
@@ -81,7 +88,8 @@ export const usersModule = new Hono<AppEnv>()
     }),
   )
   .route('/', userRoutes(usersDeps))
-  .route('/', faceRoutes(usersDeps));
+  .route('/', faceRoutes(usersDeps))
+  .route('/', telegramRoutes(usersDeps));
 
 // For the bots: a blocked person gets "account blocked" in every bot too (docs/17).
 export const isBlocked = async (env: Bindings, telegramId: number) =>
