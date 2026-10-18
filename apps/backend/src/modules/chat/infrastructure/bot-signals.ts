@@ -8,6 +8,7 @@ import { tellOwners } from '../../team-queue';
 import { peopleOf } from '../../users';
 import type { Addressee, ChatSignals } from '../application/ports';
 import { brandOf } from '../../../shared/brand/brand-of';
+import { botMessageUrl } from '../../../shared/telegram/open-button';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
@@ -17,7 +18,7 @@ const { t } = createI18n(DEFAULT_LOCALE);
 const toChat = async (env: Bindings, { to, key, kind }: ChatNews, text: string, button: string) => {
   const link = kind === 'call' ? ANSWER_LINK : CHAT_LINK;
   const url = `https://${appHost(brandOf(env), to.role)}/?${link}=${key}`;
-  const markup = { inline_keyboard: [[{ text: button, web_app: { url } }]] };
+  const markup = { inline_keyboard: [[{ text: button, web_app: { url: botMessageUrl(url, link) } }]] };
   await notify(env, [{ bot: to.role, chatId: to.userId, text, markup }]);
 };
 

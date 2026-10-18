@@ -4,6 +4,7 @@ import type { ArrivalCount } from '../domain/arrivals';
 import type { BotEvents } from '../domain/bot-load';
 import type { Counter } from '../domain/counters';
 import type { MarkCount, SearchCount } from '../domain/rost';
+import type { VoiceRows } from '../domain/voice';
 
 // Errors (docs/29): a crash of a screen, a failure of the server (G42) and an error answer of the API.
 export const ERROR_EVENTS = ['client_error', 'server_error', 'api_error'] as const;
@@ -27,6 +28,8 @@ export type NumbersSource = {
   arrivals(since: number): Promise<ArrivalCount[]>;
   // The new people of a mark who rode since (G69): a seat ridden or a trip driven to its end.
   riders(since: number): Promise<MarkCount[]>;
+  // What people feel (G87, docs/191): the ratings and the reasons of the complaints since.
+  voice(since: number): Promise<VoiceRows>;
 };
 
 // Saved answers: Analytics Engine allows 10 000 queries a day (docs/03). Also remembers sent signals.

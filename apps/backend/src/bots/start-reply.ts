@@ -1,6 +1,7 @@
 import { appHost, type BotWelcome, type BrandConfig } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { BotRole } from './bot-roles';
+import { botMessageUrl } from '../shared/telegram/open-button';
 
 const { t, formatMoney } = createI18n(DEFAULT_LOCALE);
 // A driver who came from the passenger bot already knows Rida: another first line (G34).
@@ -74,7 +75,7 @@ export function startReply({ brand, role, chatId, access, payload = '' }: StartC
   const follow = FOLLOW_PAYLOAD.exec(payload);
   if (role === 'passenger' && follow) {
     const url = `${miniAppUrl(brand, role)}/?${FOLLOW_PARAM}=${follow[1]}`;
-    const button = { text: t('bot.share.follow'), web_app: { url } };
+    const button = { text: t('bot.share.follow'), web_app: { url: botMessageUrl(url, FOLLOW_PARAM) } };
     return {
       method: 'sendMessage',
       chat_id: chatId,

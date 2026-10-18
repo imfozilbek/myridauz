@@ -29,9 +29,17 @@ const callbackSchema = z.object({
 });
 export type BotCallback = z.infer<typeof callbackSchema>;
 
+// A person blocked the bot or came back (G87, docs/191): Telegram says it in a private chat only.
+const memberSchema = z.object({
+  chat: z.object({ id: z.number(), type: z.string() }),
+  new_chat_member: z.object({ status: z.string() }),
+});
+export type BotMember = z.infer<typeof memberSchema>;
+
 export const telegramUpdateSchema = z.object({
   message: messageSchema.optional(),
   callback_query: callbackSchema.optional(),
+  my_chat_member: memberSchema.optional(),
 });
 export type TelegramUpdate = z.infer<typeof telegramUpdateSchema>;
 

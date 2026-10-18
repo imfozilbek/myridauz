@@ -36,7 +36,12 @@ function setup(events: EventSource | null) {
   };
   const deps: StatsDeps = {
     events: counting,
-    numbers: { numbers: async () => numbers, arrivals: async () => [], riders: async () => [] },
+    numbers: {
+      numbers: async () => numbers,
+      arrivals: async () => [],
+      riders: async () => [],
+      voice: async () => ({ stars: { count: 0, total: 0, low: 0 }, tags: [], complaints: [] }),
+    },
     cache: createMemoryCache(),
     rules: { errorGrowth: 3, minErrors: 2, dropGrowth: 20, minPeople: 2, repeatHours: 6 },
     tellOwners: async (alert) => void told.push(alert),

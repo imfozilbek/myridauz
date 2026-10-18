@@ -1,11 +1,14 @@
 import {
   CHANNEL_ARRIVALS_DAYS,
+  CHANNEL_LIFE_DAYS,
   channelVia,
   DAY_MS,
   FAILED_POSTS_DAYS,
+  tashkentDate,
   type Channel,
   type ChannelHealth,
 } from '@platform/contracts';
+import { lifeKey, lifeOf, NO_LIFE, type ChannelLife } from './channel-life';
 
 // What the Cron last read from Telegram about a channel (G75).
 export type HealthRow = {
@@ -32,6 +35,8 @@ export type HealthDeps = {
   // The posts Telegram never took, by channel; the people who came by the marks of the channels.
   readonly failed: (since: number) => Promise<ReadonlyMap<string, number>>;
   readonly arrivals: (since: number) => Promise<ReadonlyMap<string, number>>;
+  // The joins, leaves and reactions by day; the people of a day kept by the check (G87, docs/191).
+  readonly life: ChannelLife;
   readonly now: () => number;
 };
 
@@ -53,7 +58,9 @@ export async function checkChannels(deps: HealthDeps): Promise<void> {
       deps.canPost(chat).catch(() => null),
       before.get(chat)?.appLink ?? deps.appLink(chat).catch(() => null),
     ]);
-    await deps.store.save({ channel: chat, subscribers, canPost, checkedAt: deps.now(), appLink });
+    const checkedAt = deps.now();
+    await deps.store.save({ channel: chat, subscribers, canPost, checkedAt, appLink });
+    if (subscribers !== null) await deps.life.counted(tashkentDate(checkedAt), lifeKey(chat), subscribers);
   }
 }
 
@@ -67,11 +74,12 @@ export async function appLinks(store: HealthStore): Promise<ReadonlyMap<string, 
 // «Kanallar» of the owner: every channel with its people, its bot, its lost posts and its arrivals.
 export async function channelHealth(deps: HealthDeps): Promise<ChannelHealth> {
   const now = deps.now();
-  const [channels, rows, failed, arrivals] = await Promise.all([
+  const [channels, rows, failed, arrivals, life] = await Promise.all([
     deps.channels(),
     deps.store.rows(),
     deps.failed(now - FAILED_POSTS_DAYS * DAY_MS),
     deps.arrivals(now - CHANNEL_ARRIVALS_DAYS * DAY_MS),
+    lifeOf(deps.life, CHANNEL_LIFE_DAYS, now),
   ]);
   const byChannel = new Map(rows.map((row) => [row.channel, row]));
   return {
@@ -85,6 +93,7 @@ export async function channelHealth(deps: HealthDeps): Promise<ChannelHealth> {
         checkedAt: row?.checkedAt ?? null,
         failed: failed.get(chat) ?? 0,
         arrivals: arrivals.get(channelVia(chat)) ?? 0,
+        ...(life.get(lifeKey(chat)) ?? NO_LIFE),
       };
     }),
   };

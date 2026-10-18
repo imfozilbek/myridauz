@@ -24,6 +24,20 @@ describe('botEventOf (G12)', () => {
     });
   });
 
+  it('counts a person who blocked the bot or came back, never who (G87)', () => {
+    const member = (status: string, type = 'private') => ({
+      my_chat_member: { chat: { id: 7, type }, new_chat_member: { status } },
+    });
+    expect(botEventOf('passenger', member('kicked'))).toEqual({
+      name: 'bot_member',
+      source: 'passenger',
+      code: 'blocked',
+    });
+    expect(botEventOf('driver', member('member'))?.code).toBe('unblocked');
+    // The bot added to or taken out of a group is not a person leaving.
+    expect(botEventOf('admin', member('left', 'group'))).toBeUndefined();
+  });
+
   it('never keeps free text: an odd command becomes "other", a plain message is no event', () => {
     expect(botEventOf('passenger', message('/+998901234567'))?.code).toBe('other');
     expect(botEventOf('passenger', button('Ali Valiyev'))?.code).toBe('other');

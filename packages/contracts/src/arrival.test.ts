@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { arrivalSchema, channelVia, splitStart, tripBookLink, VIA_DRIVER, withVia } from './arrival';
+import {
+  arrivalSchema,
+  botVia,
+  channelVia,
+  splitStart,
+  tripBookLink,
+  VIA_DRIVER,
+  VIA_PATTERN,
+  withVia,
+} from './arrival';
 
 describe('the mark of a link (G55, docs/116)', () => {
   it('goes after the link and comes back without changing it', () => {
@@ -19,6 +28,13 @@ describe('the mark of a link (G55, docs/116)', () => {
     expect(splitStart('find_1703_1714')).toEqual({ start: 'find_1703_1714', via: null });
     expect(splitStart('__ad-insta1')).toEqual({ start: null, via: 'ad-insta1' });
     expect(splitStart('trip_1__Bad Mark')).toEqual({ start: 'trip_1__Bad Mark', via: null });
+  });
+
+  it('names the link of a bot button in a mark of the same form (G87, docs/191)', () => {
+    expect(botVia('booking')).toBe('bot-booking');
+    expect(botVia('new_trip')).toBe('bot-new-trip');
+    for (const link of ['booking', 'new_trip', 'mytrip', 'a_very_long_name_of_a_link'])
+      expect(VIA_PATTERN.test(botVia(link))).toBe(true);
   });
 
   it('names a channel in a short mark of letters, digits and hyphens', () => {

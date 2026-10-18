@@ -1,0 +1,20 @@
+{
+  "title.booking": "Nega joyni bekor qildingiz?",
+  "title.trip": "Nega safarni bekor qildingiz?",
+  "title.account": "Nega maʼlumotlaringizni oʻchirdingiz?",
+  "hint": "Javob berish shart emas. Bu bizga yaxshiroq boʻlishga yordam beradi.",
+  "reason.booking.plans_changed": "Rejam oʻzgardi",
+  "reason.booking.found_other": "Boshqa yoʻl topdim",
+  "reason.booking.driver": "Haydovchi bilan kelisha olmadik",
+  "reason.booking.time": "Vaqt toʻgʻri kelmadi",
+  "reason.booking.other": "Boshqa sabab",
+  "reason.trip.plans_changed": "Rejam oʻzgardi",
+  "reason.trip.no_passengers": "Yoʻlovchi topilmadi",
+  "reason.trip.car": "Mashinada muammo",
+  "reason.trip.other": "Boshqa sabab",
+  "reason.account.not_needed": "Endi kerak emas",
+  "reason.account.no_trips": "Kerakli safar topilmadi",
+  "reason.account.hard": "Ishlatish qiyin",
+  "reason.account.privacy": "Maʼlumotlarim uchun xavotirdaman",
+  "reason.account.other": "Boshqa sabab"
+}

@@ -17,13 +17,14 @@
 
 | Группа | События (проверено в G12) |
 |---|---|
-| Экраны | `screen_open` (Mini App, экран; первый экран сессии ещё: вид ссылки `source`, метка источника `via`, платформа `client`, G55 `116`) |
+| Экраны | `screen_open` (Mini App, экран; первый экран сессии ещё: вид ссылки `source`, метка источника `via`, платформа `client`, G55 `116`; с G87 `source` = `bot` и `via` = `bot-<ссылка>`, если Mini App открыта кнопкой сообщения бота, `191`) |
 | Скорость (G72) | `app_ready`: мс от нажатия до готового первого экрана (пока стоит сплэш, `121` §4), Mini App и платформа `client`; больше 120 000 мс не принимаем |
 | Шаги | `registration_step` (consent, about, phone, done; G34), `driver_application_step`, `trip_step` (route, published; G63), `booking_step`, `way_step` (поиск списками: opened, from, to, done; G26) |
 | Действия | `trip_search`, `trip_open`, `chat_open`, `chat_first_message`, `wallet_open`, `route_subscribed`, `subscriptions_open`, `review_sent`, `complaint_sent`, `complaint_decided`, `favorite_driver`, `return_trip_created` (обратная поездка опубликована после «Qaytish», G63, или «Qaytish safari» нижнего блока, G76), `driver_trip_shared`, `driver_trip_story` |
 | Ошибки | `client_error` (экран упал: код `render`, `uncaught` или `rejection`, класс ошибки, текст без цифр и знаков, экран, приложение Telegram и его версия, движок WebView и его главная версия, место в сборке `where`, G52 `112`), `api_error` (код ответа API и последний открытый экран, G12; нормальные состояния не шлются: `users.not_registered`, `drivers.not_found`, `auth.missing`, G52) |
 | Главный экран (G25, G76) | `home_tap` (место нажатия: плитка, шапка, кнопка блока, чат и звонок поездки), `dock_state` (состояние нижнего блока, когда оно сменилось: 1 или 2 за открытие, `165`) |
-| Бот (G12) | `bot_command` (id команды), `bot_button` (вид кнопки, без id) |
+| Бот (G12) | `bot_command` (id команды), `bot_button` (вид кнопки, без id), `bot_member` (G87: человек заблокировал бота `blocked` или вернулся `unblocked`, по боту, без ID, `191`) |
+| Голос людей (G87) | `leave_reason`: вид (`booking`, `trip`, `account`) и id причины после отмены места, поездки или удаления данных; одно нажатие, можно пропустить (`191`) |
 | Сервер | `driver_approved` |
 | Близкие (`43`) | `trip_shared`, `share_opened`, `share_follow`, `share_join`, `boarded` («Keldi» водителя, G76), `arrived` |
 

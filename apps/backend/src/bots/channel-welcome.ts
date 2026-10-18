@@ -31,7 +31,7 @@ const channelWelcome = (brand: BrandConfig, role: Role, chat: string) => ({
   ...sendFlags({ quiet: true }),
 });
 
-// Table channel_welcomes (migration 0074). A welcome counts as posted once taken, so neither two ticks
+// Table channel_welcomes (migration 0076). A welcome counts as posted once taken, so neither two ticks
 // nor a lost answer of Telegram post it twice: a double in a channel is seen by all, a lost one by
 // none. Only a post Telegram refused (4xx) is given back, and taken again after RETRY_MS.
 const DONE = 'SELECT chat, role FROM channel_welcomes WHERE posted_at IS NOT NULL OR tried_at > ?';

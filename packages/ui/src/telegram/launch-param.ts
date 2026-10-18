@@ -1,4 +1,4 @@
-import { splitStart } from '@platform/contracts';
+import { BOT_VIA_PARAM, BOT_VIA_PREFIX, splitStart, VIA_PATTERN } from '@platform/contracts';
 import { useEffect } from 'react';
 
 // A bot button opens the Mini App with a parameter: a chat (docs/07) or a shared trip (docs/43).
@@ -32,6 +32,13 @@ export function startParam(): string | null {
 export function startVia(): string | null {
   const raw = rawStart();
   return raw === null ? null : splitStart(raw).via;
+}
+
+// The mark of a button under a message of a bot (G87, docs/191): «bot-booking». It only counts the
+// open in «Statistika»; where the person first came from stays the mark of the startapp link.
+export function botMessageVia(): string | null {
+  const value = launchParam(BOT_VIA_PARAM, VIA_PATTERN);
+  return value?.startsWith(BOT_VIA_PREFIX) === true ? value : null;
 }
 
 // The mark of a link opened inside the app (G69, docs/123): «Men ham yoʻlga chiqaman» of a followed

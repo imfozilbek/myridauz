@@ -14,8 +14,10 @@ export const REVIEW_TEXT_MAX = 300;
 // Quick tags: a passenger rates the driver, a driver rates a passenger (docs/24).
 export const DRIVER_TAGS = ['on_time', 'careful', 'clean_car', 'polite'] as const;
 export const PASSENGER_TAGS = ['on_time', 'polite', 'tidy'] as const;
-const TAGS = [...new Set([...DRIVER_TAGS, ...PASSENGER_TAGS])] as [string, ...string[]];
 export type ReviewTag = (typeof DRIVER_TAGS)[number] | (typeof PASSENGER_TAGS)[number];
+export const REVIEW_TAGS = [...new Set([...DRIVER_TAGS, ...PASSENGER_TAGS])] as [ReviewTag, ...ReviewTag[]];
+// A review comes with the words of its tags, checked against the list.
+const TAGS: [string, ...string[]] = REVIEW_TAGS;
 
 export const reviewInputSchema = z.object({
   bookingId: z.string().min(1).max(64),

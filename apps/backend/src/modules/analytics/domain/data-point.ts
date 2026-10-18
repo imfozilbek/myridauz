@@ -9,31 +9,34 @@ export type DataPoint = {
 
 export function toDataPoint(event: AnalyticsEvent, receivedAt: number): DataPoint {
   // The detail of an event: an error code, a funnel step or a search result (docs/29). A step of the
-  // waitlist names its role too: «passenger.pains» (G83, docs/183).
+  // waitlist names its role too: «passenger.pains» (G83, docs/183); a reason of leaving its kind:
+  // «booking.found_other» (G87, docs/191).
   const code =
     event.name === 'waitlist_step' && event.role
       ? `${event.role}.${event.step}`
-      : 'button' in event
-        ? [event.button, event.target].filter(Boolean).join('.')
-        : 'source' in event && event.source
-          ? event.source
-          : 'code' in event
-            ? event.code
-            : 'step' in event
-              ? event.step
-              : 'result' in event
-                ? event.result
-                : 'method' in event
-                  ? event.method
-                  : 'length' in event
-                    ? String(event.length)
-                    : 'navigator' in event
-                      ? event.navigator
-                      : 'target' in event
-                        ? event.target
-                        : 'state' in event
-                          ? event.state
-                          : '';
+      : event.name === 'leave_reason'
+        ? `${event.kind}.${event.reason}`
+        : 'button' in event
+          ? [event.button, event.target].filter(Boolean).join('.')
+          : 'source' in event && event.source
+            ? event.source
+            : 'code' in event
+              ? event.code
+              : 'step' in event
+                ? event.step
+                : 'result' in event
+                  ? event.result
+                  : 'method' in event
+                    ? event.method
+                    : 'length' in event
+                      ? String(event.length)
+                      : 'navigator' in event
+                        ? event.navigator
+                        : 'target' in event
+                          ? event.target
+                          : 'state' in event
+                            ? event.state
+                            : '';
   // What broke a screen follows its code (G52, docs/112). The first screen of a session keeps the
   // platform in the same place and the mark of the source after it (G55, docs/116); so does the ready app.
   const crash =

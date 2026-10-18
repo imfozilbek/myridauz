@@ -1,4 +1,4 @@
-import type { BotLoad } from '@platform/contracts';
+import type { BotBlock, BotLoad } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { ManageGroup, ManageRow } from '../manage/manage-page';
 
@@ -30,6 +30,26 @@ export function BotsSection({
         />
       ))}
       <ManageRow icon="statistics" title={t('stats.bots.queue')} value={formatNumber(queueOps)} />
+    </ManageGroup>
+  );
+}
+
+// «Botni bloklaganlar» (G87, docs/191): how many people blocked each bot in the period and how many
+// came back to it; only the numbers, never who. The bots nobody left are not in the list.
+export function BlocksSection({ blocks }: { readonly blocks: readonly BotBlock[] }) {
+  const { t, formatNumber } = useI18n();
+  if (blocks.length === 0) return null;
+  return (
+    <ManageGroup title={t('stats.blocks.title')}>
+      {blocks.map((block) => (
+        <ManageRow
+          key={block.bot}
+          icon="blocked"
+          title={t(`stats.bots.bot.${block.bot}`)}
+          hint={t('stats.blocks.back', { count: formatNumber(block.unblocked) })}
+          value={formatNumber(block.blocked)}
+        />
+      ))}
     </ManageGroup>
   );
 }

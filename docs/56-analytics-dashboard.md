@@ -10,6 +10,10 @@
 | Воронки (3) | Analytics Engine | Люди на каждом шаге и «N% ketdi» от прошлого шага |
 | Qayerdan kelishdi, Qurilmalar | D1 (`user_arrivals`) | Новые люди периода по источнику (канал, реклама, история водителя, сайт, напрямую) и по платформе (G55, `116`) |
 | Botlar xabarlari | Analytics Engine | G85 (`122`): у каждого бота отправлено, ответы 429, «yoʻqoldi» (потеряно после 5 попыток) и «soniyada» (самая занятая секунда); строка «Navbat amallari, kuniga». 429 или потеря выделены красным |
+| Botni bloklaganlar | Analytics Engine | G87 (`191`): сколько людей заблокировали каждого бота и сколько вернулись («Qaytdi»); боты без таких людей не видны |
+| Baholar, Nimasi yoqdi, Shikoyat sabablari | D1 (`reviews`, `complaints`) | G87: средняя оценка и число оценок, оценки 1 или 2 звезды и их доля, частые теги, частые причины жалоб; видно и без ключа аналитики |
+| Nega bekor qilishdi | Analytics Engine | G87: причины после отмены места, поездки и удаления данных, по виду |
+| Ilova qanday ochildi | Analytics Engine | G87: открытия (сессии) из сообщения бота, напрямую и по ссылке; без админ Mini App |
 | Xatolar | Analytics Engine | 15 самых частых. Сверху «Ilova buzilishlari»: падения экрана и сбои сервера. Ниже «Rad etilgan amallar»: отказы правил словами экрана человека. Mini App `main` зовётся «Kutish roʻyxati» (G52, `112`) |
 
 - Переключатель периода: «24 soat» и «7 kun».

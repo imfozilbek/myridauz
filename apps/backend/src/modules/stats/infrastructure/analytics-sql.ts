@@ -82,13 +82,13 @@ export function analyticsSql({ accountId, token, dataset, fetch }: Options): Eve
       return sqlAnswerSchema(searchRow).parse(await query(sql)).data;
     },
     // G85 T1: what Telegram answered each bot, its dead letters, the operations of the queue (double3),
-    // and the busiest second of each bot.
+    // and the busiest second of each bot. G87: the people who blocked a bot or came back.
     bots: async (days) => {
       const rows =
         `SELECT blob1 AS name, blob2 AS bot, blob6 AS code, SUM(_sample_interval) AS count, ` +
         `SUM(double3 * _sample_interval) AS amount FROM ${dataset} WHERE ${within('DAY', days)} AND ` +
-        `(blob1 IN ('bot_send', 'queue_ops') OR (blob1 = 'server_error' AND blob6 = 'notification_dead')) ` +
-        `GROUP BY name, bot, code`;
+        `(blob1 IN ('bot_send', 'queue_ops', 'bot_member') OR ` +
+        `(blob1 = 'server_error' AND blob6 = 'notification_dead')) GROUP BY name, bot, code`;
       // The busiest second of each bot: the seconds of every bot first, then the most of each one.
       const peaks =
         `SELECT bot, max(count) AS count FROM (SELECT blob2 AS bot, ` +

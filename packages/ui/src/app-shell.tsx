@@ -11,6 +11,7 @@ import { BrandContext } from './context/brand-context';
 import { useOwnerLimits } from './context/owner-limits';
 import { I18nProvider } from './context/i18n-context';
 import { ConnectionGate } from './network/connection-gate';
+import { LeaveReasonProvider } from './leave/leave-reason';
 import { LocationsClientContext } from './places/directory';
 import { StepProgressProvider } from './flow/step-progress';
 import { useSplash } from './splash/use-splash';
@@ -63,7 +64,9 @@ export function AppShell({
                     <StepProgressProvider>
                       <ErrorBoundary>
                         <ConnectionGate>
-                          <Suspense fallback={<ScreenSkeleton />}>{children}</Suspense>
+                          <LeaveReasonProvider>
+                            <Suspense fallback={<ScreenSkeleton />}>{children}</Suspense>
+                          </LeaveReasonProvider>
                         </ConnectionGate>
                       </ErrorBoundary>
                     </StepProgressProvider>
