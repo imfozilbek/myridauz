@@ -54,3 +54,10 @@
   font-size: 11px;
   line-height: 13px;
 }
+
+/* The move since the period before under a number of «Statistika» (G45). */
+.number-tile small {
+  color: var(--reg-muted);
+  font-size: 11px;
+  line-height: 13px;
+}

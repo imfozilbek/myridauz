@@ -67,6 +67,20 @@ describe('«Cheklovlar» and «Jurnal»', () => {
     expect(change).not.toHaveBeenCalled();
   });
 
+  // Q3 of docs/111 (G45): what the limit changes and why, its range and its own changes in its sheet.
+  it('says what a limit does and shows its own changes in its sheet', async () => {
+    renderManagement({
+      limits: { current: async () => ({ values: {} }), state: async () => limitsOf(3), change: vi.fn() },
+    });
+    await tap('Cheklovlar');
+    // The list row; the same name stands in «Oʻzgarishlar» under the list.
+    const [row] = await screen.findAllByText('Bir soʻrovdagi joylar');
+    if (row) fireEvent.click(row);
+    expect(await screen.findByText('Yoʻlovchi bitta soʻrovda nechta joy soʻray oladi.')).toBeTruthy();
+    expect(screen.getByText('4 ta → 3 ta')).toBeTruthy();
+    expect(screen.getAllByText(/, Fozil$/u).length).toBeGreaterThan(0);
+  });
+
   it('says every decision in words and shows the older ones on «Yana»', async () => {
     const journal = vi.fn(async (before?: number) =>
       before === undefined

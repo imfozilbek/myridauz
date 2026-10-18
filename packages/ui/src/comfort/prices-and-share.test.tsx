@@ -31,6 +31,7 @@ describe('prices next to each other (docs/40, question 44)', () => {
           failed={null}
           onBack={() => undefined}
           onSave={() => undefined}
+          onDistance={() => undefined}
         />
       </PlacesGate>
     );

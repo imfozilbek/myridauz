@@ -1,6 +1,7 @@
 import './number-tiles.css';
 
-type Tile = { readonly value: string | number; readonly label: string };
+// change: how the number moved since the period before, «↑ 6» (G45, F-A12 of docs/90).
+type Tile = { readonly value: string | number; readonly label: string; readonly change?: string };
 
 type TilesProps = {
   readonly tiles: readonly Tile[];
@@ -12,10 +13,11 @@ type TilesProps = {
 export function NumberTiles({ tiles, kind }: TilesProps) {
   return (
     <div className={`number-tiles number-tiles-${kind}`}>
-      {tiles.map(({ value, label }) => (
+      {tiles.map(({ value, label, change }) => (
         <div key={label} className="number-tile">
           <b>{value}</b>
           <span>{label}</span>
+          {change ? <small>{change}</small> : null}
         </div>
       ))}
     </div>

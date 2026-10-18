@@ -78,6 +78,7 @@ function Pricing({ onBack }: { readonly onBack: () => void }) {
         failed={mode.failed}
         onBack={() => setMode({ kind: 'view' })}
         onSave={(price) => void done(pricing.setDirection({ from, to, price }))}
+        onDistance={(km) => void done(pricing.setDistance({ from, to, km }))}
       />
     );
   }

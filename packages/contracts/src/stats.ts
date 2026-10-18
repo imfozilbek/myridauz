@@ -47,7 +47,6 @@ export const MAIN_NUMBERS = [
 export type MainNumber = (typeof MAIN_NUMBERS)[number];
 // The numbers counted over a period, compared with the period before it (F-A12 of docs/90, G45); the
 // live trips are a number of now.
-export const COUNTED_NUMBERS = MAIN_NUMBERS.filter((name) => name !== 'activeTrips');
 export type CountedNumber = Exclude<MainNumber, 'activeTrips'>;
 
 const count = z.number().int().nonnegative();

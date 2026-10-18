@@ -60,6 +60,8 @@ export const testClients = (overrides: Overrides): ApiClients => ({
     rollback: NOT_USED,
     directions: NOT_USED,
     setDirection: NOT_USED,
+    setDistance: NOT_USED,
+    distanceHistory: async () => ({ changes: [] }),
     ...overrides.pricing,
   },
   channels: {
