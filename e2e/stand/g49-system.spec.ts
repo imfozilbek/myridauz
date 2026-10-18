@@ -52,6 +52,12 @@ test('S51. the app missed the signal in the background: back in it, the screen i
     server.onMessage((message) => (away ? undefined : socket.send(message)));
     server.onClose(() => (away ? undefined : socket.close()));
   });
+  // An app in the background asks nothing: a socket opened again just before (the local Worker reloads
+  // now and then) would read the seat while away (lesson 343). Its questions wait for the return.
+  await page.route('**/passenger/bookings', async (route) => {
+    while (away) await new Promise((wait) => setTimeout(wait, 100));
+    await route.continue();
+  });
   await openAs(page, 'passenger', GULI);
   await page.getByText(t('common.myTrips')).click();
   await expect(page.getByText(t('bookings.status.requested'))).toBeVisible();
