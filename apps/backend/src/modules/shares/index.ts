@@ -95,5 +95,10 @@ export const tellTripFamilyRetimed = (env: Bindings, tripId: string, driverTripO
 export const tellCloseOnes = (env: Bindings, booking: Booking, update: ShareUpdate) =>
   tellFollowers(base(env), booking, update);
 
+// «Ha, yetib keldim» to «Yetib keldingizmi?» closes the link of close people (G46, docs/43): they
+// heard «yetib keldi» already.
+export const closeBookingShare = (env: Bindings, bookingId: string) =>
+  base(env).shares.revoke({ kind: 'booking', id: bookingId }, Date.now());
+
 // A deleted account (docs/30): it follows no shared trip any more.
 export const forgetFollows = (env: Bindings, telegramId: number) => base(env).shares.unfollowAll(telegramId);

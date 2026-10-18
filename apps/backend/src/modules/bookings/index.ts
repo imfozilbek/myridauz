@@ -18,7 +18,6 @@ import { passengerView } from './application/progress';
 import { filedRideOf, ratableRideOf, rideOf, ridesOf } from './application/rides';
 import { expireTripOffers } from './application/salon-trip';
 import { tellTripRetimed } from './application/trip-change';
-import { bookingViews } from './application/views';
 import { bookingRoutes } from './http/booking-routes';
 import { meetingRoutes } from './http/meeting-routes';
 import { offerRoutes } from './http/offer-routes';
@@ -100,6 +99,9 @@ export {
   tellTripPassengers,
 } from './live-cards';
 
+// «Yetib keldingizmi?» answered in the passenger bot (G46).
+export { answerArrived, ARRIVED_PREFIX } from './arrived-answer';
+
 // Rides for the ratings and the complaints (G11): one booking, or the rides of ended trips.
 export const rideOfBooking = (env: Bindings, bookingId: string) => rideOf(bookingsDeps(env), bookingId);
 export const filedRideOfBooking = (env: Bindings, bookingId: string) =>
@@ -115,25 +117,7 @@ export const cancelAllOf = (env: Bindings, userId: number) => cancelEverything(b
 export const ridingOf = (env: Bindings, userId: number) => ridingNow(bookingsDeps(env), userId);
 export { cancelsOf, passengerRideCount, ridesOfPerson } from './person-facts';
 
-// «Hamyon» names the passenger and the seats of each booking of its rows (G63, G65).
-export const walletBookingsOf = async (env: Bindings, bookingIds: readonly string[]) => {
-  const deps = bookingsDeps(env);
-  const named = await Promise.all(
-    bookingIds.map(async (id) => {
-      const booking = await deps.bookings.find(id);
-      const person = booking && (await deps.people.find(booking.passengerId));
-      return person ? [[id, { passenger: person.firstName, seats: booking.seats }] as const] : [];
-    }),
-  );
-  return new Map(named.flat());
-};
-
-// The details of a commission show the booking as its driver sees it (G65, mockup g65/2).
-export const driverBookingOf = async (env: Bindings, bookingId: string) => {
-  const deps = bookingsDeps(env);
-  const record = await deps.bookings.find(bookingId);
-  return record ? (await bookingViews(deps, [record], 'driver'))[0] : undefined;
-};
+export { driverBookingOf, walletBookingsOf } from './wallet-views';
 
 // The card of a support question shows the booking a passenger lives with now (G68).
 export const liveBookingFor = (env: Bindings, passengerId: number) =>

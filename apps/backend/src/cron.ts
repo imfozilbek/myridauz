@@ -12,7 +12,7 @@ import { decisionsBetween, grantMissedBonuses, waitingApplications } from './mod
 import { sendApplicationReminders, sendDaySummary } from './modules/assignments';
 import { forgetOldCards } from './modules/notifications';
 import { askForRatings } from './modules/ratings';
-import { sendReminders, watchLateDepartures } from './modules/reminders';
+import { askArrived, sendReminders, watchLateDepartures } from './modules/reminders';
 import { showQueue } from './modules/team-queue';
 import { expireRequests } from './modules/ride-requests';
 import { endSubscriptions } from './modules/route-subscriptions';
@@ -32,7 +32,7 @@ const DAILY_HOUR_UTC = 0;
 const LOOKS_MINUTE = 30;
 
 // Closes trips, requests and bookings whose time is over, sends trip reminders, asks a driver who
-// forgot «Yoʻlga chiqdim» and departs the trip later, edits channel posts of trips that left and the
+// forgot «Yoʻlga chiqdim» and departs the trip later, asks a passenger «Yetib keldingizmi?», edits channel posts of trips that left and the
 // boards of the day, reminds the team of waiting driver applications and keeps the minutes of
 // «Navbat» fresh; tells the waiting people of opened directions and refreshes the cards of the list
 // on Monday, a few at a time; sets the bots up again when their tokens or texts changed; posts the
@@ -46,6 +46,7 @@ const everyTick = (env: Bindings, now: number): Job[] => [
   ['expireBookings', () => expireBookings(env, now)],
   ['sendReminders', () => sendReminders(env, now)],
   ['watchLateDepartures', () => watchLateDepartures(env, now)],
+  ['askArrived', () => askArrived(env, now)],
   ['closeDepartedPosts', () => closeDepartedPosts(env)],
   ['showChannelBoards', () => showChannelBoards(env)],
   ['sendApplicationReminders', () => sendApplicationReminders(env, () => waitingApplications(env))],

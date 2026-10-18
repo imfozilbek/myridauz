@@ -7,6 +7,7 @@ import { botToken } from '../shared/telegram/bot-config';
 import type { Fetch } from '../shared/telegram/telegram-api';
 import { fromTelegram } from '../shared/telegram/webhook-secret';
 import { onAdminCallback } from './admin-callbacks';
+import { isArrivedButton, onArrivedCallback } from './arrived-callbacks';
 import { isAskButton, onAskCallback } from './ask-callbacks';
 import { isNewsOffButton, onNewsOffCallback } from './news-callbacks';
 import { onAdminMessage } from './admin-messages';
@@ -64,6 +65,7 @@ async function answer(bot: BotContext, role: BotRole | typeof SUPPORT_BOT, data:
   if (query) {
     if (role === 'admin') return onAdminCallback(bot, query);
     if (isNewsOffButton(query.data)) return onNewsOffCallback(bot, role, query);
+    if (role === 'passenger' && isArrivedButton(query.data)) return onArrivedCallback(bot, query);
     return role === 'driver' && isAskButton(query.data)
       ? onAskCallback(bot, query)
       : onRatingCallback(bot, role, query);

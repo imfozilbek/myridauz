@@ -1,8 +1,8 @@
-import { MINUTE_MS } from '@platform/contracts';
+import { ARRIVED_ASK_BEFORE_END_MS, MINUTE_MS } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { confirmedBookings, passengerNewsOf, requestsPastHalf, tellDriver } from '../bookings';
 import { notifyMass, scheduleTasks, type TimedTask } from '../notifications';
-import { departByCron, tripsDeparting, tripsNotDeparted, tripViewsOf } from '../trips';
+import { departByCron, tripsDeparting, tripsEnded, tripsNotDeparted, tripViewsOf } from '../trips';
 import { watchDepartures } from './application/departures';
 import { remindTrips, tellReminder, type TellDeps } from './application/remind';
 import { departReminder } from './infrastructure/depart-reminder';
@@ -69,3 +69,19 @@ export const watchLateDepartures = (env: Bindings, now: number) =>
     autoDepartHours: brandOf(env).schedule.autoDepartHours,
     now: () => now,
   });
+
+// The Cron job (every 15 minutes): an hour after the arrival a passenger without «Yetib keldim» hears
+// «Yetib keldingizmi?» in the bot, once (G46, docs/43). The trips that end an hour later ask: those of
+// the last two ticks, so a late tick misses none.
+export async function askArrived(env: Bindings, now: number): Promise<void> {
+  const first = env.DB ? d1First(env.DB) : localFirst;
+  const from = now - 2 * TICK_MINUTES * MINUTE_MS + ARRIVED_ASK_BEFORE_END_MS;
+  const trips = await tripsEnded(env, from, now + ARRIVED_ASK_BEFORE_END_MS);
+  const ask = passengerNewsOf(env);
+  for (const booking of await confirmedBookings(
+    env,
+    trips.map((trip) => trip.id),
+  ))
+    if (booking.arrivedAt === null && booking.noShowAt === null && (await first(`${booking.id}:arrived`)))
+      await ask(booking, 'arrivedAsk');
+}
