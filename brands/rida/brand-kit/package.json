@@ -9,6 +9,7 @@
     "landing": "node landing/build.mjs",
     "bot": "node landing/bot.mjs",
     "flyer": "node flyer.mjs",
+    "ads": "node ads.mjs",
     "cuts": "node promo/cuts.mjs",
     "regions": "node region-drawings.mjs",
     "logos": "node channel-logos.mjs"

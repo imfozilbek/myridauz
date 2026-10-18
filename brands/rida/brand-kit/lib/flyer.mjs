@@ -1,13 +1,14 @@
 // Two-sided flyer 99 x 210 mm for one direction (owner, 18.10.2026): the passenger side and the driver side,
 // each with three steps on the screens of its Mini App. 300 dpi with 3 mm of bleed: 105 x 216 mm.
 // Texts are the approved ones of the landing (docs/60), the QR poster and the story of drivers (docs/38).
-import fs from 'node:fs';
 import { encode } from 'uqr';
 import { text, markR, layout } from './text.mjs';
 import { C, COMBOS, svg } from './palette.mjs';
 import { squircle } from './brand.mjs';
 import { icon } from '../promo/icons.mjs';
 import { NAME, SITE, PROMO } from './production.mjs';
+import { phone, phoneHeight } from './phone.mjs';
+import { routeCard } from './route-card.mjs';
 import { theme } from '../../theme.ts';
 
 const DPI = 300, MM = DPI / 25.4;
@@ -47,33 +48,14 @@ function band(s, copy) {
     text(copy.sub, { x: M, y: 502, fill: s.light, weight: 600, size: 50, maxWidth: CW });
 }
 
-// The line of a route of the brand (docs/38): teal start, dashes, amber finish. Both ways, one under the
-// other (owner, 18.10.2026); the dots of the ends stand in two columns.
-function route(from, to) {
-  const size = 52, widest = Math.max(layout(from, { size }).width, layout(to, { size }).width);
-  const a = M + 56, b = W - M - 48 - widest - 40;
-  const way = ([start, end], y) => {
-    const first = a + 40 + layout(start, { size }).width + 28, n = Math.max(1, Math.floor((b - 28 - first) / 34));
-    const dashes = Array.from({ length: n }, (_, i) => `<rect x="${first + i * 34}" y="${y - 6}" width="22" height="12" rx="6" fill="${C.teal}"/>`).join('');
-    return `<circle cx="${a}" cy="${y}" r="22" fill="${C.teal}"/>` + text(start, { x: a + 40, y: y + 18, fill: C.ink, size }) + dashes +
-      `<circle cx="${b}" cy="${y}" r="22" fill="${C.amber}"/>` + text(end, { x: b + 40, y: y + 18, fill: C.ink, size });
-  };
-  return `<rect x="${M}" y="560" width="${CW}" height="200" rx="40" fill="${C.white}" stroke="${C.divider}" stroke-width="6"/>` +
-    way([from, to], 622) + way([to, from], 702);
-}
-
-// The screens of the Mini App of a side (e2e/stand/flyer-shots.spec.ts), each whole in a thin phone, the step
-// under it. The stand shoots a short phone of 390 x 640 at twice the density: no empty bottom of a screen.
-const SHOT = { width: 780, height: 1280 }, PHONE = { gap: 24, bezel: 6, y: 830 };
+// The screens of the Mini App of a side, each whole in a thin phone (lib/phone.mjs), the step under it.
+const PHONE = { gap: 24, bezel: 6, y: 830 };
 function steps(s, side, flyer) {
   const list = COPY[side].steps, width = (CW - (list.length - 1) * PHONE.gap) / list.length;
-  const inner = width - 2 * PHONE.bezel, ih = Math.round(SHOT.height * inner / SHOT.width), h = ih + 2 * PHONE.bezel, y = PHONE.y;
+  const h = phoneHeight(width, PHONE.bezel), y = PHONE.y;
   return list.map((lines, i) => {
     const x = M + i * (width + PHONE.gap), cx = x + width / 2, id = `${side}-${i + 1}`;
-    const jpg = fs.readFileSync(new URL(`../data/flyer-screens/${flyer.id}/${id}.jpg`, import.meta.url)).toString('base64');
-    return `<clipPath id="clip-${id}"><rect x="${x + PHONE.bezel}" y="${y + PHONE.bezel}" width="${inner}" height="${ih}" rx="22"/></clipPath>` +
-      `<rect x="${x}" y="${y}" width="${width}" height="${h}" rx="28" fill="${C.ink}"/>` +
-      `<image href="data:image/jpeg;base64,${jpg}" x="${x + PHONE.bezel}" y="${y + PHONE.bezel}" width="${inner}" height="${ih}" clip-path="url(#clip-${id})"/>` +
+    return phone({ id, file: `${flyer.id}/${id}`, x, y, width, bezel: PHONE.bezel }) +
       `<circle cx="${cx}" cy="${y + h + 44}" r="30" fill="${s.band}"/>` +
       text(String(i + 1), { x: cx, y: y + h + 61, anchor: 'middle', fill: C.white, size: 48 }) +
       lines.map((line, n) => text(line, { x: cx, y: y + h + 116 + n * 42, anchor: 'middle', fill: C.ink, weight: 600, size: 34, maxWidth: width })).join('');
@@ -112,7 +94,7 @@ function qr(url, x, y, size, s) {
 export function flyerSide(side, flyer) {
   const s = SIDES[side], copy = COPY[side], y = 1830, size = 480, x = M + size + 44;
   const lines = (list, top, opts) => list.map((line, n) => text(line, { x, y: top + n * opts.gap, maxWidth: W - M - x, ...opts })).join('');
-  return svg(W, H, `<rect width="${W}" height="${H}" fill="${C.white}"/>` + band(s, copy) + route(flyer.from, flyer.to) +
+  return svg(W, H, `<rect width="${W}" height="${H}" fill="${C.white}"/>` + band(s, copy) + routeCard({ x: M, y: 560, width: CW, from: flyer.from, to: flyer.to }) +
     steps(s, side, flyer) + facts(s, copy.facts) + qr(flyer[side], M, y, size, s) +
     lines(['Telefon kamerasi', 'bilan skanerlang'], y + 64, { fill: C.ink, weight: 600, size: 44, gap: 56 }) +
     `<rect x="${x}" y="${y + 200}" width="120" height="14" rx="7" fill="${C.amber}"/>` +

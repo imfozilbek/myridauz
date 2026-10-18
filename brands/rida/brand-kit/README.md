@@ -33,6 +33,9 @@ FFMPEG=… CHROMIUM=… pnpm promo --preview 1.5,30,100
 и ссылки QR: `data/flyers.json`. Экраны шагов снимает стенд:
 `pnpm stand:check e2e/stand/flyer-shots.spec.ts --shots` пишет их в `data/flyer-screens/<направление>/`.
 
+Картинки для Telegram Ads 16:9: `CHROMIUM=… pnpm ads`. Пишет в `kit/ads/` 6 PNG 1920 × 1080
+(3 для бота попутчика, 3 для бота водителя) на экранах и маршруте первого флаера.
+
 Картинки ботов (G34): `CHROMIUM=… pnpm bot`. Пишет в `brands/rida/landing/bot/`
 картинку приветствия бота водителя и 4 аватара ботов (JPG 640). Файлы
 в репозитории; сайт отдаёт их по адресу `https://<домен>/bot/…`, оттуда
@@ -54,6 +57,8 @@ FFMPEG=… CHROMIUM=… pnpm promo --preview 1.5,30,100
 | `data/regions.json` | 13 каналов: код региона, названия, ссылки |
 | `lib/flyer.mjs`, `flyer.mjs` | Флаер направления: сторона попутчика и сторона водителя, PDF и PNG |
 | `data/flyers.json` | Флаеры: направление и ссылки QR (ссылки для рекламы, `docs/184`) |
+| `lib/ads.mjs`, `ads.mjs` | Картинки для Telegram Ads 16:9 |
+| `lib/phone.mjs`, `lib/route-card.mjs` | Экран Mini App в телефоне и карточка маршрута: общие для флаера и рекламы |
 | `data/flyer-screens/` | Экраны шагов флаера с локальной Rida (стенд, `docs/75`) |
 | `data/qr.json` | Матрица QR для https://myrida.uz (python qrcode, уровень H) |
 | `data/tokens.json` | Для чего каждый цвет и моушн-токены. Значения цветов: только `brands/rida/theme.ts` |
