@@ -31,6 +31,7 @@ export default defineConfig({
             'scripts/stand/*.test.mjs',
             'brands/*/brand-kit/lib/*.test.mjs',
           ],
+          setupFiles: ['apps/backend/src/test-offline.ts'],
         },
       },
       {
