@@ -57,13 +57,15 @@ export function botJobDeps(env: Bindings): BotJobDeps | null {
     openings: d1Openings(db),
     switches: d1Switches(db),
     channels: (userId) => channelsOfPerson(env, userId),
-    cards: async (views) => showCards(env, await cardsOf(env, views)),
+    // The cards of the whole list on Monday: the even pace of the bots (G85 T2).
+    cards: async (views) => showCards(env, await cardsOf(env, views), [], 'mass'),
     ring: async (views) => {
       const places = await placesOf(env);
       await showCards(
         env,
         await cardsOf(env, views),
         views.map((view) => openedRing(view, places)),
+        'mass',
       );
     },
     listed: (role) =>
@@ -83,6 +85,8 @@ export function personDeps(env: Bindings): (PersonDeps & InviteDeps) | null {
   };
   return {
     ...base,
+    // The answer to the person's own step goes at once, not at the pace of the Monday update (G85 T2).
+    cards: async (views) => showCards(env, await cardsOf(env, views)),
     prepare: async (record, code) => {
       const link = friendLink(brand, code);
       const text = inviteText(brand, record, await placesOf(env));

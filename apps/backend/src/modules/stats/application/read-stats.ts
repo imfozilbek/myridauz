@@ -1,5 +1,6 @@
 import { FUNNELS, type Funnel, type Stats, type StatsPeriod } from '@platform/contracts';
 import { arrivalsOf } from '../domain/arrivals';
+import { botLoadOf } from '../domain/bot-load';
 import { FUNNEL_EVENTS, funnelOf } from '../domain/funnels';
 import type { StatsCache, StatsDeps } from './ports';
 
@@ -28,20 +29,24 @@ export const funnelsOf = (deps: StatsDeps, period: StatsPeriod): Promise<Funnel[
     return FUNNELS.map((id) => funnelOf(id, counters));
   });
 
-type EventsPart = Pick<Stats, 'events' | 'funnels' | 'errors'>;
+type EventsPart = Pick<Stats, 'events' | 'funnels' | 'errors' | 'bots' | 'queueOps'>;
+const NO_EVENTS = { funnels: [], errors: [], bots: [], queueOps: 0 };
 
 // Funnels and errors need Analytics Engine; if it fails, the main numbers still show (docs/29).
 async function eventsPart(deps: StatsDeps, period: StatsPeriod, at: number): Promise<EventsPart> {
   const { events } = deps;
-  if (!events) return { events: 'off', funnels: [], errors: [] };
+  if (!events) return { events: 'off', ...NO_EVENTS };
+  const days = PERIOD_DAYS[period];
   try {
-    const [funnels, errors] = await Promise.all([
+    const [funnels, errors, bots] = await Promise.all([
       funnelsOf(deps, period),
-      cached(deps.cache, `errors:${period}`, at, () => events.topErrors(PERIOD_DAYS[period])),
+      cached(deps.cache, `errors:${period}`, at, () => events.topErrors(days)),
+      // The bots under load (G85 T1, docs/122).
+      cached(deps.cache, `bots:${period}`, at, async () => botLoadOf(await events.bots(days), days)),
     ]);
-    return { events: 'on', funnels, errors };
+    return { events: 'on', funnels, errors, ...bots };
   } catch {
-    return { events: 'failed', funnels: [], errors: [] };
+    return { events: 'failed', ...NO_EVENTS };
   }
 }
 

@@ -1,7 +1,7 @@
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../env';
 import { maskContacts } from '../chat';
-import { notify } from '../notifications';
+import { notify, notifyMass } from '../notifications';
 import { tellOwners } from '../team-queue';
 import { peopleOf } from '../users';
 import { askRatings } from './application/ask';
@@ -37,7 +37,8 @@ const ratingsDeps = (env: Bindings): RatingsDeps => {
       publicId: async (id) => (await peopleOf(env).find(id))?.publicId,
       idOf: (publicId) => peopleOf(env).idOf(publicId),
     },
-    ask: botAsker(brandOf(env), (jobs) => notify(env, jobs)),
+    // The Cron asks both sides of ended rides at once: the even pace of the bots (G85 T2, T6).
+    ask: botAsker(brandOf(env), (jobs) => notifyMass(env, jobs)),
     alertTeam: async ({ name, publicId }, rating) => {
       const values = {
         name,

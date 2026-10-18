@@ -96,6 +96,6 @@ export async function mockTeamWaitlist(page: Page, open = true) {
   };
   await json('**/api/admin/stats*', {
     ...{ period: 'week', numbers, arrivals: { sources: [], platforms: [] }, events: 'on' },
-    ...{ funnels: team.funnels, errors: [], at: Date.now() },
+    ...{ funnels: team.funnels, errors: [], bots: [], queueOps: 0, at: Date.now() },
   });
 }

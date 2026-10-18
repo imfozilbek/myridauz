@@ -32,6 +32,13 @@ describe('the Worker of an environment', () => {
     expect(config.split('\n')).toHaveLength(BASE.split('\n').length + 1);
   });
 
+  // G85 R2: Smart Placement in both environments: the Worker runs near its database.
+  it('places the Worker near its database in every environment', () => {
+    expect(withEnvironment(BASE, VALUES)).toContain('[placement]\nmode = "smart"');
+    // A key under a table belongs to it: the address of the Worker stays above every table.
+    expect(BASE.indexOf('routes = ')).toBeLessThan(BASE.indexOf('['));
+  });
+
   // The owner, 13.10.2026: the team sees the posts in its own channel before people do.
   it('turns the channel posts on only where the environment wants them', () => {
     expect(withEnvironment(BASE, { ...VALUES, posts: true })).toContain('CHANNEL_POSTS = "on"');

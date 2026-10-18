@@ -60,4 +60,25 @@
 
 Остальное (Mini App из Worker на одном адресе с API, Smart Placement, `delaySeconds`, Web Analytics на Mini App, Email Routing, D1 read replication) делает цель G85 после запуска (`goals/G85-cloudflare-polish.md`, решение владельца 15.10.2026).
 
+## G85: замер «до» (18.10.2026, до выкладки G85)
+
+Источник: Workers Analytics (GraphQL, все вызовы Worker) и Workers Logs (вызовы API, без `OPTIONS`); в Analytics Engine времени ответа нет. Скрипт замера с ключом на 15 минут: повторить им же «после» (G86).
+
+| Среда | Вызовы Worker в сутки | Время ответа API: медиана | p95 | Доля `OPTIONS` |
+|---|---|---|---|---|
+| Внутренняя (11 … 17.10) | 4 531, 2 249, 1 395, 521, 1 615, 284, 339 | 173 мс (за 72 ч) | 534 мс | ~23 % |
+| Прод (17.10 вечер, 18.10 до 09:15) | 4 130 и 743 | 116 мс (за 24 ч) | 385 мс | ~13 % |
+
+## G85: что сделано
+
+| Пункт | Статус |
+|---|---|
+| R2 Smart Placement | Сделан: `[placement] mode = "smart"` в `wrangler.toml`; время «после» сравнивается с таблицей выше |
+| R3 напоминания в свою минуту | Сделан: очередь с `delaySeconds` (`122`) |
+| R4 Web Analytics | Сделан: автоустановка зоны уже вставляет скрипт на сайт и во все Mini App обеих сред (проверено 18.10.2026); строка в политике с редакции 1.9 (`30`, согласие владельца 18.10.2026) |
+| R5 Email Routing | Сделан 18.10.2026: `support@ridaone.uz` пересылает на почту компании (`46`) |
+| R1 | Отложен: владелец 18.10.2026 «пока нет». `maxAge` предзапросов уже 2 часа (`117`) |
+| R6 D1 read replication | В G86, после замера |
+
+
 Источники: developers.cloudflare.com (Workers limits, Static Assets, R2 pricing и public buckets, Placement, Rate Limiting binding и changelog 2025-09-19, D1 read replication, Workflows, Workers AI, KV, Images, Workers Logs).

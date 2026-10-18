@@ -21,11 +21,13 @@ describe('a message after its last try', () => {
     });
     const DB = testD1();
     const env = { DRIVER_BOT_TOKEN: 'd', DB };
-    await consumeNotifications({ messages: [message(1), message(MAX_ATTEMPTS)] } as never, env);
+    const tasks = { reminder: async () => undefined };
+    await consumeNotifications({ messages: [message(1), message(MAX_ATTEMPTS)] } as never, env, tasks);
     expect(done).toEqual(['retry 1', `ack ${MAX_ATTEMPTS}`]);
     const kept = await DB.prepare('SELECT bot, chat_id, text FROM dead_notifications').all();
     expect(kept.results).toEqual([{ bot: 'driver', chat_id: 7, text: 'Yangi soʻrov' }]);
-    expect(localAnalyticsRows.at(-1)?.blobs[0]).toBe('server_error');
-    expect(localAnalyticsRows.at(-1)?.blobs[5]).toBe('notification_dead');
+    // Counted by its bot (G85 T1); the reads of the queue come after it.
+    const dead = localAnalyticsRows.find((row) => row.blobs[5] === 'notification_dead');
+    expect(dead?.blobs.slice(0, 2)).toEqual(['server_error', 'driver']);
   });
 });

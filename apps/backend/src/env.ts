@@ -1,5 +1,5 @@
 import type { MiniApp, TeamRole } from '@platform/contracts';
-import type { NotificationJob } from './modules/notifications/application/job';
+import type { QueueMessage } from './modules/notifications/application/job';
 import type { TelegramUser } from './shared/auth/telegram-fields';
 
 // Cloudflare bindings, vars and secrets of the Worker (brands/<brand>/wrangler.toml).
@@ -15,7 +15,7 @@ export type Bindings = {
   readonly CHATS?: DurableObjectNamespace;
   // One Durable Object per person: "something changed" to the open Mini Apps (docs/64, G19).
   readonly FEEDS?: DurableObjectNamespace;
-  readonly NOTIFICATIONS?: Queue<NotificationJob>;
+  readonly NOTIFICATIONS?: Queue<QueueMessage>;
   // Workers Rate Limiting (G42): actions, the map search, the analytics of one person or address.
   readonly ACTIONS_LIMIT?: RateLimit;
   readonly SEARCH_LIMIT?: RateLimit;

@@ -56,12 +56,18 @@ export function toDataPoint(event: AnalyticsEvent, receivedAt: number): DataPoin
 }
 
 // An event of the backend itself: no Mini App, no session. A bot event names its bot and an id (G12).
-export type ServerEvent = { readonly name: string; readonly source?: string; readonly code?: string };
+// count: how many things one row stands for, the operations of the queue (G85 T1); it is double3.
+export type ServerEvent = {
+  readonly name: string;
+  readonly source?: string;
+  readonly code?: string;
+  readonly count?: number;
+};
 export const serverDataPoint = (
-  { name, source = 'server', code = '' }: ServerEvent,
+  { name, source = 'server', code = '', count }: ServerEvent,
   at: number,
 ): DataPoint => ({
   indexes: ['server'],
   blobs: [name, source, '', '', '', code],
-  doubles: [at, at],
+  doubles: count === undefined ? [at, at] : [at, at, count],
 });

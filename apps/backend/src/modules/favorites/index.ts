@@ -27,7 +27,8 @@ const favoritesDeps = (env: Bindings): FavoritesDeps => ({
   tell: favoriteTeller({
     brand: brandOf(env),
     placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
-    show: (news) => showNews(env, news),
+    // Many followers at once: the even pace of the bots (G85 T2).
+    show: (news) => showNews(env, news, undefined, 'mass'),
     now: Date.now,
   }),
   idOf: (publicId) => peopleOf(env).idOf(publicId),

@@ -1,6 +1,7 @@
 import type { ErrorRow, MainNumber } from '@platform/contracts';
 import type { Alert, AlertRules } from '../domain/alerts';
 import type { ArrivalCount } from '../domain/arrivals';
+import type { BotEvents } from '../domain/bot-load';
 import type { Counter } from '../domain/counters';
 import type { MarkCount, SearchCount } from '../domain/rost';
 
@@ -15,6 +16,8 @@ export type EventSource = {
   // «Rost» (G69, docs/123): the sessions that came with a mark, and the searches by direction.
   marks(days: number): Promise<MarkCount[]>;
   searches(days: number): Promise<SearchCount[]>;
+  // The bots under load (G85 T1): their answers from Telegram, the queue, the busiest seconds.
+  bots(days: number): Promise<BotEvents>;
 };
 
 // The main numbers come from the database: exact, no sampling.

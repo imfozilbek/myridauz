@@ -10,7 +10,8 @@ export type Tokens = Readonly<Record<NotificationJob['bot'], string | undefined>
 // message to edit was deleted or is too old, a live card is sent anew (G68).
 export type Delivery =
   | { readonly outcome: 'sent'; readonly messageId: number | null }
-  | { readonly outcome: 'retry'; readonly afterSeconds: number }
+  // limited: Telegram said 429, the whole bot waits (G85 T4).
+  | { readonly outcome: 'retry'; readonly afterSeconds: number; readonly limited?: boolean }
   | { readonly outcome: 'drop' }
   | { readonly outcome: 'gone' };
 
@@ -49,8 +50,10 @@ export async function deliver(fetch: Fetch, tokens: Tokens, job: NotificationJob
   if (response.ok) return { outcome: 'sent', messageId: body.result?.message_id ?? null };
   const refused = response.status === BAD_REQUEST ? refusedEdit(job, body.description ?? '') : null;
   if (refused) return refused;
-  if (response.status === TOO_MANY_REQUESTS)
-    return { outcome: 'retry', afterSeconds: body.parameters?.retry_after ?? DEFAULT_RETRY_SECONDS };
+  if (response.status === TOO_MANY_REQUESTS) {
+    const afterSeconds = body.parameters?.retry_after ?? DEFAULT_RETRY_SECONDS;
+    return { outcome: 'retry', afterSeconds, limited: true };
+  }
   if (response.status >= SERVER_ERROR) return { outcome: 'retry', afterSeconds: DEFAULT_RETRY_SECONDS };
   console.warn(JSON.stringify({ event: 'notification_dropped', bot: job.bot, status: response.status }));
   return { outcome: 'drop' };

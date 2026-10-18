@@ -100,6 +100,13 @@ const statsOf = (period: string) => {
         count: 1,
       },
     ],
+    // G85 T1: the bots under load.
+    bots: [
+      { bot: 'passenger', sent: 412 * week, limited: 1, dead: 0, peak: 18 },
+      { bot: 'driver', sent: 160 * week, limited: 0, dead: 0, peak: 6 },
+      { bot: 'poster', sent: 31 * week, limited: 0, dead: 1, peak: 2 },
+    ],
+    queueOps: 96,
     at: Date.now(),
   };
 };

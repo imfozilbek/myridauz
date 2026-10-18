@@ -9,6 +9,11 @@ workers_dev = false
 
 routes = [{ pattern = "api.myrida.uz", custom_domain = true }]
 
+# Smart Placement (G85, docs/85): Cloudflare runs the Worker near what it waits for most, the database
+# in Western Europe, so an answer of the API waits less for D1. The stand runs it locally as before.
+[placement]
+mode = "smart"
+
 [vars]
 BRAND = "rida"
 # Channel posts of new trips (docs/15): the deploy sets it by the environment (`posts`, docs/179).

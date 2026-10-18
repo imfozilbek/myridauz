@@ -7,6 +7,7 @@ import type { Tokens } from '../application/deliver';
 import type { NotificationJob } from '../application/job';
 import { createMemoryCards, d1Cards } from './d1-cards';
 import { createMemoryNews, d1News } from './d1-news';
+import { d1Pace, noPace, type PaceStore } from './pace-store';
 
 export const tokensOf = (env: Bindings): Tokens => ({
   passenger: env.PASSENGER_BOT_TOKEN,
@@ -22,6 +23,8 @@ const memoryCards = createMemoryCards();
 export const cardsOf = (env: Bindings): CardStore => (env.DB ? d1Cards(env.DB) : memoryCards);
 const memoryNews = createMemoryNews();
 export const newsOf = (env: Bindings): NewsStore => (env.DB ? d1News(env.DB) : memoryNews);
+// The pace of the bots and channels (G85 T4, T7).
+export const paceOf = (env: Bindings): PaceStore => (env.DB ? d1Pace(env.DB) : noPace);
 export const opsOf = (env: Bindings): ChatOps => {
   const call = (method: string, params: object, bot: NotificationJob['bot']) =>
     callTelegram(send, tokensOf(env)[bot] ?? '', method, params);

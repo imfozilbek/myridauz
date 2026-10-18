@@ -30,7 +30,8 @@ const subscriptionsDeps = (env: Bindings): SubscriptionsDeps => ({
   tell: botTeller({
     brand: brandOf(env),
     placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
-    show: (news) => showNews(env, news),
+    // Many subscribers at once: the even pace of the bots (G85 T2).
+    show: (news) => showNews(env, news, undefined, 'mass'),
     now: Date.now,
   }),
   limits: brandOf(env).subscriptions,
