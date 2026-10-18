@@ -99,10 +99,23 @@ export const botLoadSchema = z.object({
 });
 export type BotLoad = z.infer<typeof botLoadSchema>;
 
+// G87 V2 (docs/191): what the reviews and complaints of the period say. average: the stars with one
+// decimal, null without reviews; lowShare: the percent of 1 and 2 stars; the five most chosen tags and
+// the five most given reasons of complaints.
+export const feelingsSchema = z.object({
+  reviews: count,
+  average: z.number().min(1).max(5).nullable(),
+  lowShare: z.number().int().min(0).max(100),
+  tags: z.array(z.object({ tag: id, count })),
+  reasons: z.array(z.object({ reason: id, count })),
+});
+export type Feelings = z.infer<typeof feelingsSchema>;
+
 export const statsSchema = z.object({
   period: z.enum(STATS_PERIODS),
   numbers: z.record(z.enum(MAIN_NUMBERS), count),
   arrivals: arrivalsSchema,
+  feelings: feelingsSchema,
   // Funnels and errors come from the events: "off" while the analytics key is not set (docs/46),
   // "failed" when Analytics Engine did not answer.
   events: z.enum(['on', 'off', 'failed']),

@@ -57,6 +57,7 @@ const GROWING = [
   'users',
   'rating_asks',
   'ratings',
+  'reviews',
   'channel_posts',
   'support_messages',
   'driver_applications',

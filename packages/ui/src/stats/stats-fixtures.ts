@@ -30,6 +30,17 @@ export const statsOf = (period: StatsPeriod, events: Stats['events'] = 'on'): St
       { platform: 'desktop', count: period === 'day' ? 1 : 7 },
     ],
   },
+  // G87 V2: the reviews and complaints of the period.
+  feelings: {
+    reviews: period === 'day' ? 14 : 96,
+    average: period === 'day' ? 4.6 : 4.5,
+    lowShare: period === 'day' ? 7 : 9,
+    tags: [
+      { tag: 'on_time', count: period === 'day' ? 9 : 61 },
+      { tag: 'polite', count: period === 'day' ? 6 : 40 },
+    ],
+    reasons: [{ reason: 'no_show', count: period === 'day' ? 1 : 3 }],
+  },
   events,
   funnels:
     events === 'on'

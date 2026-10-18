@@ -76,5 +76,12 @@
   "bots.queue": "Navbat amallari, kuniga",
   "bots.bot.support": "Yordam boti",
   "bots.blocks": "Botni bloklaganlar",
-  "bots.returned": "qaytdi: {returned}"
+  "bots.returned": "qaytdi: {returned}",
+  "feelings.title": "Baholar va shikoyatlar",
+  "feelings.average": "Oʻrtacha baho",
+  "feelings.reviews": "{count} ta baho",
+  "feelings.none": "Hali yoʻq",
+  "feelings.low": "1 va 2 yulduz",
+  "feelings.tag": "Koʻp tanlangan belgi",
+  "feelings.reason": "Shikoyat sababi"
 }

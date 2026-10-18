@@ -19,6 +19,14 @@ const RIDERS = `SELECT a.via AS via, COUNT(*) AS count FROM user_arrivals a
     OR EXISTS (SELECT 1 FROM trips t WHERE t.driver_id = a.user_id AND t.status = 'completed'))
   GROUP BY a.via`;
 
+// The reviews of a period through reviews_created (migration 0074), their tags from the JSON list,
+// the reasons of the complaints through complaints_created (G87 V2).
+const REVIEWS = `SELECT COUNT(*) AS reviews, COALESCE(SUM(stars), 0) AS starsSum,
+  COALESCE(SUM(stars <= 2), 0) AS low FROM reviews WHERE created_at >= ?`;
+const TAGS = `SELECT j.value AS tag, COUNT(*) AS count FROM reviews r, json_each(r.tags) j
+  WHERE r.created_at >= ? GROUP BY j.value`;
+const REASONS = 'SELECT reason FROM complaints WHERE created_at >= ?';
+
 type Row = {
   newUsers: number;
   trips: number;
@@ -55,5 +63,19 @@ export const d1Numbers = (db: D1Database): NumbersSource => ({
   riders: async (since) => {
     const { results } = await db.prepare(RIDERS).bind(since).all<MarkCount>();
     return results;
+  },
+  feelings: async (since) => {
+    const [reviews, tags, reasons] = await Promise.all([
+      db.prepare(REVIEWS).bind(since).first<{ reviews: number; starsSum: number; low: number }>(),
+      db.prepare(TAGS).bind(since).all<{ tag: string; count: number }>(),
+      db.prepare(REASONS).bind(since).all<{ reason: string }>(),
+    ]);
+    return {
+      reviews: reviews?.reviews ?? 0,
+      starsSum: reviews?.starsSum ?? 0,
+      low: reviews?.low ?? 0,
+      tags: tags.results,
+      reasons: reasons.results.map((row) => row.reason),
+    };
   },
 });

@@ -1,6 +1,7 @@
 import { FUNNELS, type Funnel, type Stats, type StatsPeriod } from '@platform/contracts';
 import { arrivalsOf } from '../domain/arrivals';
 import { botLoadOf } from '../domain/bot-load';
+import { feelingsOf } from '../domain/feelings';
 import { FUNNEL_EVENTS, funnelOf } from '../domain/funnels';
 import type { StatsCache, StatsDeps } from './ports';
 
@@ -54,10 +55,12 @@ export async function readStats(deps: StatsDeps, period: StatsPeriod): Promise<S
   const at = deps.now();
   const since = at - PERIOD_DAYS[period] * DAY;
   // The main numbers count whole tables: they live in the cache too (G56, docs/117).
-  const [numbers, arrivals, part] = await Promise.all([
+  const [numbers, arrivals, feelings, part] = await Promise.all([
     cached(deps.cache, `numbers:${period}`, at, () => deps.numbers.numbers(since)),
     cached(deps.cache, `arrivals:${period}`, at, () => deps.numbers.arrivals(since)),
+    // What the reviews and complaints say (G87 V2).
+    cached(deps.cache, `feelings:${period}`, at, async () => feelingsOf(await deps.numbers.feelings(since))),
     eventsPart(deps, period, at),
   ]);
-  return { period, numbers, arrivals: arrivalsOf(arrivals), ...part, at };
+  return { period, numbers, arrivals: arrivalsOf(arrivals), feelings, ...part, at };
 }

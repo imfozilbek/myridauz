@@ -3,7 +3,7 @@ import { localAnalyticsRows } from '../analytics';
 import { tellOwners } from '../team-queue';
 import { checkAlerts } from './application/check-alerts';
 import { cached } from './application/read-stats';
-import type { EventSource, StatsDeps } from './application/ports';
+import type { EventSource, NumbersSource, StatsDeps } from './application/ports';
 import { statsRoutes } from './http/stats-routes';
 import { analyticsSql } from './infrastructure/analytics-sql';
 import { CHANNEL_MARK } from './domain/arrivals';
@@ -33,7 +33,13 @@ function eventsOf(env: Bindings): EventSource | null {
 }
 
 // Without D1 (local runs): no people yet.
-const localNumbers = { numbers: async () => zeroNumbers, arrivals: async () => [], riders: async () => [] };
+const noFeelings = { reviews: 0, starsSum: 0, low: 0, tags: [], reasons: [] };
+const localNumbers: NumbersSource = {
+  numbers: async () => zeroNumbers,
+  arrivals: async () => [],
+  riders: async () => [],
+  feelings: async () => noFeelings,
+};
 
 const statsDeps = (env: Bindings): StatsDeps => {
   const brand = brandOf(env);

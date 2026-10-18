@@ -50,6 +50,17 @@ const statsOf = (period: string) => {
         { platform: 'desktop', count: week },
       ],
     },
+    // G87 V2: the reviews and complaints of the period.
+    feelings: {
+      reviews: 14 * week,
+      average: 4.6,
+      lowShare: 7,
+      tags: [
+        { tag: 'on_time', count: 9 * week },
+        { tag: 'polite', count: 6 * week },
+      ],
+      reasons: [{ reason: 'no_show', count: week }],
+    },
     events: 'on',
     funnels: [
       {

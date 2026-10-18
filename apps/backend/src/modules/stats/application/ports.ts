@@ -2,6 +2,7 @@ import type { ErrorRow, MainNumber } from '@platform/contracts';
 import type { Alert, AlertRules } from '../domain/alerts';
 import type { ArrivalCount } from '../domain/arrivals';
 import type { BotEvents } from '../domain/bot-load';
+import type { FeelingRows } from '../domain/feelings';
 import type { Counter } from '../domain/counters';
 import type { MarkCount, SearchCount } from '../domain/rost';
 
@@ -27,6 +28,8 @@ export type NumbersSource = {
   arrivals(since: number): Promise<ArrivalCount[]>;
   // The new people of a mark who rode since (G69): a seat ridden or a trip driven to its end.
   riders(since: number): Promise<MarkCount[]>;
+  // The reviews and complaints since a moment (G87 V2).
+  feelings(since: number): Promise<FeelingRows>;
 };
 
 // Saved answers: Analytics Engine allows 10 000 queries a day (docs/03). Also remembers sent signals.

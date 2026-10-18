@@ -6,6 +6,7 @@ import { NumberTiles } from '../team/number-tiles';
 import { ArrivalsSections } from './stats-arrivals';
 import { BotsSection } from './stats-bots';
 import { ErrorsSections } from './stats-errors';
+import { FeelingsSection } from './stats-feelings';
 
 // A drop from this share is where people get stuck: it is marked (docs/29).
 const HIGH_DROP = 50;
@@ -37,6 +38,7 @@ export function StatsSections({ stats, gold }: { readonly stats: Stats; readonly
       ))}
       {gold}
       <ArrivalsSections arrivals={stats.arrivals} />
+      <FeelingsSection feelings={stats.feelings} />
       {funnels.slice(listFunnels).map((funnel, index) => (
         <FunnelSection key={funnel.id} funnel={funnel} hint={listFunnels === 0 && index === 0} />
       ))}
