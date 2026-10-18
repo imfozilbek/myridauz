@@ -15,7 +15,7 @@ const car = {
 const application = {
   status: 'pending',
   car,
-  photos: { front: true, side: true, interior: true },
+  photos: { front: true },
   reasons: [],
 };
 const PERSON = '0123456789abcdef0123456789abcdef';

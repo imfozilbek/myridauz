@@ -1,3 +1,4 @@
+import { CAR_PHOTO_KINDS } from '@platform/contracts';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { fakeTelegram } from './bots/test-bot';
 import { sendApplicationReminders } from './modules/assignments';
@@ -26,7 +27,7 @@ const car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01 A 1
 async function apply(id: number) {
   await registerUser(id);
   await call('/me/avatar', id, { method: 'PUT', ...jpeg });
-  for (const kind of ['front', 'side', 'interior'])
+  for (const kind of CAR_PHOTO_KINDS)
     await call(`/driver/application/photos/${kind}`, id, { method: 'PUT', app: 'driver', ...jpeg });
   const body = JSON.stringify(car);
   const headers = { 'content-type': 'application/json' };

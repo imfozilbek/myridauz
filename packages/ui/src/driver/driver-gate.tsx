@@ -21,7 +21,7 @@ const LOOKING_AROUND = new Set<DriverApplication['status']>([
 const NEW_APPLICATION: DriverApplication = {
   status: 'draft',
   car: null,
-  photos: { front: false, side: false, interior: false },
+  photos: { front: false },
   reasons: [],
 };
 

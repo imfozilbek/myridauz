@@ -37,18 +37,6 @@
   border-radius: 50%;
 }
 
-.camera-guide-interior {
-  width: 86vw;
-  height: 64vw;
-  border-radius: 22px;
-}
-
-.camera-guide-side {
-  width: 92vw;
-  height: 46vw;
-  border-radius: 22px;
-}
-
 /* The front photo: 26px from the sides, 150px from the top, the car line in it. */
 .camera-guide-front {
   top: 150px;

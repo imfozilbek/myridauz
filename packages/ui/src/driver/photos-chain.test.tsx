@@ -21,16 +21,17 @@ const account = {
   onProfileChanged: () => undefined,
 } as unknown as Account;
 
-describe('the car photos one after another (G40, docs/106 K7)', () => {
-  it('opens the camera again for the next empty photo after an upload', async () => {
+// One photo of the car since 18.10.2026 (owner decision): no camera opens after it (before: G40).
+describe('the car photo', () => {
+  it('opens the camera once, sends the photo and opens no camera after it', async () => {
     const uploadPhoto = vi.fn<DriversClient['uploadPhoto']>(async (kind) =>
-      application({ photos: { front: kind === 'front', side: false, interior: false } }),
+      application({ photos: { front: kind === 'front' } }),
     );
     const { container } = renderInShell(
       <AccountContext.Provider value={account}>
         <PhotosStep
           car={car}
-          photos={{ front: false, side: false, interior: false }}
+          photos={{ front: false }}
           reasons={[]}
           fixing={false}
           failure={null}
@@ -51,9 +52,7 @@ describe('the car photos one after another (G40, docs/106 K7)', () => {
     expect(opened).toHaveBeenCalledOnce();
     fireEvent.change(input, { target: { files: [new File(['x'], 'car.jpg', { type: 'image/jpeg' })] } });
     await waitFor(() => expect(uploadPhoto).toHaveBeenCalledWith('front', expect.anything()));
-    // No tap on the next slot: the camera of the side photo is open.
-    await waitFor(() => expect(opened).toHaveBeenCalledTimes(2));
-    fireEvent.change(input, { target: { files: [new File(['y'], 'side.jpg', { type: 'image/jpeg' })] } });
-    await waitFor(() => expect(uploadPhoto).toHaveBeenCalledWith('side', expect.anything()));
+    expect(uploadPhoto).toHaveBeenCalledOnce();
+    expect(opened).toHaveBeenCalledOnce();
   });
 });

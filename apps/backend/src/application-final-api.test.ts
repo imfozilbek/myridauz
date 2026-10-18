@@ -1,4 +1,9 @@
-import { applicationDetailSchema, adminApplicationPath, adminDecisionPath } from '@platform/contracts';
+import {
+  applicationDetailSchema,
+  adminApplicationPath,
+  adminDecisionPath,
+  CAR_PHOTO_KINDS,
+} from '@platform/contracts';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { fakeTelegram } from './bots/test-bot';
 import { call, pid, registerUser } from './test-api';
@@ -27,7 +32,7 @@ const decide = async (id: number, decision: object) =>
 async function apply(id: number, car: object) {
   await registerUser(id);
   await call('/me/avatar', id, { method: 'PUT', ...jpeg });
-  for (const kind of ['front', 'side', 'interior']) await photo(id, kind);
+  for (const kind of CAR_PHOTO_KINDS) await photo(id, kind);
   return submit(id, car);
 }
 

@@ -1,4 +1,4 @@
-import { CAR_PHOTO_KINDS, type CarPhotoKind, type DriverApplication } from '@platform/contracts';
+import type { CarPhotoKind, DriverApplication } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { useRef, useState } from 'react';
 import { compressImage } from '../account/profile/compress-image';
@@ -8,8 +8,8 @@ import { errorKey } from '../market/error-text';
 import { usePhotoTaker } from '../media/use-photo-taker';
 import { haptic } from '../telegram/feedback';
 
-// The car photos with the main camera (docs/04): each one goes to the server at once, then the
-// camera opens again for the next empty photo, no tap per tile (G40, docs/106 K7).
+// The car photo with the main camera (docs/04): it goes to the server at once. One photo since
+// 18.10.2026 (owner decision), so no camera opens after it.
 export function useCarShots(onPhotos: (application: DriverApplication) => void) {
   const { t } = useI18n();
   const { drivers } = useApiClients();
@@ -28,8 +28,6 @@ export function useCarShots(onPhotos: (application: DriverApplication) => void) 
       if (next) onPhotos(next);
       setVersion((value) => value + 1);
       haptic.success();
-      const missing = next && CAR_PHOTO_KINDS.find((item) => item !== current && !next.photos[item]);
-      if (missing) take(missing);
     } catch (caught) {
       haptic.error();
       setFailed(errorKey(caught, 'drivers.photos.failed'));

@@ -33,7 +33,7 @@ describe('the state screens', () => {
     const application: DriverApplication = {
       status: 'rejected',
       car: null,
-      photos: { front: true, side: true, interior: true },
+      photos: { front: true },
       reasons: ['fake_profile'],
     };
     renderInShell(<StatusScreen application={application} />);

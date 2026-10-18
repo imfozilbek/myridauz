@@ -82,7 +82,7 @@
 
 | № | Инструкция |
 |---|---|
-| D1 | Haydovchi boʻlish: 2 ekran, 3 rasm |
+| D1 | Haydovchi boʻlish: 2 ekran, 1 rasm (одно фото с 18.10.2026) |
 | D2 | Safar eʼlon qilish: bir ekran |
 | D3 | Soʻrovga javob: «Tasdiqlash» |
 | D4 | Yoʻlovchilar soʻrovlariga taklif |

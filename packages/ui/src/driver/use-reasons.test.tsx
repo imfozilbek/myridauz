@@ -17,12 +17,12 @@ describe('useReasons: a fixed place is no longer red (docs/89 D2)', () => {
         </AccountContext.Provider>
       </ApiClientsContext.Provider>
     );
-    const { result, rerender } = renderHook(() => useReasons(['face_not_visible', 'side_unclear']), {
+    const { result, rerender } = renderHook(() => useReasons(['face_not_visible', 'front_unclear']), {
       wrapper,
     });
-    expect(result.current.reasons).toEqual(['face_not_visible', 'side_unclear']);
+    expect(result.current.reasons).toEqual(['face_not_visible', 'front_unclear']);
     version = 1;
     rerender();
-    expect(result.current.reasons).toEqual(['side_unclear']);
+    expect(result.current.reasons).toEqual(['front_unclear']);
   });
 });

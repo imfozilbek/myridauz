@@ -27,7 +27,7 @@ const account = {
   onAvatarChanged: () => undefined,
   onProfileChanged: () => undefined,
 } as unknown as Account;
-const photos = { front: true, side: true, interior: true };
+const photos = { front: true };
 const car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 } as const;
 
 type PhotosProps = { readonly reasons: readonly ModerationReason[]; readonly onBack: () => void };

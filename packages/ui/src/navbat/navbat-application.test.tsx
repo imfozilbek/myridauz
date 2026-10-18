@@ -48,7 +48,7 @@ describe('an application in «Navbat»', () => {
     fireEvent.click(await screen.findByText('Tuzatish'));
     expect(await screen.findByText('Sabablarni tanlang')).toBeTruthy();
     expect(screen.getByText('Jasur · ariza')).toBeTruthy();
-    fireEvent.click(screen.getByText('Salon rasmi tiniq emas'));
+    fireEvent.click(screen.getByText('Old tomondan olingan rasm tiniq emas'));
     await closeSheet();
     expect(asked).not.toHaveBeenCalled();
     asked.mockRestore();
@@ -58,7 +58,7 @@ describe('an application in «Navbat»', () => {
     await screen.findByText('Javob yuborildi');
     expect(decide).toHaveBeenCalledWith(JASUR.id, {
       action: 'request_changes',
-      reasons: ['plate_not_readable', 'interior_unclear'],
+      reasons: ['front_unclear', 'plate_not_readable'],
     });
     await sheetClosed();
   });
@@ -98,8 +98,8 @@ describe('an application in «Navbat»', () => {
     renderNavbat(open, [JASUR], { moderation: { get } });
     expect(await screen.findByText('Rad etilgan')).toBeTruthy();
     expect(screen.getByText('Nexia · Qora · 30 B 456 CA')).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Yon tomondan' }));
-    expect(await screen.findByRole('img', { name: 'Yon tomondan' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Old tomondan, raqami bilan' }));
+    expect(await screen.findByRole('img', { name: 'Old tomondan, raqami bilan' })).toBeTruthy();
     fireEvent.click(screen.getByText('Orqaga'));
     expect(await screen.findByText('Jasur · ariza')).toBeTruthy();
   });
