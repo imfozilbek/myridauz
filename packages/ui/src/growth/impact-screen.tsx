@@ -1,10 +1,14 @@
 import { GROWTH_BADGES } from '@platform/contracts';
+import type { TranslationKey } from '@platform/i18n';
+import { useState } from 'react';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
+import { errorKey } from '../market/error-text';
 import { useLoad } from '../market/use-list';
 import { Screen } from '../screen/screen';
+import { ActionFailure } from '../states/action-failure';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { MainButton } from '../telegram/bottom-button';
@@ -27,14 +31,21 @@ export function ImpactScreen({ onBack }: { readonly onBack: () => void }) {
   const { growth } = useApiClients();
   const { value, failed, reload } = useLoad(() => growth.mine(), 'growth.mine');
   const done = useShareTrack('share-join', 'growth.impact');
+  // A card that cannot be made says why, under the badges (docs/65 B3).
+  const [failure, setFailure] = useState<TranslationKey | null>(null);
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   const next = GROWTH_BADGES.find((badge) => badge.people > value.joined);
   const share = async () => {
-    const card = await growth.loopCard({ loop: 'share-join' });
-    if (!(await shareCard(card.prepared, card.link, card.text))) return;
-    done('chat');
-    haptic.success();
+    setFailure(null);
+    try {
+      const card = await growth.loopCard({ loop: 'share-join' });
+      if (!(await shareCard(card.prepared, card.link, card.text))) return;
+      done('chat');
+      haptic.success();
+    } catch (caught) {
+      setFailure(errorKey(caught));
+    }
   };
   return (
     <div className="impact" style={brandVars(brand.theme.colors)}>
@@ -53,6 +64,7 @@ export function ImpactScreen({ onBack }: { readonly onBack: () => void }) {
           state={badgeState(badge, value.joined, next)}
         />
       ))}
+      <ActionFailure error={failure} />
       <MainButton text={t('growth.impact.share')} onClick={share} />
     </div>
   );

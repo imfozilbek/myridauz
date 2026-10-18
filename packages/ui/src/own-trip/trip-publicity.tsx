@@ -8,13 +8,12 @@ import { usePlaces } from '../market/places-gate';
 import { useRegionArt } from '../places/region-art';
 import { openInTelegram } from '../telegram/feedback';
 import { regionOf } from '../way/way-end';
-import { useTripCard } from './use-trip-card';
+import { TripCardButton } from './trip-card-button';
 import { useTripPublicity } from './use-trip-publicity';
 import './trip-publicity.css';
 
-// The chevron of the channel and the paper plane of the link (mockup g59/7-channels-3 phone 1).
+// The chevron of the channel (mockup g59/7-channels-3 phone 1).
 const CHEVRON = 15;
-const SEND = 18;
 
 // «Safaringiz kanalda chiqdi» on «Mening safarim» (owner decision 08.10.2026, docs/119 row 1): the
 // channel of the direction that posted the trip, how many people opened it in the app, and the card of
@@ -26,7 +25,6 @@ export function TripPublicity({ trip }: { readonly trip: Trip }) {
   const directory = usePlaces();
   const art = useRegionArt();
   const publicity = useTripPublicity(trip.id);
-  const send = useTripCard(trip);
   if (!publicity) return null;
   const channel = publicity.channels.find((item) => item.posted);
   // The name the channel has in Telegram, without the brand (owner 13.10.2026, docs/176).
@@ -50,12 +48,7 @@ export function TripPublicity({ trip }: { readonly trip: Trip }) {
           <Icon name="next" size={CHEVRON} />
         </button>
       ) : null}
-      {trip.seatsLeft > 0 ? (
-        <button type="button" className="own-channel-share" onClick={() => void send()}>
-          <Icon name="send" size={SEND} />
-          <span>{t('driverTrip.channel.share')}</span>
-        </button>
-      ) : null}
+      {trip.seatsLeft > 0 ? <TripCardButton trip={trip} /> : null}
     </div>
   );
 }

@@ -26,15 +26,15 @@
 
 | Где | Текст |
 |---|---|
-| Описание до Start | Guruhlarda eʼlon koʻpligidan keraklisini topishga qiynalasizmi? Narxlar qatʼiy belgilangani va kelishib boʻlmasligi yoqmaydimi? Telefon raqamingiz guruhlarda ochiq koʻrinishidan xavotirdamisiz? {brand}: yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. Tez orada ochiladi. Yoʻnalishingizni hozir yozib qoʻying: ochilganda birinchi boʻlib xabar beramiz. |
-| Первое сообщение (видео 15 с) | Assalomu alaykum, {name}! 👋 · {brand}: yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. · 🔎 Guruhlardan kerakli eʼlonni topish qiyinmi? · 💸 Narxni kelisha olmaslik xalaqit beryaptimi? · 🔒 Raqamingiz hammaning koʻz oʻngida turishi yoqmaydimi? · {brand} tez orada ochiladi va shularni hal qiladi. · цитата: 📝 Yoʻnalishingizni yozib qoʻying: 1 daqiqa, telefon raqami kerak emas |
+| Описание до Start | Guruhlarda eʼlon koʻpligidan keraklisini topishga qiynalasizmi? Narxlar qatʼiy belgilangani va kelishib boʻlmasligi yoqmaydimi? Telefon raqamingiz guruhlarda ochiq koʻrinishidan xavotirdamisiz? {brand}: yoʻli bir odamlar bir mashinada boradi. Tez orada ochiladi. Yoʻnalishingizni hozir yozib qoʻying: ochilganda birinchi boʻlib xabar beramiz. |
+| Первое сообщение (видео 15 с) | Assalomu alaykum, {name}! 👋 · {brand}: yoʻli bir odamlar bir mashinada boradi. · 🔎 Guruhlardan kerakli eʼlonni topish qiyinmi? · 💸 Narxni kelisha olmaslik xalaqit beryaptimi? · 🔒 Raqamingiz hammaning koʻz oʻngida turishi yoqmaydimi? · {brand} tez orada ochiladi va shularni hal qiladi. · цитата: 📝 Yoʻnalishingizni yozib qoʻying: 1 daqiqa, telefon raqami kerak emas |
 | Кнопки | 🚀 Roʻyxatga yozilish · 📣 Kanal · меню «ilova» (есть); документы: команда `/documents` (есть) |
 | Живая карточка | ⏳ Roʻyxatdasiz (водитель: · haydovchi) · {when} · tez orada ochiladi · 🛣 Toshkent shahri ↔ {region} · 👥 {count} kishi kutmoqda · 🚗 {drivers} haydovchi · Siz tanlagan: {pains} · ✏️ {time} da yangilandi · har dushanba yangilanadi |
 | Карточка, кнопки | 👥 Doʻstimni chaqiraman · ✏️ Oʻzgartirish · 📣 Kanal · водитель сверху: 🚗 Haydovchi boʻlish |
 | Закреп | 📌 Toshkent shahri ↔ {region} · roʻyxatdasiz / haydovchi / ochildi |
 | Карточка открыта | ✅ Yoʻnalish ochildi · Bugun {n} ta safar · ertaga {m} ta (водитель: {count} yoʻlovchi kutmoqda) · 🔎 Safar topish · 🚗 Safar eʼlon qilish · 📣 Yoʻnalish kanali |
 | Звонок при открытии | цитата Toshkent shahri ↔ {region} · 🔔 Yoʻnalishingiz ochildi: endi guruhlardan qidirmaysiz, hamma safarlar bir joyda. · водитель: 🔔 Yoʻnalishingiz ochildi: {count} yoʻlovchi safaringizni kutmoqda. Endi guruhlarda yoʻlovchi qidirmaysiz. |
-| Приветствие, список закрыт | Assalomu alaykum, {name}! 👋 · {brand} ochildi: yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. · 🔎 Safar toping va joyni oldindan band qiling. · 🚗 Mashinangiz boʻlsa, safar eʼlon qiling. · 🔎 Safar topish · 🚗 Safar eʼlon qilish · 📣 Kanal |
+| Приветствие, список закрыт | Assalomu alaykum, {name}! 👋 · {brand} ochildi: yoʻli bir odamlar bir mashinada boradi. · 🔎 Safar toping va joyni oldindan band qiling. · 🚗 Mashinangiz boʻlsa, safar eʼlon qiling. · 🔎 Safar topish · 🚗 Safar eʼlon qilish · 📣 Kanal |
 | Другу | Men ham guruhlarda kerakli eʼlonni qidirib charchadim. {brand} tez orada ochiladi: u yerda hamma safarlar bir joyda. Men yozildim: {route}. Siz ham yoziling: qancha koʻp odam yozilsa, haydovchi shuncha tez topiladi. · Roʻyxatga yozilish |
 
 Строки «Endi … » и первая строка сообщения другу: по одной на каждую боль: 6 у попутчика и 7 у водителя (как в таблице болей).
@@ -43,7 +43,7 @@
 
 | Где | Текст |
 |---|---|
-| Первый экран | {brand} · Manzil sari (есть) · Tez orada ochiladi · Yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. |
+| Первый экран | {brand} · Manzil sari (есть) · Tez orada ochiladi · Yoʻli bir odamlar bir mashinada boradi. |
 | Роль | Kim boʻlib yoʻlga chiqasiz? · Yoʻlovchiman · Safarga joy kerak · Haydovchiman · Mashinam bor, boʻsh joy bor · Javobni keyin oʻzgartirsa boʻladi. |
 | Боли | Safar davomida qanday muammolarga duch kelgansiz? · (Bir yoki bir nechtasini tanlash mumkin) · Davom etish (есть) |
 | Маршрут (`5-regions`) | Qaysi viloyatdansiz? · Yoʻnalishingizni shunga qarab tuzamiz: viloyatingiz ↔ Toshkent shahri. · Qaysi viloyatga qatnaysiz? · Toshkent shahridan qaysi viloyatga yurasiz? · Yoʻnalish · имена областей из справочника (есть) · группы на карте: Toshkent · Vodiy · Markaz · Janub · Gʻarb |
@@ -90,7 +90,7 @@
 
 | № · день | Текст | Кнопка |
 |---|---|---|
-| 1 · вс 18.10 | 📝 {brand} roʻyxati ochildi · {brand}: yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. Tez orada ochiladi. · Yoʻnalishingizni hozir yozib qoʻying: ochilganda birinchi boʻlib xabar beramiz. 1 daqiqa, telefon raqami kerak emas. | 🚀 Roʻyxatga yozilish |
+| 1 · вс 18.10 | 📝 {brand} roʻyxati ochildi · {brand}: yoʻli bir odamlar bir mashinada boradi. Tez orada ochiladi. · Yoʻnalishingizni hozir yozib qoʻying: ochilganda birinchi boʻlib xabar beramiz. 1 daqiqa, telefon raqami kerak emas. | 🚀 Roʻyxatga yozilish |
 | 2 · ср 21.10 | 🔎 Guruhlarda eʼlon koʻpligidan keraklisini topishga qiynalasizmi? · 💸 Narxlar qatʼiy belgilangani va kelishib boʻlmasligi yoqmaydimi? · 🔒 Telefon raqamingiz guruhlarda ochiq koʻrinishidan xavotirdamisiz? · {brand} shularni hal qiladi: · Hamma safarlar bir roʻyxatda: qayerdan, qayerga va qachon boʻyicha darhol topasiz. · Narxni oʻzingiz taklif qilasiz. {brand} faqat tavsiya beradi. · Raqamingiz hech kimga koʻrinmaydi. Haydovchi bilan {brand} ichida yozishasiz. | 🚀 Roʻyxatga yozilish |
 | 3 · вс 25.10 | 📊 Roʻyxatning birinchi haftasi · {p} yoʻlovchi va {d} haydovchi yoʻnalishini yozdi. · Eng koʻp kutilgan yoʻnalishlar: · 1. Toshkent shahri ↔ {region}: {n} kishi (три строки) · Yoʻnalish haydovchilar yetarli boʻlganda ochiladi. Doʻstingizni ham chaqiring: qancha koʻp odam yozilsa, haydovchi shuncha tez topiladi. | 🚀 Roʻyxatga yozilish |
 | 4 · ср 28.10 | 🚗 Haydovchilar uchun · 🔁 Yoʻlning bir tomoniga boʻsh (pustoy) qaytishdan bezor boʻldingizmi? · ⏳ Pitakda mijoz yigʻilishini soatlab kutishdan charchadingizmi? · Safaringizni eʼlon qilasiz, yoʻlovchilar oʻzlari joy band qiladi. Qaytish safarini ham oldindan eʼlon qilasiz. · {region} yoʻnalishida {p} yoʻlovchi kutmoqda. Mashinangiz boʻlsa, yoziling: yoʻnalish ochilganda yoʻlovchilar safaringizni koʻradi. | 🚗 Haydovchi sifatida yozilish |

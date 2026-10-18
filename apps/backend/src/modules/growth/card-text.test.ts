@@ -12,7 +12,7 @@ describe('the chat card of a moment', () => {
     expect(text).toBe(
       `«Men ${brand.name} haydovchisiman»\nJasur\n${brand.name} haydovchisi\n\n` +
         'Raqamingiz yashirin. Telegramda ochiladi. Ilova yuklab olish shart emas.\n' +
-        'Siz ham Jasur bilan yoʻlga chiqing:',
+        `Siz ham ${brand.name} bilan yoʻlga chiqing:`,
     );
     // The link opens the passenger bot: the button says so (G88, docs/193).
     expect(words).toEqual({ title: `Men ${brand.name} bilan`, button: 'Safar topish' });
@@ -23,7 +23,7 @@ describe('the chat card of a moment', () => {
     expect(text.split('\n').slice(0, 3)).toEqual([
       '«Viloyatga endi birga boraman»',
       'Jasur',
-      'Birga borish, xarajatni boʻlish',
+      'Viloyatlararo birga safarlar',
     ]);
     expect(words).toEqual({ title: `Men ${brand.name} bilan`, button: 'Men ham qoʻshilaman' });
   });

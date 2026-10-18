@@ -25,7 +25,7 @@ export const driverNewsOf = (env: Bindings, deps: BookingsDeps) =>
       const ordered = [...records].sort((one, other) => one.createdAt - other.createdAt);
       return { trip, chatId: facts.driverId, bookings: await bookingViews(deps, ordered, 'driver') };
     },
-    // No D1 (local runs): the plain mark of a driver's link (docs/116).
-    via: async (driverId) => (await personVia(env, driverId, 'trip')) ?? VIA_DRIVER,
+    // No D1 (local runs) or D1 failed: the plain mark of a driver's link (docs/116); the card goes on.
+    via: async (driverId) => (await personVia(env, driverId, 'trip').catch(() => null)) ?? VIA_DRIVER,
     now: deps.now,
   });

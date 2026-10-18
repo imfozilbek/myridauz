@@ -17,7 +17,7 @@ export const MINI_APPS = [
   {
     name: 'driver',
     port: 4102,
-    welcome: t('common.welcome.costsBack'),
+    welcome: t('common.welcome.ownPrice'),
     // G66: an approved driver publishes with the main button under «Qayerdan / Qayerga».
     action: t('home.publish'),
     mainButton: t('home.publish'),

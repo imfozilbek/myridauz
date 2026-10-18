@@ -2,7 +2,6 @@ import type { Trip } from '@platform/contracts';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { useShareTrack } from '../growth/use-share-track';
 import { PICTURE_FONT } from '../media/story-paint';
 import { usePassengerColors, useTripTexts } from '../media/use-trip-texts';
 import { haptic } from '../telegram/feedback';
@@ -21,7 +20,6 @@ export function useTripStory(trip: Trip) {
   const { chat } = useApiClients();
   const colors = usePassengerColors();
   const texts = useTripTexts();
-  const done = useShareTrack('story', SCREEN);
   return async () => {
     const words = texts(trip);
     const picture = await drawStory(words, colors, PICTURE_FONT);
@@ -38,7 +36,8 @@ export function useTripStory(trip: Trip) {
     });
     openStory(story.imageUrl, text, { url: story.bookLink, name: words.button });
     track({ name: 'driver_trip_story', screen: SCREEN });
-    done('story');
+    // share_shown of the story comes with the tiles, the only place of its button (OwnTripTiles).
+    track({ name: 'share_done', button: 'story', screen: SCREEN, target: 'story' });
     haptic.success();
   };
 }

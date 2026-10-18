@@ -6,6 +6,7 @@ import { haptic } from '../telegram/feedback';
 import { shareCard } from '../telegram/share-card';
 import { canShareStory, openStory } from '../telegram/story';
 import { PICTURE_FONT } from '../media/story-paint';
+import { usePictureChecks } from '../media/use-trip-texts';
 import { drawMomentStory } from './moment-picture';
 import type { MomentWords } from './moment-words';
 import { useShareTrack } from './use-share-track';
@@ -17,6 +18,7 @@ export function useMomentShare(found: Moment & { readonly moment: ShareMoment },
   const { growth } = useApiClients();
   const brand = useBrand();
   const done = useShareTrack(momentLoop(found.moment), 'growth.moment');
+  const checks = usePictureChecks();
   const story = async (phrase: number) => {
     const quote = t('growth.quote', { phrase: words.phrases[phrase] ?? '' });
     const picture = await drawMomentStory(
@@ -28,7 +30,7 @@ export function useMomentShare(found: Moment & { readonly moment: ShareMoment },
         fact: words.fact,
         link: words.link,
         slogan: brand.slogan,
-        checks: [t('share.picture.hidden'), t('share.picture.telegram')],
+        checks,
       },
       brand.theme.colors,
       PICTURE_FONT,

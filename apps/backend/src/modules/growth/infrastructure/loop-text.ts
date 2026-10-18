@@ -30,7 +30,7 @@ export function loopMessage(brand: BrandConfig, input: LoopInput, places: Places
   if (input.loop === 'req-share') {
     const date = formatDate(new Date(tashkentDayStart(input.date)));
     return {
-      text: withValue(t('growth.group.message', { ...route, date }), driverValue(brand)),
+      text: t('growth.group.message', { ...route, date, value: driverValue(brand) }),
       words: { title: t('growth.group.messageTitle'), button: t('growth.group.link') },
     };
   }

@@ -11,10 +11,17 @@ export function usePassengerColors() {
   return brandForApp(useBrand(), 'passenger').theme.colors;
 }
 
+// The lines of value of the flyer under a picture (G88): «Raqamingiz yashirin», «Telegram ichida».
+export function usePictureChecks(): readonly string[] {
+  const { t } = useI18n();
+  return [t('share.picture.hidden'), t('share.picture.telegram')];
+}
+
 export function useTripTexts() {
   const { t, formatDate, formatTime, formatMoney } = useI18n();
   const brand = useBrand();
   const place = usePlaceLabel();
+  const checks = usePictureChecks();
   return (trip: Trip): TripPictureTexts => {
     const day = new Date(trip.departAt);
     const values = { date: formatDate(day), time: formatTime(day), seats: String(trip.seatsLeft) };
@@ -28,7 +35,7 @@ export function useTripTexts() {
       button: t('market.trip.book'),
       brandName: brand.name,
       slogan: brand.slogan,
-      checks: [t('share.picture.hidden'), t('share.picture.telegram')],
+      checks,
     };
   };
 }

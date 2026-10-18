@@ -63,9 +63,10 @@ describe('the cards of the request and of the free seats', () => {
       link: 'driver:1726273_1718401_2026-10-16__req-share-a1b2c3',
     });
     expect(card?.text.replace(/[\u00a0\u202f]/gu, ' ')).toBe(
-      'Toshkent → Urgut, 16-oktabr\n2 kishi yoʻlga chiqmoqchi. Haydovchilar, taklif yuboring:\n\n' +
+      'Toshkent → Urgut, 16-oktabr\n2 kishi yoʻlga chiqmoqchi.\n\n' +
         'Narxni oʻzingiz belgilaysiz. Har 10 daqiqada yozish shart emas.\n' +
-        'Yangi haydovchilarga 1 500 000 soʻmgacha bonus.',
+        'Yangi haydovchilarga 1 500 000 soʻmgacha bonus.\n' +
+        'Haydovchilar, taklif yuboring:',
     );
     expect(prepared[0]).toMatch(/^passenger\|\|Toshkent → Urgut.+\|Taklif yuborish$/su);
     expect(await loopCard(value, passenger(8, { loop: 'req-share', requestId: 'r1' }))).toBeNull();

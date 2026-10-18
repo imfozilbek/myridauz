@@ -2,11 +2,12 @@ import type { BrandColors } from '@platform/brands';
 import { QR_TYPE } from '@platform/contracts';
 import { encode, renderSVG } from 'uqr';
 import { box, fitted, storyCanvas, write } from '../media/story-paint';
-import { drawChecks, drawMark } from '../media/trip-paint';
+import { drawChecks, drawMark } from '../media/brand-paint';
 
 // The QR of a driver on the glass (docs/123 loop 1): medium error correction, it is read through glass.
 const ECC = 'M';
-const SIZE = { width: 1080, height: 1400 };
+// A margin under the lines of value for the scissors of the print (G88).
+const SIZE = { width: 1080, height: 1440 };
 const QR = { x: 160, y: 300, size: 760 };
 const HEADER = 220;
 const MARK = 112;

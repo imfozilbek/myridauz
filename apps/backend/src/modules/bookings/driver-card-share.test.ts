@@ -46,7 +46,7 @@ describe('the share button of the driver trip card', () => {
       '🟢 Chilonzor, Toshkent shahri',
       '🔴 Samarqand shahri, Samarqand viloyati',
     ]);
-    expect(lines[3]).toMatch(/^🗓 \d+-[a-zʻ]+, soat \d\d:\d\d$/u);
+    expect(lines[3]).toMatch(/^🗓 \d+-[a-zʻ]+ soat \d\d:\d\d$/u);
     expect(lines[4]).toBe('💰 Bir joy 90 000 soʻm');
     expect(lines.slice(5)).toEqual([
       '',

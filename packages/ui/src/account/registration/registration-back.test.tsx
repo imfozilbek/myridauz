@@ -11,7 +11,7 @@ const welcome = {
   logo: 'logo.svg',
   points: [
     { icon: 'team', textKey: 'common.welcome.verified' },
-    { icon: 'price', textKey: 'common.welcome.shareCosts' },
+    { icon: 'female', textKey: 'common.welcome.woman' },
     { icon: 'hidden', textKey: 'account.about.hidden' },
   ],
 } as const;

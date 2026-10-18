@@ -79,7 +79,6 @@ describe('the channel post of a trip (G68, mockup g68/5)', () => {
     expect(lines(arrived.text)).toEqual([
       '<b>🏁 Yetib bordi</b>',
       'Chilonzor → Samarqand shahri · 2 kishi · 13:05 da',
-      'Yoʻl xarajati 2 ga boʻlindi',
     ]);
     expect(arrived.markup).toEqual({ inline_keyboard: [[{ text: '🔎 Keyingi safarni topish', url: FIND }]] });
   });

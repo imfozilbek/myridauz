@@ -71,8 +71,9 @@ const growthDeps = (env: Bindings): Wiring | null => {
       const found = await driverTripView(env, id);
       if (!found) return undefined;
       const { trip, driverId } = found;
-      // The car still takes people: open for booking, not on the way (G88, docs/193).
-      const takes = trip.status === 'active' && !trip.departedAt;
+      // The car still takes people: open for booking, not on the way, not offered to one passenger
+      // only (G64), G88 docs/193.
+      const takes = trip.status === 'active' && !trip.departedAt && !trip.private;
       const { from, to, departAt, price } = trip;
       return { driverId, tripId: trip.id, from, to, departAt, price, seatsLeft: takes ? trip.seatsLeft : 0 };
     },

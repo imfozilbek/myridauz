@@ -37,7 +37,7 @@
   "value.bonus": "Yangi haydovchilarga {bonus}gacha bonus.",
   "value.service": "Tekshirilgan haydovchilar. Raqamingiz yashirin.",
   "trip.title": "Safarimda boʻsh joy bor",
-  "trip.text": "Safarimda {seats} ta boʻsh joy bor\n🟢 {from}\n🔴 {to}\n🗓 {date}, soat {time}\n💰 Bir joy {price}",
+  "trip.text": "Safarimda {seats} ta boʻsh joy bor\n🟢 {from}\n🔴 {to}\n🗓 {date} soat {time}\n💰 Bir joy {price}",
   "picture.hidden": "Raqamingiz yashirin",
   "picture.telegram": "Telegram ichida"
 }
