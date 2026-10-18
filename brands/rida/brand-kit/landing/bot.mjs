@@ -8,11 +8,13 @@ import fs from 'node:fs';
 import { chromium } from 'playwright';
 import { botAvatar } from '../lib/avatar.mjs';
 import { splash } from '../lib/brand.mjs';
-import { botWelcome } from '../lib/welcome.mjs';
+import { botWelcome, WELCOMES, welcomeVersion } from '../lib/welcome.mjs';
 import { channelAvatar, mainAvatar } from '../lib/channels.mjs';
 
 const OUT = new URL('../../landing/bot/', import.meta.url);
 const CHANNELS = new URL('../../landing/channel/', import.meta.url);
+// The bots send a welcome under the version of its picture (lesson №311): brand.config.ts reads it.
+const VERSIONS = new URL('../../welcomes.json', import.meta.url);
 const regions = JSON.parse(fs.readFileSync(new URL('../data/regions.json', import.meta.url), 'utf8'));
 const AVATAR = 640;
 const JPEG_QUALITY = 90;
@@ -35,7 +37,13 @@ fs.mkdirSync(OUT, { recursive: true });
 fs.mkdirSync(CHANNELS, { recursive: true });
 // The splash of Telegram before the Mini App (BotFather, docs/121 §4, OPS-05): one white «R».
 fs.writeFileSync(new URL('miniapp-splash.svg', OUT), splash());
-for (const role of ['driver', 'passenger', 'support', 'main', 'main-open']) await save(`${role}-welcome.png`, botWelcome(role), 1280, 720, 'png');
+const versions = {};
+for (const role of WELCOMES) {
+  const picture = botWelcome(role);
+  versions[role] = welcomeVersion(picture);
+  await save(`${role}-welcome.png`, picture, 1280, 720, 'png');
+}
+fs.writeFileSync(VERSIONS, `${JSON.stringify(versions, null, 2)}\n`);
 for (const role of ROLES) await save(`${role}-avatar.jpg`, botAvatar(role), AVATAR, AVATAR, 'jpeg');
 for (const region of regions)
   await save(`${region.code}-avatar.jpg`, channelAvatar(region), AVATAR, AVATAR, 'jpeg', CHANNELS);

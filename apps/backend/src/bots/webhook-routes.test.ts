@@ -21,7 +21,9 @@ describe('POST /telegram/:role', () => {
   it('greets a passenger with the picture and what the brand gives a passenger (03.10.2026)', async () => {
     const reply = (await (await send('passenger', start())).json()) as PhotoReply;
     expect(reply).toMatchObject({ method: 'sendPhoto', chat_id: 42 });
-    expect(reply.photo).toBe(`https://${brand.domain}/bot/passenger-welcome.png`);
+    expect(reply.photo).toBe(
+      `https://${brand.domain}/bot/passenger-welcome.png?v=${brand.welcomes.passenger}`,
+    );
     expect(reply.caption.startsWith(`Assalomu alaykum! ${brand.name}: `)).toBe(true);
     expect(reply.caption).toContain('Yoʻlovchi sifatida siz:');
     expect(reply.reply_markup.inline_keyboard[0]?.[0]).toEqual({
@@ -99,7 +101,7 @@ describe('POST /telegram/:role', () => {
   it('greets a driver with the picture, what the brand gives and the bonus of the brand (G34)', async () => {
     const reply = (await (await send('driver', start())).json()) as PhotoReply;
     expect(reply).toMatchObject({ method: 'sendPhoto', chat_id: 42 });
-    expect(reply.photo).toBe(`https://${brand.domain}/bot/driver-welcome.png`);
+    expect(reply.photo).toBe(`https://${brand.domain}/bot/driver-welcome.png?v=${brand.welcomes.driver}`);
     expect(reply.caption.startsWith(`Assalomu alaykum! ${brand.name}: `)).toBe(true);
     expect(reply.caption).toContain(`Boshlash uchun ${formatMoney(brand.promo.amount)} bonus.`);
     expect(reply.reply_markup.inline_keyboard).toEqual([

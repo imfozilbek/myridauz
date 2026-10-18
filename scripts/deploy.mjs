@@ -48,6 +48,22 @@ run('pnpm', ['--filter', './apps/miniapp-*', '--filter', './apps/landing', 'buil
   ...(served ? { VITE_MAP_URL: `https://${mapHost(brand)}` } : {}),
   VITE_APP_VERSION: process.env.GITHUB_SHA?.slice(0, 7) ?? 'local',
 });
+// The landing lives on the brand domain itself, www leads to the same pages (G15, docs/59). It goes
+// before the Worker: the bots send its pictures under a new version only once it serves them (lesson №314).
+const landing = `${brand.id}-landing`;
+const landingTarget = await ensurePagesProject(landing);
+wrangler(
+  'pages',
+  'deploy',
+  'apps/landing/dist',
+  '--project-name',
+  landing,
+  '--branch',
+  'main',
+  '--commit-dirty=true',
+);
+for (const host of [brand.domain, `www.${brand.domain}`])
+  await ensurePagesDomain(landing, host, brand.domain, landingTarget);
 wrangler('d1', 'migrations', 'apply', 'DB', '--remote', '--config', config);
 wrangler('deploy', '--config', config);
 
@@ -67,19 +83,4 @@ for (const app of apps) {
   await ensurePagesDomain(project, appHost(brand, app), brand.domain, target);
 }
 
-// The landing lives on the brand domain itself, www leads to the same pages (G15, docs/59).
-const landing = `${brand.id}-landing`;
-const landingTarget = await ensurePagesProject(landing);
-wrangler(
-  'pages',
-  'deploy',
-  'apps/landing/dist',
-  '--project-name',
-  landing,
-  '--branch',
-  'main',
-  '--commit-dirty=true',
-);
-for (const host of [brand.domain, `www.${brand.domain}`])
-  await ensurePagesDomain(landing, host, brand.domain, landingTarget);
 console.log(`deploy: ${brand.id} ${environment} done`);
