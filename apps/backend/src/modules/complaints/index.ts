@@ -24,17 +24,20 @@ type Wiring = {
   trips: (env: Bindings, userId: number, side: Side) => Promise<number>;
   cancelAll: (env: Bindings, userId: number) => Promise<void>;
   refund: (env: Bindings, ownerId: number, driverId: number, bookingId: string) => Promise<'ok' | 'nothing'>;
+  // The other passengers of the trip of a seat (G46, docs/111 Q4); null: not this passenger's seat.
+  coRiders: (env: Bindings, passengerId: number, bookingId: string) => Promise<readonly number[] | null>;
 };
 let wiring: Wiring | undefined;
 export const wireComplaints = (next: Wiring) => void (wiring = next);
 
 const complaintsDeps = (env: Bindings): ComplaintsDeps => {
   if (!wiring) throw new Error('complaints.not_wired');
-  const { ride, filedRide, trips, cancelAll, refund } = wiring;
+  const { ride, filedRide, trips, cancelAll, refund, coRiders } = wiring;
   return {
     store: env.DB ? d1Complaints(env.DB) : localComplaints,
     ride: (id) => ride(env, id),
     filedRide: (id) => filedRide(env, id),
+    coRiders: (passengerId, bookingId) => coRiders(env, passengerId, bookingId),
     people: peopleOf(env),
     isTeam: async (userId) => (await teamRole(env, userId)) !== null,
     trips: (userId, side) => trips(env, userId, side),

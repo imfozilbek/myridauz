@@ -4,6 +4,7 @@ import {
   chatRing,
   driverBookingOf,
   passengerRideCount,
+  coRidersOf,
   filedRideOfBooking,
   ratableRideOfBooking,
   rideOfBooking,
@@ -121,6 +122,7 @@ wireComplaints({
     side === 'driver' ? (await driverTripIds(env, userId)).length : passengerRideCount(env, userId),
   cancelAll: cancelAllOf,
   refund: refundNoShow,
+  coRiders: coRidersOf,
 });
 
 // «Navbat» of the team reads its cases from the modules that hold them (G68, docs/122).

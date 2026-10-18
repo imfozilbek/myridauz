@@ -9,6 +9,7 @@ import { cancelEverything } from './application/cancel-all';
 import { eraseOldPoints } from './application/erase';
 import { expireRequests, expireTripRequests } from './application/expire';
 import { chatAbout } from './application/chat-about';
+import { coRiderIds } from './application/co-riders';
 import { chatMember } from './application/chat-member';
 import { chatKeysOf } from './application/chat-keys';
 import { liveBookingOf } from './application/live-booking';
@@ -99,6 +100,9 @@ export {
   tellTripPassengers,
 } from './live-cards';
 
+// Whom a passenger may complain about: the other passengers of the trip (G46, docs/111 Q4).
+export const coRidersOf = (env: Bindings, passengerId: number, bookingId: string) =>
+  coRiderIds(bookingsDeps(env), passengerId, bookingId);
 // «Yetib keldingizmi?» answered in the passenger bot (G46).
 export { answerArrived, ARRIVED_PREFIX } from './arrived-answer';
 

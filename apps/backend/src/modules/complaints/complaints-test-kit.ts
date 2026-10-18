@@ -31,6 +31,14 @@ export function setup() {
     store,
     ride: async (id) => rides.find((known) => known.bookingId === id),
     filedRide: async (id) => rides.find((known) => known.bookingId === id),
+    // The passengers of the other rides of the same trip ride together (G46, docs/111 Q4).
+    coRiders: async (passengerId, bookingId) => {
+      const mine = rides.find((known) => known.bookingId === bookingId);
+      if (mine?.passengerId !== passengerId) return null;
+      return rides
+        .filter((known) => known.tripId === mine.tripId && known.passengerId !== passengerId)
+        .map((known) => known.passengerId);
+    },
     people: {
       find: async (id) => ({
         publicId: publicIdOf(id),

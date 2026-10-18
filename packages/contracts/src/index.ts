@@ -91,6 +91,7 @@ export * from './person-id';
 export * from './launch-links';
 export * from './point';
 export * from './bookings';
+export * from './co-riders';
 export * from './offers';
 export * from './pricing';
 export * from './ride-requests';
