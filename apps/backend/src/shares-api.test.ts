@@ -66,13 +66,16 @@ describe('"Yaqinlarimga yuborish" (docs/43)', () => {
     expect((await call(`/passenger/bookings/${booking.id}/share`, OTHER, { method: 'POST' })).status).toBe(
       404,
     );
-    const created = await read<{ preparedMessageId: string; link: string }>(share());
+    const created = await read<{ preparedMessageId: string; link: string; text: string }>(share());
     expect(created.preparedMessageId).toBe('prepared-1');
     expect(created.link).toMatch(/^https:\/\/t\.me\/.+\?start=follow_[\w-]{43}$/u);
     const prepared = telegram.find((item) => item.method === 'savePreparedInlineMessage')?.body;
     expect(prepared?.user_id).toBe(passenger);
-    // The last line calls close people to the brand too (G69, docs/123 loop 4).
-    expect(JSON.stringify(prepared)).toMatch(/\\n\\nSiz ham \w+ bilan yoʻlga chiqing\."/u);
+    // The last lines call close people to the brand too (G69, docs/123 loop 4) and say why (G88).
+    expect(created.text).toMatch(
+      /\n\nSiz ham \w+ bilan yoʻlga chiqing\.\nRaqamingiz yashirin\. Telegramda ochiladi\. Ilova yuklab olish shart emas\.$/u,
+    );
+    expect(JSON.stringify(prepared)).toContain(JSON.stringify(created.text).slice(1, -1));
     const token = tokenOf(created.link);
     expect((await shared('x'.repeat(43))).status).toBe(404);
     const trip = await read<Record<string, unknown>>(shared(token));

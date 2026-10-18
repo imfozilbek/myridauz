@@ -20,11 +20,12 @@ const json = (body: unknown) => ({
 
 // The API of the loops of growth (G69, docs/123): only with D1, the pictures only for whom they are.
 describe('the loops of growth over HTTP', () => {
-  it('gives the own links with the code: «Yana ulashish» and the QR', async () => {
+  it('gives the own QR link with the code; «Yana ulashish» is a card with it (G88)', async () => {
     const mine = (await (await call('/me/growth', PASSENGER, { env })).json()) as Record<string, unknown>;
     expect(mine).toMatchObject({ joined: 0, rode: 0 });
-    expect(String(mine.link)).toMatch(/startapp=__share-join-[a-z0-9]{6}$/u);
     expect(String(mine.qr)).toMatch(/startapp=__qr-[a-z0-9]{6}$/u);
+    const again = await call('/me/loop-card', PASSENGER, json({ loop: 'share-join' }));
+    expect(((await again.json()) as { link: string }).link).toMatch(/startapp=__share-join-[a-z0-9]{6}$/u);
     expect((await call('/me/growth', PASSENGER)).status).toBe(503);
   });
 
@@ -38,6 +39,21 @@ describe('the loops of growth over HTTP', () => {
     const { imageUrl } = (await saved.json()) as { imageUrl: string };
     const image = await call(new URL(imageUrl).pathname, DRIVER, { env });
     expect(image.headers.get('content-type')).toBe('image/png');
+  });
+
+  it('keeps the picture of a trip card for an approved driver; the card names its picture (G88)', async () => {
+    const card = (body: unknown) => call('/me/loop-card', DRIVER, { ...json(body), app: 'driver' });
+    expect((await call('/me/card-picture', PASSENGER, picture('image/jpeg'))).status).toBe(404);
+    expect((await call('/me/card-picture', DRIVER, picture('image/png'))).status).toBe(400);
+    const saved = await call('/me/card-picture', DRIVER, picture('image/jpeg'));
+    expect(saved.status).toBe(201);
+    const { id } = (await saved.json()) as { id: string };
+    expect((await call(`/stories/${id}`, DRIVER, { env })).headers.get('content-type')).toBe('image/jpeg');
+    expect((await card({ loop: 'trip', tripId: crypto.randomUUID(), picture: 'evil.uz/x' })).status).toBe(
+      400,
+    );
+    // No such trip of this driver: nothing to send.
+    expect((await card({ loop: 'trip', tripId: crypto.randomUUID(), picture: id })).status).toBe(404);
   });
 
   it('keeps the story of a moment only after the moment was offered', async () => {

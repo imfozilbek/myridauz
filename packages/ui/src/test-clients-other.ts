@@ -117,6 +117,7 @@ export const otherClients = (overrides: Overrides) => ({
     momentStory: NOT_USED,
     qrPicture: NOT_USED,
     loopCard: NOT_USED,
+    cardPicture: NOT_USED,
     ...overrides.growth,
   },
 });

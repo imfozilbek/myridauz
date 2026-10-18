@@ -5,6 +5,7 @@ import type { Card, Ring } from '../../notifications';
 import { bold, escapeHtml, italic, quote } from '../../../shared/telegram/html';
 import type { Places } from '../../../shared/places/end-names';
 import { appButton } from '../../../shared/telegram/open-button';
+import { shareLink } from '../../../shared/telegram/share-link';
 import type { CardView } from '../application/person';
 import { friendLink, inviteText, routeNames } from './invite-text';
 
@@ -79,7 +80,7 @@ export function waitlistCard(
     text: t(record.role === 'driver' ? 'bot.main.publish' : 'bot.main.find'),
     url: tripsLink(brand, record.role, record.home, record.region),
   };
-  const share = `https://t.me/share/url?url=${encodeURIComponent(friendLink(brand, view.code))}&text=${encodeURIComponent(inviteText(brand, record, places))}`;
+  const share = shareLink(friendLink(brand, view.code), inviteText(brand, record, places));
   const waiting = [
     ...(record.role === 'driver'
       ? [[{ text: t('bot.main.becomeDriver'), url: tripsLink(brand, 'driver', record.home, record.region) }]]

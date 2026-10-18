@@ -70,7 +70,9 @@ describe('the life of a channel post (G68)', () => {
       '<b>🚗 Yoʻlga chiqdi</b>',
       '<b>🏁 Yetib bordi</b>',
     ]);
-    expect(String(posts().at(-1)?.body.text)).toContain('Yoʻl xarajati 2 ga boʻlindi');
+    // Who went and when, no words about sharing the costs (owner decision 18.10.2026, docs/193).
+    expect(String(posts().at(-1)?.body.text)).toContain(' · 2 kishi · ');
+    expect(String(posts().at(-1)?.body.text)).not.toContain('xarajat');
     // The board of the day (08:00 now): pinned, with sound once, the picture of the direction above.
     const boards = telegram.filter(
       (item) => item.body.chat_id === SAMARQAND && String(item.body.text ?? '').startsWith('<b>📋'),

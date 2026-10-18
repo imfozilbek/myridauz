@@ -71,8 +71,8 @@
 
 - Узбекские тексты картинок: «Viloyatlararo birga safarlar», «Rida ishga tushdi»,
   «Safar toping yoki safaringizga yoʻlovchi oling», «Ayollar uchun xotirjam safar»,
-  «Shu belgili safarlarni tanlang», «Haydovchimisiz?», «Yoʻl xarajatini birga
-  koʻtaring», «Telefon kamerasi bilan skanerlang», «Joy band qiling».
+  «Shu belgili safarlarni tanlang», «Haydovchimisiz?», «Narxni oʻzingiz
+  belgilaysiz» (G88, `194`), «Telefon kamerasi bilan skanerlang», «Joy band qiling».
 - Бонус 1 500 000 сум в сторис для водителей: решение владельца.
 - QR-плакат: отсканировать телефоном перед печатью.
 

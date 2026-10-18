@@ -1,7 +1,9 @@
 import { botStartLink, channelVia, tashkentDate, type Trip } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Card } from '../../notifications';
+import { serviceValue, withValue } from '../../../shared/share/value-lines';
 import { bold, escapeHtml, quote } from '../../../shared/telegram/html';
+import { shareLink } from '../../../shared/telegram/share-link';
 import { postState } from '../domain/route-channels';
 import type { TeamChannel } from '../application/team';
 import { peopleOf } from './post-parts';
@@ -80,7 +82,7 @@ export const weekCard =
       channel: channel.title,
       trips: String(came.length),
     });
-    const share = `https://t.me/share/url?url=${encodeURIComponent(channel.link)}&text=${encodeURIComponent(words)}`;
+    const share = shareLink(channel.link, withValue(words, serviceValue()));
     const page = site.pageOf(channel.chat);
     return {
       bot: 'poster',

@@ -74,6 +74,8 @@ describe('the moments of the cards of a person', () => {
     expect(await momentCard(value, 7, 'join', 2)).toEqual({
       prepared: 'prepared-1',
       link: 'https://t.me/brand_bot?startapp=__share-join-a1b2c3',
+      // The words for an old Telegram without shareMessage (G88).
+      text: 'join:2:Madina',
     });
     expect(prepared).toMatchObject([{ side: 'passenger', message: { text: 'join:2:Madina' } }]);
     const driver = deps({ offered: ['driver'] });

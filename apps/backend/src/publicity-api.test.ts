@@ -63,7 +63,6 @@ describe('what the driver sees after the publishing (G63, docs/119)', () => {
     expect(await publicityOf(id)).toEqual({
       channels: CHANNELS.map((channel) => ({ ...channel, posted: false })),
       views: 2,
-      link: `https://t.me/${BRAND.bots.passenger}?startapp=trip_${id}__driver`,
     });
     // The same count on «Mening safarlarim» of the driver: «2 kishi koʻrdi» in the block (G76).
     const mine = await read<{ trips: { id: string; views: number }[] }>(

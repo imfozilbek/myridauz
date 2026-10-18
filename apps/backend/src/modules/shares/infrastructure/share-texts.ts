@@ -1,6 +1,7 @@
 import type { BrandConfig } from '@platform/brands';
 import { botStartLink, formatPlate, type Booking } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { passengerValue, withValue } from '../../../shared/share/value-lines';
 import type { ShareTexts, ShareUpdate } from '../application/ports';
 
 const { t, formatDate, formatTime } = createI18n(DEFAULT_LOCALE);
@@ -30,10 +31,11 @@ export const cardWords = (bot: string, via: string | null) => ({
   ...(via ? { second: { text: t('share.follow.join'), url: botStartLink(bot, via) } } : {}),
 });
 
-// The card and the messages close people get (docs/43): names, the car, never a phone. The last line
-// calls them to the brand too (G69, docs/123 loop 4).
+// The card and the messages close people get (docs/43): names, the car, never a phone. The last lines
+// call them to the brand too (G69, docs/123 loop 4) and say why (G88, docs/193).
 export const shareTexts = (brand: BrandConfig, placeName: (id: string) => Promise<string>): ShareTexts => {
-  const invited = (card: string) => `${card}\n\n${t('bot.share.invite', { brand: brand.name })}`;
+  const invited = (card: string) =>
+    withValue(card, `${t('bot.share.invite', { brand: brand.name })}\n${passengerValue()}`);
   return {
     card: async (booking) =>
       invited(

@@ -13,6 +13,9 @@ export const GROWTH_LOOPS = [
   // 5: the cards «Men Rida bilan» of the moments.
   'share-join',
   'share-driver',
+  // 1 too (G88, docs/193): the link of the driver's trip and the story of the trip.
+  'trip',
+  'story',
 ] as const;
 export type GrowthLoop = (typeof GROWTH_LOOPS)[number];
 

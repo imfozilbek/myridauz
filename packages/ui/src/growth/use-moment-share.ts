@@ -5,6 +5,8 @@ import { useI18n } from '../context/i18n-context';
 import { haptic } from '../telegram/feedback';
 import { shareCard } from '../telegram/share-card';
 import { canShareStory, openStory } from '../telegram/story';
+import { PICTURE_FONT } from '../media/story-paint';
+import { usePictureChecks } from '../media/use-trip-texts';
 import { drawMomentStory } from './moment-picture';
 import type { MomentWords } from './moment-words';
 import { useShareTrack } from './use-share-track';
@@ -16,6 +18,7 @@ export function useMomentShare(found: Moment & { readonly moment: ShareMoment },
   const { growth } = useApiClients();
   const brand = useBrand();
   const done = useShareTrack(momentLoop(found.moment), 'growth.moment');
+  const checks = usePictureChecks();
   const story = async (phrase: number) => {
     const quote = t('growth.quote', { phrase: words.phrases[phrase] ?? '' });
     const picture = await drawMomentStory(
@@ -27,9 +30,10 @@ export function useMomentShare(found: Moment & { readonly moment: ShareMoment },
         fact: words.fact,
         link: words.link,
         slogan: brand.slogan,
+        checks,
       },
       brand.theme.colors,
-      getComputedStyle(document.body).fontFamily,
+      PICTURE_FONT,
     );
     if (!picture) throw new Error('ui.story_not_drawn');
     const imageUrl = await growth.momentStory(picture);
@@ -40,7 +44,7 @@ export function useMomentShare(found: Moment & { readonly moment: ShareMoment },
   };
   const chat = async (phrase: number) => {
     const card = await growth.momentCard(found.moment, phrase);
-    if (!(await shareCard(card.prepared, card.link))) return;
+    if (!(await shareCard(card.prepared, card.link, card.text))) return;
     done('chat');
     haptic.success();
   };

@@ -18,7 +18,7 @@ const ROLES = {
     points: [
       ['CarFront', 'Safar bir daqiqada'],
       ['Users', 'Yoʻlovchi sizni topadi'],
-      ['Banknote', 'Yoʻl xarajati qaytadi'],
+      ['Banknote', 'Narxni oʻzingiz\nbelgilaysiz'],
       ['Gift', `${money(brandConfig.promo.amount * brandConfig.promo.grants)}gacha\nbonus`],
     ],
   },
