@@ -97,7 +97,7 @@ export function PassengerDayCard({ kind, booking, words, act, onTold }: Props) {
             text={t('bookings.arrivedAsk.later')}
             onClick={() => markStillOnWay(booking.id)}
           />
-          <MainButton text={t('bookings.arrivedAsk.yes')} onClick={steps.step} />
+          <MainButton text={t('bookings.arrivedAsk.yes')} onClick={steps.answer} />
           <DockFailure error={steps.failure} />
         </>
       );
