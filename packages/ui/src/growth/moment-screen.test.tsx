@@ -10,7 +10,6 @@ import { MomentScreen } from './moment-screen';
 afterEach(cleanup);
 
 type Found = Moment & { readonly moment: ShareMoment };
-const JOIN: Found = { moment: 'join', link: 'https://t.me/brand_bot?startapp=__share-join-a1b2c3' };
 const DRIVER: Found = { moment: 'driver', link: 'https://t.me/brand_bot?startapp=__share-driver-a1b2c3' };
 
 function open(found: Found, growth: Partial<GrowthClient> = {}) {
@@ -23,70 +22,69 @@ function open(found: Found, growth: Partial<GrowthClient> = {}) {
   return { ...view, offered, onDone };
 }
 
-// The celebration of a moment «Men Rida bilan» (G69, docs/123, mockups g69/1 … 3). No moment after a
-// trip (owner decision 15.10.2026): the registration and the approval of a driver.
+// The celebration of a moment «Men Rida bilan» (G69, docs/123, mockups g69/1 … 3): only the approval of
+// a driver. No moment after a trip (owner decision 15.10.2026) nor after the registration (18.10.2026).
 describe('the celebration of a moment', () => {
-  it('says what happened, why to tell friends and shows the card a friend sees, offered once', async () => {
-    const { offered } = open(JOIN);
-    expect(await screen.findByText(/^Siz .+ jamoasidasiz! 🎉$/u)).toBeTruthy();
-    expect(screen.getByText('Doʻstlaringizga ayting: ular ham viloyatga birga borsin.')).toBeTruthy();
-    expect(screen.getByText('Doʻstlaringiz ham shunday borsin.')).toBeTruthy();
+  it('says what happened, why to tell and shows the card the passengers see, offered once', async () => {
+    const { offered } = open(DRIVER);
+    expect(await screen.findByText(/^Siz endi .+ haydovchisisiz! ✅$/u)).toBeTruthy();
+    expect(screen.getByText(/^Doimiy yoʻlovchilaringizga ayting: endi sizni .+ da topadi\.$/u)).toBeTruthy();
+    expect(screen.getByText('Yoʻlovchilar sizni topadi.')).toBeTruthy();
     expect(screen.getByText('Qaysi soʻz sizniki?')).toBeTruthy();
     expect(screen.getAllByRole('radio')).toHaveLength(3);
-    expect(screen.getByText(/^«Men endi .+ jamoasidaman!»$/u)).toBeTruthy();
+    expect(screen.getByText(/^«Men .+ haydovchisiman»$/u)).toBeTruthy();
     expect(screen.getByText('Ali')).toBeTruthy();
     expect(screen.getByText('Keyinroq')).toBeTruthy();
-    await waitFor(() => expect(offered).toHaveBeenCalledWith('join'));
+    await waitFor(() => expect(offered).toHaveBeenCalledWith('driver'));
   });
 
-  it('sends the card with the chosen phrase to the friends', async () => {
+  it('sends the card with the chosen phrase to the own passengers', async () => {
     const momentCard = vi.fn<GrowthClient['momentCard']>(async () => ({
       prepared: null,
-      link: JOIN.link,
-      text: '«Viloyatga endi birga boraman»',
+      link: DRIVER.link,
+      text: '«Viloyatga men bilan yuring»',
     }));
     const opened = vi.spyOn(window, 'open').mockReturnValue(null);
-    const { tracked } = open(JOIN, { momentCard });
-    await tap('Viloyatga endi birga boraman');
-    expect(screen.getByText('«Viloyatga endi birga boraman»')).toBeTruthy();
-    await tap('Doʻstlarimga yuborish');
+    const { tracked } = open(DRIVER, { momentCard });
+    await tap('Viloyatga men bilan yuring');
+    expect(screen.getByText('«Viloyatga men bilan yuring»')).toBeTruthy();
+    await tap('Yoʻlovchilarimga yuborish');
     await waitFor(() => expect(opened).toHaveBeenCalled());
-    expect(momentCard).toHaveBeenCalledWith('join', 1);
+    expect(momentCard).toHaveBeenCalledWith('driver', 2);
     expect(tracked.filter((event) => event.name.startsWith('share_'))).toMatchObject([
-      { name: 'share_shown', button: 'share-join' },
-      { name: 'share_done', button: 'share-join', target: 'chat' },
+      { name: 'share_shown', button: 'share-driver' },
+      { name: 'share_done', button: 'share-driver', target: 'chat' },
     ]);
     opened.mockRestore();
   });
 
-  it('lets a new driver tell the own passengers, and «Keyinroq» goes on', async () => {
+  it('goes on with «Keyinroq»', async () => {
     const { onDone } = open(DRIVER);
-    expect(await screen.findByText(/^Siz endi .+ haydovchisisiz! ✅$/u)).toBeTruthy();
-    expect(screen.getByText('Yoʻlovchilarimga yuborish')).toBeTruthy();
     await tap('Keyinroq');
     expect(onDone).toHaveBeenCalled();
   });
 
-  it('greets a new passenger once at a launch without a link, over the page', async () => {
-    const offered = vi.fn<GrowthClient['offered']>(async () => undefined);
-    const clients = testClients({ growth: { moment: async () => JOIN, offered } });
-    renderMarket(
-      <MomentGate enabled>
-        <p>Asosiy</p>
-      </MomentGate>,
-      clients,
-    );
-    expect(await screen.findByText(/^Siz .+ jamoasidasiz! 🎉$/u)).toBeTruthy();
-    expect(screen.getByText('Ali')).toBeTruthy();
+  it('greets a new driver once at a launch without a link, over the page; a passenger app asks nothing', async () => {
+    const moment = vi.fn<GrowthClient['moment']>(async () => DRIVER);
+    const clients = testClients({ growth: { moment, offered: async () => undefined } });
+    const gate = (enabled: boolean) =>
+      renderMarket(
+        <MomentGate enabled={enabled}>
+          <p>Asosiy</p>
+        </MomentGate>,
+        clients,
+      );
+    gate(false);
+    expect(screen.getByText('Asosiy')).toBeTruthy();
+    expect(moment).not.toHaveBeenCalled();
+    cleanup();
+    gate(true);
+    expect(await screen.findByText(/^Siz endi .+ haydovchisisiz! ✅$/u)).toBeTruthy();
     await tap('Keyinroq');
     expect(screen.getByText('Asosiy')).toBeTruthy();
     cleanup();
-    renderMarket(
-      <MomentGate enabled>
-        <p>Asosiy</p>
-      </MomentGate>,
-      clients,
-    );
+    gate(true);
     expect(screen.getByText('Asosiy')).toBeTruthy();
+    expect(moment).toHaveBeenCalledTimes(1);
   });
 });

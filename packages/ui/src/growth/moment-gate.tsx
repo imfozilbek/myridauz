@@ -25,9 +25,9 @@ function useDueMoment(enabled: boolean): Due | null | undefined {
   return found;
 }
 
-// Opened without a link: a moment not offered yet (the registration, the approval of a driver) once
-// per launch, over the page (docs/123). A link opens its own screen. No moment after a trip: the trip
-// ends with the stars (owner decision 15.10.2026). The mark of a bot button opens nothing (G87).
+// Opened without a link: a moment not offered yet (the approval of a driver) once per launch, over the
+// page (docs/123). A link opens its own screen. No moment after a trip (owner decision 15.10.2026) nor
+// after the registration (18.10.2026). The mark of a bot button opens nothing (G87).
 let asked = false;
 const plainLaunch = () =>
   startParam() === null &&

@@ -35,7 +35,7 @@ export type Moment = z.infer<typeof momentSchema>;
 export const MOMENT_OFFERED_PATH = '/me/moment/offered';
 export const momentOfferedSchema = z.object({ moment: z.enum(SHARE_MOMENTS) });
 
-// «Doʻstlarimga yuborish»: the ready message of the card with the phrase the person chose; the
+// «Yoʻlovchilarimga yuborish»: the ready message of the card with the phrase the person chose; the
 // moment says the side: the bot of the app of that side keeps the message.
 export const MOMENT_CARD_PATH = '/me/moment/card';
 export const PHRASES = 3;
