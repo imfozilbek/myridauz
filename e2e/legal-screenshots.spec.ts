@@ -57,6 +57,10 @@ test('profile: documents and "Maʼlumotlarimni oʻchirish"', async ({ page }) =>
   await expect(page.getByText(t('account.delete.title'))).toBeVisible();
   await shot('6-delete-confirm');
   await page.locator('#tg-main-button').click();
+  // «Nima uchun?» in one tap or skipped (G87 V3).
+  await expect(page.getByText(t('cancelReason.title'))).toBeVisible();
+  await shot('7-reason');
+  await page.getByText(t('cancelReason.account.done')).click();
   await expect(page.getByText(t('account.delete.done'))).toBeVisible();
-  await shot('7-deleted');
+  await shot('8-deleted');
 });

@@ -35,6 +35,8 @@ test('passenger: cancels a confirmed seat', async ({ page }) => {
   await page.getByText(t('bookings.cancel')).click();
   await expect.poll(() => cancelled).toHaveLength(1);
   expect(cancelled[0]).toBe(`/api/passenger/bookings/${confirmed.id}/cancel`);
+  // «Nima uchun?» in one tap (G87 V3), then the lists.
+  await page.getByText(t('cancelReason.booking.plans')).click();
   await expect(page.locator('.market-tabs')).toBeVisible();
   await expect(page.getByText(t('errors.generic.title'))).toHaveCount(0);
 });
