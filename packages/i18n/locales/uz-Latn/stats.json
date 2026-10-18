@@ -65,5 +65,13 @@
   "platform.android": "Android",
   "platform.ios": "iPhone",
   "platform.desktop": "Kompyuter",
-  "platform.other": "Boshqa"
+  "platform.other": "Boshqa",
+  "bots.title": "Botlar xabarlari",
+  "bots.bot.passenger": "Yoʻlovchi boti",
+  "bots.bot.driver": "Haydovchi boti",
+  "bots.bot.admin": "Admin bot",
+  "bots.bot.poster": "Kanallar boti",
+  "bots.bot.main": "Kutish roʻyxati boti",
+  "bots.hint": "429: {limited} · yetib bormadi: {dead} · eng koʻp: {peak} / soniya",
+  "bots.queue": "Navbat amallari, kuniga"
 }

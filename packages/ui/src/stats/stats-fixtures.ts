@@ -69,5 +69,15 @@ export const statsOf = (period: StatsPeriod, events: Stats['events'] = 'on'): St
           },
         ]
       : [],
+  // G85 T1: the passenger bot met one 429, the bot of the channels lost one post.
+  bots:
+    events === 'on'
+      ? [
+          { bot: 'passenger', sent: period === 'day' ? 412 : 2730, limited: 1, dead: 0, peak: 18 },
+          { bot: 'driver', sent: period === 'day' ? 160 : 1104, limited: 0, dead: 0, peak: 6 },
+          { bot: 'poster', sent: period === 'day' ? 31 : 214, limited: 0, dead: 1, peak: 2 },
+        ]
+      : [],
+  queueOps: events === 'on' ? 96 : 0,
   at: Date.parse('2026-10-05T09:30:00Z'),
 });

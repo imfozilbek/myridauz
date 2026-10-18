@@ -3,7 +3,14 @@ import { recordServerEvent } from '../../analytics';
 import { sendSignals, signalsOf } from '../../feed';
 import type { Delivery } from '../application/deliver';
 import type { NotificationJob, QueueMessage, TimedTask } from '../application/job';
-import { CHANNEL_STEP_MS, coalesce, isChannel, massDelays, secondsUntil } from '../application/pace';
+import {
+  CHANNEL_STEP_MS,
+  coalesce,
+  isChannel,
+  massDelays,
+  SECOND_MS,
+  secondsUntil,
+} from '../application/pace';
 import { deliverNow } from './deliver-now';
 import { paceOf } from './wiring';
 
@@ -38,7 +45,7 @@ async function sendDirect(env: Bindings, ready: readonly Waiting[], paused: Map<
     }
     const delivery: Delivery = await deliverNow(env, item.body).catch(() => RETRY);
     if (delivery.outcome !== 'retry') continue;
-    if (delivery.limited) paused.set(item.body.bot, now + delivery.afterSeconds * 1000);
+    if (delivery.limited) paused.set(item.body.bot, now + delivery.afterSeconds * SECOND_MS);
     later.push({ body: item.body, delaySeconds: delivery.afterSeconds });
   }
   return later;

@@ -29,6 +29,15 @@ describe('Statistika of the team (docs/29)', () => {
     expect(screen.getByText('TypeError: x is undefined')).toBeTruthy();
     expect(screen.getByText('Faol eʼlonlar soni chegaraga yetdi. Eskisini bekor qiling.')).toBeTruthy();
     expect(screen.getByText('Haydovchi · market.review')).toBeTruthy();
+    // The bots under load (G85 T1): a 429 and a lost post are marked.
+    expect(screen.getByText('Botlar xabarlari')).toBeTruthy();
+    expect(screen.getByText('412')).toBeTruthy();
+    const passenger = screen.getByText('429: 1 · yetib bormadi: 0 · eng koʻp: 18 / soniya');
+    expect(passenger.className).toContain('manage-danger');
+    expect(screen.getByText('429: 0 · yetib bormadi: 0 · eng koʻp: 6 / soniya').className).not.toContain(
+      'manage-danger',
+    );
+    expect(screen.getByText('Navbat amallari, kuniga')).toBeTruthy();
     await tap('7 kun');
     expect(await screen.findByText('158')).toBeTruthy();
     expect(get.mock.calls.map(([period]) => period)).toEqual(['day', 'week']);
@@ -41,5 +50,6 @@ describe('Statistika of the team (docs/29)', () => {
       await screen.findByText('Voronka va xatolarni koʻrish uchun analitika kaliti kerak.'),
     ).toBeTruthy();
     expect(screen.queryByText('Ilova buzilishlari')).toBeNull();
+    expect(screen.queryByText('Botlar xabarlari')).toBeNull();
   });
 });

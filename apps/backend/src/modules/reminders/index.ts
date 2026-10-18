@@ -1,3 +1,4 @@
+import { MINUTE_MS } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { confirmedBookings, passengerNewsOf, requestsPastHalf, tellDriver } from '../bookings';
 import { notifyMass, scheduleTasks, type TimedTask } from '../notifications';
@@ -11,7 +12,6 @@ import { brandOf } from '../../shared/brand/brand-of';
 import { TICK_MINUTES } from '../../shared/cron/tick';
 
 const localFirst = createMemoryFirst();
-const MINUTE_MS = 60_000;
 
 const tellDeps = (env: Bindings): TellDeps => ({
   trips: (from, to) => tripsDeparting(env, from, to),

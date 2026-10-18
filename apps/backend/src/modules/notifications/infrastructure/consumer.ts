@@ -3,7 +3,7 @@ import { recordServerEvent } from '../../analytics';
 import { keepDead } from '../application/dead-letter';
 import type { Delivery } from '../application/deliver';
 import type { QueueMessage, TimedTask } from '../application/job';
-import { secondsUntil } from '../application/pace';
+import { SECOND_MS, secondsUntil } from '../application/pace';
 import { deliverNow } from './deliver-now';
 import { enqueue } from './lanes';
 import { paceOf } from './wiring';
@@ -12,12 +12,9 @@ import { paceOf } from './wiring';
 export const MAX_ATTEMPTS = 5;
 const RETRY_SECONDS = 5;
 const RETRY: Delivery = { outcome: 'retry', afterSeconds: RETRY_SECONDS };
-const SECOND_MS = 1000;
 
 // Who runs a timed task when its moment comes (src/index.ts, G85 R3).
-export type TaskRunners = Readonly<
-  Record<TimedTask['task'], (env: Bindings, task: TimedTask) => Promise<void>>
->;
+type TaskRunners = Readonly<Record<TimedTask['task'], (env: Bindings, task: TimedTask) => Promise<void>>>;
 
 // A failure is tried again later; after the last try a message goes to the dead letters, never lost
 // silently (G42, docs/65 D), counted by its bot (G85 T1). A task that kept failing is counted too.

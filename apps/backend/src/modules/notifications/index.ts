@@ -13,7 +13,7 @@ export type { News, NewsLine } from './application/news';
 export { forgetCards, forgetOldCards } from './infrastructure/d1-cards';
 export { handleAfterSent } from './infrastructure/deliver-now';
 export { notify, notifyMass, scheduleTasks } from './infrastructure/lanes';
-export { consumeNotifications, MAX_ATTEMPTS, type TaskRunners } from './infrastructure/consumer';
+export { consumeNotifications, MAX_ATTEMPTS } from './infrastructure/consumer';
 
 // fast: the answer to a person's own step, at once and first; mass: one of many messages at once,
 // at an even pace (G85 T2, docs/122).

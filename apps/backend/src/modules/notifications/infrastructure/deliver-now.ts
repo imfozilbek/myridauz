@@ -3,9 +3,8 @@ import { recordServerEvent } from '../../analytics';
 import { cardSent } from '../application/card-sent';
 import { deliver, type Delivery } from '../application/deliver';
 import type { AfterSentHandler, NotificationJob } from '../application/job';
+import { SECOND_MS } from '../application/pace';
 import { cardsOf, opsOf, paceOf, send, tokensOf } from './wiring';
-
-const SECOND_MS = 1000;
 
 // What to do once a message has its id; set by the app, which knows every module (app.ts).
 let afterSent: AfterSentHandler<Bindings> = async () => undefined;

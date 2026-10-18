@@ -1,6 +1,7 @@
 import { HOUR_MS, type ErrorRow } from '@platform/contracts';
 import type { DataPoint } from '../../analytics';
 import { ERROR_EVENTS, type EventSource } from '../application/ports';
+import type { BotRow } from '../domain/bot-load';
 import type { Counter } from '../domain/counters';
 import { toErrorRow } from './sql-rows';
 
@@ -63,5 +64,32 @@ export function memoryEvents(rows: readonly DataPoint[], now: () => number): Eve
         ({ blobs }) => [blobs[6], blobs[5]].join('|'),
         (same) => ({ route: same[0]?.blobs[6] ?? '', result: same[0]?.blobs[5] ?? '', count: same.length }),
       ),
+    // G85 T1: the bots under load, by the same groups as the SQL of Analytics Engine.
+    bots: async (days) => {
+      const ofBots = recent(days * DAY).filter(
+        ({ blobs }) =>
+          blobs[0] === 'bot_send' ||
+          blobs[0] === 'queue_ops' ||
+          (blobs[0] === 'server_error' && blobs[5] === 'notification_dead'),
+      );
+      const rows = group(
+        ofBots,
+        ({ blobs }) => [blobs[0], blobs[1], blobs[5]].join('|'),
+        (same): BotRow => ({
+          name: same[0]?.blobs[0] ?? '',
+          bot: same[0]?.blobs[1] ?? '',
+          code: same[0]?.blobs[5] ?? '',
+          count: same.length,
+          amount: same.reduce((total, row) => total + (row.doubles[2] ?? 0), 0),
+        }),
+      );
+      const sent = ofBots.filter(({ blobs }) => blobs[0] === 'bot_send' && blobs[5] === 'sent');
+      const peaks = group(
+        sent,
+        (row) => `${row.blobs[1] ?? ''}|${Math.floor((row.doubles[1] ?? 0) / 1000)}`,
+        (same) => ({ bot: same[0]?.blobs[1] ?? '', count: same.length }),
+      );
+      return { rows, peaks };
+    },
   };
 }

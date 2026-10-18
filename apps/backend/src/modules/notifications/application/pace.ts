@@ -5,7 +5,7 @@ import type { NotificationJob } from './job';
 export const MASS_PER_SECOND = 20;
 // A channel takes about 20 posts a minute; Rida keeps to 18, one each 60 / 18 seconds (G85 T7).
 export const CHANNEL_STEP_MS = 60_000 / 18;
-const SECOND_MS = 1000;
+export const SECOND_MS = 1000;
 
 // A channel is "@username" or a negative chat id; a person is a positive one (docs/15).
 export const isChannel = (chatId: NotificationJob['chatId']) => typeof chatId === 'string' || chatId < 0;

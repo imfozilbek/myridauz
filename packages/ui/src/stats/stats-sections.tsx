@@ -4,6 +4,7 @@ import { useI18n } from '../context/i18n-context';
 import { ManageGroup, ManageNote, ManageRow } from '../manage/manage-page';
 import { NumberTiles } from '../team/number-tiles';
 import { ArrivalsSections } from './stats-arrivals';
+import { BotsSection } from './stats-bots';
 import { ErrorsSections } from './stats-errors';
 
 // A drop from this share is where people get stuck: it is marked (docs/29).
@@ -40,6 +41,7 @@ export function StatsSections({ stats, gold }: { readonly stats: Stats; readonly
         <FunnelSection key={funnel.id} funnel={funnel} hint={listFunnels === 0 && index === 0} />
       ))}
       {stats.events === 'on' ? <ErrorsSections errors={stats.errors} /> : null}
+      {stats.events === 'on' ? <BotsSection bots={stats.bots} queueOps={stats.queueOps} /> : null}
       <ManageNote>{t('stats.updated', { time: formatTime(new Date(stats.at)) })}</ManageNote>
     </>
   );
