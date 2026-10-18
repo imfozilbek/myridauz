@@ -49,7 +49,7 @@ run('pnpm', ['--filter', './apps/miniapp-*', '--filter', './apps/landing', 'buil
   VITE_APP_VERSION: process.env.GITHUB_SHA?.slice(0, 7) ?? 'local',
 });
 // The landing lives on the brand domain itself, www leads to the same pages (G15, docs/59). It goes
-// before the Worker: the bots send its pictures under a new version only once it serves them (lesson №313).
+// before the Worker: the bots send its pictures under a new version only once it serves them (lesson №314).
 const landing = `${brand.id}-landing`;
 const landingTarget = await ensurePagesProject(landing);
 wrangler(

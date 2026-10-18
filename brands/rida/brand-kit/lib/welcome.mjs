@@ -10,7 +10,7 @@ import { brandConfig } from '../../brand.config.ts';
 
 const hours = ({ from, to }) => `${from}:00 dan ${to}:00 gacha`;
 const money = (amount) => `${String(amount).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} soʻm`;
-// The logo in the corner wears a combo of docs/36 that stands out of the color of the bot (lesson №312).
+// The logo in the corner wears a combo of docs/36 that stands out of the color of the bot (lesson №313).
 const ROLES = {
   driver: {
     logo: 5,

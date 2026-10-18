@@ -108,6 +108,10 @@ D. Проверка владельца
 | `account.moved.text` | Mini App внутренней среды | «Safarlar yangi botda. Tugmani bosing va oʻsha yerda davom eting.» | да, 18.10.2026 |
 | `navbat.telegram.*, bot.face.telegram*` | проверки команды | «Telegram: @{username}», «Telegram: username yoʻq», «Profilni ochish» | да, 18.10.2026 |
 | `legal privacy.2.text` | «Maxfiylik siyosati», редакция 1.8 | «Telegram foydalanuvchi nomi (username): faqat jamoa koʻradi, moderatsiya uchun.» | да, 18.10.2026 |
+| `bot.person.text` | бот человека, команде после «Start» | «Telegram profili: {name}» и кнопка «Profilni ochish» | да, 18.10.2026 |
+| `bot.person.closed` | бот человека: профиль скрыт | «{name}: Telegram bu profilni ochishga ruxsat bermadi.» | да, 18.10.2026 |
+| `bot.person.gone` | бот человека: человека нет | «Odam topilmadi.» | да, 18.10.2026 |
+| `navbat.telegram.profile` | проверки команды без username | «Profilni ochish» | да, 18.10.2026 |
 
 ## Ждёт решения владельца
 

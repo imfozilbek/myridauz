@@ -8,7 +8,7 @@ const versions = JSON.parse(fs.readFileSync(new URL('../../welcomes.json', impor
 const LOGO = /<rect x="80" y="80" width="160" height="160" rx="[\d.]+" fill="(#[0-9A-F]{6})"\/><path d="[^"]+" fill="(#[0-9A-F]{6})"\/>/u;
 
 describe('the welcome of a bot', () => {
-  // docs/36: a combo of the table only, the one that stands out of the color of the bot (lesson №312).
+  // docs/36: a combo of the table only, the one that stands out of the color of the bot (lesson №313).
   it.each([
     ['passenger', 2],
     ['driver', 5],

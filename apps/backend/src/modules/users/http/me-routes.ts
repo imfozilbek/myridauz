@@ -40,9 +40,11 @@ export function meRoutes({ deps, forget, registered }: Wiring) {
     new Hono<AppEnv>()
       .get(ME_PATH, async (context) => {
         const usersDeps = deps(context.env);
-        // The public name of the account, for the checks of the team (owner, 17.10.2026).
-        const { user } = context.get('session');
-        await usersDeps.names.keep(user.id, user.username, usersDeps.now());
+        // The public name of the account and the bot of this Mini App, for the checks of the team
+        // (owner, 17.10 and 18.10.2026). The main Mini App never asks for /me (G83).
+        const { user, app } = context.get('session');
+        if (app !== 'main')
+          await usersDeps.names.keep(user.id, { username: user.username, bot: app }, usersDeps.now());
         return context.json(await getMe(usersDeps, callerOf(context)));
       })
       // "Maʼlumotlarimni oʻchirish" (docs/30).

@@ -25,10 +25,11 @@ export const personCardSchema = z.object({
 export type PersonCard = z.infer<typeof personCardSchema>;
 
 // The Telegram account of a person in the checks of the team (owner, 17.10.2026): the public name
-// opens the profile; without one, only the number. Never shown to other people (docs/07).
+// opens the profile; without one, the link through the bot the person writes to (owner, 18.10.2026).
+// Never shown to other people (docs/07).
 export const adminTelegramPath = (userId: PersonId) => `/admin/people/${userId}/telegram`;
 export const telegramAccountSchema = z.object({
-  telegramId: z.number().int().positive(),
   username: z.string().nullable(),
+  profileLink: z.string().url(),
 });
 export type TelegramAccount = z.infer<typeof telegramAccountSchema>;

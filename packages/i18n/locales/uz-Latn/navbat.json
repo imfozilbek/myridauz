@@ -2,6 +2,7 @@
   "progress": "{n} / {m} · qarordan keyin keyingisi oʻzi ochiladi",
   "telegram.username": "Telegram: @{username}",
   "telegram.none": "Telegram: username yoʻq",
+  "telegram.profile": "Profilni ochish",
   "face.title": "Yoʻlovchi rasmi",
   "face.who": "{name} · yoʻlovchi",
   "face.minutes": "{count} daqiqa kutmoqda",

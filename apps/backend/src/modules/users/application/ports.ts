@@ -1,5 +1,6 @@
 import type { Arrival, AvatarStatus, FaceReason } from '@platform/contracts';
 import type { ImageStore } from '../../../shared/storage/image-store';
+import type { PersonBot } from '../../../shared/telegram/profile-link';
 import type { TripRelation } from '../domain/avatar-visibility';
 import type { Block, BlockEntry, User } from '../domain/user';
 
@@ -56,10 +57,13 @@ export type FaceNotifier = {
 export type TripRelations = { relation(viewerId: number, ownerId: number): Promise<TripRelation> };
 
 // The public name of the Telegram account of a person, for the team only (owner, 17.10.2026).
+// The Telegram account as a Mini App last saw it: the public name and the bot of that Mini App,
+// which knows the person and so opens their profile for the team (owner, 18.10.2026).
+export type TelegramSeen = { readonly username: string | null; readonly bot: PersonBot };
 export type TelegramNames = {
   // Kept on each opening of a Mini App; written only when it changed.
-  keep(userId: number, username: string | null, at: number): Promise<void>;
-  find(userId: number): Promise<string | null>;
+  keep(userId: number, seen: TelegramSeen, at: number): Promise<void>;
+  find(userId: number): Promise<TelegramSeen | null>;
   // «Maʼlumotlarimni oʻchirish» (docs/30).
   forget(userId: number): Promise<void>;
 };

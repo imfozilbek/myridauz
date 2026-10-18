@@ -59,7 +59,7 @@ const usersDeps = (env: Bindings): UsersDeps => ({
     avatars: avatarsOf(env),
     send: (jobs) => notify(env, jobs),
     queue: (news) => showQueue(env, news),
-    nameOf: (userId) => namesOf(env).find(userId),
+    seenOf: (userId) => namesOf(env).find(userId),
   }),
   names: namesOf(env),
   riding: (userId) => ridingOf(env, userId),
@@ -103,6 +103,9 @@ export const blockedGuard = guard;
 // Since when a person is with the brand: the card of a support question (G68).
 export const joinedAtOf = async (env: Bindings, id: number) =>
   (await usersDeps(env).users.find(id))?.createdAt;
+// The person behind a public id: their bot opens the Telegram profile for the team (owner, 18.10.2026).
+export const personByPublicId = (env: Bindings, publicId: string) =>
+  usersDeps(env).users.byPublicId(publicId);
 // The new face photos for «Navbat» of the team (G68): whose and since when.
 export const waitingFaces = async (env: Bindings) =>
   (await pendingFaces(usersDeps(env))).map((face) => ({
