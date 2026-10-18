@@ -34,20 +34,26 @@ const becomeDriver = (brand: BrandConfig) => ({
   url: `https://t.me/${brand.bots.driver}?start=${FROM_PASSENGER}`,
 });
 
-// The public bots greet with a picture: what Rida gives this person (G34, docs/95; passenger 03.10.2026).
-function welcome(brand: BrandConfig, role: 'passenger' | 'driver', chatId: number, payload: string) {
+// The words of a public bot's welcome: in its chat after /start and on its post in the main channel
+// (owner, 18.10.2026).
+export function welcomeCaption(brand: BrandConfig, role: 'passenger' | 'driver', payload = '') {
   const hello =
     role === 'driver' && payload === FROM_PASSENGER ? 'bot.driver.helloFromPassenger' : 'bot.hello';
   const about =
     role === 'driver'
       ? t('bot.driver.welcome', { bonus: formatMoney(brand.promo.amount) })
       : t('bot.passenger.welcome');
+  return [t(hello, { brand: brand.name }), about].join('\n\n');
+}
+
+// The public bots greet with a picture: what Rida gives this person (G34, docs/95; passenger 03.10.2026).
+function welcome(brand: BrandConfig, role: 'passenger' | 'driver', chatId: number, payload: string) {
   const rows = [[openButton(brand, role)], ...(role === 'passenger' ? [[becomeDriver(brand)]] : [])];
   return {
     method: 'sendPhoto',
     chat_id: chatId,
     photo: welcomePicture(brand, role),
-    caption: [t(hello, { brand: brand.name }), about].join('\n\n'),
+    caption: welcomeCaption(brand, role, payload),
     reply_markup: { inline_keyboard: rows },
   };
 }
