@@ -76,7 +76,7 @@
   koʻtaring», «Telefon kamerasi bilan skanerlang», «Joy band qiling».
 - Бонус 1 500 000 сум в сторис для водителей: решение владельца.
 - QR-плакат: отсканировать телефоном перед печатью.
-- Флаер: тексты водителя «Narxni oʻzingiz belgilaysiz» и «Har 10 daqiqada yozish shart emas» дал владелец (18.10.2026); новый ещё «va orqaga», подписи шагов с лендинга; ссылки QR сделал владелец в «Reklama havolalari» (`ad-0xi4wx`, `ad-d92sl5`). Ждёт «да» на вид; QR отсканировать перед печатью.
+- Флаер: тексты водителя «Narxni oʻzingiz belgilaysiz» и «Har 10 daqiqada yozish shart emas» дал владелец (18.10.2026); маршрут в обе стороны двумя строками (решение владельца 18.10.2026), подписи шагов с лендинга; ссылки QR сделал владелец в «Reklama havolalari» (`ad-0xi4wx`, `ad-d92sl5`). Ждёт «да» на вид; QR отсканировать перед печатью.
 
 ## Генератор
 

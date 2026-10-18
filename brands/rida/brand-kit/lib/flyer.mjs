@@ -47,15 +47,19 @@ function band(s, copy) {
     text(copy.sub, { x: M, y: 502, fill: s.light, weight: 600, size: 50, maxWidth: CW });
 }
 
-// The line of a route of the brand (docs/38): teal start, dashes, amber finish; both ways.
+// The line of a route of the brand (docs/38): teal start, dashes, amber finish. Both ways, one under the
+// other (owner, 18.10.2026); the dots of the ends stand in two columns.
 function route(from, to) {
-  const y = 650, size = 56, toW = layout(to, { size }).width, a = M + 56, b = W - M - 56 - toW - 44;
-  const start = a + 40 + layout(from, { size }).width + 34, end = b - 34, n = Math.max(1, Math.floor((end - start) / 34));
-  const dashes = Array.from({ length: n }, (_, i) => `<rect x="${start + i * 34}" y="${y - 6}" width="22" height="12" rx="6" fill="${C.teal}"/>`).join('');
+  const size = 52, widest = Math.max(layout(from, { size }).width, layout(to, { size }).width);
+  const a = M + 56, b = W - M - 48 - widest - 40;
+  const way = ([start, end], y) => {
+    const first = a + 40 + layout(start, { size }).width + 28, n = Math.max(1, Math.floor((b - 28 - first) / 34));
+    const dashes = Array.from({ length: n }, (_, i) => `<rect x="${first + i * 34}" y="${y - 6}" width="22" height="12" rx="6" fill="${C.teal}"/>`).join('');
+    return `<circle cx="${a}" cy="${y}" r="22" fill="${C.teal}"/>` + text(start, { x: a + 40, y: y + 18, fill: C.ink, size }) + dashes +
+      `<circle cx="${b}" cy="${y}" r="22" fill="${C.amber}"/>` + text(end, { x: b + 40, y: y + 18, fill: C.ink, size });
+  };
   return `<rect x="${M}" y="560" width="${CW}" height="200" rx="40" fill="${C.white}" stroke="${C.divider}" stroke-width="6"/>` +
-    `<circle cx="${a}" cy="${y}" r="24" fill="${C.teal}"/>` + text(from, { x: a + 40, y: y + 20, fill: C.ink, size }) + dashes +
-    `<circle cx="${b}" cy="${y}" r="24" fill="${C.amber}"/>` + text(to, { x: b + 40, y: y + 20, fill: C.ink, size }) +
-    text('va orqaga', { x: W / 2, y: y + 76, anchor: 'middle', fill: C.muted, weight: 600, size: 36 });
+    way([from, to], 622) + way([to, from], 702);
 }
 
 // Three screens of the Mini App of a side (e2e/stand/flyer-shots.spec.ts), each in a phone, the step under it.
