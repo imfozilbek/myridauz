@@ -1,6 +1,7 @@
-import { appHost, type BrandChannel, type BrandConfig } from '@platform/brands';
+import { type BrandChannel, type BrandConfig } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { NotificationJob } from '../../notifications';
+import { botAppUrl } from '../../../shared/telegram/open-button';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
@@ -15,7 +16,7 @@ export const zoneMessage =
     markup: {
       inline_keyboard: [
         [{ text: t('bot.zone.join'), url: zone.link }],
-        [{ text: t('bot.zone.find'), web_app: { url: `https://${appHost(brand, 'passenger')}/` } }],
+        [{ text: t('bot.zone.find'), web_app: { url: botAppUrl(brand, 'passenger', 'zone') } }],
       ],
     },
   });

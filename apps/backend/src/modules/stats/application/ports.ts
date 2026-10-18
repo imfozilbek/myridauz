@@ -4,6 +4,7 @@ import type { ArrivalCount } from '../domain/arrivals';
 import type { BotEvents } from '../domain/bot-load';
 import type { FeelingRows } from '../domain/feelings';
 import type { Counter } from '../domain/counters';
+import type { EntryCount } from '../domain/entries';
 import type { MarkCount, SearchCount } from '../domain/rost';
 
 // Errors (docs/29): a crash of a screen, a failure of the server (G42) and an error answer of the API.
@@ -16,6 +17,8 @@ export type EventSource = {
   errorsSince(hours: number): Promise<number>;
   // «Rost» (G69, docs/123): the sessions that came with a mark, and the searches by direction.
   marks(days: number): Promise<MarkCount[]>;
+  // How the sessions began (G87 V4): a button of a bot message, a direct visit or a link.
+  entries(days: number): Promise<EntryCount[]>;
   searches(days: number): Promise<SearchCount[]>;
   // The bots under load (G85 T1): their answers from Telegram, the queue, the busiest seconds.
   bots(days: number): Promise<BotEvents>;

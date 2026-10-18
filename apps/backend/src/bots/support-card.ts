@@ -1,4 +1,4 @@
-import { appHost, type BrandConfig } from '@platform/brands';
+import { type BrandConfig } from '@platform/brands';
 import { DAY_MS, formatPlate, LINK_ID, OPEN_LINK, TEAM_TRIPS_SECTION, TRIP_LINK } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { endNames } from '../shared/places/end-names';
@@ -7,6 +7,7 @@ import { shortDay } from '../shared/telegram/route-news';
 import type { Asker } from './support-asker';
 import { mediaLabel } from './support-talk';
 import type { Media } from '../shared/telegram/telegram-files';
+import { botAppUrl } from '../shared/telegram/open-button';
 
 const { t, formatTime, formatNumber } = createI18n(DEFAULT_LOCALE);
 const MONTH_DAYS = 30;
@@ -81,7 +82,7 @@ export function supportButtons(brand: BrandConfig, asker: Asker, wroteBefore: bo
   const first = wroteBefore ? [reply, history] : [reply];
   const live = asker.booking?.trip ?? asker.trip;
   if (!live || !LINK_ID.test(live.id)) return { inline_keyboard: [first] };
-  const url = `https://${appHost(brand, 'admin')}/?${OPEN_LINK}=${TEAM_TRIPS_SECTION}&${TRIP_LINK}=${live.id}`;
+  const url = botAppUrl(brand, 'admin', 'support', { [OPEN_LINK]: TEAM_TRIPS_SECTION, [TRIP_LINK]: live.id });
   const open = {
     text: t(asker.booking ? 'bot.supportCard.openBooking' : 'bot.supportCard.openTrip'),
     web_app: { url },

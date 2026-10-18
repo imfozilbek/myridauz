@@ -123,6 +123,8 @@ const statsOf = (period: string) => {
       { what: 'booking', reason: 'plans', count: 5 * week },
       { what: 'trip', reason: 'empty', count: 2 * week },
     ],
+    // G87 V4: how the sessions began.
+    entries: { bot: 64 * week, direct: 120 * week, link: 18 * week },
     at: Date.now(),
   };
 };

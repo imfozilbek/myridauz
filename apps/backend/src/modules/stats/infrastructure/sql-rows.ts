@@ -21,6 +21,8 @@ export const totalRow = z.object({ count: number });
 // «Rost» (G69): the sessions of a mark, the searches of a direction with their result.
 export const markRow = z.object({ via: text, count: number });
 export const searchRow = z.object({ route: text, result: text, count: number });
+// G87 V4: the sessions of one way in.
+export const entryRow = z.object({ entry: text, count: number });
 // G85 T1: the events of the bots; amount: the operations of the queue a row stands for.
 export const botRow = z.object({
   name: text,

@@ -1,5 +1,6 @@
 import { appHost, type BotWelcome, type BrandConfig } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { botAppUrl } from '../shared/telegram/open-button';
 import type { BotRole } from './bot-roles';
 
 const { t, formatMoney } = createI18n(DEFAULT_LOCALE);
@@ -16,9 +17,10 @@ const FOLLOW_PAYLOAD = /^follow_([A-Za-z0-9_-]{43})$/u;
 const FOLLOW_PARAM = 'follow';
 
 const miniAppUrl = (brand: BrandConfig, role: BotRole) => `https://${appHost(brand, role)}`;
-export const openButton = (brand: BrandConfig, role: BotRole) => ({
+// «Ochish» under a bot message: the welcome (start) or the answer to any other text (reply), G87 V4.
+export const openButton = (brand: BrandConfig, role: BotRole, kind: 'start' | 'reply') => ({
   text: t('bot.open'),
-  web_app: { url: miniAppUrl(brand, role) },
+  web_app: { url: botAppUrl(brand, role, kind) },
 });
 
 // The menu button next to the input field: its own name, chosen by the owner (03.10.2026).
@@ -42,7 +44,7 @@ function welcome(brand: BrandConfig, role: 'passenger' | 'driver', chatId: numbe
     role === 'driver'
       ? t('bot.driver.welcome', { bonus: formatMoney(brand.promo.amount) })
       : t('bot.passenger.welcome');
-  const rows = [[openButton(brand, role)], ...(role === 'passenger' ? [[becomeDriver(brand)]] : [])];
+  const rows = [[openButton(brand, role, 'start')], ...(role === 'passenger' ? [[becomeDriver(brand)]] : [])];
   return {
     method: 'sendPhoto',
     chat_id: chatId,
@@ -65,9 +67,9 @@ type StartContext = {
 // The answer to /start goes back in the webhook response: no extra request to Telegram (docs/03).
 export function startReply({ brand, role, chatId, access, payload = '' }: StartContext) {
   if (access === 'blocked') return { method: 'sendMessage', chat_id: chatId, text: t('bot.blocked') };
-  const follow = FOLLOW_PAYLOAD.exec(payload);
+  const follow = FOLLOW_PAYLOAD.exec(payload)?.[1];
   if (role === 'passenger' && follow) {
-    const url = `${miniAppUrl(brand, role)}/?${FOLLOW_PARAM}=${follow[1]}`;
+    const url = botAppUrl(brand, role, FOLLOW_PARAM, { [FOLLOW_PARAM]: follow });
     const button = { text: t('bot.share.follow'), web_app: { url } };
     return {
       method: 'sendMessage',
@@ -81,6 +83,6 @@ export function startReply({ brand, role, chatId, access, payload = '' }: StartC
     method: 'sendMessage',
     chat_id: chatId,
     text: t('bot.admin.start', { brand: brand.name }),
-    reply_markup: { inline_keyboard: [[openButton(brand, role)]] },
+    reply_markup: { inline_keyboard: [[openButton(brand, role, 'start')]] },
   };
 }

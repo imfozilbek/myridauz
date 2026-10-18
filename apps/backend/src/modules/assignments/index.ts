@@ -1,4 +1,3 @@
-import { appHost } from '@platform/brands';
 import { DAY_MS, MINUTE_MS, tashkentDate, teamWaitMs } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../env';
@@ -16,6 +15,7 @@ import { d1Assignments } from './infrastructure/d1-assignments';
 import { digestText } from './infrastructure/digest-text';
 import { createMemoryAssignments } from './infrastructure/memory-assignments';
 import { brandOf } from '../../shared/brand/brand-of';
+import { botAppUrl } from '../../shared/telegram/open-button';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 const localAssignments = createMemoryAssignments();
@@ -41,7 +41,7 @@ const deps = (env: Bindings, sources: Sources = NO_SOURCES): DigestDeps => ({
       ),
     );
     const text = digestText(day, rows, numbers, (id) => names.get(id) ?? String(id));
-    const url = `https://${appHost(brandOf(env), 'admin')}/?stats=day`;
+    const url = botAppUrl(brandOf(env), 'admin', 'summary', { stats: 'day' });
     const markup = { inline_keyboard: [[{ text: t('bot.summary.open'), web_app: { url } }]] };
     const job = (chatId: number) => ({
       bot: 'admin' as const,

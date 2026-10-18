@@ -1,9 +1,10 @@
-import { appHost, type BrandConfig } from '@platform/brands';
+import { type BrandConfig } from '@platform/brands';
 import { formatPlate } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Card, Ring } from '../../notifications';
 import { bold, escapeHtml, mono } from '../../../shared/telegram/html';
 import type { Application } from '../domain/application';
+import { botAppUrl } from '../../../shared/telegram/open-button';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
@@ -40,7 +41,7 @@ type Facts = {
 };
 
 export function applicationCard({ brand, application, fixedPlate, details, buttons }: Facts): Card {
-  const open = { text: t('bot.open'), web_app: { url: `https://${appHost(brand, 'driver')}` } };
+  const open = { text: t('bot.open'), web_app: { url: botAppUrl(brand, 'driver', 'application') } };
   const head = [
     bold(t('bot.dapp.title')),
     stepsLine(application.status),

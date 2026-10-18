@@ -98,5 +98,6 @@ export async function mockTeamWaitlist(page: Page, open = true) {
     ...{ period: 'week', numbers, arrivals: { sources: [], platforms: [] }, events: 'on' },
     feelings: { reviews: 0, average: null, lowShare: 0, tags: [], reasons: [] },
     ...{ funnels: team.funnels, errors: [], bots: [], queueOps: 0, cancelReasons: [], at: Date.now() },
+    entries: { bot: 0, direct: 0, link: 0 },
   });
 }

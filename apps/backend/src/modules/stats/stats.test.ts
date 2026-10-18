@@ -33,6 +33,7 @@ function setup(events: EventSource | null) {
     marks: (days) => ((queries += 1), events.marks(days)),
     searches: (days) => ((queries += 1), events.searches(days)),
     bots: (days) => ((queries += 1), events.bots(days)),
+    entries: (days) => ((queries += 1), events.entries(days)),
   };
   const deps: StatsDeps = {
     events: counting,
@@ -90,6 +91,7 @@ describe('readStats (docs/29)', () => {
       marks: async () => [],
       searches: async () => [],
       bots: async () => ({ rows: [], peaks: [] }),
+      entries: async () => [],
     };
     expect(await readStats(setup(broken).deps, 'day')).toMatchObject({
       events: 'failed',

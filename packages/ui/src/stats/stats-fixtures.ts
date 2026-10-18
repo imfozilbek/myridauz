@@ -122,5 +122,14 @@ export const statsOf = (period: StatsPeriod, events: Stats['events'] = 'on'): St
           { what: 'trip', reason: 'empty', count: period === 'day' ? 2 : 12 },
         ]
       : [],
+  // G87 V4: how the sessions began.
+  entries:
+    events === 'on'
+      ? {
+          bot: period === 'day' ? 64 : 410,
+          direct: period === 'day' ? 120 : 790,
+          link: period === 'day' ? 18 : 95,
+        }
+      : { bot: 0, direct: 0, link: 0 },
   at: Date.parse('2026-10-05T09:30:00Z'),
 });

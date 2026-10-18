@@ -1,8 +1,9 @@
-import { appHost, type BrandConfig } from '@platform/brands';
+import { type BrandConfig } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Card, Ring } from '../../notifications';
 import { bold, escapeHtml, italic } from '../../../shared/telegram/html';
 import type { Case, Queue } from '../domain/queue';
+import { botAppUrl } from '../../../shared/telegram/open-button';
 
 const { t, formatTime } = createI18n(DEFAULT_LOCALE);
 
@@ -34,7 +35,7 @@ export function navbatCard(brand: BrandConfig, memberId: number, queue: Queue, n
         waitLine(oldest.minutes, brand.moderation.ownerMinutes),
       ]
     : [bold(t('bot.navbat.empty'))];
-  const start = { text: t('bot.navbat.start'), web_app: { url: `https://${appHost(brand, 'admin')}/` } };
+  const start = { text: t('bot.navbat.start'), web_app: { url: botAppUrl(brand, 'admin', 'navbat') } };
   return {
     bot: 'admin',
     chatId: memberId,

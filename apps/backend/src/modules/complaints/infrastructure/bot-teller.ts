@@ -1,9 +1,10 @@
-import { appHost, type BrandConfig } from '@platform/brands';
+import { type BrandConfig } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { NotificationJob } from '../../notifications';
 import type { QueueNews } from '../../team-queue';
 import type { ComplaintTeller } from '../application/ports';
 import { isHigh } from '../domain/complaint';
+import { botAppUrl } from '../../../shared/telegram/open-button';
 
 const { t, formatDate } = createI18n(DEFAULT_LOCALE);
 
@@ -21,7 +22,7 @@ export const botTeller = ({ brand, send, queue }: Wiring): ComplaintTeller => {
   return {
     team: async (complaint, against) => {
       if (!isHigh(complaint.reasons)) return queue({ kind: 'new' });
-      const url = `https://${appHost(brand, 'admin')}/?complaint=${complaint.id}`;
+      const url = botAppUrl(brand, 'admin', 'complaint', { complaint: complaint.id });
       const reason = complaint.reasons.map((code) => t(`complaints.reason.${code}`)).join(', ');
       const markup = { inline_keyboard: [[{ text: t('bot.complaint.open'), web_app: { url } }]] };
       const text = t('bot.complaint.urgent', { reason, name: against.firstName, id: against.publicId });

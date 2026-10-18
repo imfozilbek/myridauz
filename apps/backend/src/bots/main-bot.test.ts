@@ -26,7 +26,9 @@ describe('the main bot of the waitlist (G83, docs/181)', () => {
     expect(answer.photo).toBe(`https://${brand.domain}/bot/main-welcome.png?v=${brand.welcomes.main}`);
     expect(answer.caption).toContain('Assalomu alaykum, Ali! 👋');
     expect(answer.caption).toContain('🔎 Guruhlardan kerakli eʼlonni topish qiyinmi?');
-    expect(answer.reply_markup.inline_keyboard[0]?.[0]?.web_app?.url).toBe(`https://main.${brand.domain}/`);
+    expect(answer.reply_markup.inline_keyboard[0]?.[0]?.web_app?.url).toBe(
+      `https://main.${brand.domain}/?via=bot-home`,
+    );
     expect(answer.reply_markup.inline_keyboard[1]?.[0]?.url).toBe(`https://t.me/${brand.mainChannel}`);
   });
 

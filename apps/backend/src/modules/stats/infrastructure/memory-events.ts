@@ -1,8 +1,9 @@
-import { HOUR_MS, type ErrorRow } from '@platform/contracts';
+import { BOT_VIA_PREFIX, HOUR_MS, type ErrorRow } from '@platform/contracts';
 import type { DataPoint } from '../../analytics';
 import { ERROR_EVENTS, type EventSource } from '../application/ports';
 import type { BotRow } from '../domain/bot-load';
 import type { Counter } from '../domain/counters';
+import { entryOf } from '../domain/entries';
 import { toErrorRow } from './sql-rows';
 
 const DAY = 24 * HOUR_MS;
@@ -54,9 +55,21 @@ export function memoryEvents(rows: readonly DataPoint[], now: () => number): Eve
     errorsSince: async (hours) => recent(hours * HOUR_MS).filter(isError).length,
     marks: async (days) =>
       group(
-        recent(days * DAY).filter((row) => row.blobs[0] === 'screen_open' && row.blobs[10]),
+        recent(days * DAY).filter(
+          (row) =>
+            row.blobs[0] === 'screen_open' && row.blobs[10] && !row.blobs[10].startsWith(BOT_VIA_PREFIX),
+        ),
         ({ blobs }) => blobs[10] ?? '',
         (same) => ({ via: same[0]?.blobs[10] ?? '', count: new Set(same.map((row) => row.blobs[4])).size }),
+      ),
+    entries: async (days) =>
+      group(
+        recent(days * DAY).filter((row) => row.blobs[0] === 'screen_open' && row.blobs[5]),
+        ({ blobs }) => entryOf(blobs[5] ?? '', blobs[10] ?? ''),
+        (same) => ({
+          entry: entryOf(same[0]?.blobs[5] ?? '', same[0]?.blobs[10] ?? ''),
+          count: new Set(same.map((row) => row.blobs[4])).size,
+        }),
       ),
     searches: async (days) =>
       group(

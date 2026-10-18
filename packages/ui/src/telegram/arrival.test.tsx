@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { launchArrival } from './arrival';
+import { launchArrival, sessionArrival } from './arrival';
 import { startParam } from './launch-param';
 
 const open = (start: string | null) =>
@@ -26,5 +26,21 @@ describe('where the person came from (G55, docs/116)', () => {
     expect(launchArrival('browser')).toEqual({ source: 'direct', client: 'browser' });
     open('find_1703_1714');
     expect(launchArrival('android 9.6')).toEqual({ source: 'find', client: 'android 9.6' });
+  });
+});
+
+// G87 V4: a button of a bot message opens the app with ?via=bot-<kind>.
+describe('a tap on a bot message (G87 V4, docs/116)', () => {
+  it('marks the session, never the first touch of the registration', () => {
+    window.history.replaceState(null, '', '/?booking=6f1c2f7e&via=bot-booking');
+    expect(sessionArrival('ios 9.6')).toEqual({ source: 'direct', via: 'bot-booking', client: 'ios 9.6' });
+    expect(launchArrival('ios 9.6')).toEqual({ source: 'direct', client: 'ios 9.6' });
+  });
+
+  it('keeps the mark of a link first and drops a mark that is no bot message', () => {
+    window.history.replaceState(null, '', '/?via=bot-chat#tgWebAppStartParam=__ad-insta1');
+    expect(sessionArrival('ios 9.6')).toMatchObject({ via: 'ad-insta1' });
+    window.history.replaceState(null, '', '/?via=ad-insta1');
+    expect(sessionArrival('ios 9.6')).toEqual({ source: 'direct', client: 'ios 9.6' });
   });
 });

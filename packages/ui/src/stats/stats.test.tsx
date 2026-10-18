@@ -36,6 +36,10 @@ describe('Statistika of the team (docs/29)', () => {
     expect(passenger.className).toContain('manage-danger');
     expect(screen.getByText('429: 0 · yoʻqoldi: 0 · soniyada: 6').className).not.toContain('manage-danger');
     expect(screen.getByText('Navbat amallari, kuniga')).toBeTruthy();
+    // G87 V4: how the sessions began, a tap on a bot message apart from a direct visit.
+    expect(screen.getByText('Ilovaga kirishlar')).toBeTruthy();
+    expect(screen.getByText('Havola orqali')).toBeTruthy();
+    expect(screen.getAllByText('64').length).toBeGreaterThan(0);
     // G87 V3: why seats and trips went, in the words of «Nima uchun?».
     expect(screen.getByText('Bekor qilish sabablari')).toBeTruthy();
     expect(screen.getByText('Rejam oʻzgardi')).toBeTruthy();
@@ -62,5 +66,6 @@ describe('Statistika of the team (docs/29)', () => {
     ).toBeTruthy();
     expect(screen.queryByText('Ilova buzilishlari')).toBeNull();
     expect(screen.queryByText('Botlar xabarlari')).toBeNull();
+    expect(screen.queryByText('Ilovaga kirishlar')).toBeNull();
   });
 });

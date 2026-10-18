@@ -64,6 +64,8 @@ describe('the celebration of a moment', () => {
   });
 
   it('greets a new passenger once at a launch without a link, over the page', async () => {
+    // «Ochish» of a bot message carries only its mark: no link (G87 V4).
+    window.history.replaceState(null, '', '/?via=bot-home');
     const offered = vi.fn<GrowthClient['offered']>(async () => undefined);
     const clients = testClients({ growth: { moment: async () => JOIN, offered } });
     renderMarket(
@@ -84,5 +86,6 @@ describe('the celebration of a moment', () => {
       clients,
     );
     expect(screen.getByText('Asosiy')).toBeTruthy();
+    window.history.replaceState(null, '', '/');
   });
 });

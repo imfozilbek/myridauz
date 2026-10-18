@@ -25,6 +25,13 @@ export const arrivalSchema = z.object({
 });
 export type Arrival = z.infer<typeof arrivalSchema>;
 
+// A button of a bot message opens the Mini App with ?via=bot-<kind> (G87 V4): «Statistika» tells a
+// tap on a bot message from a direct visit. Only the session counts it, never the first touch.
+export const VIA_PARAM = 'via';
+export const BOT_VIA_PREFIX = 'bot-';
+export const botVia = (kind: string) =>
+  `${BOT_VIA_PREFIX}${kind.toLowerCase().replace(/[^a-z0-9-]+/g, '-')}`.slice(0, VIA_MAX);
+
 // A link with its mark: the link stays as it was, the screens of links read it without the mark.
 export const withVia = (start: string, via: string) => `${start}${VIA_SEPARATOR}${via}`;
 // The start of a bot with a mark alone: the Mini App opens on its home (an ad, a post, a card).

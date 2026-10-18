@@ -1,9 +1,10 @@
-import { appHost, type BrandConfig } from '@platform/brands';
+import { type BrandConfig } from '@platform/brands';
 import { isQuietTime, STARS } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { NotificationJob } from '../../notifications';
 import { driverTripCard, passengerTripCard } from '../../../shared/telegram/card-keys';
 import type { RatingsDeps } from '../application/ports';
+import { botAppUrl } from '../../../shared/telegram/open-button';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
@@ -23,7 +24,7 @@ export const botAsker =
       text: `${value} ⭐`,
       callback_data: `${RATE_PREFIX}:${ask.bookingId}:${value}`,
     }));
-    const url = `https://${appHost(brand, rater)}/?${REVIEW_PARAM}=${ask.bookingId}`;
+    const url = botAppUrl(brand, rater, 'rating', { [REVIEW_PARAM]: ask.bookingId });
     const text = t(reminder ? 'bot.rating.remind' : 'bot.rating.ask', { name: rateeName });
     const markup = { inline_keyboard: [stars, [{ text: t('bot.rating.review'), web_app: { url } }]] };
     const card = rater === 'passenger' ? passengerTripCard(ask.bookingId) : driverTripCard(tripId);

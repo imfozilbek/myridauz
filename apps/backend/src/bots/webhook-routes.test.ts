@@ -6,6 +6,8 @@ import { botEnv, botSender, fakeTelegram } from './test-bot';
 import { publicIdOf } from '../test-people';
 
 const brand = loadBrand();
+// The Mini App under a bot message, with the mark of the message (G87 V4).
+const app = (role: string, query: string) => `https://${role}.${brand.domain}/?${query}`;
 const { formatMoney } = createI18n(DEFAULT_LOCALE);
 type Reply = { text: string; reply_markup: { inline_keyboard: { web_app: { url: string } }[][] } };
 type PhotoReply = Reply & { photo: string; caption: string };
@@ -28,7 +30,7 @@ describe('POST /telegram/:role', () => {
     expect(reply.caption).toContain('Yoʻlovchi sifatida siz:');
     expect(reply.reply_markup.inline_keyboard[0]?.[0]).toEqual({
       text: 'Ochish',
-      web_app: { url: `https://passenger.${brand.domain}` },
+      web_app: { url: app('passenger', 'via=bot-start') },
     });
   });
 
@@ -44,7 +46,7 @@ describe('POST /telegram/:role', () => {
 
   it('opens the admin Mini App only for the team; others are sent to the support bot (docs/50)', async () => {
     const team = (await (await send('admin', start(7))).json()) as Reply;
-    expect(team.reply_markup.inline_keyboard[0]?.[0]?.web_app.url).toBe(`https://admin.${brand.domain}`);
+    expect(team.reply_markup.inline_keyboard[0]?.[0]?.web_app.url).toBe(app('admin', 'via=bot-start'));
     const stranger = (await (await send('admin', start(9))).json()) as LinkReply;
     expect(stranger.text).toContain('yordam xizmatiga yozing');
     expect(stranger.reply_markup.inline_keyboard[0]?.[0]?.url).toBe(`https://t.me/${brand.bots.support}`);
@@ -90,9 +92,7 @@ describe('POST /telegram/:role', () => {
     for (const role of ['passenger', 'driver'] as const) {
       const reply = (await (await send(role, start(3, '/hujjatlar'))).json()) as Reply;
       const urls = reply.reply_markup.inline_keyboard.map((row) => row[0]?.web_app.url);
-      expect(urls).toEqual(
-        ['offer', 'privacy', 'consent'].map((doc) => `https://${role}.${brand.domain}/?doc=${doc}`),
-      );
+      expect(urls).toEqual(['offer', 'privacy', 'consent'].map((doc) => app(role, `doc=${doc}&via=bot-doc`)));
     }
     const admin = (await (await send('admin', start(9, '/hujjatlar'))).json()) as { text?: string };
     expect(admin.text).not.toContain('Ommaviy oferta');
@@ -105,7 +105,7 @@ describe('POST /telegram/:role', () => {
     expect(reply.caption.startsWith(`Assalomu alaykum! ${brand.name}: `)).toBe(true);
     expect(reply.caption).toContain(`Boshlash uchun ${formatMoney(brand.promo.amount)} bonus.`);
     expect(reply.reply_markup.inline_keyboard).toEqual([
-      [{ text: 'Ochish', web_app: { url: `https://driver.${brand.domain}` } }],
+      [{ text: 'Ochish', web_app: { url: app('driver', 'via=bot-start') } }],
     ]);
     const fromPassenger = (await (await send('driver', start(1, '/start from_passenger'))).json()) as {
       caption: string;
@@ -121,7 +121,7 @@ describe('POST /telegram/:role', () => {
       expect(reply.text).toContain(`@${brand.bots.support} ga yozing`);
       expect(reply.reply_markup.inline_keyboard).toEqual([
         [
-          { text: 'Ochish', web_app: { url: `https://${role}.${brand.domain}` } },
+          { text: 'Ochish', web_app: { url: app(role, 'via=bot-reply') } },
           { text: 'Yordam', url: `https://t.me/${brand.bots.support}` },
         ],
       ]);

@@ -5,6 +5,7 @@ import { ManageGroup, ManageNote, ManageRow } from '../manage/manage-page';
 import { NumberTiles } from '../team/number-tiles';
 import { ArrivalsSections } from './stats-arrivals';
 import { BotsSection } from './stats-bots';
+import { EntriesSection } from './stats-entries';
 import { ErrorsSections } from './stats-errors';
 import { CancelReasonsSection, FeelingsSection } from './stats-feelings';
 
@@ -42,6 +43,7 @@ export function StatsSections({ stats, gold }: { readonly stats: Stats; readonly
       {funnels.slice(listFunnels).map((funnel, index) => (
         <FunnelSection key={funnel.id} funnel={funnel} hint={listFunnels === 0 && index === 0} />
       ))}
+      {stats.events === 'on' ? <EntriesSection entries={stats.entries} /> : null}
       {stats.events === 'on' ? <CancelReasonsSection reasons={stats.cancelReasons} /> : null}
       {stats.events === 'on' ? <ErrorsSections errors={stats.errors} /> : null}
       {stats.events === 'on' ? <BotsSection bots={stats.bots} queueOps={stats.queueOps} /> : null}

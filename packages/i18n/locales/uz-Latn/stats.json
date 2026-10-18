@@ -87,5 +87,9 @@
   "cancel.title": "Bekor qilish sabablari",
   "cancel.what.booking": "Joy bekor qilindi",
   "cancel.what.trip": "Safar bekor qilindi",
-  "cancel.what.account": "Hisob oʻchirildi"
+  "cancel.what.account": "Hisob oʻchirildi",
+  "entries.title": "Ilovaga kirishlar",
+  "entries.bot": "Bot xabaridan",
+  "entries.direct": "Toʻgʻridan toʻgʻri",
+  "entries.link": "Havola orqali"
 }

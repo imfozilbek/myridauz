@@ -118,6 +118,13 @@ export type Feelings = z.infer<typeof feelingsSchema>;
 export const cancelReasonCountSchema = z.object({ ...cancelReasonFields, count });
 export type CancelReasonCount = z.infer<typeof cancelReasonCountSchema>;
 
+// G87 V4 (docs/116): how the sessions of the period began: a button of a bot message, a direct visit
+// (the menu button, the profile of the bot) or a link (a channel, an ad, a friend).
+export const ENTRIES = ['bot', 'direct', 'link'] as const;
+export type Entry = (typeof ENTRIES)[number];
+export const entriesSchema = z.object({ bot: count, direct: count, link: count });
+export type Entries = z.infer<typeof entriesSchema>;
+
 export const statsSchema = z.object({
   period: z.enum(STATS_PERIODS),
   numbers: z.record(z.enum(MAIN_NUMBERS), count),
@@ -130,6 +137,7 @@ export const statsSchema = z.object({
   errors: z.array(errorRowSchema),
   bots: z.array(botLoadSchema),
   cancelReasons: z.array(cancelReasonCountSchema),
+  entries: entriesSchema,
   queueOps: count,
   at: z.number().int(),
 });

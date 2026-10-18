@@ -1,4 +1,4 @@
-import { splitStart } from '@platform/contracts';
+import { BOT_VIA_PREFIX, splitStart, VIA_PARAM, VIA_PATTERN } from '@platform/contracts';
 import { useEffect } from 'react';
 
 // A bot button opens the Mini App with a parameter: a chat (docs/07) or a shared trip (docs/43).
@@ -32,6 +32,12 @@ export function startParam(): string | null {
 export function startVia(): string | null {
   const raw = rawStart();
   return raw === null ? null : splitStart(raw).via;
+}
+
+// The mark of the bot message whose button opened the app: ?via=bot-<kind> (G87 V4, docs/116).
+export function messageVia(): string | null {
+  const via = new URLSearchParams(window.location.search).get(VIA_PARAM);
+  return via !== null && via.startsWith(BOT_VIA_PREFIX) && VIA_PATTERN.test(via) ? via : null;
 }
 
 // The mark of a link opened inside the app (G69, docs/123): «Men ham yoʻlga chiqaman» of a followed

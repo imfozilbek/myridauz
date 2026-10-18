@@ -11,6 +11,6 @@ const { t } = createI18n(DEFAULT_LOCALE);
 export function noRepliesReply(brand: BrandConfig, role: 'passenger' | 'driver' | 'main', chatId: number) {
   const help = { text: t('bot.help'), url: supportUrl(brand) };
   return sendMessage(chatId, t('bot.noReplies', { supportBot: brand.bots.support }), {
-    inline_keyboard: [[openButton(brand, role), help]],
+    inline_keyboard: [[openButton(brand, role, 'reply'), help]],
   });
 }

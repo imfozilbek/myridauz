@@ -1,4 +1,3 @@
-import { appHost } from '@platform/brands';
 import { COMPLAIN_BELOW_STARS, STARS } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { COMPLAIN_PARAM, RATE_PREFIX, rateFromBot, REVIEW_PARAM } from '../modules/ratings';
@@ -7,6 +6,7 @@ import { botToken } from '../shared/telegram/bot-config';
 import { callTelegram } from '../shared/telegram/telegram-api';
 import { answerQuery as answer, type BotContext } from './bot-context';
 import type { BotCallback } from './telegram-update';
+import { botAppUrl } from '../shared/telegram/open-button';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
@@ -26,10 +26,17 @@ export async function onRatingCallback(
   if ((await rateFromBot(context.env, query.from.id, bookingId, stars)) !== 'ok')
     return answer(query, t('bot.rating.late'));
   if (!query.message) return answer(query);
-  const app = `https://${appHost(context.brand, role)}/`;
-  const review = [{ text: t('bot.rating.review'), web_app: { url: `${app}?${REVIEW_PARAM}=${bookingId}` } }];
+  const review = [
+    {
+      text: t('bot.rating.review'),
+      web_app: { url: botAppUrl(context.brand, role, 'rating', { [REVIEW_PARAM]: bookingId }) },
+    },
+  ];
   const complain = [
-    { text: t('bot.rating.complain'), web_app: { url: `${app}?${COMPLAIN_PARAM}=${bookingId}` } },
+    {
+      text: t('bot.rating.complain'),
+      web_app: { url: botAppUrl(context.brand, role, 'rating', { [COMPLAIN_PARAM]: bookingId }) },
+    },
   ];
   await callTelegram(context.fetch, token, 'editMessageText', {
     chat_id: query.message.chat.id,

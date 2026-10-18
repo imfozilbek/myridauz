@@ -1,8 +1,10 @@
+import { BOT_VIA_PREFIX } from '@platform/contracts';
 import type { Fetch } from '../../../shared/telegram/telegram-api';
 import { ERROR_EVENTS, type EventSource } from '../application/ports';
 import {
   botRow,
   counterRow,
+  entryRow,
   errorRow,
   markRow,
   peakRow,
@@ -66,12 +68,24 @@ export function analyticsSql({ accountId, token, dataset, fetch }: Options): Eve
         `WHERE ${within('HOUR', hours)} AND blob1 IN (${list(ERROR_EVENTS)})`;
       return sqlAnswerSchema(totalRow).parse(await query(sql)).data[0]?.count ?? 0;
     },
-    // blob11: the mark of the first screen of a session (G55); one session counts once.
+    // blob11: the mark of the first screen of a session (G55); one session counts once. The marks of
+    // bot messages are no source of people (G87 V4).
     marks: async (days) => {
       const sql =
         `SELECT blob11 AS via, count(DISTINCT blob5) AS count FROM ${dataset} WHERE ${within('DAY', days)} ` +
-        `AND blob1 = 'screen_open' AND blob11 != '' GROUP BY via ORDER BY count DESC LIMIT ${TOP_MARKS}`;
+        `AND blob1 = 'screen_open' AND blob11 != '' AND NOT startsWith(blob11, '${BOT_VIA_PREFIX}') ` +
+        `GROUP BY via ORDER BY count DESC LIMIT ${TOP_MARKS}`;
       return sqlAnswerSchema(markRow).parse(await query(sql)).data;
+    },
+    // G87 V4: the first screens of the sessions by their way in, as entryOf (domain/entries.ts) tells.
+    entries: async (days) => {
+      const entry =
+        `if(startsWith(blob11, '${BOT_VIA_PREFIX}'), 'bot', ` +
+        `if(blob6 = 'direct' AND blob11 = '', 'direct', 'link'))`;
+      const sql =
+        `SELECT ${entry} AS entry, count(DISTINCT blob5) AS count FROM ${dataset} ` +
+        `WHERE ${within('DAY', days)} AND blob1 = 'screen_open' AND blob6 != '' GROUP BY entry`;
+      return sqlAnswerSchema(entryRow).parse(await query(sql)).data;
     },
     // blob6: found or empty, blob7: the two regions of the search (G69).
     searches: async (days) => {

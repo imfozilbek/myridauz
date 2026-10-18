@@ -1,8 +1,9 @@
-import { appHost, type BrandConfig } from '@platform/brands';
+import type { BrandConfig } from '@platform/brands';
 import { OPEN_LINK, type AttentionSign } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { News } from '../../notifications';
 import { bold, italic } from '../../../shared/telegram/html';
+import { botAppUrl } from '../../../shared/telegram/open-button';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
@@ -23,7 +24,6 @@ const PEOPLE_SECTION = 'people';
 // «Diqqat» of the owner (mockup g68/4): one quiet card a day, its lines the signs of the day; only
 // errors and a late case ring under it.
 export function diqqatNews(brand: BrandConfig, ownerId: number, signal: Signal, now: number): News {
-  const app = `https://${appHost(brand, 'admin')}/`;
   return {
     bot: 'admin',
     chatId: ownerId,
@@ -34,8 +34,14 @@ export function diqqatNews(brand: BrandConfig, ownerId: number, signal: Signal, 
     markup: {
       inline_keyboard: [
         [
-          { text: t('bot.diqqat.stats'), web_app: { url: `${app}?stats=day` } },
-          { text: t('bot.diqqat.people'), web_app: { url: `${app}?${OPEN_LINK}=${PEOPLE_SECTION}` } },
+          {
+            text: t('bot.diqqat.stats'),
+            web_app: { url: botAppUrl(brand, 'admin', 'diqqat', { stats: 'day' }) },
+          },
+          {
+            text: t('bot.diqqat.people'),
+            web_app: { url: botAppUrl(brand, 'admin', 'diqqat', { [OPEN_LINK]: PEOPLE_SECTION }) },
+          },
         ],
       ],
     },

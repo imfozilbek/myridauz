@@ -1,4 +1,4 @@
-import { appHost, type BrandConfig } from '@platform/brands';
+import { type BrandConfig } from '@platform/brands';
 import {
   formatPlate,
   hourLabel,
@@ -13,6 +13,7 @@ import type { QueueNews } from '../../team-queue';
 import type { Application } from '../domain/application';
 import type { Bonus, ModerationNotifier } from '../application/ports';
 import { applicationCard, decisionRing } from './application-card';
+import { botAppUrl } from '../../../shared/telegram/open-button';
 
 const { t, formatDate, formatMoney } = createI18n(DEFAULT_LOCALE);
 
@@ -55,7 +56,7 @@ function receivedText(brand: BrandConfig, sentAt: number): string {
 function approvedParts(brand: BrandConfig) {
   const publish = {
     text: t('bot.driver.publish'),
-    web_app: { url: `https://${appHost(brand, 'driver')}/?${OPEN_LINK}=${NEW_TRIP_SECTION}` },
+    web_app: { url: botAppUrl(brand, 'driver', 'approved', { [OPEN_LINK]: NEW_TRIP_SECTION }) },
   };
   return {
     channel: t('bot.driver.channel', { username: brand.mainChannel }),
