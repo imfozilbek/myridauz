@@ -1,6 +1,7 @@
 import { FUNNELS, type Funnel, type Stats, type StatsPeriod } from '@platform/contracts';
 import { arrivalsOf } from '../domain/arrivals';
 import { botLoadOf } from '../domain/bot-load';
+import { cancelReasonsOf } from '../domain/cancel-reasons';
 import { feelingsOf } from '../domain/feelings';
 import { FUNNEL_EVENTS, funnelOf } from '../domain/funnels';
 import type { StatsCache, StatsDeps } from './ports';
@@ -30,8 +31,8 @@ export const funnelsOf = (deps: StatsDeps, period: StatsPeriod): Promise<Funnel[
     return FUNNELS.map((id) => funnelOf(id, counters));
   });
 
-type EventsPart = Pick<Stats, 'events' | 'funnels' | 'errors' | 'bots' | 'queueOps'>;
-const NO_EVENTS = { funnels: [], errors: [], bots: [], queueOps: 0 };
+type EventsPart = Pick<Stats, 'events' | 'funnels' | 'errors' | 'bots' | 'queueOps' | 'cancelReasons'>;
+const NO_EVENTS = { funnels: [], errors: [], bots: [], queueOps: 0, cancelReasons: [] };
 
 // Funnels and errors need Analytics Engine; if it fails, the main numbers still show (docs/29).
 async function eventsPart(deps: StatsDeps, period: StatsPeriod, at: number): Promise<EventsPart> {
@@ -39,13 +40,17 @@ async function eventsPart(deps: StatsDeps, period: StatsPeriod, at: number): Pro
   if (!events) return { events: 'off', ...NO_EVENTS };
   const days = PERIOD_DAYS[period];
   try {
-    const [funnels, errors, bots] = await Promise.all([
+    const [funnels, errors, bots, cancelReasons] = await Promise.all([
       funnelsOf(deps, period),
       cached(deps.cache, `errors:${period}`, at, () => events.topErrors(days)),
       // The bots under load (G85 T1, docs/122).
       cached(deps.cache, `bots:${period}`, at, async () => botLoadOf(await events.bots(days), days)),
+      // Why seats, trips and accounts went (G87 V3, docs/191).
+      cached(deps.cache, `reasons:${period}`, at, async () =>
+        cancelReasonsOf(await events.counters(days, ['cancel_reason'])),
+      ),
     ]);
-    return { events: 'on', funnels, errors, ...bots };
+    return { events: 'on', funnels, errors, ...bots, cancelReasons };
   } catch {
     return { events: 'failed', ...NO_EVENTS };
   }

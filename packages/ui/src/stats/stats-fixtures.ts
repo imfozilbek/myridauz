@@ -114,5 +114,13 @@ export const statsOf = (period: StatsPeriod, events: Stats['events'] = 'on'): St
         ]
       : [],
   queueOps: events === 'on' ? 96 : 0,
+  // G87 V3: why seats, trips and accounts went.
+  cancelReasons:
+    events === 'on'
+      ? [
+          { what: 'booking', reason: 'plans', count: period === 'day' ? 5 : 31 },
+          { what: 'trip', reason: 'empty', count: period === 'day' ? 2 : 12 },
+        ]
+      : [],
   at: Date.parse('2026-10-05T09:30:00Z'),
 });

@@ -83,5 +83,9 @@
   "feelings.none": "Hali yoʻq",
   "feelings.low": "1 va 2 yulduz",
   "feelings.tag": "Koʻp tanlangan belgi",
-  "feelings.reason": "Shikoyat sababi"
+  "feelings.reason": "Shikoyat sababi",
+  "cancel.title": "Bekor qilish sabablari",
+  "cancel.what.booking": "Joy bekor qilindi",
+  "cancel.what.trip": "Safar bekor qilindi",
+  "cancel.what.account": "Hisob oʻchirildi"
 }

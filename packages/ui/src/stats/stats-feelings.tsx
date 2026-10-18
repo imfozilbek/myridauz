@@ -2,12 +2,14 @@ import {
   COMPLAINT_REASONS,
   DRIVER_TAGS,
   PASSENGER_TAGS,
+  type CancelReasonCount,
   type ComplaintReason,
   type Feelings,
   type ReviewTag,
 } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { ManageGroup, ManageRow } from '../manage/manage-page';
+import { reasonWords } from '../cancel-reason/reason-words';
 
 // A share of 1 and 2 stars from this percent is marked: people are unhappy (G87 V2).
 const LOW_ALARM = 20;
@@ -50,6 +52,26 @@ export function FeelingsSection({ feelings }: { readonly feelings: Feelings }) {
           icon="complaints"
           title={isReason(reason) ? t(`complaints.reason.${reason}`) : reason}
           hint={t('stats.feelings.reason')}
+          value={formatNumber(count)}
+        />
+      ))}
+    </ManageGroup>
+  );
+}
+
+// «Bekor qilish sabablari» (G87 V3, docs/191): why seats, trips and accounts went, in the words of the
+// sheet «Nima uchun?»; the kind under each.
+export function CancelReasonsSection({ reasons }: { readonly reasons: readonly CancelReasonCount[] }) {
+  const { t, formatNumber } = useI18n();
+  if (reasons.length === 0) return null;
+  return (
+    <ManageGroup title={t('stats.cancel.title')}>
+      {reasons.map(({ what, reason, count }) => (
+        <ManageRow
+          key={`${what}:${reason}`}
+          icon="close"
+          title={reasonWords(t, what, reason)}
+          hint={t(`stats.cancel.what.${what}`)}
           value={formatNumber(count)}
         />
       ))}

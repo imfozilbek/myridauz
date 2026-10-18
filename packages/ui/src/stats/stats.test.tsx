@@ -36,6 +36,10 @@ describe('Statistika of the team (docs/29)', () => {
     expect(passenger.className).toContain('manage-danger');
     expect(screen.getByText('429: 0 · yoʻqoldi: 0 · soniyada: 6').className).not.toContain('manage-danger');
     expect(screen.getByText('Navbat amallari, kuniga')).toBeTruthy();
+    // G87 V3: why seats and trips went, in the words of «Nima uchun?».
+    expect(screen.getByText('Bekor qilish sabablari')).toBeTruthy();
+    expect(screen.getByText('Rejam oʻzgardi')).toBeTruthy();
+    expect(screen.getByText('Safar bekor qilindi')).toBeTruthy();
     // G87 V2: what the reviews and complaints say, in the words people chose.
     expect(screen.getByText('Baholar va shikoyatlar')).toBeTruthy();
     expect(screen.getByText('14 ta baho')).toBeTruthy();

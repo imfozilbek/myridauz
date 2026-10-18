@@ -54,6 +54,10 @@ describe('Mening safarlarim (docs/35)', () => {
     await tap('Safarni bekor qilish');
     vi.unstubAllGlobals();
     expect(cancelTrip).toHaveBeenCalledWith('t1');
+    // G87 V3: «Nima uchun?» in one tap, or skipped; the list comes back after it.
+    expect(await screen.findByText('Nima uchun?')).toBeTruthy();
+    expect(screen.getByText('Yoʻlovchi topilmadi')).toBeTruthy();
+    await tap('Oʻtkazib yuborish');
     await vi.waitFor(() => expect(myTrips).toHaveBeenCalledTimes(2));
   });
 

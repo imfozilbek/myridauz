@@ -6,7 +6,7 @@ import { NumberTiles } from '../team/number-tiles';
 import { ArrivalsSections } from './stats-arrivals';
 import { BotsSection } from './stats-bots';
 import { ErrorsSections } from './stats-errors';
-import { FeelingsSection } from './stats-feelings';
+import { CancelReasonsSection, FeelingsSection } from './stats-feelings';
 
 // A drop from this share is where people get stuck: it is marked (docs/29).
 const HIGH_DROP = 50;
@@ -42,6 +42,7 @@ export function StatsSections({ stats, gold }: { readonly stats: Stats; readonly
       {funnels.slice(listFunnels).map((funnel, index) => (
         <FunnelSection key={funnel.id} funnel={funnel} hint={listFunnels === 0 && index === 0} />
       ))}
+      {stats.events === 'on' ? <CancelReasonsSection reasons={stats.cancelReasons} /> : null}
       {stats.events === 'on' ? <ErrorsSections errors={stats.errors} /> : null}
       {stats.events === 'on' ? <BotsSection bots={stats.bots} queueOps={stats.queueOps} /> : null}
       <ManageNote>{t('stats.updated', { time: formatTime(new Date(stats.at)) })}</ManageNote>

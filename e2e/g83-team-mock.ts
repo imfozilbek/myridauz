@@ -97,6 +97,6 @@ export async function mockTeamWaitlist(page: Page, open = true) {
   await json('**/api/admin/stats*', {
     ...{ period: 'week', numbers, arrivals: { sources: [], platforms: [] }, events: 'on' },
     feelings: { reviews: 0, average: null, lowShare: 0, tags: [], reasons: [] },
-    ...{ funnels: team.funnels, errors: [], bots: [], queueOps: 0, at: Date.now() },
+    ...{ funnels: team.funnels, errors: [], bots: [], queueOps: 0, cancelReasons: [], at: Date.now() },
   });
 }

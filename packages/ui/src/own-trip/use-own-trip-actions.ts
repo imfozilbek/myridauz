@@ -14,6 +14,7 @@ import type { Opened } from './own-trip-opened';
 import { tileBlock } from './tile-block';
 import type { TripStage } from './trip-stage';
 import { useCloseShare } from './use-close-share';
+import { askReason } from '../cancel-reason/ask-reason';
 
 type Options = {
   readonly trip: Trip;
@@ -83,6 +84,8 @@ export function useOwnTripActions({ trip, stage, bookings, open, onChanged, onCl
       clear();
       await market.cancelTrip(trip.id);
       haptic.success();
+      // «Nima uchun?» in one tap, or skipped (G87 V3).
+      await askReason('trip');
       onClosed();
     } catch (caught) {
       fail(caught);

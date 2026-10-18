@@ -12,6 +12,7 @@ import { useCame } from '../../meeting/use-came';
 import { useFailure } from '../../states/use-failure';
 import { confirm, haptic, openExternal } from '../../telegram/feedback';
 import { useHomeTap } from '../use-home-tap';
+import { askReason } from '../../cancel-reason/ask-reason';
 
 // What the cards of a seat do (G76, docs/165): the chat and the call of the trip (numbers hidden,
 // docs/07), the seat itself, a cancel, «Men keldim», the ready words of the meeting, the close
@@ -60,6 +61,8 @@ export function useSeatActions(go: HomeGo, refresh: () => void) {
       await run(async () => {
         await bookings.cancelMine(booking.id);
         track({ name: 'booking_step', screen: 'home', step: 'cancelled' });
+        // «Nima uchun?» in one tap, or skipped (G87 V3): only after the seat is really cancelled.
+        void askReason('booking');
       })();
     },
     came: (booking: Booking) => () => void here.came(booking),

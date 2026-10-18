@@ -45,6 +45,8 @@ import manage from '../locales/uz-Latn/manage.json' with { type: 'json' };
 import waitlist from '../locales/uz-Latn/waitlist.json' with { type: 'json' };
 import waitlistTeam from '../locales/uz-Latn/waitlist-team.json' with { type: 'json' };
 import ads from '../locales/uz-Latn/ads.json' with { type: 'json' };
+// «Nima uchun?» after a cancel or a deletion (G87 V3, docs/191).
+import cancelReason from '../locales/uz-Latn/cancel-reason.json' with { type: 'json' };
 import type { Locale } from './config';
 
 // uz-Latn is the reference: its keys are the only valid keys (docs/13).
@@ -90,6 +92,7 @@ const REFERENCE = {
   // The waitlist of the team and the links of the ads (G83, docs/183, docs/184).
   waitlistTeam,
   ads,
+  cancelReason,
 };
 type Namespaces = typeof REFERENCE;
 export type TranslationKey = {

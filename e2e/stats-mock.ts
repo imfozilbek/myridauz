@@ -118,6 +118,11 @@ const statsOf = (period: string) => {
       { bot: 'poster', sent: 31 * week, limited: 0, dead: 1, peak: 2, blocked: 0, returned: 0 },
     ],
     queueOps: 96,
+    // G87 V3: why seats and trips went.
+    cancelReasons: [
+      { what: 'booking', reason: 'plans', count: 5 * week },
+      { what: 'trip', reason: 'empty', count: 2 * week },
+    ],
     at: Date.now(),
   };
 };

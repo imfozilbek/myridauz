@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { crash, ready, route } from './analytics-fields';
+import { cancelReasonFields } from './cancel-reasons';
 import { CLIENT_PATTERN, VIA_PATTERN } from './arrival';
 import { DOCK_STATES } from './dock-states';
 import { shareFields } from './growth';
@@ -125,5 +126,7 @@ export const analyticsEventSchema = z.discriminatedUnion('name', [
   // G69: a share button shown and used, by loop and place (docs/123).
   z.object({ name: z.literal('share_shown'), ...shareFields, ...context }),
   z.object({ name: z.literal('share_done'), ...shareFields, ...context }),
+  // G87 V3: why a seat, a trip or an account went, chosen in one tap (docs/191).
+  z.object({ name: z.literal('cancel_reason'), ...cancelReasonFields, ...context }),
 ]);
 export type AnalyticsEvent = z.infer<typeof analyticsEventSchema>;

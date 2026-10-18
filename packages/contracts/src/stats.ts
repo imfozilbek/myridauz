@@ -1,5 +1,8 @@
 import { z } from 'zod';
 import { TRIP_STEPS } from './analytics';
+import { cancelReasonFields } from './cancel-reasons';
+
+export { CANCEL_REASONS, type CancelReason, type CancelWhat } from './cancel-reasons';
 
 // The dashboard of the admin Mini App (G12, docs/29): main numbers, funnels, errors.
 export const ADMIN_STATS_PATH = '/admin/stats';
@@ -111,6 +114,10 @@ export const feelingsSchema = z.object({
 });
 export type Feelings = z.infer<typeof feelingsSchema>;
 
+// G87 V3: the reasons of cancels and deletions chosen in one tap, the most given first.
+export const cancelReasonCountSchema = z.object({ ...cancelReasonFields, count });
+export type CancelReasonCount = z.infer<typeof cancelReasonCountSchema>;
+
 export const statsSchema = z.object({
   period: z.enum(STATS_PERIODS),
   numbers: z.record(z.enum(MAIN_NUMBERS), count),
@@ -122,6 +129,7 @@ export const statsSchema = z.object({
   funnels: z.array(funnelSchema),
   errors: z.array(errorRowSchema),
   bots: z.array(botLoadSchema),
+  cancelReasons: z.array(cancelReasonCountSchema),
   queueOps: count,
   at: z.number().int(),
 });

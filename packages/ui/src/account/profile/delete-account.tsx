@@ -13,6 +13,7 @@ import { useAccount } from '../account-context';
 import { StepLayout } from '../step-layout';
 import './delete-account.css';
 import { DeleteWallet, DeleteWhat } from './delete-what';
+import { askReason } from '../../cancel-reason/ask-reason';
 
 type Stage = 'confirm' | 'failed' | 'done';
 
@@ -36,8 +37,10 @@ export function DeleteAccountScreen({ client, onBack }: ScreenProps) {
   }
   const erase = () => {
     client.deleteMe().then(
-      () => {
+      async () => {
         haptic.success();
+        // «Nima uchun?» in one tap, or skipped (G87 V3); the reason is counted without the person.
+        await askReason('account');
         setStage('done');
       },
       () => {

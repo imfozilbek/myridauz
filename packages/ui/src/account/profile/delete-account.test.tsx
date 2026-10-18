@@ -51,7 +51,10 @@ describe('delete my data (docs/30, docs/58)', () => {
     expect(screen.getByText(/qayta urinib/)).toBeTruthy();
     await act(async () => fireEvent.click(screen.getByText('Oʻchirish')));
     expect(client.deleteMe).toHaveBeenCalledTimes(2);
-    expect(screen.getByText('Maʼlumotlaringiz oʻchirildi')).toBeTruthy();
+    // G87 V3: «Nima uchun?» in one tap, then the end of the account.
+    expect(await screen.findByText('Nima uchun?')).toBeTruthy();
+    await act(async () => fireEvent.click(screen.getByText('Endi kerak emas')));
+    expect(await screen.findByText('Maʼlumotlaringiz oʻchirildi')).toBeTruthy();
     fireEvent.click(screen.getByText('Yopish'));
     expect(reload).toHaveBeenCalled();
   });

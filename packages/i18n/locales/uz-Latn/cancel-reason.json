@@ -1,0 +1,19 @@
+{
+  "title": "Nima uchun?",
+  "hint": "Bir marta bosing. Javob bermasangiz ham boʻladi.",
+  "skip": "Oʻtkazib yuborish",
+  "booking.plans": "Rejam oʻzgardi",
+  "booking.found": "Boshqa mashina topdim",
+  "booking.wait": "Haydovchi uzoq javob bermadi",
+  "booking.price": "Narx toʻgʻri kelmadi",
+  "booking.other": "Boshqa sabab",
+  "trip.plans": "Rejam oʻzgardi",
+  "trip.empty": "Yoʻlovchi topilmadi",
+  "trip.car": "Mashinada muammo",
+  "trip.other": "Boshqa sabab",
+  "account.done": "Endi kerak emas",
+  "account.other_app": "Boshqa ilovadan foydalanaman",
+  "account.privacy": "Maʼlumotlarim uchun xavotirdaman",
+  "account.hard": "Ilova tushunarsiz",
+  "account.other": "Boshqa sabab"
+}

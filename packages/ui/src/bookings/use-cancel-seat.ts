@@ -5,6 +5,7 @@ import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { errorKey, isStale } from '../market/error-text';
 import { confirm, haptic } from '../telegram/feedback';
+import { askReason } from '../cancel-reason/ask-reason';
 
 type Done = { readonly onDone: () => void; readonly onStale?: (() => void) | undefined };
 
@@ -34,6 +35,8 @@ export function useCancelSeat(id: string, { onDone, onStale }: Done) {
       await bookings.cancelMine(id);
       haptic.success();
       track({ name: 'booking_step', screen: 'bookings.passenger', step: 'cancelled' });
+      // «Nima uchun?» in one tap, or skipped (G87 V3).
+      await askReason('booking');
       onDone();
     } catch (caught) {
       haptic.error();

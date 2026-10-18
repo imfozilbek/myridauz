@@ -95,6 +95,9 @@ describe('toDataPoint', () => {
     expect(toDataPoint({ ...shown, name: 'share_done', target: 'story' }, 1).blobs[5]).toBe(
       'req-share.story',
     );
+    // G87 V3: a reason of a cancel names what went.
+    const reason = { name: 'cancel_reason', what: 'trip', reason: 'empty', ...base } as const;
+    expect(toDataPoint(reason, 1).blobs[5]).toBe('trip.empty');
     const search = { name: 'trip_search', result: 'found', route: '1726-1718', ...base } as const;
     expect(toDataPoint(search, 1).blobs.slice(5)).toEqual(['found', '1726-1718']);
   });
