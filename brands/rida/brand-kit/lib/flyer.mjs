@@ -22,16 +22,16 @@ const SIDES = {
   driver: { band: driverApp.brandStrong, soft: driverApp.brandSoft, light: driverApp.brandMint, box: C.teal, boxInk: C.white, logo: COMBOS[4], center: COMBOS[3] },
 };
 const sum = (n) => `${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} soʻm`;
-// steps: the caption in two lines and where the window on the screen starts (the screen is 780 x 1560).
+// steps: the caption of each screen, in one or two lines; the first screen is the main one of the bot.
 const COPY = {
   passenger: {
     role: 'Yoʻlovchi', title: 'Safar toping', sub: 'Viloyatlararo birga safarlar',
-    steps: [[['Yoʻnalishni', 'tanlang'], 0], [['Safarni', 'tanlang'], 0], [['Joy band', 'qiling'], 200]],
+    steps: [['Skanerlang'], ['Yoʻnalishni', 'tanlang'], ['Safarni', 'tanlang'], ['Joy band', 'qiling']],
     facts: [['ShieldCheck', ['Tekshirilgan', 'haydovchilar']], ['EyeOff', ['Raqamingiz', 'yashirin']], ['Venus', ['Mashinada', 'ayol bor']], ['Send', ['Telegram', 'ichida']]],
   },
   driver: {
     role: 'Haydovchi', title: 'Haydovchimisiz?', sub: 'Safaringizga yoʻlovchi toping',
-    steps: [[['Safaringizni', 'eʼlon qiling'], 0], [['Yoʻlovchilar', 'sizni topadi'], 0], [['Tasdiqlang,', 'joylar toʻladi'], 0]],
+    steps: [['Skanerlang'], ['Safaringizni', 'eʼlon qiling'], ['Yoʻlovchilar', 'sizni topadi'], ['Tasdiqlang,', 'joylar toʻladi']],
     facts: [['Banknote', ['Narxni oʻzingiz', 'belgilaysiz']], ['Clock', ['Pitakda kutish', 'shart emas']], ['MessageSquareOff', ['Har 10 daqiqada', 'yozish shart emas']],
       ['Gift', ['Yangi haydovchilarga', `${sum(PROMO.amount * PROMO.grants)}gacha bonus`], true]],
   },
@@ -62,21 +62,21 @@ function route(from, to) {
     way([from, to], 622) + way([to, from], 702);
 }
 
-// Three screens of the Mini App of a side (e2e/stand/flyer-shots.spec.ts), each in a phone, the step under it.
-const SHOT = { width: 780, window: 1360 }, PHONE = { width: 316, bezel: 8, y: 810 };
+// The screens of the Mini App of a side (e2e/stand/flyer-shots.spec.ts), each whole in a thin phone, the step
+// under it. The stand shoots a short phone of 390 x 640 at twice the density: no empty bottom of a screen.
+const SHOT = { width: 780, height: 1280 }, PHONE = { gap: 24, bezel: 6, y: 830 };
 function steps(s, side, flyer) {
-  const inner = PHONE.width - 2 * PHONE.bezel, ih = Math.round(SHOT.window * inner / SHOT.width), h = ih + 2 * PHONE.bezel;
-  const gap = (CW - 3 * PHONE.width) / 2, y = PHONE.y;
-  return COPY[side].steps.map(([lines, top], i) => {
-    const x = M + i * (PHONE.width + gap), cx = x + PHONE.width / 2, id = `${side}-${i + 1}`;
+  const list = COPY[side].steps, width = (CW - (list.length - 1) * PHONE.gap) / list.length;
+  const inner = width - 2 * PHONE.bezel, ih = Math.round(SHOT.height * inner / SHOT.width), h = ih + 2 * PHONE.bezel, y = PHONE.y;
+  return list.map((lines, i) => {
+    const x = M + i * (width + PHONE.gap), cx = x + width / 2, id = `${side}-${i + 1}`;
     const jpg = fs.readFileSync(new URL(`../data/flyer-screens/${flyer.id}/${id}.jpg`, import.meta.url)).toString('base64');
-    return `<clipPath id="clip-${id}"><rect x="${x + PHONE.bezel}" y="${y + PHONE.bezel}" width="${inner}" height="${ih}" rx="26"/></clipPath>` +
-      `<rect x="${x}" y="${y}" width="${PHONE.width}" height="${h}" rx="34" fill="${C.ink}"/>` +
-      `<g clip-path="url(#clip-${id})"><svg x="${x + PHONE.bezel}" y="${y + PHONE.bezel}" width="${inner}" height="${ih}" viewBox="0 ${top} ${SHOT.width} ${SHOT.window}">` +
-      `<image href="data:image/jpeg;base64,${jpg}" width="${SHOT.width}" height="1560"/></svg></g>` +
-      `<circle cx="${cx}" cy="${y + h + 56}" r="36" fill="${s.band}"/>` +
-      text(String(i + 1), { x: cx, y: y + h + 76, anchor: 'middle', fill: C.white, size: 56 }) +
-      lines.map((line, n) => text(line, { x: cx, y: y + h + 146 + n * 46, anchor: 'middle', fill: C.ink, weight: 600, size: 40, maxWidth: PHONE.width })).join('');
+    return `<clipPath id="clip-${id}"><rect x="${x + PHONE.bezel}" y="${y + PHONE.bezel}" width="${inner}" height="${ih}" rx="22"/></clipPath>` +
+      `<rect x="${x}" y="${y}" width="${width}" height="${h}" rx="28" fill="${C.ink}"/>` +
+      `<image href="data:image/jpeg;base64,${jpg}" x="${x + PHONE.bezel}" y="${y + PHONE.bezel}" width="${inner}" height="${ih}" clip-path="url(#clip-${id})"/>` +
+      `<circle cx="${cx}" cy="${y + h + 44}" r="30" fill="${s.band}"/>` +
+      text(String(i + 1), { x: cx, y: y + h + 61, anchor: 'middle', fill: C.white, size: 48 }) +
+      lines.map((line, n) => text(line, { x: cx, y: y + h + 116 + n * 42, anchor: 'middle', fill: C.ink, weight: 600, size: 34, maxWidth: width })).join('');
   }).join('');
 }
 
@@ -84,7 +84,7 @@ function steps(s, side, flyer) {
 function facts(s, list) {
   const w = (CW - 20) / 2, h = 110;
   return list.map(([name, [first, second], box], i) => {
-    const x = M + (i % 2) * (w + 20), y = 1590 + Math.floor(i / 2) * (h + 20), ink = box ? s.boxInk : C.ink;
+    const x = M + (i % 2) * (w + 20), y = 1460 + Math.floor(i / 2) * (h + 20), ink = box ? s.boxInk : C.ink;
     return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="28" fill="${box ? s.box : s.soft}"/>` +
       `<circle cx="${x + 52}" cy="${y + h / 2}" r="32" fill="${box ? s.box : C.white}"/>` + icon(name, x + 52, y + h / 2, 40, box ? s.boxInk : s.band, 2.25) +
       text(first, { x: x + 100, y: y + 48, fill: ink, weight: 600, size: box ? 30 : 36, maxWidth: w - 116 }) +
@@ -110,7 +110,7 @@ function qr(url, x, y, size, s) {
 
 // One side of the flyer of a direction: `side` is passenger or driver, `flyer` an entry of data/flyers.json.
 export function flyerSide(side, flyer) {
-  const s = SIDES[side], copy = COPY[side], y = 1880, size = 460, x = M + size + 44;
+  const s = SIDES[side], copy = COPY[side], y = 1830, size = 480, x = M + size + 44;
   const lines = (list, top, opts) => list.map((line, n) => text(line, { x, y: top + n * opts.gap, maxWidth: W - M - x, ...opts })).join('');
   return svg(W, H, `<rect width="${W}" height="${H}" fill="${C.white}"/>` + band(s, copy) + route(flyer.from, flyer.to) +
     steps(s, side, flyer) + facts(s, copy.facts) + qr(flyer[side], M, y, size, s) +
