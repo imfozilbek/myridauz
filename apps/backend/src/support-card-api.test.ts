@@ -1,7 +1,7 @@
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { approvedDriver, json, read } from './bookings-test-api';
 import { botEnv, botSender, fakeTelegram, textMessage } from './bots/test-bot';
-import { call, doorBooking, registerUser } from './test-api';
+import { call, doorBooking, pid, registerUser } from './test-api';
 
 const telegram = fakeTelegram();
 vi.stubGlobal('fetch', telegram.fetch);
@@ -48,7 +48,7 @@ async function bookedPassenger() {
 
 // The card of a question for the team (G68, docs/122, mockup g68/4 «Yordam boti»).
 describe('the card of a support question (G68)', () => {
-  it('a passenger: the role, the live booking, the text; never the Telegram ID', async () => {
+  it('a passenger: the role, the public id, the live booking, the text; never the Telegram ID', async () => {
     const tripId = await bookedPassenger();
     await send('support', textMessage(PASSENGER, 'Haydovchi telefonni olmayapti'), 'hook', botEnv);
     const card = copyOf('Haydovchi telefonni olmayapti');
@@ -63,8 +63,16 @@ describe('the card of a support question (G68)', () => {
     expect(text).toMatch(/<i>.+ bilan 1 kun · 0 safar<\/i>/u);
     expect(text).not.toMatch(new RegExp(`\\b${PASSENGER}\\b`, 'u'));
     const buttons = buttonsOf(card?.body.reply_markup);
-    expect(buttons.map((button) => button.text)).toEqual(['✍️ Javob berish', '📋 Bronni ochish']);
+    // Q8 of docs/111 (G45): the public id and «Profilni ochish» in «Odamlar» of the owner.
+    const id = await pid(PASSENGER);
+    expect(text).toContain(`ID <code>${id}</code>`);
+    expect(buttons.map((button) => button.text)).toEqual([
+      '✍️ Javob berish',
+      '📋 Bronni ochish',
+      '👤 Profilni ochish',
+    ]);
     expect(JSON.stringify(buttons[1])).toContain(`open=trips&trip=${tripId}`);
+    expect(JSON.stringify(buttons[2])).toContain(`open=people&person=${id}`);
   });
 
   it('a person without an account: only the name and «roʻyxatdan oʻtmagan»; quiet at night', async () => {
@@ -75,6 +83,8 @@ describe('the card of a support question (G68)', () => {
     await send('support', night, 'hook', botEnv);
     const card = copyOf('Qanday yozilaman?');
     expect(String(card?.body.text)).toContain('<b>Vali · roʻyxatdan oʻtmagan</b>');
+    expect(String(card?.body.text)).not.toContain('ID ');
+    expect(buttonsOf(card?.body.reply_markup).map((button) => button.text)).toEqual(['✍️ Javob berish']);
     expect(String(card?.body.text)).not.toMatch(new RegExp(`\\b${GUEST}\\b`, 'u'));
     expect(card?.body.disable_notification).toBe(true);
   });

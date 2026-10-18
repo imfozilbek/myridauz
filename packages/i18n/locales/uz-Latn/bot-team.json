@@ -27,6 +27,7 @@
   "summary.open": "Batafsil: Statistika",
   "supportCard.title": "Yangi murojaat",
   "supportCard.who": "{name} · {role}",
+  "supportCard.id": "ID {id}",
   "supportCard.role.passenger": "yoʻlovchi",
   "supportCard.role.driver": "haydovchi",
   "supportCard.role.guest": "roʻyxatdan oʻtmagan",
@@ -42,5 +43,6 @@
   "supportCard.history": "📜 Tarix",
   "supportCard.openBooking": "📋 Bronni ochish",
   "supportCard.openTrip": "📋 Safarni ochish",
+  "supportCard.openProfile": "👤 Profilni ochish",
   "supportCard.answered": "✅ Operator {name} javob berdi"
 }

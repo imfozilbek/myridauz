@@ -1,5 +1,14 @@
 import { appHost, type BrandConfig } from '@platform/brands';
-import { DAY_MS, formatPlate, LINK_ID, OPEN_LINK, TEAM_TRIPS_SECTION, TRIP_LINK } from '@platform/contracts';
+import {
+  DAY_MS,
+  formatPlate,
+  LINK_ID,
+  OPEN_LINK,
+  PERSON_LINK,
+  TEAM_PEOPLE_SECTION,
+  TEAM_TRIPS_SECTION,
+  TRIP_LINK,
+} from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { endNames } from '../shared/places/end-names';
 import { bold, escapeHtml, italic, mono, quote } from '../shared/telegram/html';
@@ -14,8 +23,8 @@ export const REPLY_DATA = 'support:reply';
 export const HISTORY_DATA = 'support:history';
 
 // The card of a question for the team (G68, docs/122, mockup g68/4): who writes and in which role,
-// the booking or the trip they live with now, the text, how long with the brand. Never the Telegram
-// ID (lesson №136).
+// the public id, the booking or the trip they live with now, the text, how long with the brand. Never
+// the Telegram ID (lesson №136, Q8 of docs/111).
 
 // «3 kun» in the first month, then «3 oy».
 function since(joinedAt: number, now: number): string {
@@ -67,6 +76,7 @@ export function supportCard(
   return [
     `💬 ${bold(t('bot.supportCard.title'))}`,
     bold(who),
+    ...(asker.publicId ? [t('bot.supportCard.id', { id: mono(asker.publicId) })] : []),
     ...liveBlock(asker, now),
     ...(label ? [label] : []),
     ...(said.text ? [t('bot.supportCard.text', { text: escapeHtml(said.text) })] : []),
@@ -74,17 +84,31 @@ export function supportCard(
   ].join('\n');
 }
 
-// «Javob berish», «Tarix» for a person who wrote before, and «Bronni ochish» in the admin app.
-export function supportButtons(brand: BrandConfig, asker: Asker, wroteBefore: boolean) {
+// «Javob berish», «Tarix» for a person who wrote before, «Bronni ochish» in the admin app and, for
+// an owner, «Profilni ochish» of a person with an account (Q8 of docs/111: «Odamlar» is the owner's).
+export function supportButtons(brand: BrandConfig, asker: Asker, wroteBefore: boolean, owner: boolean) {
   const reply = { text: t('bot.supportCard.reply'), callback_data: REPLY_DATA };
   const history = { text: t('bot.supportCard.history'), callback_data: HISTORY_DATA };
   const first = wroteBefore ? [reply, history] : [reply];
+  const admin = `https://${appHost(brand, 'admin')}/?${OPEN_LINK}=`;
   const live = asker.booking?.trip ?? asker.trip;
-  if (!live || !LINK_ID.test(live.id)) return { inline_keyboard: [first] };
-  const url = `https://${appHost(brand, 'admin')}/?${OPEN_LINK}=${TEAM_TRIPS_SECTION}&${TRIP_LINK}=${live.id}`;
-  const open = {
-    text: t(asker.booking ? 'bot.supportCard.openBooking' : 'bot.supportCard.openTrip'),
-    web_app: { url },
-  };
-  return { inline_keyboard: [first, [open]] };
+  const open =
+    live && LINK_ID.test(live.id)
+      ? [
+          {
+            text: t(asker.booking ? 'bot.supportCard.openBooking' : 'bot.supportCard.openTrip'),
+            web_app: { url: `${admin}${TEAM_TRIPS_SECTION}&${TRIP_LINK}=${live.id}` },
+          },
+        ]
+      : [];
+  const profile =
+    owner && asker.publicId
+      ? [
+          {
+            text: t('bot.supportCard.openProfile'),
+            web_app: { url: `${admin}${TEAM_PEOPLE_SECTION}&${PERSON_LINK}=${asker.publicId}` },
+          },
+        ]
+      : [];
+  return { inline_keyboard: [first, ...[...open, ...profile].map((button) => [button])] };
 }

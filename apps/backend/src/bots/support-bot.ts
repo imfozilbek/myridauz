@@ -2,9 +2,10 @@ import type { BrandConfig } from '@platform/brands';
 import { hourLabel, isTeamTime, MINUTE_MS } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { assignTo } from '../modules/assignments';
-import { forwardToTeam, recordSupport, supportDeps, supportTalk } from '../modules/support';
+import { forwardToTeam, recordSupport, supportDeps, supportTalk, type Content } from '../modules/support';
 import type { BotContext } from './bot-context';
 import { sendMessage } from './bot-context';
+import { adminIds } from '../shared/telegram/bot-config';
 import { isStartCommand, type BotMessage } from './telegram-update';
 import { mediaOf } from './media';
 import { welcomePicture } from './start-reply';
@@ -46,16 +47,23 @@ async function toSupport(context: BotContext, message: BotMessage) {
     text: said ?? '',
   });
   if (lastMinute >= SUPPORT_PER_MINUTE) return {};
-  const deps = {
-    ...supportDeps(context.env, context.fetch),
-    teamIds: () => assignTo(context.env, 'support', chatId),
-  };
   const { brand } = context;
   const asker = await askerOf(context.env, chatId, name);
+  const owners = adminIds(context.env);
+  const support = supportDeps(context.env, context.fetch);
+  const deps = {
+    ...support,
+    teamIds: () => assignTo(context.env, 'support', chatId),
+    // «Profilni ochish» only in the copy of an owner: «Odamlar» is the owner's (Q8 of docs/111).
+    toTeam: (teamId: number, content: Content) =>
+      support.toTeam(teamId, {
+        ...content,
+        markup: supportButtons(brand, asker, wroteBefore, owners.has(teamId)),
+      }),
+  };
   const card = {
     text: supportCard(brand, asker, { kind, text: said }, now),
     media,
-    markup: supportButtons(brand, asker, wroteBefore),
     html: true,
     quiet: !isTeamTime(now, brand.moderation.hours),
   };

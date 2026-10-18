@@ -3,6 +3,7 @@ import {
   AdLinksScreen,
   CHANNELS_SECTION,
   linkedCase,
+  linkedPerson,
   linkedStats,
   MANAGEMENT_SECTION,
   ManagementScreen,
@@ -92,11 +93,13 @@ const SECTIONS: readonly StartAction[] = [
   },
 ];
 
-// A link from the admin bot opens a case in «Navbat» or «Statistika» at once (docs/17, docs/29,
-// docs/50, G75): «Назад» from it is the main screen, one tap (G77).
+// A link from the admin bot opens a case in «Navbat», «Statistika» or a person in «Odamlar» at once
+// (docs/17, docs/29, docs/50, G75, G45): «Назад» from it is the main screen, one tap (G77).
 const linked = () => {
   const open = linkedCase();
   if (open) return { opened: NAVBAT_SECTION, launch: { navbat: open } };
+  const person = linkedPerson();
+  if (person) return { opened: PEOPLE_SECTION, launch: { person } };
   return linkedStats() ? { opened: STATS_SECTION } : {};
 };
 
