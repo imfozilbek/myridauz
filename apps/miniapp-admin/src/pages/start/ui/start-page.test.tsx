@@ -80,6 +80,40 @@ describe('StartPage', () => {
     expect(screen.queryByText('Narxlar')).toBeNull();
   });
 
+  // «Profilni ochish» under a support question (Q8 of docs/111, G45): the person in «Odamlar» at once,
+  // «Назад» is the main screen.
+  it('opens the person of a support question at once', async () => {
+    const id = 'b'.repeat(32);
+    window.history.replaceState(null, '', `/?open=people&person=${id}`);
+    const asked: string[] = [];
+    const card = {
+      id,
+      firstName: 'Jasur',
+      hasAvatar: false,
+      joinedAt: null,
+      rating: { average: null, count: 0 },
+      trips: 0,
+      rides: 3,
+      complaintsAgainst: 0,
+      car: null,
+      blocked: false,
+      blockedUntil: null,
+    };
+    const person = async (one: string) => (asked.push(one), card);
+    renderInShell(
+      <StartPage />,
+      false,
+      true,
+      undefined,
+      owner({ team: { navbat: async () => EMPTY, person } }),
+    );
+    expect(await screen.findByText('Jasur')).toBeTruthy();
+    expect(asked).toEqual([id]);
+    expect(window.location.search).toBe('');
+    fireEvent.click(screen.getByText('Orqaga'));
+    expect(await screen.findByText('Hammasi koʻrildi')).toBeTruthy();
+  });
+
   // Who the member is did not load: the error with «Qayta urinish», never an empty screen (G77).
   it('says the error when the team member does not load, and tries again', async () => {
     let fail = true;

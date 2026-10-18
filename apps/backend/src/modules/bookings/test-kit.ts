@@ -70,6 +70,8 @@ export function setup() {
     notify: fakeNotifier(notes),
     pairTalked: async (driverId, passengerId, talks) =>
       void notes.push(`pair: ${driverId} ${passengerId} ${talks}`),
+    pairCancelled: async (driverId, passengerId, cancels) =>
+      void notes.push(`pair cancels: ${driverId} ${passengerId} ${cancels}`),
     track: (step) => void notes.push(`step: ${step}`),
     places: fakePlaces,
     pitak: async (pitakId) => (pitakId === PITAK.id ? PITAK : null),

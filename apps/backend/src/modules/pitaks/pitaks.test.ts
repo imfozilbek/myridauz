@@ -16,6 +16,7 @@ function setup() {
     store: createMemoryPitaks(),
     regionOf,
     isRegion: isRegionId,
+    names: async (ids) => new Map(ids.map((id) => [id, id === MODERATOR ? 'Kamron' : ''])),
     now: () => 1000,
     newId: () => `p${(id += 1)}`,
   };
@@ -31,6 +32,8 @@ describe('pitaks and live directions (G24, docs/72)', () => {
     await savePitak(deps, MODERATOR, 'p1', input('claude'));
     const history = await pitakHistory(deps);
     expect(history.map((change) => change.subject)).toEqual(['pitak:p1', 'pitak:p1']);
+    // Who changed it, by the name (G45, docs/72).
+    expect(history.map((change) => change.by)).toEqual(['Kamron', 'Kamron']);
     expect(JSON.parse(history[0]?.after ?? '{}')).toMatchObject({ status: 'claude' });
   });
 

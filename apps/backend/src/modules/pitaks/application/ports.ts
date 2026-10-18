@@ -1,4 +1,5 @@
 import type { Point } from '@platform/contracts';
+import type { Names } from '../../../shared/team/who';
 import type { DirectionRecord, PitakRecord } from '../domain/pitak';
 
 // Ports of the pitaks (docs/72): D1 in production, memory in tests.
@@ -27,6 +28,7 @@ export type PitaksDeps = {
   // The region of a point by the borders; null abroad (G24).
   readonly regionOf: (point: Point) => string | null;
   readonly isRegion: (id: string) => boolean;
+  readonly names: Names;
   readonly now: () => number;
   readonly newId: () => string;
 };

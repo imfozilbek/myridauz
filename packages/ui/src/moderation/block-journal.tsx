@@ -41,22 +41,23 @@ export function BlockJournal({ userId }: { readonly userId: PersonId }) {
     <>
       <ManageGroup title={t('moderation.blocks.title')}>
         <ManageRow icon="blocked" title={now} danger={active !== null} />
-        {value.entries.map((entry) => (
-          <ManageRow
-            key={entry.at}
-            icon="blocked"
-            title={t(`moderation.blocks.reason.${entry.reason}`)}
-            hint={`${entry.by}, ${formatDate(new Date(entry.at))}`}
-            {...(entry.reason === 'unblock'
-              ? {}
-              : {
-                  value:
-                    entry.until === null
-                      ? t('moderation.blocks.forever')
-                      : t('moderation.blocks.until', { date: formatDate(new Date(entry.until)) }),
-                })}
-          />
-        ))}
+        {value.entries.map((entry) => {
+          const who = `${entry.by}, ${formatDate(new Date(entry.at))}`;
+          // Until when stands in the line under the reason: on a narrow phone the reason is never
+          // squeezed by a value on the right (docs/121, G45).
+          const until =
+            entry.until === null
+              ? t('moderation.blocks.forever')
+              : t('moderation.blocks.until', { date: formatDate(new Date(entry.until)) });
+          return (
+            <ManageRow
+              key={entry.at}
+              icon="blocked"
+              title={t(`moderation.blocks.reason.${entry.reason}`)}
+              hint={entry.reason === 'unblock' ? who : t('home.meta', { when: who, more: until })}
+            />
+          );
+        })}
         {active ? (
           <ManageRow icon="blocked" title={t('moderation.unblock')} onClick={() => void unblock()} />
         ) : null}

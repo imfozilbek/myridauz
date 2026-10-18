@@ -1,9 +1,10 @@
-import { checkRoute, type Distance, type RouteError } from '@platform/contracts';
+import { checkRoute, type Distance, type DistanceHistory, type RouteError } from '@platform/contracts';
+import { namer } from '../../../shared/team/who';
 import { indexById, type Directory } from './directory';
 import type { LocationsDeps, Result } from './ports';
 
 type DistanceError = RouteError | 'locations.not_found';
-type Caller = { readonly isOwner: boolean };
+type Caller = { readonly id: number; readonly isOwner: boolean };
 
 const DEFAULT_LOCALE = 'uz-Latn';
 const LEVEL_2 = new Set(['district', 'city']);
@@ -38,7 +39,8 @@ export async function getDistance(
     : { ok: true, value: { from, to, km } };
 }
 
-// Only the owner corrects a distance: it moves every price (docs/16, docs/65 A6).
+// Only the owner corrects a distance: it moves every price (docs/16, docs/65 A6). The history keeps
+// who, when, before and after (G45).
 export async function updateDistance(
   deps: LocationsDeps,
   directory: Directory,
@@ -48,6 +50,21 @@ export async function updateDistance(
   if (!caller.isOwner) return { ok: false, error: 'auth.not_owner' };
   const error = await checkPair(deps, directory, input.from, input.to);
   if (error) return { ok: false, error };
-  await deps.locations.saveDistance(...ordered(input.from, input.to), input.km, deps.now());
+  const change = { after: input.km, by: caller.id, at: deps.now() };
+  await deps.locations.correctDistance(...ordered(input.from, input.to), change);
   return { ok: true, value: input };
+}
+
+// The corrections of one distance for the team, by the name of who made each (G45).
+export async function distanceHistory(
+  deps: LocationsDeps,
+  from: string,
+  to: string,
+): Promise<DistanceHistory> {
+  const changes = await deps.locations.distanceChanges(...ordered(from, to));
+  const nameOf = await namer(
+    deps.names,
+    changes.map((change) => change.by),
+  );
+  return { changes: changes.map((change) => ({ ...change, by: nameOf(change.by) })) };
 }

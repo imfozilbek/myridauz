@@ -10,9 +10,9 @@ afterEach(cleanup);
 
 const V: PricingVariables = { ratePerKm: 300, roundStep: 5000, minPrice: 30000, maxPrice: 600000 };
 const state: PricingState = {
-  current: { version: 2, variables: V, changedBy: 900, changedAt: 1 },
+  current: { version: 2, variables: V, changedBy: 'Fozil', changedAt: 1 },
   history: [
-    { version: 2, variables: V, changedBy: 900, changedAt: 1 },
+    { version: 2, variables: V, changedBy: 'Fozil', changedAt: 1 },
     { version: 1, variables: V, changedBy: null, changedAt: 0 },
   ],
 };
@@ -39,6 +39,8 @@ function setup() {
     save: vi.fn(async () => state),
     rollback: vi.fn(async () => state),
     setDirection: vi.fn(async () => [direction]),
+    setDistance: vi.fn(async () => undefined),
+    distanceHistory: vi.fn(async () => ({ changes: [{ before: 300, after: 320, by: 'Fozil', at: 1 }] })),
   };
   renderInShell(
     <ManagementScreen onBack={() => undefined} />,
@@ -54,6 +56,9 @@ describe('Narxlar: the price engine for the team (docs/23)', () => {
   it('changes the formula with the new prices on the same screen (G78 sheet 4)', async () => {
     const pricing = setup();
     await tap('Narxlar');
+    // Who changed a version: the name, never the Telegram ID (docs/65 A3, G45).
+    expect(await screen.findByText(/, Fozil$/u)).toBeTruthy();
+    expect(document.body.textContent).not.toMatch(/#\d/u);
     await tap('Formulani oʻzgartirish');
     // Every field is named on every platform, not only by a header iOS hides (G27).
     fireEvent.change(screen.getByLabelText('Stavka (1 km uchun)'), { target: { value: '400' } });
@@ -124,5 +129,17 @@ describe('Narxlar: the price engine for the team (docs/23)', () => {
     expect(screen.getByDisplayValue('90000')).toBeTruthy();
     await tap('Narxni saqlash');
     expect(pricing.setDirection).toHaveBeenCalledWith(expect.objectContaining({ price: 90000 }));
+  });
+
+  // G45 (docs/48): the owner corrects the road km; who corrected it, before and after, stay under it.
+  it('corrects the distance of a direction and shows its history', async () => {
+    const pricing = setup();
+    await tap('Narxlar');
+    await tap(/^Formula: 95/);
+    expect(await screen.findByText('300 km → 320 km')).toBeTruthy();
+    await tap('320 km');
+    fireEvent.change(screen.getByDisplayValue('320'), { target: { value: '305' } });
+    await tap('Saqlash');
+    expect(pricing.setDistance).toHaveBeenCalledWith({ from: '1726269', to: '1730401', km: 305 });
   });
 });

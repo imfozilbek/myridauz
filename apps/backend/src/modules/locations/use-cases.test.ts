@@ -26,7 +26,7 @@ describe('directory cache', () => {
   it('reads the store once per period', async () => {
     let now = 0;
     const locations = createMemoryLocations();
-    const deps = { locations, now: () => now };
+    const deps = { locations, names: async () => new Map<number, string>(), now: () => now };
     const directory = cachedDirectory(1000);
     await directory(deps, 'uz-Latn');
     await directory(deps, 'uz-Latn');

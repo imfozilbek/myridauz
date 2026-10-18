@@ -21,6 +21,8 @@ const complaint = (id: string, reason: string, high: boolean, hours: number) => 
   departAt: Date.now() - DAY,
   author: party(101, 'Madina', 'passenger', 4),
   against: party(11, 'Jasur', 'driver', 23),
+  // The open case carries the complaints before against the same person (G45).
+  past: [],
 });
 const QUEUE = [complaint('c1', 'harassment', true, 2), complaint('c2', 'no_show', false, 20)];
 const REVIEWS = [

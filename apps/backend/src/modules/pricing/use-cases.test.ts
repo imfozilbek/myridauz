@@ -41,6 +41,7 @@ function setup() {
     variables: variablesCache(60_000),
     mainDirections: [['1701', '1801']],
     realPrices: async () => [],
+    names: async (ids) => new Map(ids.map((id) => [id, `Member ${id}`])),
     now: () => 1000,
   };
   return deps;
@@ -117,7 +118,7 @@ describe('recommendation and the team prices (docs/09, docs/23)', () => {
       rows: [{ from: '1701', to: '1801', km: 300, before: 90000, after: 120000 }],
     });
     const changed = await changeVariables(deps, next, 900);
-    expect(changed.current).toMatchObject({ version: 2, variables: next, changedBy: 900 });
+    expect(changed.current).toMatchObject({ version: 2, variables: next, changedBy: 'Member 900' });
     expect(await recommendPrice(deps, '1701', '1801')).toMatchObject({ value: { price: 120000 } });
     const back = await rollback(deps, 1, 900);
     expect(back.ok && back.value.current).toMatchObject({ version: 3, variables: V });

@@ -1,4 +1,4 @@
-import { MAIN_NUMBERS, type Funnel, type Stats } from '@platform/contracts';
+import { MAIN_NUMBERS, type Funnel, type MainNumber, type Stats } from '@platform/contracts';
 import type { ReactNode } from 'react';
 import { useI18n } from '../context/i18n-context';
 import { ManageGroup, ManageNote, ManageRow } from '../manage/manage-page';
@@ -16,6 +16,16 @@ const isWaitlist = (funnel: Funnel) => funnel.id.startsWith('waitlist');
 
 export function StatsSections({ stats, gold }: { readonly stats: Stats; readonly gold?: ReactNode }) {
   const { t, formatNumber, formatTime } = useI18n();
+  // «↑ 6», «↓ 2», «±0» since the period before (G45, F-A12 of docs/90); the live trips have none.
+  const changeOf = (key: MainNumber) => {
+    const before = stats.before[key];
+    if (before === undefined) return {};
+    const moved = stats.numbers[key] - before;
+    const count = formatNumber(Math.abs(moved));
+    if (moved === 0) return { change: t('stats.change.same') };
+    return { change: t(moved > 0 ? 'stats.change.up' : 'stats.change.down', { count }) };
+  };
+  const compared = Object.keys(stats.before).length > 0;
   const funnels = [
     ...stats.funnels.filter(isWaitlist),
     ...stats.funnels.filter((funnel) => !isWaitlist(funnel)),
@@ -28,8 +38,10 @@ export function StatsSections({ stats, gold }: { readonly stats: Stats; readonly
         tiles={MAIN_NUMBERS.map((key) => ({
           value: formatNumber(stats.numbers[key]),
           label: t(`stats.number.${key}`),
+          ...changeOf(key),
         }))}
       />
+      {compared ? <ManageNote>{t(`stats.compare.${stats.period}`)}</ManageNote> : null}
       {stats.events === 'on' ? null : (
         <ManageNote>{t(stats.events === 'off' ? 'stats.eventsOff' : 'stats.eventsFailed')}</ManageNote>
       )}

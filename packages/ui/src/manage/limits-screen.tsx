@@ -39,6 +39,7 @@ export function LimitsScreen({ onBack }: { readonly onBack: () => void }) {
       <LimitSheet
         limitKey={open}
         value={valueOf(open)}
+        history={shown.history}
         onClose={() => setOpen(null)}
         onSaved={(next) => {
           setState(next);

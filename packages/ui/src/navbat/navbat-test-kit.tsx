@@ -1,4 +1,4 @@
-import type { ApplicationDetail, Complaint, Navbat, NavbatItem } from '@platform/contracts';
+import type { ApplicationDetail, ComplaintCase, Navbat, NavbatItem } from '@platform/contracts';
 import { vi } from 'vitest';
 import type { NavbatOpen } from '../flow/start-action';
 import type { Overrides } from '../test-clients-other';
@@ -53,7 +53,7 @@ const party = (id: string, firstName: string, role: 'driver' | 'passenger') => (
   trips: 3,
   complaints: 0,
 });
-export const COMPLAINT_DETAIL: Complaint = {
+export const COMPLAINT_DETAIL: ComplaintCase = {
   id: 'c1',
   reasons: ['no_show'],
   high: false,
@@ -66,6 +66,7 @@ export const COMPLAINT_DETAIL: Complaint = {
   author: party(pid(3), 'Madina', 'passenger'),
   against: party(pid(1), 'Jasur', 'driver'),
   refund: null,
+  past: [],
 };
 
 // «Navbat» opened at a case with the given queue; every client the cases use is a spy.

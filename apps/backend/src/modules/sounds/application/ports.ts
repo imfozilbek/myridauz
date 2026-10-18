@@ -1,3 +1,5 @@
+import type { Names } from '../../../shared/team/who';
+
 // Ports of the sounds module (docs/115): D1 in production, memory in tests.
 export type SoundPick = { readonly set: string; readonly changedBy: number; readonly changedAt: number };
 
@@ -9,6 +11,7 @@ export type SoundRepository = {
 
 export type SoundsDeps = {
   readonly sounds: SoundRepository;
+  readonly names: Names;
   // The sets of the brand and the one that plays until the owner picks (brands/<brand>/brand.config.ts).
   readonly sets: readonly string[];
   readonly defaultSet: string;

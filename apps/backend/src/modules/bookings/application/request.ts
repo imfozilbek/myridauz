@@ -1,6 +1,7 @@
 import { arrivalAt, onTheWay, type Booking, type BookingInput } from '@platform/contracts';
 import { answerDeadline } from '../domain/answer-deadline';
 import { move, NO_MARKS, statusAt, type BookingRecord } from '../domain/booking';
+import { watchPairCancels } from './pair-cancels';
 import type { BookingsDeps, Result } from './ports';
 import { heldSeat } from './held-seat';
 import { bookingViews } from './views';
@@ -97,7 +98,10 @@ export async function cancelByPassenger(
   if (!(await deps.bookings.replace(next, record.status)))
     return { ok: false, error: 'bookings.wrong_status' };
   // A cancelled confirmed booking gives the commission back (docs/12, owner decision 29.09.2026).
-  if (record.status === 'confirmed') await deps.wallet.refund(facts.driverId, id);
+  if (record.status === 'confirmed') {
+    await deps.wallet.refund(facts.driverId, id);
+    await watchPairCancels(deps, facts.driverId, passengerId);
+  }
   const [view] = await bookingViews(deps, [next], 'passenger');
   if (view) await deps.notify.cancelled(view, 'passenger');
   return view ? { ok: true, value: view } : { ok: false, error: 'bookings.not_found' };

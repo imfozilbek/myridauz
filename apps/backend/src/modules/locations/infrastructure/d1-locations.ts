@@ -52,4 +52,31 @@ export const d1Locations = (db: D1Database): LocationRepository => ({
       .bind(from, to, km, at)
       .run();
   },
+  correctDistance: async (from, to, { after, by, at }) => {
+    // The change is written with the km before it, then the distance: one batch, one step.
+    await db.batch([
+      db
+        .prepare(
+          `INSERT INTO location_distance_changes (from_id, to_id, km_before, km_after, changed_by, changed_at)
+           VALUES (?, ?, (SELECT km FROM location_distances WHERE from_id = ? AND to_id = ?), ?, ?, ?)`,
+        )
+        .bind(from, to, from, to, after, by, at),
+      db
+        .prepare(
+          `INSERT INTO location_distances (from_id, to_id, km, source, updated_at) VALUES (?, ?, ?, 'team', ?)
+           ON CONFLICT (from_id, to_id) DO UPDATE SET km = excluded.km, source = 'team', updated_at = excluded.updated_at`,
+        )
+        .bind(from, to, after, at),
+    ]);
+  },
+  distanceChanges: async (from, to) => {
+    const { results } = await db
+      .prepare(
+        `SELECT km_before AS before, km_after AS after, changed_by AS by, changed_at AS at
+         FROM location_distance_changes WHERE from_id = ? AND to_id = ? ORDER BY changed_at DESC`,
+      )
+      .bind(from, to)
+      .all<{ before: number | null; after: number; by: number; at: number }>();
+    return results;
+  },
 });

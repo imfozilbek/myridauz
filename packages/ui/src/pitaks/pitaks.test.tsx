@@ -22,11 +22,18 @@ const QOYLIQ: AdminPitak = {
 };
 const DIRECTION = { from: '1726', to: '1730', pitakId: null };
 const CHANGES: PitakChange[] = [
-  { subject: 'direction:1726>1730', before: null, after: JSON.stringify({ pitakId: 'qoyliq' }), at: 2 },
+  {
+    subject: 'direction:1726>1730',
+    before: null,
+    after: JSON.stringify({ pitakId: 'qoyliq' }),
+    by: 'Kamron',
+    at: 2,
+  },
   {
     subject: 'pitak:qoyliq',
     before: '{}',
     after: JSON.stringify({ name: 'Qoʻyliq', status: 'checked' }),
+    by: 'Fozil',
     at: 1,
   },
 ];
@@ -99,6 +106,8 @@ describe('Pitaklar: the pitaks of the team (G24, docs/72)', { timeout: 20_000 },
     await tap('Oʻzgarishlar tarixi');
     expect(await screen.findByText('Qoʻshildi: Qoʻyliq pitagi')).toBeTruthy();
     expect(screen.getByText('Qoʻyliq · Tekshirilgan')).toBeTruthy();
+    // Who changed it (G45, docs/72).
+    expect(screen.getByText(/, Kamron$/u)).toBeTruthy();
   });
 
   // G79 К8 (docs/170): an empty name takes the name of the place chosen on the map.

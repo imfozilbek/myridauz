@@ -2,7 +2,7 @@ import type { Complaint, complaintDecisionSchema } from '@platform/contracts';
 import type { z } from 'zod';
 import { queueOrder } from '../domain/complaint';
 import { blockPerson } from './block';
-import { complaintView as view, sideOf } from './complaint-view';
+import { caseView, complaintView as view, sideOf } from './complaint-view';
 import type { ComplaintsDeps, Ride } from './ports';
 import { answerRefund } from './refund';
 
@@ -25,7 +25,7 @@ export async function openComplaint(deps: ComplaintsDeps, id: string) {
   if (!complaint) return undefined;
   const taken = complaint.status === 'new' ? { ...complaint, status: 'in_review' as const } : complaint;
   if (taken !== complaint) await deps.store.save(taken);
-  return (await view(deps, taken)) ?? undefined;
+  return (await caseView(deps, taken)) ?? undefined;
 }
 
 // The chat of the ride, only through its complaint, and every read goes to the log (docs/07).

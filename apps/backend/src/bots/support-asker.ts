@@ -12,6 +12,8 @@ import type { Places } from '../shared/places/end-names';
 export type Asker = {
   readonly name: string;
   readonly role: 'passenger' | 'driver' | 'guest';
+  // The public id of a person with an account: the team opens the profile by it (Q8 of docs/111).
+  readonly publicId?: string;
   // The live booking of a passenger or the next trip of a driver, with a button to open it.
   readonly booking?: Booking | undefined;
   readonly trip?: Trip | undefined;
@@ -36,6 +38,7 @@ export async function askerOf(env: Bindings, chatId: number, telegramName: strin
   ]);
   const facts = {
     name: person.firstName,
+    publicId: person.publicId,
     joinedAt,
     rides: new Set(rides.map((ride) => ride.tripId)).size,
     rating: ratings.get(chatId),

@@ -8,6 +8,7 @@ import { ActionFailure } from '../states/action-failure';
 import { useFailure } from '../states/use-failure';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
+import { LimitChanges } from './limit-changes';
 import { useLimitValue } from './limit-value';
 import '../find/seats.css';
 import './limit-sheet.css';
@@ -20,34 +21,33 @@ const STEPPER_MAX_TAPS = 30;
 type SheetProps = {
   readonly limitKey: LimitKey | null;
   readonly value: number;
+  // The changes of every limit: the sheet shows the ones of its own (G45, Q3 of docs/111).
+  readonly history: Limits['history'];
   readonly onClose: () => void;
   readonly onSaved: (limits: Limits) => void;
 };
 
-// One limit in a sheet over «Cheklovlar» (G78 sheet 5): its name, its range and the new value; the
-// server checks the rule again (G75, docs/128 §4).
-export function LimitSheet({ limitKey, value, onClose, onSaved }: SheetProps) {
+// One limit in a sheet over «Cheklovlar» (G78 sheet 5): its name, what it changes and why, the new
+// value, its range and its own changes (G45, Q3 of docs/111); the server checks the rule again (G75,
+// docs/128 §4).
+export function LimitSheet({ limitKey, value, history, onClose, onSaved }: SheetProps) {
   const { t } = useI18n();
-  const valueOf = useLimitValue();
   const words = limitKey
-    ? {
-        title: t(`manage.limit.${limitKey}`),
-        hint: t('manage.limitRange', {
-          min: valueOf(limitKey, LIMITS[limitKey].min),
-          max: valueOf(limitKey, LIMITS[limitKey].max),
-        }),
-      }
+    ? { title: t(`manage.limit.${limitKey}`), hint: t(`manage.limitWhy.${limitKey}`) }
     : {};
   return (
     <FormSheet open={limitKey !== null} {...words} onClose={onClose}>
       {limitKey ? (
-        <LimitForm key={limitKey} limitKey={limitKey} value={value} onClose={onClose} onSaved={onSaved} />
+        <>
+          <LimitForm key={limitKey} limitKey={limitKey} value={value} onClose={onClose} onSaved={onSaved} />
+          <LimitChanges limitKey={limitKey} history={history} />
+        </>
       ) : null}
     </FormSheet>
   );
 }
 
-type FormProps = Omit<SheetProps, 'limitKey'> & { readonly limitKey: LimitKey };
+type FormProps = Omit<SheetProps, 'limitKey' | 'history'> & { readonly limitKey: LimitKey };
 
 function LimitForm({ limitKey, value, onClose, onSaved }: FormProps) {
   const { t } = useI18n();
@@ -94,6 +94,9 @@ function LimitForm({ limitKey, value, onClose, onSaved }: FormProps) {
           />
         )}
       </div>
+      <p className="limit-range">
+        {t('manage.limitRange', { min: valueOf(limitKey, rule.min), max: valueOf(limitKey, rule.max) })}
+      </p>
       <ActionFailure error={failure} />
       <MainButton text={t('manage.limitSave')} disabled={!fits} onClick={save} />
     </>

@@ -1,4 +1,5 @@
 import {
+  adminTripCancelPath,
   ADMIN_TRIPS_PATH,
   bookingSchema,
   bookingsSchema,
@@ -26,6 +27,7 @@ import {
   type OfferAction,
   type OfferInput,
   type SalonTrip,
+  type TeamCancel,
 } from '@platform/contracts';
 import { signedRequest, type SignedOptions } from './signed-request';
 
@@ -51,6 +53,9 @@ export function createBookingsClient(options: SignedOptions) {
       booking(await post(driverMeetPath(id, step), {})),
     tripBookings: async (tripId: string): Promise<Booking[]> =>
       bookings(await request(`${ADMIN_TRIPS_PATH}/${tripId}/bookings`)),
+    // The team cancels one trip with a reason (Q5 of docs/111, G45).
+    cancelTrip: async (tripId: string, input: TeamCancel): Promise<void> =>
+      void (await post(adminTripCancelPath(tripId), input)),
     sendOffer: async (requestId: string, input: OfferInput): Promise<Offer> =>
       offer(await post(requestOffersPath(requestId), input)),
     driverOffers: async (): Promise<Offer[]> => offers(await request(DRIVER_OFFERS_PATH)),

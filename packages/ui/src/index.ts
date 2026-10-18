@@ -28,6 +28,7 @@ export { AdLinksScreen } from './waitlist/team/ad-links-screen';
 export { PeopleScreen } from './manage/people-screen';
 export { NavbatScreen } from './navbat/navbat-screen';
 export { linkedCase } from './navbat/linked-case';
+export { linkedPerson } from './manage/linked-person';
 export { TeamHome } from './team/team-home';
 export { linkedStats } from './stats/stats-screen';
 export { RequestsFlow } from './requests/requests-flow';

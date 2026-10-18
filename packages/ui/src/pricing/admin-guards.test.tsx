@@ -31,7 +31,15 @@ type Form = (onBack: () => void) => ReactNode;
 const FORMS: [string, Form][] = [
   [
     'a direction price',
-    (onBack) => <DirectionEdit direction={direction} failed={null} onBack={onBack} onSave={vi.fn()} />,
+    (onBack) => (
+      <DirectionEdit
+        direction={direction}
+        failed={null}
+        onBack={onBack}
+        onSave={vi.fn()}
+        onDistance={vi.fn()}
+      />
+    ),
   ],
   ['a channel', (onBack) => <ChannelEdit channel={null} directory={directory} onBack={onBack} />],
   [

@@ -1,4 +1,4 @@
-import type { Complaint, ComplaintDecision } from '@platform/contracts';
+import type { ComplaintCase, ComplaintDecision } from '@platform/contracts';
 import { useState } from 'react';
 import { Switch } from '../components';
 import { useAnalytics } from '../context/analytics-context';
@@ -19,6 +19,7 @@ import { CaseButtons } from './case-buttons';
 import { CaseHeader } from './case-header';
 import type { CaseProps } from './case-props';
 import { ComplaintChat } from './complaint-chat';
+import { ComplaintHistory } from './complaint-history';
 import { ComplaintTrip } from './complaint-trip';
 import { ComplaintWords } from './complaint-words';
 
@@ -26,7 +27,7 @@ const ARROW = 16;
 const CHAT = 18;
 
 // A complaint (docs/17, docs/120, mockup g67/2 screen 4): who on whom and why, the words, the trip,
-// the chat on demand; «Ogohlantirish», «Bloklash» for 1, 7, 30 days or for good, «Buzilish yoʻq».
+// the history of both sides (G45), the chat on demand; «Ogohlantirish», «Bloklash» for 1, 7, 30 days or for good, «Buzilish yoʻq».
 export function ComplaintCase({ id, onBack, ...props }: CaseProps) {
   const { feedback } = useApiClients();
   const { value, failed, reload } = useLoad(() => feedback.complaint(id));
@@ -35,7 +36,7 @@ export function ComplaintCase({ id, onBack, ...props }: CaseProps) {
   return <Review complaint={value} onBack={onBack} {...props} />;
 }
 
-type ReviewProps = Omit<CaseProps, 'id' | 'item'> & { readonly complaint: Complaint };
+type ReviewProps = Omit<CaseProps, 'id' | 'item'> & { readonly complaint: ComplaintCase };
 
 function Review({ complaint, progress, onBack, onDone }: ReviewProps) {
   const { t } = useI18n();
@@ -79,6 +80,7 @@ function Review({ complaint, progress, onBack, onDone }: ReviewProps) {
       </div>
       <ComplaintWords complaint={complaint} />
       <ComplaintTrip tripId={complaint.tripId} />
+      <ComplaintHistory complaint={complaint} />
       <button type="button" className="case-card case-link" onClick={() => setMode('chat')}>
         <span className="navbat-icon">
           <Icon name="write" size={CHAT} />

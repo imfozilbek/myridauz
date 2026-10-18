@@ -1,9 +1,8 @@
-import type { CompanyVersion } from '@platform/contracts';
-import type { CompanyRepository } from '../application/ports';
+import type { CompanyRepository, StoredCompanyVersion } from '../application/ports';
 
 // The same table as migrations/0033_company.sql, in memory for tests and local runs.
 export function createMemoryCompany(): CompanyRepository {
-  const versions: CompanyVersion[] = [];
+  const versions: StoredCompanyVersion[] = [];
   return {
     versions: async () => [...versions].reverse(),
     addVersion: async (company, changedBy, at) => {

@@ -17,6 +17,14 @@ export const statsOf = (period: StatsPeriod, events: Stats['events'] = 'on'): St
     driverApplications: period === 'day' ? 3 : 12,
     complaints: period === 'day' ? 1 : 4,
   },
+  // The period before (G45): more people came, fewer trips were made.
+  before: {
+    newUsers: period === 'day' ? 18 : 140,
+    trips: period === 'day' ? 11 : 61,
+    bookings: period === 'day' ? 17 : 90,
+    driverApplications: period === 'day' ? 0 : 15,
+    complaints: period === 'day' ? 1 : 2,
+  },
   arrivals: {
     sources: [
       { kind: 'channel', mark: SAMARQAND_MARK, count: period === 'day' ? 11 : 64 },

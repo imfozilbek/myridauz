@@ -9,6 +9,7 @@ import { usePlaceLabel } from '../market/places-gate';
 import { useUnsavedGuard } from '../screen/unsaved-guard';
 import { ActionFailure } from '../states/action-failure';
 import { MainButton } from '../telegram/bottom-button';
+import { DistanceGroup } from './distance-group';
 
 type DirectionEditProps = {
   readonly direction: Direction;
@@ -17,11 +18,13 @@ type DirectionEditProps = {
   readonly onBack: () => void;
   // null removes the team's price: the formula works again.
   readonly onSave: (price: number | null) => void;
+  // The owner corrects the road km: the formula price follows (G45).
+  readonly onDistance: (km: number) => void;
 };
 
 // The team's price for one direction goes before the formula (docs/09, docs/23): the way, the price
 // and the median in cards of «Boshqaruv» (G78 sheet 6).
-export function DirectionEdit({ direction, failed, onBack, onSave }: DirectionEditProps) {
+export function DirectionEdit({ direction, failed, onBack, onSave, onDistance }: DirectionEditProps) {
   useScreenView('pricing.direction');
   const { t, formatMoney } = useI18n();
   const place = usePlaceLabel();
@@ -50,6 +53,7 @@ export function DirectionEdit({ direction, failed, onBack, onSave }: DirectionEd
       </ManageGroup>
       <ActionFailure error={failed} />
       <MedianRow direction={direction} onPick={(median) => setValue(String(median))} />
+      <DistanceGroup direction={direction} onSave={onDistance} />
       {direction.manual === null ? null : (
         <ManageGroup>
           <ManageRow icon="change" title={t('pricing.directionRemove')} onClick={() => onSave(null)} />

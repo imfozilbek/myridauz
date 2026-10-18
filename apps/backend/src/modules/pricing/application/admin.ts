@@ -10,11 +10,20 @@ import {
 import { orderedPair } from '../domain/direction';
 import { withinBounds } from '../domain/formula';
 import { medianPrice, onDirection } from '../domain/median';
+import { namer } from '../../../shared/team/who';
 import type { PricingDeps, Result } from './ports';
 
 // The team changes the formula in one place (docs/23): every change is a new version.
 export async function pricingState(deps: PricingDeps): Promise<PricingState> {
-  const history = await deps.pricing.versions();
+  const stored = await deps.pricing.versions();
+  const nameOf = await namer(
+    deps.names,
+    stored.map((item) => item.changedBy),
+  );
+  const history = stored.map((item) => ({
+    ...item,
+    changedBy: item.changedBy === null ? null : nameOf(item.changedBy),
+  }));
   const [current] = history;
   if (!current) throw new Error('pricing.no_variables');
   return { current, history };

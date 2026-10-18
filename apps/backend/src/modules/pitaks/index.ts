@@ -1,5 +1,6 @@
 import type { Bindings } from '../../env';
 import { isRegionId, regionOf } from '../map';
+import { firstNames } from '../users';
 import { pitakOfDirection, pitakView } from './application/pitaks';
 import type { PitaksDeps } from './application/ports';
 import { pitakRoutes } from './http/pitak-routes';
@@ -13,6 +14,7 @@ const pitaksDeps = (env: Bindings): PitaksDeps => ({
   store: env.DB ? d1Pitaks(env.DB) : localPitaks,
   regionOf,
   isRegion: isRegionId,
+  names: (ids) => firstNames(env, ids),
   now: () => Date.now(),
   newId: () => crypto.randomUUID(),
 });

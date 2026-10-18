@@ -10,11 +10,14 @@ import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { DriverWallet } from '../wallet/driver-wallet';
 import { ManageGroup, ManagePage, ManageRow } from './manage-page';
+import { PersonActivityGroups } from './person-activity';
+import { PersonSupport } from './person-support';
 
 type ViewProps = { readonly card: PersonCard; readonly onBack: () => void; readonly onChanged: () => void };
 
 // One person for the owner: since when, the rating, the trips and rides, the complaints, the car,
-// the block now, each value on the right (G78 sheet 6); the history and «Blokdan chiqarish»;
+// the block now, each value on the right (G78 sheet 6); what the person did lately (G45); the history
+// and «Blokdan chiqarish»;
 // «Bloklash» at the bottom opens the days in a sheet.
 export function PersonView({ card, onBack, onChanged }: ViewProps) {
   const { t, formatDate, formatRating } = useI18n();
@@ -88,6 +91,8 @@ export function PersonView({ card, onBack, onChanged }: ViewProps) {
         />
       </ManageGroup>
       <ActionFailure error={failure} />
+      <PersonActivityGroups id={card.id} />
+      <PersonSupport id={card.id} />
       <BlockJournal userId={card.id} />
       {card.blocked ? null : (
         <MainButton text={t('moderation.block')} destructive onClick={() => setBlocking(true)} />

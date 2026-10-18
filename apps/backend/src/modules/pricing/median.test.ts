@@ -36,6 +36,7 @@ const deps = (real: readonly RealPrice[]): PricingDeps => ({
   variables: variablesCache(60_000),
   mainDirections: [['17', '18']],
   realPrices: async () => real,
+  names: async () => new Map(),
   now: () => Date.parse('2026-10-01T00:00:00Z'),
 });
 

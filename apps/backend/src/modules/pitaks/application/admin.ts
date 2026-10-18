@@ -7,6 +7,7 @@ import {
   type PitakChange,
 } from '@platform/contracts';
 import { fitsDirection, type DirectionRecord, type PitakRecord } from '../domain/pitak';
+import { namer } from '../../../shared/team/who';
 import type { PitaksDeps } from './ports';
 
 // The pitaks in the admin (docs/72): the team adds, moves, renames and closes pitaks and says
@@ -103,10 +104,16 @@ export async function removeDirection(deps: PitaksDeps, by: number, from: string
 }
 
 export async function pitakHistory(deps: PitaksDeps): Promise<PitakChange[]> {
-  return (await deps.store.history(HISTORY_LIMIT)).map(({ subject, before, after, at }) => ({
+  const changes = await deps.store.history(HISTORY_LIMIT);
+  const nameOf = await namer(
+    deps.names,
+    changes.map((change) => change.by),
+  );
+  return changes.map(({ subject, before, after, by, at }) => ({
     subject,
     before,
     after,
+    by: nameOf(by),
     at,
   }));
 }

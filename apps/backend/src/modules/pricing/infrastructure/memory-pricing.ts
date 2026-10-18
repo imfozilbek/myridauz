@@ -1,11 +1,11 @@
-import type { PricingVariables, PricingVersion } from '@platform/contracts';
-import type { PricingRepository } from '../application/ports';
+import type { PricingVariables } from '@platform/contracts';
+import type { PricingRepository, StoredPricingVersion } from '../application/ports';
 
 // The same start as migrations/0006_pricing.sql (docs/16).
 const START: PricingVariables = { ratePerKm: 300, roundStep: 5000, minPrice: 30000, maxPrice: 600000 };
 
 export function createMemoryPricing(): PricingRepository {
-  const versions: PricingVersion[] = [{ version: 1, variables: START, changedBy: null, changedAt: 0 }];
+  const versions: StoredPricingVersion[] = [{ version: 1, variables: START, changedBy: null, changedAt: 0 }];
   const manual = new Map<string, number>();
   return {
     versions: async () => [...versions].reverse(),

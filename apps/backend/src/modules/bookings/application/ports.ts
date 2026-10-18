@@ -89,7 +89,8 @@ export type BookingsDeps = {
     publishPrivate(driverId: number, input: Required<TripInput>, requestId: string): Promise<Published>;
     open(driverId: number, tripId: string): Promise<Published>;
     release(tripId: string): Promise<void>;
-    cancel(driverId: number, tripId: string): Promise<void>;
+    // False when the trip is already on its way or over (docs/35).
+    cancel(driverId: number, tripId: string): Promise<boolean>;
   };
   readonly requests: {
     find(id: string): Promise<RequestFacts | undefined>;
@@ -114,6 +115,8 @@ export type BookingsDeps = {
   readonly notify: BookingNotifier;
   // A pair talked about requests this many times and never booked: «Diqqat» of the owner (docs/129).
   readonly pairTalked: (driverId: number, passengerId: number, talks: number) => Promise<void>;
+  // A pair confirmed and cancelled seats this many times in a month: «Diqqat» too (G45, docs/83 N26).
+  readonly pairCancelled: (driverId: number, passengerId: number, cancels: number) => Promise<void>;
   // A step of the booking funnel no Mini App sees: a refused or a burned request (docs/89 S2).
   readonly track: (step: 'declined' | 'expired') => void;
   // The names of a point and where a point of a trip may lie (docs/69), from the map module.

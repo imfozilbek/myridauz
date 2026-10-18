@@ -12,8 +12,8 @@ const company = {
   email: 'info@example.uz',
 };
 const state = {
-  current: { version: 1, company, changedBy: 900, changedAt: 1 },
-  history: [{ version: 1, company, changedBy: 900, changedAt: 1 }],
+  current: { version: 1, company, changedBy: 'Fozil', changedAt: 1 },
+  history: [{ version: 1, company, changedBy: 'Fozil', changedAt: 1 }],
 };
 
 describe('createCompanyClient (G34)', () => {

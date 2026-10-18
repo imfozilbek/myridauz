@@ -31,5 +31,6 @@
   "diqqat.contact": "{count} ta suhbatda raqam yozildi",
   "diqqat.rating": "{count} kishida reyting past",
   "diqqat.pair": "{count} juft gaplashdi, bron yoʻq",
+  "diqqat.pairCancel": "{count} juft tasdiqlab, bekor qildi",
   "diqqat.peopleLink": "Odamlar"
 }

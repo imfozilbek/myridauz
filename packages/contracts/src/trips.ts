@@ -12,6 +12,14 @@ export const driverTripCancelPath = (id: string) => `${DRIVER_TRIPS_PATH}/${id}/
 export const TRIPS_PATH = '/trips';
 // The team sees the trips of yesterday, today and later; trips are not approved (owner decision 29.09.2026).
 export const ADMIN_TRIPS_PATH = '/admin/trips';
+// The team cancels one trip with a reason (Q5 of docs/111, G45): the driver reads the reason.
+export const adminTripCancelPath = (id: string) => `${ADMIN_TRIPS_PATH}/${id}/cancel`;
+const TEAM_CANCEL_REASON_MIN = 3;
+export const TEAM_CANCEL_REASON_MAX = 200;
+export const teamCancelSchema = z.object({
+  reason: z.string().trim().min(TEAM_CANCEL_REASON_MIN).max(TEAM_CANCEL_REASON_MAX),
+});
+export type TeamCancel = z.infer<typeof teamCancelSchema>;
 export const tripPath = (id: string) => `${TRIPS_PATH}/${id}`;
 // A trip opened for one passenger's request: the driver opens it for everybody (G64, docs/118 path 7).
 export const driverTripOpenPath = (id: string) => `${DRIVER_TRIPS_PATH}/${id}/open`;

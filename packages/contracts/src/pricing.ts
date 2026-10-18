@@ -41,11 +41,12 @@ export const recommendationSchema = z.object({
 });
 export type Recommendation = z.infer<typeof recommendationSchema>;
 
-// Every change of the variables is a new version: who, when, what (docs/23).
+// Every change of the variables is a new version: who, when, what (docs/23). Who: the first name of
+// the team member, never the Telegram ID (docs/65 A3); null for the starting version.
 const versionSchema = z.object({
   version: z.number().int().min(1),
   variables: pricingVariablesSchema,
-  changedBy: z.number().int().nullable(),
+  changedBy: z.string().nullable(),
   changedAt: z.number().int(),
 });
 export type PricingVersion = z.infer<typeof versionSchema>;

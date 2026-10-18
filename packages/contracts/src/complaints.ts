@@ -105,3 +105,15 @@ export const complaintDecisionSchema = z.object({
   refund: z.boolean().default(false),
 });
 export type ComplaintDecision = z.input<typeof complaintDecisionSchema>;
+
+// The open case adds the past complaints against the same person (docs/17, G45): why, when and what
+// the team decided; null while one waits. The newest few.
+export const PAST_COMPLAINTS = 5;
+export const pastComplaintSchema = z.object({
+  id: z.string(),
+  reasons: z.array(z.enum(COMPLAINT_REASONS)).min(1),
+  decision: z.enum(COMPLAINT_DECISIONS).nullable(),
+  at: z.number().int(),
+});
+export const complaintCaseSchema = complaintSchema.extend({ past: z.array(pastComplaintSchema) });
+export type ComplaintCase = z.infer<typeof complaintCaseSchema>;

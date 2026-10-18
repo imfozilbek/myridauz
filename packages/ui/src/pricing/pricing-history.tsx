@@ -15,7 +15,7 @@ export function PricingHistory({ history, onRollback }: PricingHistoryProps) {
     <ManageGroup title={t('pricing.history')}>
       {history.map((item) => {
         const at = new Date(item.changedAt);
-        const who = item.changedBy === null ? t('pricing.start') : `#${item.changedBy}`;
+        const who = item.changedBy ?? t('pricing.start');
         return (
           <ManageRow
             key={item.version}

@@ -38,6 +38,8 @@ export type RatingStore = {
   // "booking:rater" of every review these people wrote: the other side of the blind rule.
   writtenBy(userIds: readonly number[]): Promise<Set<string>>;
   hide(reviewId: string): Promise<boolean>;
+  // The newest reviews written before a moment, for «Sharhlar» of the team (G45).
+  latest(before: number, limit: number): Promise<StoredReview[]>;
   flag(userId: number, at: number): Promise<boolean>;
   // A deleted account: the reviews it wrote and the reviews about it go (docs/65 A5).
   forget(userId: number): Promise<void>;

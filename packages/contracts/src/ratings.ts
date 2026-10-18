@@ -46,6 +46,20 @@ export const NO_RATING: Rating = { average: null, count: 0 };
 export const userReviewsSchema = z.object({ rating: ratingSchema, reviews: z.array(reviewSchema) });
 export type UserReviews = z.infer<typeof userReviewsSchema>;
 
+// «Sharhlar» of the team (G45, docs/24): every review, the newest first, the blind and the hidden ones
+// too, a page at a time; who wrote it and about whom by the public id (docs/65 A3).
+export const ADMIN_REVIEWS_PATH = '/admin/reviews';
+export const ADMIN_REVIEWS_PAGE = 30;
+const reviewPersonSchema = z.object({ id: personIdSchema, firstName: z.string() });
+export const adminReviewSchema = reviewSchema.omit({ authorName: true }).extend({
+  author: reviewPersonSchema,
+  about: reviewPersonSchema,
+  hidden: z.boolean(),
+});
+export type AdminReview = z.infer<typeof adminReviewSchema>;
+export const adminReviewsSchema = z.object({ reviews: z.array(adminReviewSchema), more: z.boolean() });
+export type AdminReviews = z.infer<typeof adminReviewsSchema>;
+
 // The review screen of a ride: whom the person rates and what they wrote before.
 export const reviewPath = (bookingId: string) => `${REVIEWS_PATH}/${bookingId}`;
 export const reviewTargetSchema = z.object({

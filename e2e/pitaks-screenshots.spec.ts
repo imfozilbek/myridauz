@@ -31,8 +31,8 @@ const DIRECTIONS = [
   { from: '1726', to: '1733', pitakId: null },
 ];
 const HISTORY = [
-  { subject: 'direction:1726>1730', before: null, after: JSON.stringify(DIRECTIONS[1]), at: AT },
-  { subject: 'pitak:qoyliq', before: null, after: JSON.stringify(PITAKS[1]), at: AT },
+  { subject: 'direction:1726>1730', before: null, after: JSON.stringify(DIRECTIONS[1]), by: 'Fozil', at: AT },
+  { subject: 'pitak:qoyliq', before: null, after: JSON.stringify(PITAKS[1]), by: 'Fozil', at: AT },
 ];
 
 test('admin: the pitaks of the directions, a direction and the history (G24)', async ({ page }) => {

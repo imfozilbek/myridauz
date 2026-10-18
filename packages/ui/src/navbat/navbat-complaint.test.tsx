@@ -18,6 +18,18 @@ describe('a complaint in «Navbat»', () => {
     expect(await screen.findByText('Haqorat, tahdid yoki bezovta qilish, Kelmadi')).toBeTruthy();
   });
 
+  // G45 (docs/17): both sides with their trips and complaints, the complaints before against the same
+  // person with the decisions.
+  it('shows the history of both sides and the complaints before', async () => {
+    const past = [{ id: 'c0', reasons: ['no_show' as const], decision: 'warning' as const, at: 1 }];
+    const known = { ...COMPLAINT_DETAIL, past, against: { ...COMPLAINT_DETAIL.against, complaints: 2 } };
+    renderNavbat(open, [COMPLAINT], { feedback: { complaint: async () => known } });
+    expect(await screen.findByText('Avvalgi shikoyatlar: Jasur')).toBeTruthy();
+    expect(screen.getByText('Kelmadi · Ogohlantirildi')).toBeTruthy();
+    expect(screen.getByText('3 safar · 0 shikoyat')).toBeTruthy();
+    expect(screen.getByText('3 safar · 2 shikoyat')).toBeTruthy();
+  });
+
   it('reads the chat only on demand, then comes back', async () => {
     const chat = vi.fn(async () => lines);
     renderNavbat(open, [COMPLAINT], { feedback: { complaint: async () => COMPLAINT_DETAIL, chat } });

@@ -41,6 +41,8 @@ describe('the ratings in D1', () => {
     ]);
     expect(await store.hide(shown[0]?.id ?? '')).toBe(true);
     expect(await store.hide('none')).toBe(false);
+    // «Sharhlar» of the team (G45): one page by the index, the hidden one too.
+    expect(await store.latest(Number.MAX_SAFE_INTEGER, 10)).toHaveLength(3);
     expect((await reviewsOf(deps, DRIVER)).reviews).toHaveLength(1);
     expect((await store.by(101)).map((item) => item.bookingId)).toEqual(['b1']);
     expect(await store.writtenBy([101, 102])).toEqual(new Set(['b1:101', 'b2:102']));

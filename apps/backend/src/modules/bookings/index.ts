@@ -19,15 +19,21 @@ import { filedRideOf, ratableRideOf, rideOf, ridesOf } from './application/rides
 import { expireTripOffers } from './application/salon-trip';
 import { tellTripRetimed } from './application/trip-change';
 import { bookingViews } from './application/views';
-import { isRide } from './domain/meeting';
 import { bookingRoutes } from './http/booking-routes';
 import { meetingRoutes } from './http/meeting-routes';
 import { offerRoutes } from './http/offer-routes';
 import { talkRoutes } from './http/talk-routes';
+import { teamCancelRoutes } from './http/team-cancel-routes';
+import { recordAction } from '../journal';
 import { bookingStore } from './infrastructure/store';
+
+// The team cancelled a trip (G45): the journal of the team keeps who and which trip.
+const tripCancelled = (env: Bindings, memberId: number, tripId: string) =>
+  recordAction(env, { memberId, kind: 'trip', subject: tripId, action: 'cancel', since: null });
 
 export const bookingsModule = new Hono<AppEnv>()
   .route('/', bookingRoutes(bookingsDeps))
+  .route('/', teamCancelRoutes(bookingsDeps, tripCancelled))
   .route('/', offerRoutes(bookingsDeps))
   .route('/', meetingRoutes(bookingsDeps))
   .route('/', talkRoutes(bookingsDeps));
@@ -107,10 +113,7 @@ export const ridesOfTrips = (env: Bindings, trips: Parameters<typeof ridesOf>[1]
 export const cancelAllOf = (env: Bindings, userId: number) => cancelEverything(bookingsDeps(env), userId);
 // A blocked person finishes the trip on the way (owner decision 10.10.2026, docs/158 Ж).
 export const ridingOf = (env: Bindings, userId: number) => ridingNow(bookingsDeps(env), userId);
-
-// The history of a passenger for a moderator: how many rides they took (docs/17), not the no-shows.
-export const passengerRideCount = async (env: Bindings, passengerId: number) =>
-  (await bookingsDeps(env).bookings.byPassenger(passengerId)).filter(isRide).length;
+export { cancelsOf, passengerRideCount, ridesOfPerson } from './person-facts';
 
 // «Hamyon» names the passenger and the seats of each booking of its rows (G63, G65).
 export const walletBookingsOf = async (env: Bindings, bookingIds: readonly string[]) => {

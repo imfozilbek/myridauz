@@ -22,21 +22,7 @@ export {
   MINI_APP_HEADER,
   type ApiErrorCode,
 } from './auth';
-export {
-  distanceQuerySchema,
-  distanceSchema,
-  LOCATION_DISTANCE_PATH,
-  LOCATION_TYPES,
-  locationIdSchema,
-  LOCATIONS_PATH,
-  locationSchema,
-  locationsResponseSchema,
-  MAX_DISTANCE_KM,
-  type Distance,
-  type Location,
-  type LocationsResponse,
-  type LocationType,
-} from './locations';
+export * from './locations';
 export { matchesPlace } from './place-search';
 export { checkRoute, ROUTE_ERRORS, zoneOf, type RouteError } from './route-rule';
 export { CAR_CATALOG, catalogSeats, POPULAR_CARS } from './car-catalog';

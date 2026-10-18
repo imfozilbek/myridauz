@@ -60,6 +60,8 @@ export const testClients = (overrides: Overrides): ApiClients => ({
     rollback: NOT_USED,
     directions: NOT_USED,
     setDirection: NOT_USED,
+    setDistance: NOT_USED,
+    distanceHistory: async () => ({ changes: [] }),
     ...overrides.pricing,
   },
   channels: {
@@ -79,6 +81,7 @@ export const testClients = (overrides: Overrides): ApiClients => ({
     answer: NOT_USED,
     meet: NOT_USED,
     tripBookings: NOT_USED,
+    cancelTrip: NOT_USED,
     sendOffer: NOT_USED,
     // No offer sent yet: the board of requests asks for them (G41, docs/90 F-D1).
     driverOffers: async () => [],

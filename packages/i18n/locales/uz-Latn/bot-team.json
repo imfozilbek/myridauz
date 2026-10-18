@@ -19,6 +19,7 @@
   "diqqat.people": "👥 Odamlar",
   "diqqat.money": "💳 {name} (ID {id}): hamyondagi pul {count} ta joyga yetadi",
   "diqqat.pair": "🤝 {driver} (ID {driverId}) va {passenger} (ID {passengerId}) {count} marta gaplashdi, lekin bron qilmadi",
+  "diqqat.pairCancel": "🔁 {driver} (ID {driverId}) va {passenger} (ID {passengerId}) bir oyda {count} marta joyni tasdiqlab, bekor qilishdi",
   "summary.title": "📊 Kun yakuni · {date}",
   "summary.numbers": "{people} yangi odam · {trips} safar · {bookings} bron",
   "summary.team": "👥 Jamoa",
@@ -26,6 +27,7 @@
   "summary.open": "Batafsil: Statistika",
   "supportCard.title": "Yangi murojaat",
   "supportCard.who": "{name} · {role}",
+  "supportCard.id": "ID {id}",
   "supportCard.role.passenger": "yoʻlovchi",
   "supportCard.role.driver": "haydovchi",
   "supportCard.role.guest": "roʻyxatdan oʻtmagan",
@@ -41,5 +43,6 @@
   "supportCard.history": "📜 Tarix",
   "supportCard.openBooking": "📋 Bronni ochish",
   "supportCard.openTrip": "📋 Safarni ochish",
+  "supportCard.openProfile": "👤 Profilni ochish",
   "supportCard.answered": "✅ Operator {name} javob berdi"
 }

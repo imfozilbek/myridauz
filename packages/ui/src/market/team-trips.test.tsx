@@ -40,4 +40,28 @@ describe('the trips of the team day by day (docs/90 F-A6)', () => {
     expect(screen.getByText('Jasur')).toBeTruthy();
     expect(window.location.search).not.toContain('trip=');
   });
+
+  // Q5 of docs/111 (G45): the team cancels one trip with a reason, asked once more; a cancelled trip
+  // has no button.
+  it('cancels a trip with a reason', async () => {
+    const id = '1f6c2b9e-1d2a-4c3b-9e8f-7a6b5c4d3e2f';
+    window.history.replaceState(null, '', `/?open=trips&trip=${id}`);
+    let status: 'active' | 'cancelled' = 'active';
+    const tripOf = vi.fn(async () => ({ ...trip, id, status }));
+    const cancelTrip = vi.fn(async () => void (status = 'cancelled'));
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    renderMarket(
+      <TeamTripsScreen onBack={() => undefined} />,
+      testClients({
+        market: { trip: tripOf, teamTrips: async () => [] },
+        bookings: { tripBookings: async () => [], cancelTrip },
+      }),
+    );
+    fireEvent.click(await screen.findByText('Safarni bekor qilish'));
+    expect(screen.getByText(/komissiya qaytadi\.$/u)).toBeTruthy();
+    fireEvent.change(screen.getByLabelText('Sabab'), { target: { value: 'Xavfli haydovchi' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Bekor qilish' }));
+    await waitFor(() => expect(cancelTrip).toHaveBeenCalledWith(id, { reason: 'Xavfli haydovchi' }));
+    await waitFor(() => expect(screen.queryByText('Safarni bekor qilish')).toBeNull());
+  });
 });

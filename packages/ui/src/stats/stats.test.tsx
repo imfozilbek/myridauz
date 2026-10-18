@@ -14,6 +14,11 @@ describe('Statistika of the team (docs/29)', () => {
     renderMarket(<StatsScreen onBack={() => undefined} />, testClients({ stats: { get } }));
     expect(await screen.findByText('Yangi foydalanuvchilar')).toBeTruthy();
     expect(screen.getByText('24')).toBeTruthy();
+    // Since the day before (G45, F-A12): 24 new people against 18, 9 trips against 11.
+    expect(screen.getByText('↑ 6')).toBeTruthy();
+    expect(screen.getByText('↓ 2')).toBeTruthy();
+    expect(screen.getAllByText('±0')).toHaveLength(2);
+    expect(screen.getByText('↑ ↓ oldingi 24 soatga nisbatan')).toBeTruthy();
     expect(screen.getByText('Yoʻlovchi yoʻli')).toBeTruthy();
     expect(screen.getByText('60% ketdi')).toBeTruthy();
     // Where the new people came from and on what (G55, docs/116).

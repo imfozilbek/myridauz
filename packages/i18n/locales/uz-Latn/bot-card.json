@@ -32,6 +32,7 @@
   "ring.declined": "❌ {name} joyni tasdiqlamadi. Boshqa safar bor.",
   "ring.expired": "❌ Haydovchi vaqtida javob bermadi. Boshqa safar bor.",
   "ring.cancelledByDriver": "❌ {name} joyni bekor qildi. Boshqa safar bor.",
+  "ring.cancelledByTeam": "❌ Safarni jamoa bekor qildi. Boshqa safar bor.",
   "ring.retimed": "⏰ Safar vaqti oʻzgardi: endi {time}",
   "ring.soonPitak": "🚏 Safarga 2 soat qoldi: {time} da pitakda boʻling",
   "ring.soonDoor": "🏠 Safarga 2 soat qoldi: haydovchi {time} da sizni olib ketadi",

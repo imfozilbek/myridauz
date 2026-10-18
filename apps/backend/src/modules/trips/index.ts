@@ -35,9 +35,8 @@ export const tripFacts = async (env: Bindings, id: string) => {
   const trip = await tripsDeps(env).trips.find(id);
   if (!trip) return undefined;
   const now = Date.now();
-  const { driverId, from, to, departAt, departedAt, arrivedAt, km, seats, price, pickupMode } = trip;
+  const { driverId, from, to, departAt, departedAt, arrivedAt, km, seats, price, pickupMode, endsAt } = trip;
   const over = statusAt(trip, now) === 'completed';
-  const { endsAt } = trip;
   return {
     id,
     driverId,
@@ -69,9 +68,12 @@ export const driverDirections = async (env: Bindings, driverId: number) => {
     { from: to, to: from },
   ]);
 };
-// «≈ N joyga yetadi» of «Hamyon» counts at the seat price of the driver's last trip (G65).
+// The newest trips of a driver: «Odamlar» (G45); «≈ N joyga yetadi» of «Hamyon» counts at the seat
+// price of the last one (G65).
+export const latestTripsOf = (env: Bindings, driverId: number, limit: number) =>
+  tripsDeps(env).trips.latestOf(driverId, limit);
 export const lastTripPrice = async (env: Bindings, driverId: number) =>
-  (await tripsDeps(env).trips.latestOf(driverId, 1))[0]?.price ?? null;
+  (await latestTripsOf(env, driverId, 1))[0]?.price ?? null;
 export const driverTripIds = async (env: Bindings, driverId: number) =>
   (await tripsDeps(env).trips.byDriver(driverId)).map((trip) => trip.id);
 // An offer becomes a trip when it is accepted: the driver hears the schedule now (docs/103).
@@ -99,9 +101,8 @@ export const publishPrivateTripFor = (env: Bindings, driverId: number, input: In
 export const openTripFor = (env: Bindings, driverId: number, tripId: string) =>
   openTrip(tripsDeps(env), driverId, tripId);
 export const releaseTripFor = (env: Bindings, tripId: string) => releaseTrip(tripsDeps(env), tripId);
-export const cancelFor = async (env: Bindings, driverId: number, tripId: string) => {
-  await cancelTrip(tripsDeps(env), driverId, tripId);
-};
+export const cancelFor = async (env: Bindings, driverId: number, tripId: string) =>
+  (await cancelTrip(tripsDeps(env), driverId, tripId)).ok;
 
 // Every trip of a Tashkent day: the boards and the summaries of the channels (G68, docs/122).
 export const tripsOfDate = (env: Bindings, date: string) => teamTrips(tripsDeps(env), date);

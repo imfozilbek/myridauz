@@ -1,5 +1,8 @@
 import {
   ADMIN_COMPLAINTS_PATH,
+  ADMIN_REVIEWS_PATH,
+  adminReviewHidePath,
+  adminReviewsSchema,
   adminComplaintChatPath,
   adminComplaintDecisionPath,
   adminComplaintPath,
@@ -9,14 +12,16 @@ import {
   COMPLAINTS_PATH,
   complaintChatSchema,
   complaintQueueSchema,
-  complaintSchema,
+  complaintCaseSchema,
   reviewPath,
   REVIEWS_PATH,
   reviewTargetSchema,
   userReviewsPath,
   userReviewsSchema,
+  type AdminReviews,
   type ChatLine,
   type Complaint,
+  type ComplaintCase,
   type ComplaintDecision,
   type ComplaintInput,
   type ComplaintNotes,
@@ -43,12 +48,18 @@ export function createFeedbackClient(options: SignedOptions) {
       complaintNotesSchema.parse(await (await request(COMPLAINT_NOTES_PATH)).json()),
     queue: async (): Promise<Complaint[]> =>
       complaintQueueSchema.parse(await (await request(ADMIN_COMPLAINTS_PATH)).json()).complaints,
-    complaint: async (id: string): Promise<Complaint> =>
-      complaintSchema.parse(await (await request(adminComplaintPath(id))).json()),
+    complaint: async (id: string): Promise<ComplaintCase> =>
+      complaintCaseSchema.parse(await (await request(adminComplaintPath(id))).json()),
     chat: async (id: string): Promise<ChatLine[]> =>
       complaintChatSchema.parse(await (await post(adminComplaintChatPath(id), {})).json()).lines,
     decide: async (id: string, decision: ComplaintDecision): Promise<void> =>
       void (await post(adminComplaintDecisionPath(id), decision)),
+    // «Sharhlar» of the team (G45): a page of reviews, then the page before the last one seen.
+    teamReviews: async (before?: number): Promise<AdminReviews> => {
+      const path = before === undefined ? ADMIN_REVIEWS_PATH : `${ADMIN_REVIEWS_PATH}?before=${before}`;
+      return adminReviewsSchema.parse(await (await request(path)).json());
+    },
+    hideReview: async (id: string): Promise<void> => void (await post(adminReviewHidePath(id), {})),
     // Only the owner confirms or rejects the refund of a no-show (docs/35, G63).
     answerRefund: async (id: string, answer: RefundAnswer): Promise<void> =>
       void (await post(adminComplaintRefundPath(id, answer), {})),

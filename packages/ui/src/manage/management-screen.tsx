@@ -4,6 +4,7 @@ import { CompanyScreen } from '../company/company-screen';
 import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
+import { TeamReviewsScreen } from '../feedback/team-reviews-screen';
 import { TeamTripsScreen } from '../market/team-trips-screen';
 import { PitaksScreen } from '../pitaks/pitaks-screen';
 import { PricingScreen } from '../pricing/pricing-screen';
@@ -24,6 +25,7 @@ type Back = { readonly onBack: () => void };
 const SCREENS = {
   people: PeopleScreen,
   trips: TeamTripsScreen,
+  reviews: TeamReviewsScreen,
   wallets: TeamWalletsScreen,
   pricing: PricingScreen,
   channels: ChannelsScreen,
@@ -67,6 +69,12 @@ export function ManagementScreen({ onBack }: Back) {
           title={t('common.admin.trips')}
           hint={hints.trips}
           onClick={() => setOpen('trips')}
+        />
+        <ManageRow
+          icon="star"
+          title={t('manage.reviews')}
+          hint={t('manage.reviewsHint')}
+          onClick={() => setOpen('reviews')}
         />
       </ManageGroup>
       <ManageGroup title={t('manage.group.money')}>

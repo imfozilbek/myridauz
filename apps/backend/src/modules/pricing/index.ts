@@ -1,6 +1,7 @@
 import type { Bindings } from '../../env';
 import MAIN_DIRECTIONS from '../../../seed/main-directions.json';
 import { placesOf, routeKm } from '../locations';
+import { firstNames } from '../users';
 import type { PricingDeps } from './application/ports';
 import { recommendDirection, recommendPrice } from './application/recommend';
 import { variablesCache } from './application/variables';
@@ -33,6 +34,7 @@ const pricingDeps = (env: Bindings): PricingDeps => ({
   variables: cache,
   mainDirections: MAIN_DIRECTIONS.map(([from = '', to = '']) => [from, to] as const),
   realPrices: (since) => realPricesOf(env, since),
+  names: (ids) => firstNames(env, ids),
   now: Date.now,
 });
 

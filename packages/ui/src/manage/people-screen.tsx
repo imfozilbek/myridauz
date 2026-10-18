@@ -1,5 +1,5 @@
 import { personIdSchema, type PersonId } from '@platform/contracts';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { useLoad } from '../market/use-list';
@@ -7,6 +7,7 @@ import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import type { PersonName } from '../flow/start-action';
 import { ManageGroup, ManagePage, ManageRow } from './manage-page';
+import { forgetLinkedPerson } from './linked-person';
 import { PersonView } from './person-view';
 
 type PeopleProps = {
@@ -20,6 +21,7 @@ type PeopleProps = {
 // «Diqqat» names; the card, the blocks and their history.
 export function PeopleScreen({ onBack, person, people = [] }: PeopleProps) {
   const [open, setOpen] = useState<PersonId | null>(person ?? null);
+  useEffect(forgetLinkedPerson, []);
   if (open) return <PersonLoad id={open} onBack={() => (person ? onBack() : setOpen(null))} />;
   return <PeopleSearch people={people} onBack={onBack} onOpen={setOpen} />;
 }

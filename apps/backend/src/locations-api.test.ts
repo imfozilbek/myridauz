@@ -1,4 +1,4 @@
-import type { Location } from '@platform/contracts';
+import { ADMIN_DISTANCE_HISTORY_PATH, distanceHistorySchema, type Location } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { app } from './app';
 import { localLocations } from './modules/locations';
@@ -22,15 +22,24 @@ localLocations.load([
   place('1735401', '1735', 'city'),
 ]);
 
-async function put(body: unknown, id: number, app_ = 'admin') {
+async function signed(id: number, app_: string) {
   const token = app_ === 'admin' ? env.ADMIN_BOT_TOKEN : env.PASSENGER_BOT_TOKEN;
-  const headers = {
+  return {
     authorization: `tma ${await initDataFor(token, id, Math.floor(Date.now() / 1000))}`,
     'x-mini-app': app_,
     'content-type': 'application/json',
   };
+}
+async function put(body: unknown, id: number, app_ = 'admin') {
+  const headers = await signed(id, app_);
   return app.request('/locations/distance', { method: 'PUT', body: JSON.stringify(body), headers }, env);
 }
+const history = async (id: number, app_ = 'admin') =>
+  app.request(
+    `${ADMIN_DISTANCE_HISTORY_PATH}?from=1735401&to=1726269`,
+    { headers: await signed(id, app_) },
+    env,
+  );
 
 describe('locations API', () => {
   it('gives the public directory with a version for caching', async () => {
@@ -51,6 +60,18 @@ describe('locations API', () => {
     expect((await put(trip, 900)).status).toBe(200);
     const read = await app.request('/locations/distance?from=1726269&to=1735401', {}, env);
     expect(await read.json()).toEqual({ from: '1726269', to: '1735401', km: 1150 });
+  });
+
+  // G45 (docs/48): who corrected a distance, when, before and after; the person never reads it.
+  it('keeps the history of the corrections for the team', async () => {
+    expect((await put({ from: '1726269', to: '1735401', km: 1120 }, 900)).status).toBe(200);
+    expect((await history(5)).status).toBe(403);
+    const { changes } = distanceHistorySchema.parse(await (await history(900)).json());
+    expect(changes.map(({ before, after }) => [before, after])).toEqual([
+      [1150, 1120],
+      [null, 1150],
+    ]);
+    expect(changes[0]?.at).toEqual(expect.any(Number));
   });
 
   it('refuses a trip inside the city and unknown places', async () => {

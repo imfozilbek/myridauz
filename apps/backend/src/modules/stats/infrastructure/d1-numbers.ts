@@ -13,6 +13,15 @@ const SQL = `SELECT
   (SELECT COUNT(*) FROM driver_applications WHERE submitted_at >= ?1) AS driverApplications,
   (SELECT COUNT(*) FROM complaints WHERE created_at >= ?1) AS complaints`;
 
+// The same counts over [since, until): the period before, to compare (G45, F-A12 of docs/90).
+const BEFORE = `SELECT
+  (SELECT COUNT(*) FROM users WHERE created_at >= ?1 AND created_at < ?2) AS newUsers,
+  (SELECT COUNT(*) FROM trips WHERE created_at >= ?1 AND created_at < ?2) AS trips,
+  (SELECT COUNT(*) FROM bookings WHERE created_at >= ?1 AND created_at < ?2) AS bookings,
+  (SELECT COUNT(*) FROM driver_applications WHERE submitted_at >= ?1 AND submitted_at < ?2)
+    AS driverApplications,
+  (SELECT COUNT(*) FROM complaints WHERE created_at >= ?1 AND created_at < ?2) AS complaints`;
+
 const RIDERS = `SELECT a.via AS via, COUNT(*) AS count FROM user_arrivals a
   WHERE a.arrived_at >= ? AND a.via IS NOT NULL AND (
     EXISTS (SELECT 1 FROM bookings b WHERE b.passenger_id = a.user_id AND b.status = 'completed'
@@ -37,6 +46,16 @@ export const d1Numbers = (db: D1Database): NumbersSource => ({
       newUsers: row?.newUsers ?? 0,
       trips: row?.trips ?? 0,
       activeTrips: row?.activeTrips ?? 0,
+      bookings: row?.bookings ?? 0,
+      driverApplications: row?.driverApplications ?? 0,
+      complaints: row?.complaints ?? 0,
+    };
+  },
+  before: async (since, until) => {
+    const row = await db.prepare(BEFORE).bind(since, until).first<Omit<Row, 'activeTrips'>>();
+    return {
+      newUsers: row?.newUsers ?? 0,
+      trips: row?.trips ?? 0,
       bookings: row?.bookings ?? 0,
       driverApplications: row?.driverApplications ?? 0,
       complaints: row?.complaints ?? 0,

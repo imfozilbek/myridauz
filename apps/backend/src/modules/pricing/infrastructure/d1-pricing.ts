@@ -1,5 +1,4 @@
-import type { PricingVersion } from '@platform/contracts';
-import type { PricingRepository } from '../application/ports';
+import type { PricingRepository, StoredPricingVersion } from '../application/ports';
 
 type VersionRow = {
   version: number;
@@ -11,7 +10,7 @@ type VersionRow = {
   changed_at: number;
 };
 
-const toVersion = (row: VersionRow): PricingVersion => ({
+const toVersion = (row: VersionRow): StoredPricingVersion => ({
   version: row.version,
   variables: {
     ratePerKm: row.rate_per_km,

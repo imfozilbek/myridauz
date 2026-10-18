@@ -1,4 +1,5 @@
 import { companyEdition, type Company, type CompanyState, type PublicCompany } from '@platform/contracts';
+import { namer } from '../../../shared/team/who';
 import type { CompanyDeps } from './ports';
 
 // The requisites in the documents of the Mini Apps and the landing, with their edition (docs/30).
@@ -12,7 +13,12 @@ export async function publicCompany(deps: CompanyDeps): Promise<PublicCompany> {
 
 // The admin screen of the owner: the requisites now and every change before (docs/02, G75).
 export async function companyState(deps: CompanyDeps): Promise<CompanyState> {
-  const history = await deps.company.versions();
+  const stored = await deps.company.versions();
+  const nameOf = await namer(
+    deps.names,
+    stored.map((item) => item.changedBy),
+  );
+  const history = stored.map((item) => ({ ...item, changedBy: nameOf(item.changedBy) }));
   return { current: history[0] ?? null, history };
 }
 

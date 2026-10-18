@@ -34,6 +34,10 @@ export const WALLET_SECTION = 'wallet';
 // The trips of the team in the admin app: «Bronni ochish» under a support question opens one of
 // them, ?open=trips&trip=<id> (G68, mockup g68/4).
 export const TEAM_TRIPS_SECTION = 'trips';
+// «Odamlar» of the owner: «Profilni ochish» under a support question opens the person who wrote,
+// ?open=people&person=<public id> (Q8 of docs/111, G45).
+export const TEAM_PEOPLE_SECTION = 'people';
+export const PERSON_LINK = 'person';
 
 // «💬 Chat» and «📞 Qoʻngʻiroq» under a trip card (G77): the chat of the seat, or the call of it at once.
 export const CHAT_LINK = 'chat';
