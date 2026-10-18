@@ -28,7 +28,7 @@ test('driver fixes the application: screenshots', async ({ page }) => {
     await page.screenshot({ path: `screenshots/driver-fix-${name}.png`, fullPage: true });
   };
   // The fix opens at once: the bad photo outlined with its reason.
-  await expect(page.locator('.photo-tile-problem', { hasText: TEXT.reasonSide })).toBeVisible();
+  await expect(page.locator('.photo-tile-problem', { hasText: TEXT.reasonFront })).toBeVisible();
   await expect(page.locator('#tg-main-button')).toHaveText(TEXT.resend);
   await shot('1-photos');
   // «Назад» leaves a note on the main screen that opens the fix again.

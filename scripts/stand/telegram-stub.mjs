@@ -1,9 +1,13 @@
 // The Bot API of the stand (docs/75): it keeps every call of the bots so scenarios can read the
-// messages and their buttons (GET /__sent), and answers like Telegram. Nothing leaves the computer.
+// messages and their buttons (GET /__sent), refuses the people who blocked a bot (POST /__blocked), and
+// answers like Telegram. Nothing leaves the computer.
 import { createServer } from 'node:http';
 import { standLooks } from './telegram-looks.mjs';
 
 const SENT_PATH = '/__sent';
+// The people who blocked a bot (docs/80 S07): Telegram refuses every message to them with 403.
+const BLOCKED_PATH = '/__blocked';
+const BLOCKED = { ok: false, error_code: 403, description: 'Forbidden: bot was blocked by the user' };
 const CALL = /^\/bot([^/]+)\/(\w+)$/u;
 // A file a bot got (a voice message): a few bytes are enough for the backend (docs/50).
 const FILE = /^\/file\/bot[^/]+\//u;
@@ -46,12 +50,24 @@ export function serveTelegram(port) {
   let sent = [];
   // Message ids never repeat, also after a clear: a reply must reach its own message (docs/50).
   let lastId = 0;
+  const blocked = new Set();
+  let refused = 0;
   const looks = standLooks();
   const server = createServer((incoming, outgoing) => {
     const url = incoming.url ?? '/';
     if (url === SENT_PATH) {
       if (incoming.method === 'DELETE') sent = [];
       outgoing.writeHead(200, JSON_TYPE).end(JSON.stringify(sent));
+      return;
+    }
+    if (url === BLOCKED_PATH) {
+      let raw = '';
+      incoming.on('data', (chunk) => (raw += chunk));
+      incoming.on('end', () => {
+        if (incoming.method === 'POST') blocked.add(Number(raw));
+        if (incoming.method === 'DELETE') blocked.clear();
+        outgoing.writeHead(200, JSON_TYPE).end(JSON.stringify({ chats: [...blocked], refused }));
+      });
       return;
     }
     if (FILE.test(url)) {
@@ -73,6 +89,11 @@ export function serveTelegram(port) {
       lastId += 1;
       const id = lastId;
       const body = bodyOf(raw, incoming.headers['content-type']);
+      if (method.startsWith('send') && blocked.has(body.chat_id)) {
+        refused += 1;
+        outgoing.writeHead(403, JSON_TYPE).end(JSON.stringify(BLOCKED));
+        return;
+      }
       // The id a sent message got: a snapshot draws the edits and the answers on it (G68).
       sent.push({ token, method, body, at: Date.now(), ...(method.startsWith('send') ? { id } : {}) });
       const result = looks(method, token, body, id) ?? resultOf(method, id);

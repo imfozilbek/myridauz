@@ -67,6 +67,10 @@ describe('the board of the day in a channel (G68)', () => {
     expect(buttons).toContain('🔎 Safar topish');
     expect(buttons).toContain('startapp=sub_1726_1718_2026-10-02__ch-ch-samarqand');
     expect(buttons).toContain('📤 Doʻstga');
+    // The words under the shared link end with why the brand (G88, docs/193).
+    expect(decodeURIComponent(buttons)).toContain(
+      'ta safar\n\nTekshirilgan haydovchilar. Raqamingiz yashirin.',
+    );
   });
 
   it('a trip on the road or arrived is struck too; no trip of the channel: no board', () => {

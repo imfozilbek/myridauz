@@ -15,28 +15,24 @@ export function testD1(): D1Database {
   const db = new DatabaseSync(':memory:');
   for (const name of Object.keys(MIGRATIONS).sort()) db.exec(MIGRATIONS[name] ?? '');
   const ran: Ran[] = [];
-  const prepare = (sql: string) => {
-    let values: SQLInputValue[] = [];
-    const statement = {
-      bind: (...next: Value[]) => {
-        values = plain(next);
-        return statement;
-      },
-      all: async () => {
-        ran.push({ sql, values });
-        return { results: db.prepare(sql).all(...values), success: true, meta: {} };
-      },
-      first: async () => {
-        ran.push({ sql, values });
-        return db.prepare(sql).get(...values) ?? null;
-      },
-      run: async () => {
-        ran.push({ sql, values });
-        return { success: true, meta: { changes: Number(db.prepare(sql).run(...values).changes) } };
-      },
-    };
-    return statement;
-  };
+  // A bound statement is a new statement, as in D1: one prepared statement bound for many rows of a
+  // batch keeps each row (G49).
+  const statementOf = (sql: string, values: SQLInputValue[]) => ({
+    bind: (...next: Value[]) => statementOf(sql, plain(next)),
+    all: async () => {
+      ran.push({ sql, values });
+      return { results: db.prepare(sql).all(...values), success: true, meta: {} };
+    },
+    first: async () => {
+      ran.push({ sql, values });
+      return db.prepare(sql).get(...values) ?? null;
+    },
+    run: async () => {
+      ran.push({ sql, values });
+      return { success: true, meta: { changes: Number(db.prepare(sql).run(...values).changes) } };
+    },
+  });
+  const prepare = (sql: string) => statementOf(sql, []);
   const batch = async (statements: readonly { all: () => Promise<unknown> }[]) =>
     Promise.all(statements.map((statement) => statement.all()));
   const d1 = { prepare, batch, exec: async (sql: string) => db.exec(sql) } as unknown as D1Database;
@@ -56,6 +52,7 @@ const GROWING = [
   'complaints',
   'users',
   'rating_asks',
+  'reviews',
   'ratings',
   'channel_posts',
   'support_messages',
@@ -69,6 +66,9 @@ const GROWING = [
   'waitlist',
   'waitlist_visits',
   'ad_joins',
+  // The life of the channels by day and the reactions of their posts (G87, docs/191).
+  'channel_days',
+  'post_reactions',
 ] as const;
 // «SCAN t» reads every row of t, through an index or not; «SEARCH t USING INDEX» reads only what it needs.
 const SCAN = /^SCAN (\w+)/u;

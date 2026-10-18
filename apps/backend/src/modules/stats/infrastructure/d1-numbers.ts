@@ -1,6 +1,7 @@
 import type { NumbersSource } from '../application/ports';
 import type { MarkCount } from '../domain/rost';
 import type { ArrivalCount } from '../domain/arrivals';
+import { d1Voice } from './d1-voice';
 
 // The main numbers of a period, straight from the tables (docs/29).
 const SQL = `SELECT
@@ -56,4 +57,5 @@ export const d1Numbers = (db: D1Database): NumbersSource => ({
     const { results } = await db.prepare(RIDERS).bind(since).all<MarkCount>();
     return results;
   },
+  voice: d1Voice(db),
 });

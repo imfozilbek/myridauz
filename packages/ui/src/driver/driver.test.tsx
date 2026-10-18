@@ -35,17 +35,18 @@ describe('DriverGate: the application of a driver in 2 screens (G62, docs/118 pa
     fireEvent.click(button('Kamaytirish'));
     expect(screen.getByText('3')).toBeTruthy();
     await tap('Davom etish');
-    // The photos: the car and its plate on top, no face (it is taken at the registration).
-    expect(await screen.findByText('Mashina rasmlari')).toBeTruthy();
+    // The photo: the car and its plate on top, no face (it is taken at the registration).
+    expect(await screen.findByText('Mashina rasmi')).toBeTruthy();
     expect(screen.getByText('2 / 2 · kunduzi, raqam aniq koʻrinsin')).toBeTruthy();
     expect(screen.getByText('Cobalt, Oq · 3 joy')).toBeTruthy();
     expect(screen.getByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
     expect(screen.queryByText('Yuzingiz')).toBeNull();
     expect(button('Arizani yuborish').disabled).toBe(true);
-    for (const tile of ['Old tomondan', 'Yon tomondan', 'Salon']) {
-      shoot(container, tile);
-      await waitFor(() => expect(taken(tile)).toBe(true));
-    }
+    // One photo from the front (18.10.2026); before it, the driver's own car drawn with its plate.
+    expect(container.querySelector('.car-sketch .uz-plate')?.textContent).toContain('A 123 BC');
+    shoot(container, 'Old tomondan');
+    await waitFor(() => expect(taken('Old tomondan')).toBe(true));
+    expect(container.querySelector('.car-sketch')).toBeNull();
     // The server misses a photo: the driver reads what to do, not «try later» (docs/86 T7).
     submit.mockRejectedValueOnce(new ApiError(409, 'drivers.incomplete'));
     await tap('Arizani yuborish');
@@ -85,10 +86,8 @@ describe('DriverGate: the application of a driver in 2 screens (G62, docs/118 pa
     fireEvent.click(button('Oq'));
     fireEvent.change(screen.getByLabelText('Davlat raqami'), { target: { value: '10123ABC' } });
     await tap('Davom etish');
-    for (const tile of ['Old tomondan', 'Yon tomondan', 'Salon']) {
-      shoot(container, tile);
-      await waitFor(() => expect(taken(tile)).toBe(true));
-    }
+    shoot(container, 'Old tomondan');
+    await waitFor(() => expect(taken('Old tomondan')).toBe(true));
     await tap('Arizani yuborish');
     await waitFor(() =>
       expect(submit).toHaveBeenCalledWith({
@@ -102,7 +101,7 @@ describe('DriverGate: the application of a driver in 2 screens (G62, docs/118 pa
   });
 
   it('lets an approved driver in', async () => {
-    renderGate(application({ status: 'approved', car, photos: { front: true, side: true, interior: true } }));
+    renderGate(application({ status: 'approved', car, photos: { front: true } }));
     expect(await screen.findByTestId('driver-home')).toBeTruthy();
     expect(screen.queryByText('Arizangiz tekshirilmoqda')).toBeNull();
   });

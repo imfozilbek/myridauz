@@ -15,7 +15,7 @@ const driver = (status: Driver['application']['status']): Driver => ({
   application: {
     status,
     car: { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 },
-    photos: { front: true, side: true, interior: true },
+    photos: { front: true },
     reasons: [],
   },
   editCar: () => undefined,

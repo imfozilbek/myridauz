@@ -34,7 +34,7 @@ export function LoopInvite({ card, icon, title, text, button }: Props) {
     setFailure(null);
     try {
       const prepared = await growth.loopCard(card);
-      if (await shareCard(prepared.prepared, prepared.link)) {
+      if (await shareCard(prepared.prepared, prepared.link, prepared.text)) {
         done('chat');
         haptic.success();
       }

@@ -4,8 +4,15 @@ import { execFileSync } from 'node:child_process';
 
 const DIR = 'e2e/stand';
 export const AREAS = {
-  registration: ['first-contact', 'forms', 'screens-passenger', 'all-passenger-flows', 'trip-preview'],
-  search: ['passenger-search', 'passenger-directions', 'g24', 'combos', 'g33'],
+  registration: [
+    'first-contact',
+    'forms',
+    'screens-passenger',
+    'all-passenger-flows',
+    'trip-preview',
+    'g49-people',
+  ],
+  search: ['passenger-search', 'passenger-directions', 'g24', 'combos', 'g33', 'g49-search'],
   map: ['g26', 'dropoff-screen'],
   booking: [
     'passenger-booking',
@@ -21,6 +28,8 @@ export const AREAS = {
     'g60',
     'g69',
     'g69-driver',
+    'g88',
+    'g49-system',
     'flyer-shots',
   ],
   requests: ['passenger-requests', 'requests-review', 'g64', 'g64-salon'],
@@ -32,10 +41,11 @@ export const AREAS = {
     'all-driver',
     'trip-changes',
     'g63',
+    'g49-driver',
   ],
   team: ['team', 'team-moderation', 'screens-team', 'all-admin'],
   bots: ['bots', 'bots-team', 'complaints-time', 'g68-bots', 'g83'],
-  channels: ['system-channels', 'system-cron', 'system-people'],
+  channels: ['system-channels', 'system-cron', 'system-cron-team', 'system-people'],
 };
 const NAMES = Object.keys(AREAS);
 

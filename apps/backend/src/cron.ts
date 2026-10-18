@@ -1,4 +1,6 @@
+import { showMissingBotKeys } from './bots/bot-keys';
 import { setupBotsWhenChanged } from './bots/bot-setup-job';
+import { postChannelWelcomes } from './bots/channel-welcome';
 import type { Job } from './cron-jobs';
 import type { Bindings } from './env';
 import { closeDepartedPosts, sendChannelSummaries, showChannelBoards } from './module-events';
@@ -33,10 +35,12 @@ const LOOKS_MINUTE = 30;
 // forgot «Yoʻlga chiqdim» and departs the trip later, edits channel posts of trips that left and the
 // boards of the day, reminds the team of waiting driver applications and keeps the minutes of
 // «Navbat» fresh; tells the waiting people of opened directions and refreshes the cards of the list
-// on Monday, a few at a time; sets the bots up again when their tokens or texts changed (docs/15,
-// docs/35, docs/122, docs/181, G10, G34, G63, G68, G83).
+// on Monday, a few at a time; sets the bots up again when their tokens or texts changed; posts the
+// welcomes of the bots to the channels, a few at a time (docs/15, docs/35, docs/122, docs/176,
+// docs/181, G10, G34, G63, G68, G83).
 const everyTick = (env: Bindings, now: number): Job[] => [
   ['setupBots', () => setupBotsWhenChanged(env, (input, init) => fetch(input, init), now)],
+  ['postChannelWelcomes', () => postChannelWelcomes(env, (input, init) => fetch(input, init), now)],
   ['completeTrips', () => completeTrips(env, now)],
   ['expireRequests', () => expireRequests(env, now)],
   ['expireBookings', () => expireBookings(env, now)],
@@ -53,8 +57,8 @@ const everyTick = (env: Bindings, now: number): Job[] => [
 // Ends subscriptions whose time is over, sends the summaries of the channels (22:00, Monday), burns
 // bonuses that are over, asks both sides of ended rides for a rating, checks the signals of the
 // dashboard, erases the points of rides 30 days after the trip, sends the summary of the day to the
-// owner at 21:00, reads a few channels again for «Kanallar» (docs/12, docs/24, docs/29, docs/69,
-// docs/92, docs/122, G11, G12, G24, G68, G75).
+// owner at 21:00, reads a few channels again for «Kanallar», shows each bot without its key in
+// «Statistika» (docs/12, docs/24, docs/29, docs/69, docs/92, docs/122, G11, G12, G24, G68, G75, lesson 331).
 const everyHour = (env: Bindings, now: number): Job[] => [
   ['endSubscriptions', () => endSubscriptions(env)],
   ['sendChannelSummaries', () => sendChannelSummaries(env)],
@@ -62,6 +66,7 @@ const everyHour = (env: Bindings, now: number): Job[] => [
   ['askForRatings', () => askForRatings(env)],
   ['checkStatsAlerts', () => checkStatsAlerts(env)],
   ['checkChannelHealth', () => checkChannelHealth(env)],
+  ['showMissingBotKeys', async () => showMissingBotKeys(env)],
   ['erasePastPoints', async () => erasePastPoints(env, now, await bookingsUnderComplaint(env))],
   [
     'sendDaySummary',

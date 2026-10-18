@@ -1,7 +1,15 @@
 import { FUNNELS, type Funnel, type Stats, type StatsPeriod } from '@platform/contracts';
 import { arrivalsOf } from '../domain/arrivals';
-import { botLoadOf } from '../domain/bot-load';
+import { botBlocksOf, botLoadOf } from '../domain/bot-load';
 import { FUNNEL_EVENTS, funnelOf } from '../domain/funnels';
+import {
+  complaintReasonCountsOf,
+  FIRST_SCREEN,
+  LEAVE_EVENT,
+  leavingOf,
+  opensOf,
+  ratingsSummaryOf,
+} from '../domain/voice';
 import type { StatsCache, StatsDeps } from './ports';
 
 const MINUTE = 60_000;
@@ -29,8 +37,13 @@ export const funnelsOf = (deps: StatsDeps, period: StatsPeriod): Promise<Funnel[
     return FUNNELS.map((id) => funnelOf(id, counters));
   });
 
-type EventsPart = Pick<Stats, 'events' | 'funnels' | 'errors' | 'bots' | 'queueOps'>;
-const NO_EVENTS = { funnels: [], errors: [], bots: [], queueOps: 0 };
+type EventsPart = Pick<
+  Stats,
+  'events' | 'funnels' | 'errors' | 'bots' | 'queueOps' | 'blocks' | 'leaving' | 'opens'
+>;
+const NO_EVENTS = { funnels: [], errors: [], bots: [], queueOps: 0, blocks: [], leaving: [], opens: [] };
+// G87 (docs/191): the reasons of leaving and the first screens of the sessions, in one query.
+const FEEL_EVENTS = [LEAVE_EVENT, FIRST_SCREEN];
 
 // Funnels and errors need Analytics Engine; if it fails, the main numbers still show (docs/29).
 async function eventsPart(deps: StatsDeps, period: StatsPeriod, at: number): Promise<EventsPart> {
@@ -38,13 +51,21 @@ async function eventsPart(deps: StatsDeps, period: StatsPeriod, at: number): Pro
   if (!events) return { events: 'off', ...NO_EVENTS };
   const days = PERIOD_DAYS[period];
   try {
-    const [funnels, errors, bots] = await Promise.all([
+    const [funnels, errors, bots, feel] = await Promise.all([
       funnelsOf(deps, period),
       cached(deps.cache, `errors:${period}`, at, () => events.topErrors(days)),
       // The bots under load (G85 T1, docs/122).
-      cached(deps.cache, `bots:${period}`, at, async () => botLoadOf(await events.bots(days), days)),
+      // G87: the people who blocked the bots come in the same answer of Analytics Engine.
+      cached(deps.cache, `bots:${period}`, at, async () => {
+        const found = await events.bots(days);
+        return { ...botLoadOf(found, days), blocks: botBlocksOf(found.rows) };
+      }),
+      cached(deps.cache, `feel:${period}`, at, async () => {
+        const counters = await events.counters(days, FEEL_EVENTS);
+        return { leaving: leavingOf(counters), opens: opensOf(counters) };
+      }),
     ]);
-    return { events: 'on', funnels, errors, ...bots };
+    return { events: 'on', funnels, errors, ...bots, ...feel };
   } catch {
     return { events: 'failed', ...NO_EVENTS };
   }
@@ -54,10 +75,15 @@ export async function readStats(deps: StatsDeps, period: StatsPeriod): Promise<S
   const at = deps.now();
   const since = at - PERIOD_DAYS[period] * DAY;
   // The main numbers count whole tables: they live in the cache too (G56, docs/117).
-  const [numbers, arrivals, part] = await Promise.all([
+  const [numbers, arrivals, voice, part] = await Promise.all([
     cached(deps.cache, `numbers:${period}`, at, () => deps.numbers.numbers(since)),
     cached(deps.cache, `arrivals:${period}`, at, () => deps.numbers.arrivals(since)),
+    // G87 (docs/191): the ratings and the complaints of the period.
+    cached(deps.cache, `voice:${period}`, at, async () => {
+      const rows = await deps.numbers.voice(since);
+      return { ratings: ratingsSummaryOf(rows), complaintReasons: complaintReasonCountsOf(rows) };
+    }),
     eventsPart(deps, period, at),
   ]);
-  return { period, numbers, arrivals: arrivalsOf(arrivals), ...part, at };
+  return { period, numbers, arrivals: arrivalsOf(arrivals), ...voice, ...part, at };
 }

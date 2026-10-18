@@ -13,11 +13,11 @@ vi.mock('./qr-picture', async (original) => ({
 
 afterEach(cleanup);
 
-const MINE = {
-  joined: 3,
-  rode: 2,
+const MINE = { joined: 3, rode: 2, qr: 'https://t.me/brand_bot?startapp=__qr-a1b2c3' };
+const CARD = {
+  prepared: null,
   link: 'https://t.me/brand_bot?startapp=__share-join-a1b2c3',
-  qr: 'https://t.me/brand_bot?startapp=__qr-a1b2c3',
+  text: 'Siz ham qoʻshiling!',
 };
 const open = (ui: JSX.Element, growth: Partial<GrowthClient> = {}) =>
   renderMarket(ui, testClients({ growth: { mine: async () => MINE, ...growth } }));
@@ -36,12 +36,16 @@ describe('what came of the links of a person', () => {
     expect(screen.getByText('25 kishi')).toBeTruthy();
   });
 
-  it('«Yana ulashish» sends the own link with the code again', async () => {
+  it('«Yana ulashish» sends the ready card with the own link; an old Telegram gets its words (G88)', async () => {
     const opened = vi.spyOn(window, 'open').mockReturnValue(null);
-    const { tracked } = open(<ImpactScreen onBack={() => undefined} />);
+    const loopCard = vi.fn<GrowthClient['loopCard']>(async () => CARD);
+    const { tracked } = open(<ImpactScreen onBack={() => undefined} />, { loopCard });
     await tap('Yana ulashish');
     await waitFor(() => expect(opened).toHaveBeenCalled());
-    expect(String(opened.mock.calls[0]?.[0])).toContain(encodeURIComponent(MINE.link));
+    expect(loopCard).toHaveBeenCalledWith({ loop: 'share-join' });
+    expect(String(opened.mock.calls[0]?.[0])).toBe(
+      `https://t.me/share/url?url=${encodeURIComponent(CARD.link)}&text=${encodeURIComponent(CARD.text)}`,
+    );
     expect(tracked.find((event) => event.name === 'share_done')).toMatchObject({
       button: 'share-join',
       target: 'chat',

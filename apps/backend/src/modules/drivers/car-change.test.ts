@@ -12,7 +12,7 @@ describe('a new car of an approved driver', () => {
     await submitApplication(deps, 1, CAR);
     await decideApplication(deps, 900, 1, { action: 'approve' });
     onTrip();
-    expect(await uploadCarPhoto(deps, 1, 'side', jpeg)).toEqual({ ok: false, error: 'drivers.live_trips' });
+    expect(await uploadCarPhoto(deps, 1, 'front', jpeg)).toEqual({ ok: false, error: 'drivers.live_trips' });
     expect(await submitApplication(deps, 1, { ...CAR, model: 'Nexia' })).toEqual({
       ok: false,
       error: 'drivers.live_trips',

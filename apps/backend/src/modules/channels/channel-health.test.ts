@@ -4,6 +4,7 @@ import { fullScans, testD1 } from '../../test-d1';
 import { deadPostsByChannel } from '../notifications/infrastructure/dead-posts';
 import { arrivalsByChannelVia } from '../users/infrastructure/channel-arrivals';
 import { appLinks, channelHealth, checkChannels, type HealthDeps } from './application/health';
+import { createMemoryChannelLife } from './infrastructure/channel-life';
 import { createMemoryHealth, d1Health } from './infrastructure/d1-health';
 
 const NOW = Date.parse('2026-10-12T05:00:00Z');
@@ -37,6 +38,7 @@ function setup(): HealthDeps & { readonly asked: string[]; readonly linked: stri
     },
     failed: async () => new Map([['@zone_buxoro', 4]]),
     arrivals: async () => new Map([['ch-zone-samarqand', 17]]),
+    life: createMemoryChannelLife(),
     now: () => NOW,
   };
 }
@@ -128,5 +130,9 @@ function row(name: string) {
     checkedAt: null,
     failed: 0,
     arrivals: 0,
+    joined: 0,
+    gone: 0,
+    reactions: 0,
+    topReactions: 0,
   };
 }

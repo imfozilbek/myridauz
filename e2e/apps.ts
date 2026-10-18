@@ -17,7 +17,7 @@ export const MINI_APPS = [
   {
     name: 'driver',
     port: 4102,
-    welcome: t('common.welcome.costsBack'),
+    welcome: t('common.welcome.ownPrice'),
     // G66: an approved driver publishes with the main button under «Qayerdan / Qayerga».
     action: t('home.publish'),
     mainButton: t('home.publish'),
@@ -57,15 +57,12 @@ export const TEXT = {
   // The note on the main screen while the application is checked (G53).
   check: t('home.dock.afterCheckLong'),
   photoFront: t('drivers.tile.front'),
-  photoSide: t('drivers.photo.side'),
-  photoInside: t('drivers.photo.interior'),
   photos: t('drivers.photos.title'),
   approved: t('drivers.approved.title'),
   changes: t('home.dock.fixTitle'),
   requestChanges: t('moderation.requestChanges'),
   reasonFront: t('drivers.reason.front_unclear'),
   reasonPlate: t('drivers.reason.plate_not_readable'),
-  reasonSide: t('drivers.reason.side_unclear'),
   approve: t('moderation.approve'),
   wholeRegion: t('places.wholeRegion'),
   newTrip: t('home.publish'),

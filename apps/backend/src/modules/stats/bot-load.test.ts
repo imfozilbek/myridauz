@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { serverDataPoint } from '../analytics/domain/data-point';
-import { botLoadOf } from './domain/bot-load';
+import { botBlocksOf, botLoadOf } from './domain/bot-load';
 import { memoryEvents } from './infrastructure/memory-events';
 
 const NOW = Date.parse('2026-10-18T10:00:00Z');
@@ -32,6 +32,24 @@ describe('the bots under load', () => {
       ],
       queueOps: 35,
     });
+  });
+
+  it('counts the people who blocked a bot or came back, apart from the load (G87)', async () => {
+    const member = (bot: string, code: string) =>
+      serverDataPoint({ name: 'bot_member', source: bot, code }, at(20));
+    const rows = [
+      member('support', 'blocked'),
+      member('support', 'blocked'),
+      member('support', 'unblocked'),
+      member('driver', 'blocked'),
+    ];
+    const found = await memoryEvents(rows, () => NOW).bots(1);
+    expect(botBlocksOf(found.rows)).toEqual([
+      { bot: 'driver', blocked: 1, unblocked: 0 },
+      { bot: 'support', blocked: 2, unblocked: 1 },
+    ]);
+    // Blocks are no load: «Botlar xabarlari» stays empty.
+    expect(botLoadOf(found, 1).bots).toEqual([]);
   });
 
   it('shows nothing for quiet bots', () => {

@@ -34,7 +34,8 @@ export function AppGates({ app, welcome, users, connect, Page }: AppGatesProps) 
           <LegalGate>
             <AccountGate app={app} client={users} welcome={welcome}>
               <DriverGate enabled={app === 'driver'}>
-                <MomentGate enabled>
+                {/* Only a new driver has a moment: none after the registration (owner 18.10.2026). */}
+                <MomentGate enabled={app === 'driver'}>
                   <LaunchLinks app={app}>
                     <Page />
                   </LaunchLinks>

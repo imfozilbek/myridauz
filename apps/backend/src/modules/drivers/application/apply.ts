@@ -25,11 +25,7 @@ const carLocked = async (deps: DriversDeps, application: Application | undefined
 const toView = (application: Application): DriverApplication => ({
   status: application.status,
   car: application.car,
-  photos: {
-    front: application.photos.front !== null,
-    side: application.photos.side !== null,
-    interior: application.photos.interior !== null,
-  },
+  photos: { front: application.photos.front !== null },
   reasons: [...application.reasons],
 });
 

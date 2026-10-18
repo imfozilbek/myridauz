@@ -1,7 +1,8 @@
-import { MESSAGE_BOTS, type BotLoad } from '@platform/contracts';
+import { BLOCK_BOTS, MESSAGE_BOTS, type BotBlock, type BotLoad } from '@platform/contracts';
 
 // One group of the events of the bots (G85 T1): bot_send by its outcome, queue_ops with the count of
-// operations it stands for, server_error notification_dead by its bot.
+// operations it stands for, server_error notification_dead by its bot, bot_member blocked or
+// unblocked by its bot (G87).
 export type BotRow = {
   readonly name: string;
   readonly bot: string;
@@ -45,3 +46,15 @@ export function botLoadOf({ rows, peaks }: BotEvents, days: number): { bots: Bot
   );
   return { bots, queueOps: Math.round(operations / days) };
 }
+
+// The people who blocked each bot or came back to it (G87, docs/191); the bots nobody left are left out.
+export const botBlocksOf = (rows: readonly BotRow[]): BotBlock[] =>
+  BLOCK_BOTS.map((bot) => {
+    const of = (code: string) =>
+      sum(
+        rows,
+        (row) => row.name === 'bot_member' && row.bot === bot && row.code === code,
+        (row) => row.count,
+      );
+    return { bot, blocked: of('blocked'), unblocked: of('unblocked') };
+  }).filter((block) => block.blocked + block.unblocked > 0);

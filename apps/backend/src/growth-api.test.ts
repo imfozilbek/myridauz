@@ -20,11 +20,12 @@ const json = (body: unknown) => ({
 
 // The API of the loops of growth (G69, docs/123): only with D1, the pictures only for whom they are.
 describe('the loops of growth over HTTP', () => {
-  it('gives the own links with the code: «Yana ulashish» and the QR', async () => {
+  it('gives the own QR link with the code; «Yana ulashish» is a card with it (G88)', async () => {
     const mine = (await (await call('/me/growth', PASSENGER, { env })).json()) as Record<string, unknown>;
     expect(mine).toMatchObject({ joined: 0, rode: 0 });
-    expect(String(mine.link)).toMatch(/startapp=__share-join-[a-z0-9]{6}$/u);
     expect(String(mine.qr)).toMatch(/startapp=__qr-[a-z0-9]{6}$/u);
+    const again = await call('/me/loop-card', PASSENGER, json({ loop: 'share-join' }));
+    expect(((await again.json()) as { link: string }).link).toMatch(/startapp=__share-join-[a-z0-9]{6}$/u);
     expect((await call('/me/growth', PASSENGER)).status).toBe(503);
   });
 
@@ -40,17 +41,34 @@ describe('the loops of growth over HTTP', () => {
     expect(image.headers.get('content-type')).toBe('image/png');
   });
 
-  it('keeps the story of a moment only after the moment was offered', async () => {
-    expect((await call('/me/moment/story', PASSENGER, picture('image/jpeg'))).status).toBe(404);
-    expect((await call('/me/moment/offered', PASSENGER, json({ moment: 'nope' }))).status).toBe(400);
-    expect((await call('/me/moment/offered', PASSENGER, json({ moment: 'join' }))).status).toBe(204);
-    expect((await call('/me/moment/story', PASSENGER, picture('image/jpeg'))).status).toBe(201);
-    // A moment the person did not reach: a passenger is no new driver.
-    expect((await call('/me/moment/card', PASSENGER, json({ moment: 'driver', phrase: 0 }))).status).toBe(
-      404,
+  it('keeps the picture of a trip card for an approved driver; the card names its picture (G88)', async () => {
+    const card = (body: unknown) => call('/me/loop-card', DRIVER, { ...json(body), app: 'driver' });
+    expect((await call('/me/card-picture', PASSENGER, picture('image/jpeg'))).status).toBe(404);
+    expect((await call('/me/card-picture', DRIVER, picture('image/png'))).status).toBe(400);
+    const saved = await call('/me/card-picture', DRIVER, picture('image/jpeg'));
+    expect(saved.status).toBe(201);
+    const { id } = (await saved.json()) as { id: string };
+    expect((await call(`/stories/${id}`, DRIVER, { env })).headers.get('content-type')).toBe('image/jpeg');
+    expect((await card({ loop: 'trip', tripId: crypto.randomUUID(), picture: 'evil.uz/x' })).status).toBe(
+      400,
     );
-    // No moment after a trip any more (owner decision 15.10.2026).
-    expect((await call('/me/moment/card', PASSENGER, json({ moment: 'trip1', phrase: 0 }))).status).toBe(400);
+    // No such trip of this driver: nothing to send.
+    expect((await card({ loop: 'trip', tripId: crypto.randomUUID(), picture: id })).status).toBe(404);
+  });
+
+  it('keeps the story of a moment only after the moment was offered', async () => {
+    expect((await call('/me/moment/story', DRIVER, picture('image/jpeg'))).status).toBe(404);
+    expect((await call('/me/moment/offered', DRIVER, json({ moment: 'nope' }))).status).toBe(400);
+    expect((await call('/me/moment/offered', DRIVER, json({ moment: 'driver' }))).status).toBe(204);
+    expect((await call('/me/moment/story', DRIVER, picture('image/jpeg'))).status).toBe(201);
+    // A moment the person did not reach: a passenger is no new driver, not even after a crafted offer.
+    const passenger = (path: string, body: unknown) => call(path, PASSENGER, json(body));
+    expect((await passenger('/me/moment/offered', { moment: 'driver' })).status).toBe(404);
+    expect((await passenger('/me/moment/card', { moment: 'driver', phrase: 0 })).status).toBe(404);
+    expect((await call('/me/moment/story', PASSENGER, picture('image/jpeg'))).status).toBe(404);
+    // No moment after a trip nor after the registration any more (owner decisions 15 and 18.10.2026).
+    expect((await passenger('/me/moment/card', { moment: 'trip1', phrase: 0 })).status).toBe(400);
+    expect((await passenger('/me/moment/offered', { moment: 'join' })).status).toBe(400);
     expect((await call('/me/moment?side=nobody', PASSENGER, { env })).status).toBe(400);
   });
 });

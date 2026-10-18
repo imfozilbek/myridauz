@@ -41,8 +41,9 @@ type Props = {
   readonly onSend: () => void;
 };
 
-// «Mashina rasmlari» (G62, mockup g62/1 screens 3 and 5): the car and its plate on top, 3 photos of
-// the car with the main camera; no face (it is taken at the registration) and no review screen.
+// «Mashina rasmi» (G62, mockup g62/1 screens 3 and 5): the car and its plate on top, one photo of the
+// car from the front with its plate (owner decision 18.10.2026) with the main camera; no face (it is
+// taken at the registration) and no review screen.
 export function PhotosStep({
   car,
   photos,
@@ -100,6 +101,7 @@ export function PhotosStep({
             <PhotoTile
               key={item}
               kind={item}
+              car={car}
               taken={photos[item]}
               version={version}
               reasons={reasons}

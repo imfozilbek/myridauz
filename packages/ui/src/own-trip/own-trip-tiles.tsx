@@ -1,5 +1,6 @@
 import type { TranslationKey } from '@platform/i18n';
 import { useI18n } from '../context/i18n-context';
+import { useShareTrack } from '../growth/use-share-track';
 import { Icon, type IconName } from '../icons';
 
 export type OwnTripTile = 'share' | 'story' | 'change' | 'map';
@@ -16,6 +17,8 @@ const TILE_ICON = 18;
 // the map of the way. They never hide (docs/121): a tile that cannot work now says why on its tap.
 export function OwnTripTiles({ onTile }: { readonly onTile: (tile: OwnTripTile) => void }) {
   const { t } = useI18n();
+  // The story tile is on the screen: its share_shown (G88, docs/29); share_done is in useTripStory.
+  useShareTrack('story', 'market.own_trip');
   return (
     <div className="own-tiles">
       {TILES.map(([tile, icon, label]) => (

@@ -10,7 +10,7 @@ import { CameraCar } from './camera-car';
 import './camera.css';
 
 // The frame drawn over the camera: where the face or the car should be.
-export type CameraGuide = 'face' | 'front' | 'side' | 'interior';
+export type CameraGuide = 'face' | 'front';
 export type CameraFacing = 'user' | 'environment';
 type State = 'starting' | 'live' | 'failed';
 

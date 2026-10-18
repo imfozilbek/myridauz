@@ -5,7 +5,7 @@ mountApp('driver', StartPage, {
   welcome: {
     logo: 'logo-driver.svg',
     points: [
-      { icon: 'wallet', textKey: 'common.welcome.costsBack' },
+      { icon: 'price', textKey: 'common.welcome.ownPrice' },
       { icon: 'bonus', textKey: 'common.welcome.bonus' },
       { icon: 'passengers', textKey: 'common.welcome.passengersFind' },
     ],

@@ -31,11 +31,12 @@
 | Откуда | Метка | Кто ставит |
 |---|---|---|
 | Пост канала | `ch-<имя канала>` | backend сам (`63`) |
-| История водителя в Telegram (Stories) | `story` | backend сам (`88` L19) |
+| История водителя в Telegram (Stories) | `story-<код>`, без D1 `story` | backend сам (`88` L19, код автора с G88, `193`) |
 | Лендинг | `site` | лендинг сам (`59`) |
-| Ссылка водителя после публикации («Havolani yoʻlovchilarga yuborish») | `driver` | backend сам (`119`, G63) |
+| Ссылка водителя: «Havolani yoʻlovchilarga yuborish» и «🔗 Havolani yuborish» в боте | `trip-<код>`, без D1 `driver` | backend сам (`119`, G63; код автора с G88, `193`) |
 | Реклама, блогер, листовка | `ad-<код>` | команда: экран «Reklama havolalari» делает ссылку (`184`) |
 | Петля роста: QR, группа района, свободные места, «Yaqinlarimga», «Men Rida bilan» | `<петля>-<код автора>`: `qr-`, `req-share-`, `seats-`, `follow-`, `share-…-` | backend сам, код из 6 знаков (G69, `188`) |
+| Кнопка под сообщением бота (G87, `191`) | `bot-<ссылка>` в адресе Mini App (`?via=bot-booking`), не в `startapp` | backend сам; только счёт открытий в «Statistika», первое касание и список ожидания не меняет |
 
 ## Где смотреть
 

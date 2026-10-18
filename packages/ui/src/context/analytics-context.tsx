@@ -1,6 +1,6 @@
 import type { AnalyticsClient } from '@platform/api-client';
 import { createContext, useContext, useEffect } from 'react';
-import { launchArrival } from '../telegram/arrival';
+import { sessionArrival } from '../telegram/arrival';
 import { TelegramContext } from '../telegram/in-telegram-context';
 
 export const AnalyticsContext = createContext<AnalyticsClient | null>(null);
@@ -26,7 +26,7 @@ export function useScreenView(screen: string): void {
   const { client } = useContext(TelegramContext);
   useEffect(() => {
     current = screen;
-    const first = arrivalSent ? {} : launchArrival(client);
+    const first = arrivalSent ? {} : sessionArrival(client);
     arrivalSent = true;
     track({ name: 'screen_open', screen, ...first });
   }, [track, screen, client]);

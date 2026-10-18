@@ -21,7 +21,7 @@
   "request.title": "Soʻrovim",
   "comeBack": "Qaytish",
   "becomeDriver.title": "Haydovchi boʻling",
-  "becomeDriver.hint": "Mashinangiz bormi? Xarajatni boʻling",
+  "becomeDriver.hint": "Mashinangiz bormi? Yoʻlovchilar sizni topadi",
   "trip.when": "{day} {time}",
   "trip.car": "{model}, {color}",
   "dock.afterCheck": "Tekshiruvdan keyin ochiladi",

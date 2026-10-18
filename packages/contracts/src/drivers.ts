@@ -3,7 +3,9 @@ import { plateSchema } from './plate';
 
 // A driver application (docs/04). G06.
 export const DRIVER_APPLICATION_PATH = '/driver/application';
-export const CAR_PHOTO_KINDS = ['front', 'side', 'interior'] as const;
+// One photo of the car: from the front, with its plate (owner decision 18.10.2026; until then also
+// the side and the inside).
+export const CAR_PHOTO_KINDS = ['front'] as const;
 export type CarPhotoKind = (typeof CAR_PHOTO_KINDS)[number];
 export const driverPhotoPath = (kind: CarPhotoKind) => `${DRIVER_APPLICATION_PATH}/photos/${kind}`;
 
@@ -25,8 +27,6 @@ export const REASON_PLACE = {
   face_not_visible: 'avatar',
   front_unclear: 'front',
   plate_not_readable: 'front',
-  side_unclear: 'side',
-  interior_unclear: 'interior',
   plate_mismatch: 'plate',
   car_mismatch: 'car',
   fake_profile: 'profile',
@@ -80,7 +80,7 @@ export const carSchema = z.object({
 export type Car = z.infer<typeof carSchema>;
 export type CarInput = z.input<typeof carSchema>;
 
-const photosSchema = z.object({ front: z.boolean(), side: z.boolean(), interior: z.boolean() });
+const photosSchema = z.object({ front: z.boolean() });
 
 // What the applicant sees: their own application, never another one.
 const driverApplicationSchema = z.object({

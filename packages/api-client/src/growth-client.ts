@@ -1,4 +1,6 @@
 import {
+  CARD_PICTURE_PATH,
+  cardPictureSchema,
   LOOP_CARD_PATH,
   MOMENT_CARD_PATH,
   MOMENT_OFFERED_PATH,
@@ -37,6 +39,9 @@ export function createGrowthClient(options: SignedOptions) {
     qrPicture: async (image: Blob): Promise<string> =>
       pictureSchema.parse(await (await put(QR_PICTURE_PATH, image)).json()).imageUrl,
     loopCard: async (card: LoopCard): Promise<PreparedCard> => prepared(await post(LOOP_CARD_PATH, card)),
+    // The picture of the driver's trip for its card (G88): its id goes into the loop card.
+    cardPicture: async (image: Blob): Promise<string> =>
+      cardPictureSchema.parse(await (await put(CARD_PICTURE_PATH, image)).json()).id,
   };
 }
 

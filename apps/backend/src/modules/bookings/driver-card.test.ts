@@ -29,8 +29,17 @@ async function two(): Promise<[Booking, Booking]> {
   };
   return [{ ...asked.value, pickup: named('Chorsu bozori'), dropoff: named('Urgut markazi') }, confirmed];
 }
+const VIA = 'trip-a1b2c3';
 const card = (bookings: readonly Booking[], now: number, trip = bookings[0]?.trip) =>
-  driverCard({ brand: loadBrand(), chatId: 7, trip: trip as Booking['trip'], bookings, places: PLACES, now });
+  driverCard({
+    brand: loadBrand(),
+    chatId: 7,
+    trip: trip as Booking['trip'],
+    bookings,
+    places: PLACES,
+    now,
+    via: VIA,
+  });
 const buttons = (shown: Card) => JSON.stringify(shown.markup);
 
 describe('the trip card of the driver bot (G68, docs/122, mockup g68/3)', () => {
@@ -45,7 +54,6 @@ describe('the trip card of the driver bot (G68, docs/122, mockup g68/3)', () => 
     );
     expect(shown.text).toMatch(/💰 Bir joy <b>90\s000\ssoʻm<\/b>/u);
     expect(buttons(shown)).toContain(`?mytrip=${madina.trip.id}`);
-    expect(buttons(shown)).toContain('https://t.me/share/url?url=');
     expect(shown.pin).toBe(true);
   });
 

@@ -9,7 +9,9 @@ import {
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Card } from '../../notifications';
 import type { Places } from '../../../shared/places/end-names';
+import { serviceValue, withValue } from '../../../shared/share/value-lines';
 import { bold, escapeHtml, italic } from '../../../shared/telegram/html';
+import { shareLink } from '../../../shared/telegram/share-link';
 import { covers, postState, regionOf } from '../domain/route-channels';
 import type { TeamChannel } from '../application/team';
 import { timeOf } from './post-parts';
@@ -82,7 +84,7 @@ function buttons(channel: TeamChannel, first: Trip, places: Places, site: Site, 
   const via = channelVia(channel.chat);
   const route = `${regionOf(first.from, places)}_${regionOf(first.to, places)}`;
   const subscribe = `https://t.me/${site.bot}?startapp=${withVia(`sub_${route}_${tashkentDate(first.departAt)}`, via)}`;
-  const shared = `https://t.me/share/url?url=${encodeURIComponent(channel.link)}&text=${encodeURIComponent(share)}`;
+  const shared = shareLink(channel.link, withValue(share, serviceValue()));
   return {
     inline_keyboard: [
       [{ text: t('bot.board.find'), url: botStartLink(site.bot, via) }],

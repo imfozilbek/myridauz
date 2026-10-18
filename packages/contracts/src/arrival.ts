@@ -18,6 +18,16 @@ export const VIA_SITE = 'site';
 // The link the driver sends to people after the publishing (G63, docs/119).
 export const VIA_DRIVER = 'driver';
 
+// The kind of a launch without a startapp link: straight from the menu, or from a button under a
+// message of a bot (G87, docs/191). A bot button names its link in the mark: «bot-booking».
+export const SOURCE_DIRECT = 'direct';
+export const SOURCE_BOT = 'bot';
+export const BOT_VIA_PREFIX = 'bot-';
+// The parameter of the address that carries it: a button of a bot opens a page, not a startapp link.
+export const BOT_VIA_PARAM = 'via';
+export const botVia = (link: string) =>
+  `${BOT_VIA_PREFIX}${link.toLowerCase().replace(/[^a-z0-9-]+/g, '-')}`.slice(0, VIA_MAX);
+
 export const arrivalSchema = z.object({
   source: z.string().regex(SOURCE_PATTERN).optional(),
   via: z.string().regex(VIA_PATTERN).optional(),

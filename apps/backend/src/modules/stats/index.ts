@@ -33,7 +33,13 @@ function eventsOf(env: Bindings): EventSource | null {
 }
 
 // Without D1 (local runs): no people yet.
-const localNumbers = { numbers: async () => zeroNumbers, arrivals: async () => [], riders: async () => [] };
+const noVoice = { stars: { count: 0, total: 0, low: 0 }, tags: [], complaints: [] };
+const localNumbers = {
+  numbers: async () => zeroNumbers,
+  arrivals: async () => [],
+  riders: async () => [],
+  voice: async () => noVoice,
+};
 
 const statsDeps = (env: Bindings): StatsDeps => {
   const brand = brandOf(env);

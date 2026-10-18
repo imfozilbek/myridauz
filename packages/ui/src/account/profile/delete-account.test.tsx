@@ -52,6 +52,10 @@ describe('delete my data (docs/30, docs/58)', () => {
     await act(async () => fireEvent.click(screen.getByText('Oʻchirish')));
     expect(client.deleteMe).toHaveBeenCalledTimes(2);
     expect(screen.getByText('Maʼlumotlaringiz oʻchirildi')).toBeTruthy();
+    // Why, in one tap that may be skipped (G87, docs/191); then the app starts again.
+    expect(screen.getByText('Nega maʼlumotlaringizni oʻchirdingiz?')).toBeTruthy();
+    fireEvent.click(screen.getByText('Kerakli safar topilmadi'));
+    expect(screen.queryByText('Nega maʼlumotlaringizni oʻchirdingiz?')).toBeNull();
     fireEvent.click(screen.getByText('Yopish'));
     expect(reload).toHaveBeenCalled();
   });

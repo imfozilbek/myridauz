@@ -45,7 +45,7 @@ export function storyDriver() {
   return svg(1080, 1920, `<rect width="1080" height="1920" fill="${C.deep}"/>` + tile(440, 200, 200, C.white, C.teal) +
     textCentered('Haydovchimisiz?', { cx: 540, cy: 660, h: 104, fill: C.white, maxWidth: 960 }) +
     textCentered('Safaringizga yoʻlovchi toping', { cx: 540, cy: 800, h: 48, fill: C.mint, weight: 600, maxWidth: 960 }) +
-    textCentered('Yoʻl xarajatini birga koʻtaring', { cx: 540, cy: 880, h: 48, fill: C.mint, weight: 600, maxWidth: 960 }) +
+    textCentered('Narxni oʻzingiz belgilaysiz', { cx: 540, cy: 880, h: 48, fill: C.mint, weight: 600, maxWidth: 960 }) +
     `<rect x="90" y="1040" width="900" height="330" rx="48" fill="${C.amber}"/>` +
     textCentered('Yangi haydovchilarga', { cx: 540, cy: 1150, h: 50, fill: C.ink }) +
     textCentered('1 500 000 soʻmgacha bonus', { cx: 540, cy: 1260, h: 62, fill: C.ink, maxWidth: 820 }) +

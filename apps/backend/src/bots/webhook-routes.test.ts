@@ -6,7 +6,7 @@ import { botEnv, botSender, fakeTelegram } from './test-bot';
 import { publicIdOf } from '../test-people';
 
 const brand = loadBrand();
-const { formatMoney } = createI18n(DEFAULT_LOCALE);
+const bonus = createI18n(DEFAULT_LOCALE).formatMoney(brand.promo.amount * brand.promo.grants);
 type Reply = { text: string; reply_markup: { inline_keyboard: { web_app: { url: string } }[][] } };
 type PhotoReply = Reply & { photo: string; caption: string };
 type LinkReply = { text: string; reply_markup: { inline_keyboard: { url: string }[][] } };
@@ -90,9 +90,9 @@ describe('POST /telegram/:role', () => {
     for (const role of ['passenger', 'driver'] as const) {
       const reply = (await (await send(role, start(3, '/hujjatlar'))).json()) as Reply;
       const urls = reply.reply_markup.inline_keyboard.map((row) => row[0]?.web_app.url);
-      expect(urls).toEqual(
-        ['offer', 'privacy', 'consent'].map((doc) => `https://${role}.${brand.domain}/?doc=${doc}`),
-      );
+      // The button of a bot message names it in the mark of the launch (G87, docs/191).
+      const url = (doc: string) => `https://${role}.${brand.domain}/?doc=${doc}&via=bot-doc`;
+      expect(urls).toEqual(['offer', 'privacy', 'consent'].map(url));
     }
     const admin = (await (await send('admin', start(9, '/hujjatlar'))).json()) as { text?: string };
     expect(admin.text).not.toContain('Ommaviy oferta');
@@ -103,7 +103,7 @@ describe('POST /telegram/:role', () => {
     expect(reply).toMatchObject({ method: 'sendPhoto', chat_id: 42 });
     expect(reply.photo).toBe(`https://${brand.domain}/bot/driver-welcome.png?v=${brand.welcomes.driver}`);
     expect(reply.caption.startsWith(`Assalomu alaykum! ${brand.name}: `)).toBe(true);
-    expect(reply.caption).toContain(`Boshlash uchun ${formatMoney(brand.promo.amount)} bonus.`);
+    expect(reply.caption).toContain(`Boshlash uchun ${bonus}gacha bonus.`);
     expect(reply.reply_markup.inline_keyboard).toEqual([
       [{ text: 'Ochish', web_app: { url: `https://driver.${brand.domain}` } }],
     ]);

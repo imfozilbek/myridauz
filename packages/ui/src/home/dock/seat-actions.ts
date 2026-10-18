@@ -5,6 +5,7 @@ import { useAnalytics } from '../../context/analytics-context';
 import { useApiClients } from '../../context/api-clients';
 import { useOpenSupport } from '../../telegram/support-link';
 import { useI18n } from '../../context/i18n-context';
+import { useAskLeaveReason } from '../../leave/leave-reason';
 import type { HomeGo } from '../../flow/start-action';
 import { mapUrl } from '../../bookings/map-link';
 import { useShareTrip } from '../../bookings/use-share-trip';
@@ -20,6 +21,7 @@ export function useSeatActions(go: HomeGo, refresh: () => void) {
   const { t } = useI18n();
   const { bookings, chat } = useApiClients();
   const { track } = useAnalytics();
+  const askReason = useAskLeaveReason();
   const support = useOpenSupport();
   const share = useShareTrip();
   const tap = useHomeTap();
@@ -60,6 +62,8 @@ export function useSeatActions(go: HomeGo, refresh: () => void) {
       await run(async () => {
         await bookings.cancelMine(booking.id);
         track({ name: 'booking_step', screen: 'home', step: 'cancelled' });
+        // Why, in one tap that may be skipped (G87, docs/191).
+        askReason('booking');
       })();
     },
     came: (booking: Booking) => () => void here.came(booking),

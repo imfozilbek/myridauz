@@ -10,9 +10,12 @@ export const GROWTH_LOOPS = [
   // 3: «Doʻstingni chaqir», the free seats of a trip; 4: the line of «Yaqinlarimga».
   'seats',
   'follow',
-  // 5: the cards «Men Rida bilan» of the moments.
+  // 5: «Yana ulashish» of «Sizning taʼsiringiz» and the card «Men Rida bilan» of a new driver.
   'share-join',
   'share-driver',
+  // 1 too (G88, docs/193): the link of the driver's trip and the story of the trip.
+  'trip',
+  'story',
 ] as const;
 export type GrowthLoop = (typeof GROWTH_LOOPS)[number];
 
@@ -28,12 +31,12 @@ export function loopOf(via: string): { readonly loop: GrowthLoop; readonly code:
 }
 
 // The moments of «Men Rida bilan» (docs/123): a person is offered each one once, never forced. No
-// moment after a trip: the trip ends with the stars (owner decision 15.10.2026).
-export const SHARE_MOMENTS = ['join', 'driver'] as const;
+// moment after a trip: the trip ends with the stars (owner decision 15.10.2026); none after the
+// registration either (owner decision 18.10.2026): only the approval of a driver.
+export const SHARE_MOMENTS = ['driver'] as const;
 export type ShareMoment = (typeof SHARE_MOMENTS)[number];
 
 const MOMENT_LOOP = {
-  join: 'share-join',
   driver: 'share-driver',
 } as const satisfies Record<ShareMoment, GrowthLoop>;
 // The loop of the link a moment's card carries.

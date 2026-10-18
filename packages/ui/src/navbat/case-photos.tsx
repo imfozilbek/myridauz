@@ -19,12 +19,7 @@ function CasePhoto({ userId, kind, onOpen }: PhotoProps) {
   const url = useBlobUrl(() => moderation.photo(userId, kind), `${userId}:${kind}`);
   const label = t(`drivers.photo.${kind}`);
   return (
-    <button
-      type="button"
-      className={`case-photo case-photo-${kind}`}
-      aria-label={label}
-      onClick={() => onOpen(kind)}
-    >
+    <button type="button" className="case-photo" aria-label={label} onClick={() => onOpen(kind)}>
       {url ? (
         <img src={url} alt={label} />
       ) : (
@@ -39,7 +34,8 @@ function CasePhoto({ userId, kind, onOpen }: PhotoProps) {
 
 type GridProps = { readonly userId: PersonId; readonly onOpen: (kind: CarPhotoKind) => void };
 
-// The three car photos, the front with the plate large (docs/120: no face in the application, path 5).
+// The photo of the car from the front with the plate, large (docs/120: no face in the application,
+// path 5; one photo since 18.10.2026).
 // A tap opens the photo on the whole screen (docs/89 S8).
 export function CasePhotos({ userId, onOpen }: GridProps) {
   return (

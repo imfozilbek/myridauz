@@ -79,5 +79,40 @@ export const statsOf = (period: StatsPeriod, events: Stats['events'] = 'on'): St
         ]
       : [],
   queueOps: events === 'on' ? 96 : 0,
+  // G87: three people blocked the passenger bot and one came back, one blocked the driver bot.
+  blocks:
+    events === 'on'
+      ? [
+          { bot: 'passenger', blocked: period === 'day' ? 3 : 19, unblocked: 1 },
+          { bot: 'driver', blocked: 1, unblocked: 0 },
+        ]
+      : [],
+  // G87: what people feel. The ratings and complaints come from the database, the rest from events.
+  ratings: {
+    count: period === 'day' ? 18 : 121,
+    average: 4.6,
+    low: period === 'day' ? 1 : 6,
+    tags: [
+      { tag: 'on_time', count: 11 },
+      { tag: 'polite', count: 7 },
+    ],
+  },
+  complaintReasons: [{ reason: 'price_changed', count: 2 }],
+  leaving:
+    events === 'on'
+      ? [
+          { kind: 'booking', reason: 'found_other', count: 4 },
+          { kind: 'trip', reason: 'no_passengers', count: 2 },
+          { kind: 'account', reason: 'no_trips', count: 1 },
+        ]
+      : [],
+  opens:
+    events === 'on'
+      ? [
+          { kind: 'bot', count: 63 },
+          { kind: 'direct', count: 140 },
+          { kind: 'link', count: 22 },
+        ]
+      : [],
   at: Date.parse('2026-10-05T09:30:00Z'),
 });

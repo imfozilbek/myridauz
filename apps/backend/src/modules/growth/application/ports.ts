@@ -13,10 +13,12 @@ export type GrowthStore = {
   readonly approvedAt: (userId: number) => Promise<number | null>;
 };
 
-// The ready message of a card for a chat: the text and the words of its button (docs/123).
+// The ready message of a card for a chat: the text and the words of its button (docs/123); photo:
+// the public link of a picture above the text (the driver's trip, G88).
 export type CardMessage = {
   readonly text: string;
   readonly words: { readonly title: string; readonly button: string };
+  readonly photo?: string;
 };
 
 // The facts a chat message is made of: the name, never the id (docs/123).
@@ -28,7 +30,6 @@ export type CardInput = {
 
 export type GrowthDeps = {
   readonly store: GrowthStore;
-  readonly joinedAt: (userId: number) => Promise<number | undefined>;
   readonly passengerBot: string;
   readonly now: () => number;
 };

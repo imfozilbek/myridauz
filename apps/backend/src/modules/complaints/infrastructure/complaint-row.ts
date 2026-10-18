@@ -35,7 +35,7 @@ const refundOf = (row: Row): ComplaintRecord['refund'] =>
 // The reasons in the one column reason, joined by a comma: an old row holds one (G75).
 const REASON_SEPARATOR = ',';
 export const reasonsText = (reasons: ComplaintRecord['reasons']) => reasons.join(REASON_SEPARATOR);
-const reasonsOf = (text: string) => {
+export const reasonsOf = (text: string) => {
   const kept = text.split(REASON_SEPARATOR);
   return COMPLAINT_REASONS.filter((reason) => kept.includes(reason));
 };

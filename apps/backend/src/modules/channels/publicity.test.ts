@@ -19,7 +19,6 @@ const CHANNELS = [
   { chat: '@yol_urgut', link: 'https://t.me/yol_urgut', title: 'Urgut yoʻli', places: ['1718401'] },
 ];
 const TRIP: TripFacts = { driverId: DRIVER, from: '1726273', to: '1718401' };
-const LINK = 'https://t.me/test_bot?startapp=trip_trip-1__driver';
 
 function setup(change: Partial<PublicityDeps> = {}) {
   const posts = createMemoryChannelPosts();
@@ -33,7 +32,6 @@ function setup(change: Partial<PublicityDeps> = {}) {
     appLinks: async () => new Map([['@yol_urgut', 'https://t.me/+app_urgut']]),
     posts,
     views,
-    link: (id) => `https://t.me/test_bot?startapp=trip_${id}__driver`,
     now: () => NOW,
     ...change,
   };
@@ -44,7 +42,7 @@ const postedOf = async (deps: PublicityDeps) =>
   (await tripPublicity(deps, DRIVER, 'trip-1'))?.channels.map((channel) => channel.posted);
 
 describe('what the driver sees after the publishing (G63, docs/119)', () => {
-  it('names the channels of both ends with the team ones, the people who opened it and the link', async () => {
+  it('names the channels of both ends with the team ones and the people who opened it', async () => {
     const { deps, posts, views } = setup();
     await posts.save({ tripId: 'trip-1', channel: '@yol_samarqand', messageId: 3 }, NOW);
     await views.record('trip-1', 21, NOW);
@@ -54,7 +52,6 @@ describe('what the driver sees after the publishing (G63, docs/119)', () => {
         { chat: '@yol_urgut', link: 'https://t.me/+app_urgut', title: 'Urgut yoʻli', posted: false },
       ],
       views: 1,
-      link: LINK,
     });
   });
 

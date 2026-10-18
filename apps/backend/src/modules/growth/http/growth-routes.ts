@@ -1,4 +1,5 @@
 import {
+  CARD_PICTURE_PATH,
   MAX_STORY_BYTES,
   MOMENT_CARD_PATH,
   MOMENT_OFFERED_PATH,
@@ -16,6 +17,7 @@ import {
 } from '@platform/contracts';
 import { Hono, type Context } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
+import type { Side } from '../application/ports';
 import { readCapped } from '../../../shared/upload/read-capped';
 import { momentCard, myGrowth, offerMoment, type CardDeps } from '../application/cards';
 import { loopCard, type LoopDeps } from '../application/loop-cards';
@@ -40,58 +42,69 @@ export function growthRoutes(deps: (env: Bindings) => Wiring | null) {
     const wiring = deps(context.env);
     return wiring ? handler(context, wiring, context.get('session').user.id) : fail('growth.unavailable');
   };
-  return new Hono<AppEnv>()
-    .get(
-      MY_GROWTH_PATH,
-      on(async (context, wiring, userId) => context.json(await myGrowth(wiring, userId))),
-    )
-    .get(
-      MOMENT_PATH,
-      on(async (context, wiring, userId) => {
-        const query = momentQuerySchema.safeParse({ side: context.req.query('side') });
-        if (!query.success) return fail('growth.invalid_input');
-        return context.json(await dueMoment(wiring, userId, query.data.side));
-      }),
-    )
-    .post(
-      MOMENT_OFFERED_PATH,
-      on(async (context, wiring, userId) => {
-        const input = momentOfferedSchema.safeParse(await context.req.json().catch(() => null));
-        if (!input.success) return fail('growth.invalid_input');
-        await offerMoment(wiring, userId, input.data.moment);
-        return context.body(null, 204);
-      }),
-    )
-    .post(
-      MOMENT_CARD_PATH,
-      on(async (context, wiring, userId) => {
-        const input = momentCardSchema.safeParse(await context.req.json().catch(() => null));
-        if (!input.success) return fail('growth.invalid_input');
-        const card = await momentCard(wiring, userId, input.data.moment, input.data.phrase);
-        return card ? context.json(card) : fail('growth.not_found');
-      }),
-    )
-    .post(
-      LOOP_CARD_PATH,
-      on(async (context, wiring, userId) => {
-        const input = loopCardSchema.safeParse(await context.req.json().catch(() => null));
-        if (!input.success) return fail('growth.invalid_input');
-        const card = await loopCard(wiring, userId, input.data);
-        return card ? context.json(card) : fail('growth.not_found');
-      }),
-    )
-    .put(MOMENT_STORY_PATH, on(picture('moment')))
-    .put(QR_PICTURE_PATH, on(picture('qr')));
+  return (
+    new Hono<AppEnv>()
+      .get(
+        MY_GROWTH_PATH,
+        on(async (context, wiring, userId) => context.json(await myGrowth(wiring, userId))),
+      )
+      .get(
+        MOMENT_PATH,
+        on(async (context, wiring, userId) => {
+          const query = momentQuerySchema.safeParse({ side: context.req.query('side') });
+          if (!query.success) return fail('growth.invalid_input');
+          return context.json(await dueMoment(wiring, userId, query.data.side));
+        }),
+      )
+      .post(
+        MOMENT_OFFERED_PATH,
+        on(async (context, wiring, userId) => {
+          const input = momentOfferedSchema.safeParse(await context.req.json().catch(() => null));
+          if (!input.success) return fail('growth.invalid_input');
+          const kept = await offerMoment(wiring, userId, input.data.moment);
+          return kept ? context.body(null, 204) : fail('growth.not_found');
+        }),
+      )
+      .post(
+        MOMENT_CARD_PATH,
+        on(async (context, wiring, userId) => {
+          const input = momentCardSchema.safeParse(await context.req.json().catch(() => null));
+          if (!input.success) return fail('growth.invalid_input');
+          const card = await momentCard(wiring, userId, input.data.moment, input.data.phrase);
+          return card ? context.json(card) : fail('growth.not_found');
+        }),
+      )
+      .post(
+        LOOP_CARD_PATH,
+        on(async (context, wiring, userId) => {
+          const input = loopCardSchema.safeParse(await context.req.json().catch(() => null));
+          if (!input.success) return fail('growth.invalid_input');
+          const card = input.data;
+          // The bot of the app keeps the message: shareMessage of that app sends it (docs/43).
+          const side: Side = context.get('session').app === 'driver' ? 'driver' : 'passenger';
+          const origin = new URL(context.req.url).origin;
+          const photo = card.loop === 'trip' && card.picture ? publicUrl(card.picture, origin) : undefined;
+          const prepared = await loopCard(wiring, { userId, side, card, ...(photo ? { photo } : {}) });
+          return prepared ? context.json(prepared) : fail('growth.not_found');
+        }),
+      )
+      .put(MOMENT_STORY_PATH, on(picture('moment', (id, origin) => ({ imageUrl: publicUrl(id, origin) }))))
+      .put(QR_PICTURE_PATH, on(picture('qr', (id, origin) => ({ imageUrl: publicUrl(id, origin) }))))
+      // The card of the trip takes the id: the server makes its link itself (G88).
+      .put(CARD_PICTURE_PATH, on(picture('card', (id) => ({ id }))))
+  );
 }
 
-// The picture of a story or of the QR (docs/123): its public link for Telegram.
+const publicUrl = (id: string, origin: string) => `${origin}${storyImagePath(id)}`;
+
+// A picture of a story, of the QR or of a card (docs/123): kept a day behind a public link for Telegram.
 const picture =
-  (kind: PictureKind): Handler =>
+  (kind: PictureKind, answer: (id: string, origin: string) => object): Handler =>
   async (context, wiring, userId) => {
     const body = await readCapped(context.req.raw, MAX_STORY_BYTES);
     if (!body) return fail('growth.invalid_image');
     const image = { body, type: context.req.header('content-type') ?? '' };
     const saved = await savePicture(wiring, userId, kind, image);
     if (!saved.ok) return fail(saved.error);
-    return context.json({ imageUrl: `${new URL(context.req.url).origin}${storyImagePath(saved.id)}` }, 201);
+    return context.json(answer(saved.id, new URL(context.req.url).origin), 201);
   };

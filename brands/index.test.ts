@@ -80,4 +80,10 @@ describe('brandForApp (docs/20)', () => {
     expect(driver.text).toBe(passenger.text);
     expect(admin.danger).toBe(passenger.danger);
   });
+
+  it('gives another app its colors from the app of one: a driver card for passengers (G88)', () => {
+    const driver = brandForApp(brand, 'driver');
+    expect(brandForApp(driver, 'passenger').theme.colors).toEqual(brand.theme.colors);
+    expect(brandForApp(driver, 'driver').theme.colors).toEqual(driver.theme.colors);
+  });
 });

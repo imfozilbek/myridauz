@@ -6,7 +6,11 @@ import { tap } from '../market/market-test-kit';
 import { ManagementScreen } from '../manage/management-screen';
 import { renderInShell, testClients } from '../test-shell';
 
-afterEach(cleanup);
+const asked = vi.spyOn(window, 'confirm');
+afterEach(() => {
+  cleanup();
+  vi.clearAllMocks();
+});
 
 const company: Company = {
   legalName: 'Yoʻldosh',
@@ -57,9 +61,9 @@ describe('Kompaniya rekvizitlari (G34, docs/96 T22 … T27)', () => {
     type('STIR', '123456789');
     await tap('Saqlash');
     expect(save).toHaveBeenCalledWith(company);
-    expect(await screen.findByText('Saqlandi. Hujjatlar 1.10 tahririga oʻtdi.')).toBeTruthy();
+    expect(await screen.findByText('Saqlandi. Hujjatlar 1.11 tahririga oʻtdi.')).toBeTruthy();
     expect(screen.getByText('Oʻzgarishlar tarixi')).toBeTruthy();
-    expect(screen.getByText('Tahrir 1.10, 20-oktabr 2026')).toBeTruthy();
+    expect(screen.getByText('Tahrir 1.11, 20-oktabr 2026')).toBeTruthy();
   });
 
   it('shows the reason when the API refuses', async () => {
@@ -72,5 +76,20 @@ describe('Kompaniya rekvizitlari (G34, docs/96 T22 … T27)', () => {
     type('Manzil', 'Samarqand shahri');
     await tap('Saqlash');
     expect(await screen.findByText('Buni faqat loyiha egasi qila oladi.')).toBeTruthy();
+  });
+
+  // G49: a wrong field other than the STIR has the common words; «Orqaga» asks before losing the typing.
+  it('names a wrong field and asks before leaving what was typed', async () => {
+    const save = open(savedOnce);
+    await tap('Hujjatlar va kompaniya');
+    await screen.findByLabelText('Elektron pochta');
+    type('Elektron pochta', 'pochta emas');
+    await tap('Saqlash');
+    expect(screen.getByText('Kompaniya rekvizitlarini tekshiring.')).toBeTruthy();
+    expect(save).not.toHaveBeenCalled();
+    asked.mockReturnValueOnce(false);
+    await tap('Orqaga');
+    expect(asked).toHaveBeenCalledWith('Oʻzgarishlar saqlanmaydi. Chiqasizmi?');
+    expect(screen.getByLabelText('Elektron pochta')).toBeTruthy();
   });
 });

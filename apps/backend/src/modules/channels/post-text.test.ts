@@ -15,7 +15,10 @@ const SHARE =
   'https://t.me/share/url?url=' +
   encodeURIComponent(BOOK) +
   '&text=' +
-  encodeURIComponent('Toshkent shahri → Samarqand viloyati, 2-oktabr, juma: boʻsh joy bor.');
+  encodeURIComponent(
+    'Toshkent shahri → Samarqand viloyati, 2-oktabr, juma: boʻsh joy bor.\n\n' +
+      'Tekshirilgan haydovchilar. Raqamingiz yashirin.',
+  );
 const FIND = 'https://t.me/test_bot?startapp=find_1726269_1718401__ch-yol-samarqand';
 
 // The post of a trip as in the bot (G68, docs/122, mockup g68/5): no address, plate, name.
@@ -76,7 +79,6 @@ describe('the channel post of a trip (G68, mockup g68/5)', () => {
     expect(lines(arrived.text)).toEqual([
       '<b>🏁 Yetib bordi</b>',
       'Chilonzor → Samarqand shahri · 2 kishi · 13:05 da',
-      'Yoʻl xarajati 2 ga boʻlindi',
     ]);
     expect(arrived.markup).toEqual({ inline_keyboard: [[{ text: '🔎 Keyingi safarni topish', url: FIND }]] });
   });

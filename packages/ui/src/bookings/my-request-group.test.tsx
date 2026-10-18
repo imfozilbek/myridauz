@@ -24,6 +24,7 @@ describe('«Tumaningiz guruhiga yuboring» (G69, docs/123 loop 2)', () => {
     const loopCard = vi.fn<GrowthClient['loopCard']>(async () => ({
       prepared: null,
       link: 'https://t.me/d?startapp=x',
+      text: 'Yoʻlga chiqmoqchiman',
     }));
     const opened = vi.spyOn(window, 'open').mockReturnValue(null);
     const { tracked } = open({ loopCard });

@@ -9,20 +9,19 @@ import {
 import type { GrowthDeps, Side } from './ports';
 
 // A moment is offered while it is fresh: right after it, never months later (docs/123).
-const JOIN_FRESH_DAYS = 1;
 const DRIVER_FRESH_DAYS = 7;
 
-// The moment a person reached on a side while it is fresh; null: none now. No moment after a trip:
-// the trip ends with the stars (owner decision 15.10.2026).
+// The moment a person reached on a side while it is fresh; null: none now. No moment after a trip
+// (owner decision 15.10.2026) and none after the registration (owner decision 18.10.2026): only a
+// driver approved in the last days.
 export async function reachedMoment(
   deps: GrowthDeps,
   userId: number,
   side: Side,
 ): Promise<ShareMoment | null> {
-  const fresh = (at: number | null | undefined, days: number) =>
-    at !== null && at !== undefined && deps.now() - at <= days * DAY_MS;
-  if (side === 'passenger') return fresh(await deps.joinedAt(userId), JOIN_FRESH_DAYS) ? 'join' : null;
-  return fresh(await deps.store.approvedAt(userId), DRIVER_FRESH_DAYS) ? 'driver' : null;
+  if (side === 'passenger') return null;
+  const approved = await deps.store.approvedAt(userId);
+  return approved !== null && deps.now() - approved <= DRIVER_FRESH_DAYS * DAY_MS ? 'driver' : null;
 }
 
 // The link of a moment's card: the start of the bot with the mark of the moment and the author's code.

@@ -18,7 +18,6 @@ const PUBLICITY = {
     },
   ],
   views: 3,
-  link: 'https://t.me/test_bot?startapp=trip_1__driver',
 };
 
 type Trip = Record<string, unknown>;

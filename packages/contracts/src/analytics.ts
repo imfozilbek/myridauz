@@ -5,6 +5,7 @@ import { DOCK_STATES } from './dock-states';
 import { shareFields } from './growth';
 import { HOME_TARGETS } from './home-targets';
 import { NAVIGATORS } from './navigator';
+import { LEAVE_KINDS, LEAVE_REASON_IDS } from './voice/leave-reasons';
 import { waitlistStepFields } from './waitlist/person';
 
 // Product analytics events (docs/29). One place for all Mini Apps; add an event when a goal needs it.
@@ -125,5 +126,12 @@ export const analyticsEventSchema = z.discriminatedUnion('name', [
   // G69: a share button shown and used, by loop and place (docs/123).
   z.object({ name: z.literal('share_shown'), ...shareFields, ...context }),
   z.object({ name: z.literal('share_done'), ...shareFields, ...context }),
+  // G87: why a seat, a trip or the account went, one tap after it (docs/191).
+  z.object({
+    name: z.literal('leave_reason'),
+    kind: z.enum(LEAVE_KINDS),
+    reason: z.enum(LEAVE_REASON_IDS),
+    ...context,
+  }),
 ]);
 export type AnalyticsEvent = z.infer<typeof analyticsEventSchema>;

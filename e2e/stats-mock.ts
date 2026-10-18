@@ -107,6 +107,32 @@ const statsOf = (period: string) => {
       { bot: 'poster', sent: 31 * week, limited: 0, dead: 1, peak: 2 },
     ],
     queueOps: 96,
+    // G87: the people who blocked a bot or came back (docs/191).
+    blocks: [
+      { bot: 'passenger', blocked: 3 * week, unblocked: 1 },
+      { bot: 'driver', blocked: 1, unblocked: 0 },
+    ],
+    // G87: what people feel (docs/191).
+    ratings: {
+      count: 18 * week,
+      average: 4.6,
+      low: week,
+      tags: [
+        { tag: 'on_time', count: 11 * week },
+        { tag: 'polite', count: 7 * week },
+      ],
+    },
+    complaintReasons: [{ reason: 'price_changed', count: 2 }],
+    leaving: [
+      { kind: 'booking', reason: 'found_other', count: 4 * week },
+      { kind: 'trip', reason: 'no_passengers', count: 2 },
+      { kind: 'account', reason: 'no_trips', count: 1 },
+    ],
+    opens: [
+      { kind: 'bot', count: 63 * week },
+      { kind: 'direct', count: 140 * week },
+      { kind: 'link', count: 22 * week },
+    ],
     at: Date.now(),
   };
 };

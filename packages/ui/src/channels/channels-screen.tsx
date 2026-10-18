@@ -18,6 +18,7 @@ import { channelName } from './channel-name';
 type Props = { readonly onBack: () => void; readonly readOnly?: boolean };
 type Health = ChannelHealth['channels'][number];
 const NO_HEALTH = Promise.resolve(null);
+const SEPARATOR = ' · ';
 
 // "Kanallar" for the team (docs/63, G78 sheet 5): each channel one row, the channels the team added
 // first, «Kanal qoʻshish» at the bottom. A channel the team added opens to be changed; a main
@@ -25,7 +26,7 @@ const NO_HEALTH = Promise.resolve(null);
 // moderator only reads the list: no adding, no editing, no health of the owner.
 export function ChannelsScreen({ onBack, readOnly = false }: Props) {
   useScreenView('channels');
-  const { t } = useI18n();
+  const { t, formatNumber } = useI18n();
   const brand = useBrand();
   const clients = useApiClients();
   const { value, failed, reload, refresh } = useLoad(() => clients.channels.list(), 'channels');
@@ -56,13 +57,32 @@ export function ChannelsScreen({ onBack, readOnly = false }: Props) {
       : one && one.failed > 0
         ? t('manage.channel.failed', { count: one.failed })
         : null;
+  // The week of a channel for the owner (G87, docs/191): who joined and left, the reactions of its posts.
+  // A quiet week says nothing.
+  const week = (one: Health | undefined) =>
+    one
+      ? [
+          ...(one.joined + one.gone > 0
+            ? [t('manage.channel.week', { joined: formatNumber(one.joined), gone: formatNumber(one.gone) })]
+            : []),
+          ...(one.reactions > 0
+            ? [
+                t('manage.channel.reactions', {
+                  reactions: formatNumber(one.reactions),
+                  top: formatNumber(one.topReactions),
+                }),
+              ]
+            : []),
+        ]
+      : [];
   const row = (channel: Channel) => {
-    const said = trouble(health?.channels.find((one) => one.chat === channel.chat));
+    const one = health?.channels.find((item) => item.chat === channel.chat);
+    const said = trouble(one);
     const kind = channel.fixed
       ? t('channels.fixed')
       : t('channels.places', { count: String(channel.places.length) });
     // A private channel of the brand has no public name: its name in Telegram says it (docs/176).
-    const state = said ?? kind;
+    const state = [said ?? kind, ...week(one)].join(SEPARATOR);
     return (
       <ManageRow
         key={channel.chat}
