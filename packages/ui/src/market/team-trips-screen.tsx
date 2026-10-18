@@ -11,6 +11,7 @@ import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { launchParam, useLinkOpened } from '../telegram/launch-param';
 import { PlacesGate } from './places-gate';
+import { TeamCancelTrip } from './team-cancel-trip';
 import { TeamTripRow } from './team-trip-row';
 import { TripScreen } from './trip-screen';
 import { useTeamDays } from './team-days';
@@ -19,7 +20,8 @@ import { useDayLabel } from './when';
 
 const LINK = [TRIP_LINK];
 
-// The admin Mini App: trips go out without approval, the team only looks at them (owner decision 29.09.2026).
+// The admin Mini App: trips go out without approval, the team looks at them (owner decision 29.09.2026)
+// and cancels one with a reason (Q5 of docs/111, G45).
 // Day by day from yesterday on, each day a card of rows (docs/90 F-A6, G78 sheet 4).
 export function TeamTripsScreen({ onBack }: { readonly onBack: () => void }) {
   return (
@@ -46,6 +48,7 @@ function TeamTrips({ onBack }: { readonly onBack: () => void }) {
     return (
       <TripScreen trip={open} onBack={() => setOpen(null)} onPerson={onPerson}>
         <TeamTripBookings tripId={open.id} onPerson={onPerson} />
+        <TeamCancelTrip trip={open} onCancelled={() => (setOpen(null), refresh())} />
       </TripScreen>
     );
   }
@@ -91,6 +94,7 @@ function LinkedTrip({ id, onBack, onPerson }: LinkedProps) {
   return (
     <TripScreen trip={value} onBack={onBack} onPerson={onPerson}>
       <TeamTripBookings tripId={value.id} onPerson={onPerson} />
+      <TeamCancelTrip trip={value} onCancelled={reload} />
     </TripScreen>
   );
 }
