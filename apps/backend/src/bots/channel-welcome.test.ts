@@ -22,20 +22,25 @@ type Post = {
   reply_markup: { inline_keyboard: { text: string; url: string }[][] };
 };
 
-// Telegram that answers the chats of `answers` with their status, and 429 from the post number `busyAt`.
+// Telegram that answers the chats of `answers` with their status (0: no answer at all), and 429 from
+// the post number `busyAt`.
 function telegram(answers: Readonly<Record<string, number>> = {}, busyAt = Infinity) {
   const posts: Post[] = [];
   const fetch = async (_url: string, init?: RequestInit) => {
     const post = JSON.parse(String(init?.body)) as Post;
     posts.push(post);
     const status = posts.length >= busyAt ? 429 : (answers[post.chat_id] ?? 200);
+    if (status === 0) throw new Error('Network connection lost.');
     return Response.json({ ok: status === 200, result: { message_id: posts.length } }, { status });
   };
   return { posts, fetch, where: () => posts.map((post) => post.chat_id) };
 }
 
+// The server errors of «Statistika»: the code of each failed welcome.
+const errors: string[] = [];
+const ANALYTICS = { writeDataPoint: ({ blobs }: { blobs: string[] }) => errors.push(blobs.join(' ')) };
 const envWith = (values: object = {}) =>
-  ({ POSTER_BOT_TOKEN: 'c', CHANNEL_POSTS: 'on', DB: testD1(), ...values }) as unknown as Bindings;
+  ({ POSTER_BOT_TOKEN: 'c', CHANNEL_POSTS: 'on', DB: testD1(), ANALYTICS, ...values }) as unknown as Bindings;
 
 describe('the welcomes of the bots in the channels (owner, 18.10.2026)', () => {
   it('posts both welcomes to the main channel first, then a few channels a tick, never twice', async () => {
@@ -77,20 +82,42 @@ describe('the welcomes of the bots in the channels (owner, 18.10.2026)', () => {
     expect(after.posts).toEqual([]);
   });
 
-  it('tries a refused channel an hour later, stops at 429, never posts again after a lost answer', async () => {
+  it('tries a refused or failed welcome an hour later, stops at 429, shows each in «Statistika»', async () => {
     vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    errors.length = 0;
     const env = envWith();
     await postChannelWelcomes(env, telegram({ [MAIN]: 400, [FIRST]: 500 }).fetch, DAY);
+    expect(errors).toContain('server_error poster    channel_welcome.400');
+    expect(errors).toContain('server_error poster    channel_welcome.500');
     const soon = telegram();
     await postChannelWelcomes(env, soon.fetch, DAY + 1);
     expect(soon.where()).not.toContain(MAIN);
+    expect(soon.where()).not.toContain(FIRST);
     const busy = telegram({}, 1);
     await postChannelWelcomes(env, busy.fetch, DAY + HOUR_MS + 1);
     expect(busy.where()).toEqual([MAIN]);
+    expect(errors.at(-1)).toBe('server_error poster    channel_welcome.429');
     const later = telegram();
     await postChannelWelcomes(env, later.fetch, DAY + 2 * HOUR_MS + 2);
-    expect(later.where().slice(0, 2)).toEqual([MAIN, MAIN]);
-    expect([...soon.where(), ...busy.where(), ...later.where()]).not.toContain(FIRST);
+    expect(later.where().slice(0, 4)).toEqual([MAIN, MAIN, FIRST, FIRST]);
+  });
+
+  it('ends the tick when Telegram does not answer and tries that welcome again an hour later', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    errors.length = 0;
+    const env = envWith();
+    const silent = telegram({ [MAIN]: 0 });
+    await postChannelWelcomes(env, silent.fetch, DAY);
+    expect(silent.where()).toEqual([MAIN]);
+    expect(errors).toEqual(['server_error poster    channel_welcome.lost']);
+    const next = telegram();
+    await postChannelWelcomes(env, next.fetch, DAY + 1);
+    expect(next.posts.filter(({ chat_id }) => chat_id === MAIN).map(({ photo }) => photo)).toEqual([
+      welcomePicture(brand, 'driver'),
+    ]);
+    const later = telegram();
+    await postChannelWelcomes(env, later.fetch, DAY + HOUR_MS);
+    expect(later.where()[0]).toBe(MAIN);
   });
 
   it('posts each welcome once when two ticks run at once', async () => {
