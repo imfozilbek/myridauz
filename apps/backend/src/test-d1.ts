@@ -59,6 +59,7 @@ const GROWING = [
   'ratings',
   'reviews',
   'channel_posts',
+  'channel_days',
   'support_messages',
   'driver_applications',
   'application_log',

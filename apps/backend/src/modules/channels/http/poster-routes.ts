@@ -16,12 +16,15 @@ const memberSchema = z.object({
   is_member: z.boolean().optional(),
   user: z.object({ id: z.number(), is_bot: z.boolean().optional() }),
 });
+const inChannel = (one: z.infer<typeof memberSchema>) =>
+  IN_CHANNEL.includes(one.status) || one.is_member === true;
 // invite_link: the link the person joined by; an ad of the waitlist counts its own (G83, docs/184).
 const updateSchema = z.object({
   chat_member: z
     .object({
       chat: z.object({ id: z.number() }),
       date: z.number(),
+      old_chat_member: memberSchema.optional(),
       new_chat_member: memberSchema,
       invite_link: z.object({ invite_link: z.string() }).optional(),
     })
@@ -47,10 +50,12 @@ export const posterRoutes = (
       const heardChange = {
         chat: String(change.chat.id),
         userId: person.user.id,
-        member: IN_CHANNEL.includes(person.status) || person.is_member === true,
+        member: inChannel(person),
         at: change.date * SECOND_MS,
       };
-      await heard(deps(context.env), heardChange);
+      // Without the old state a change is taken as a move (G87 V5).
+      const was = change.old_chat_member ? inChannel(change.old_chat_member) : !heardChange.member;
+      await heard(deps(context.env), heardChange, was);
       await changed(context.env, { ...heardChange, invite: change.invite_link?.invite_link ?? null });
     }
     return context.json({});

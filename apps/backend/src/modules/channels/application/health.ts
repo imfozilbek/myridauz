@@ -1,11 +1,14 @@
 import {
   CHANNEL_ARRIVALS_DAYS,
+  CHANNEL_MOVES_DAYS,
   channelVia,
   DAY_MS,
   FAILED_POSTS_DAYS,
+  tashkentDate,
   type Channel,
   type ChannelHealth,
 } from '@platform/contracts';
+import type { ChannelDays } from './channel-days';
 
 // What the Cron last read from Telegram about a channel (G75).
 export type HealthRow = {
@@ -25,6 +28,8 @@ export type HealthStore = {
 export type HealthDeps = {
   readonly channels: () => Promise<Channel[]>;
   readonly store: HealthStore;
+  // The people of each check by day, the joins and leaves of a week (G87 V5).
+  readonly days: ChannelDays;
   readonly count: (chat: string) => Promise<number | null>;
   readonly canPost: (chat: string) => Promise<boolean>;
   // Makes the invite link «Rida ilovasi» of a channel; null when Telegram did not.
@@ -53,7 +58,9 @@ export async function checkChannels(deps: HealthDeps): Promise<void> {
       deps.canPost(chat).catch(() => null),
       before.get(chat)?.appLink ?? deps.appLink(chat).catch(() => null),
     ]);
-    await deps.store.save({ channel: chat, subscribers, canPost, checkedAt: deps.now(), appLink });
+    const now = deps.now();
+    await deps.store.save({ channel: chat, subscribers, canPost, checkedAt: now, appLink });
+    if (subscribers !== null) await deps.days.counted(chat, tashkentDate(now), subscribers);
   }
 }
 
@@ -67,13 +74,16 @@ export async function appLinks(store: HealthStore): Promise<ReadonlyMap<string, 
 // «Kanallar» of the owner: every channel with its people, its bot, its lost posts and its arrivals.
 export async function channelHealth(deps: HealthDeps): Promise<ChannelHealth> {
   const now = deps.now();
-  const [channels, rows, failed, arrivals] = await Promise.all([
+  const [channels, rows, failed, arrivals, moves] = await Promise.all([
     deps.channels(),
     deps.store.rows(),
     deps.failed(now - FAILED_POSTS_DAYS * DAY_MS),
     deps.arrivals(now - CHANNEL_ARRIVALS_DAYS * DAY_MS),
+    // Today and the six days before it.
+    deps.days.movesSince(tashkentDate(now - (CHANNEL_MOVES_DAYS - 1) * DAY_MS)),
   ]);
   const byChannel = new Map(rows.map((row) => [row.channel, row]));
+  const moved = new Map(moves.map((move) => [move.chat, move]));
   return {
     channels: channels.map(({ chat, title }) => {
       const row = byChannel.get(chat);
@@ -85,6 +95,8 @@ export async function channelHealth(deps: HealthDeps): Promise<ChannelHealth> {
         checkedAt: row?.checkedAt ?? null,
         failed: failed.get(chat) ?? 0,
         arrivals: arrivals.get(channelVia(chat)) ?? 0,
+        joined: moved.get(chat)?.joined ?? 0,
+        left: moved.get(chat)?.gone ?? 0,
       };
     }),
   };

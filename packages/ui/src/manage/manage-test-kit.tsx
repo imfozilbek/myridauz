@@ -41,6 +41,8 @@ export function renderManagement(overrides: Overrides = {}) {
     checkedAt: 1,
     failed: 0,
     arrivals: 3,
+    joined: 0,
+    left: 0,
   });
   const clients = testClients({
     market: { teamTrips: async () => Array.from({ length: 17 }, () => ({}) as never) },

@@ -1,5 +1,6 @@
 import type { BrandChannel } from '@platform/brands';
 import type { MyChannel } from '@platform/contracts';
+import { countMove, type ChannelDays } from './channel-days';
 import type { HealthRow } from './health';
 
 // One join or leave the bot of the posts heard in a channel (chat_member, docs/176).
@@ -41,11 +42,16 @@ export type HeardDeps = {
   // The chats of the channels of the brand.
   readonly chats: ReadonlySet<string>;
   readonly registered: (userId: number) => Promise<boolean>;
+  // The joins and leaves of each day, counted for anyone (G87 V5).
+  readonly days: ChannelDays;
 };
 
 // Only the channels of the brand and only the people of the brand are kept: the id of anyone else
-// is never stored (docs/30).
-export async function heard(deps: HeardDeps, change: MemberChange): Promise<void> {
-  if (!deps.chats.has(change.chat) || !(await deps.registered(change.userId))) return;
+// is never stored (docs/30). was: in the channel before; every join and leave is counted, only as a
+// number of the day (G87 V5).
+export async function heard(deps: HeardDeps, change: MemberChange, was: boolean): Promise<void> {
+  if (!deps.chats.has(change.chat)) return;
+  await countMove(deps.days, { chat: change.chat, was, is: change.member, at: change.at });
+  if (!(await deps.registered(change.userId))) return;
   await deps.members.mark(change);
 }

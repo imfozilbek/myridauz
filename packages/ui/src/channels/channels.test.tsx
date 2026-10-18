@@ -52,6 +52,8 @@ const health = (chat: string, subscribers: number | null, canPost: boolean | nul
   checkedAt: 1,
   failed,
   arrivals: 12,
+  joined: 0,
+  left: 0,
 });
 // The health of the channels from the Cron check (G75, docs/120).
 const HEALTH = { channels: [health(fixed.chat, 1200, true, 0), health('@ch_kitob', null, false, 2)] };

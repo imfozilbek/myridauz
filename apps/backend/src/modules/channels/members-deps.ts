@@ -2,7 +2,7 @@ import type { Bindings } from '../../env';
 import { joinedAtOf } from '../users';
 import { brandOf } from '../../shared/brand/brand-of';
 import type { HeardDeps, MyChannelsDeps } from './application/my-channels';
-import { healthStoreOf } from './health-deps';
+import { channelDaysOf, healthStoreOf } from './health-deps';
 import { createMemoryChannelMembers, d1ChannelMembers } from './infrastructure/channel-members';
 
 const localMembers = createMemoryChannelMembers();
@@ -27,4 +27,5 @@ export const heardDeps = (env: Bindings): HeardDeps => ({
   chats: new Set(brandOf(env).channels.map(({ chat }) => chat)),
   registered: async (userId) =>
     (await joinedAtOf(env, userId)) !== undefined || (await knownElsewhere(env, userId)),
+  days: channelDaysOf(env),
 });

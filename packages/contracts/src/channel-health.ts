@@ -7,6 +7,8 @@ import { CHANNEL_CHAT } from './channels';
 export const ADMIN_CHANNEL_HEALTH_PATH = '/admin/channel-health';
 export const FAILED_POSTS_DAYS = 7;
 export const CHANNEL_ARRIVALS_DAYS = 30;
+// G87 V5: the people who came to each channel and left it this week, as the bot of the posts heard.
+export const CHANNEL_MOVES_DAYS = 7;
 
 export const channelHealthSchema = z.object({
   channels: z.array(
@@ -19,6 +21,8 @@ export const channelHealthSchema = z.object({
       checkedAt: z.number().int().nullable(),
       failed: z.number().int().min(0),
       arrivals: z.number().int().min(0),
+      joined: z.number().int().min(0),
+      left: z.number().int().min(0),
     }),
   ),
 });

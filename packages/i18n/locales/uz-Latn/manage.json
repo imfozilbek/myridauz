@@ -102,5 +102,7 @@
   "entry.directionOpen": "Yoʻnalish ochildi",
   "entry.adLink": "Reklama havolasi yaratildi",
   "channel.noPost": "Bot yoza olmaydi",
-  "channel.failed": "{count} post bormadi"
+  "channel.failed": "{count} post bormadi",
+  "channel.movesTitle": "7 kunda kelgan va ketganlar",
+  "channel.moves": "{joined} keldi · {left} ketdi"
 }
