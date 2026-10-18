@@ -42,6 +42,12 @@
 
 - Тихая неделя ничего не пишет; части строки идут через « · », как раньше.
 
-## Политика
+## Политика: редакция 1.10
 
-- Новой строки нет: всё это числа без ID человека, «umumiy statistika» из `privacy.3.text` (`30`, пункт 12). Если нужна отдельная строка, это редакция 2.0.
+В `privacy.2.text` (`legal.json`), дата 18.10.2026. Текст подготовила сессия myrida-deploy (DoD G87: новые данные описаны в политике).
+
+| Было | Стало |
+|---|---|
+| Ilovadan foydalanish statistikasi: qaysi ekran ochildi, qaysi qadam bosildi. Unda ism, raqam va xabarlar boʻlmaydi. | Ilovadan foydalanish statistikasi: qaysi ekran ochildi, qaysi qadam bosildi, ilovaga nima orqali kirildi (bot xabari, menyu yoki havola). Unda ism, raqam va xabarlar boʻlmaydi. |
+| (нет) | Joy yoki safarni bekor qilganda, hisobni oʻchirganda tanlagan sababingiz, agar tanlasangiz. U ismsiz, faqat umumiy son sifatida hisoblanadi. |
+| (нет) | Botni bloklash va qayta ochish, kanalga kirish va chiqish, kanal postlaridagi reaksiyalar: faqat umumiy son. Kim ekani saqlanmaydi. |

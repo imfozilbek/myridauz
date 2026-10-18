@@ -60,7 +60,7 @@ test('admin: the week of each channel', async ({ page }) => {
   await shot(page)('2-channels');
 });
 
-test('passenger: why the seat was cancelled, and why the data went', async ({ page }) => {
+test('passenger: why the seat was cancelled', async ({ page }) => {
   await mockApi(page, 'active');
   await page.route('**/api/passenger/bookings/*/cancel', (route) =>
     route.fulfill({ json: { ...confirmed, status: 'cancelled_by_passenger' } }),
@@ -71,11 +71,19 @@ test('passenger: why the seat was cancelled, and why the data went', async ({ pa
   await page.getByText('Jasur').first().click();
   await page.getByText(t('bookings.cancel')).click();
   await expect(page.getByText(t('leave.title.booking'))).toBeVisible();
+  // The sheet slides up: the last reason is on the screen once it stands.
+  await expect(page.getByText(t('leave.reason.booking.other'))).toBeInViewport({ ratio: 1 });
   await shot(page)('3-seat-reason');
+});
+
+test('passenger: why the data went', async ({ page }) => {
+  await mockApi(page, 'active');
+  await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port)));
   await page.getByLabel(TEXT.profile).click();
   await page.getByText(t('account.delete.open')).click();
   await page.locator('#tg-main-button').click();
   await expect(page.getByText(t('leave.title.account'))).toBeVisible();
+  await expect(page.getByText(t('leave.reason.account.other'))).toBeInViewport({ ratio: 1 });
   await shot(page)('4-data-reason');
 });
