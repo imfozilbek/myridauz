@@ -115,7 +115,8 @@ describe('the passenger shares the trip; in the car by the driver «Keldi» (doc
 
   // A close person has no account in Rida: the photo of the driver loads all the same (G46).
   it('show the photo of the driver to a close person without an account', async () => {
-    const getAvatar = vi.fn(async () => new Blob());
+    // The photo itself is not needed: the call is.
+    const getAvatar = vi.fn(() => new Promise<Blob>(() => undefined));
     const clients = testClients({ chat: { sharedTrip: async () => TRIP }, users: { getAvatar } });
     renderInShell(<FollowScreen token={TOKEN} onJoin={() => undefined} />, false, true, locations, clients);
     await waitFor(() => expect(getAvatar).toHaveBeenCalledWith('d1', false));
