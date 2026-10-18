@@ -99,6 +99,13 @@ export const blockOf = (env: Bindings, userId: number) => checkAccess(usersDeps(
 
 // Other modules reach people only through this (drivers, moderation).
 export const peopleOf = (env: Bindings) => people(usersDeps(env));
+// The first names of people by their ids: who in the histories and lists of the team (G45).
+export async function firstNames(env: Bindings, ids: readonly number[]): Promise<Map<number, string>> {
+  const found = peopleOf(env);
+  return new Map(
+    await Promise.all(ids.map(async (id) => [id, (await found.find(id))?.firstName ?? ''] as const)),
+  );
+}
 export const blockedGuard = guard;
 // Since when a person is with the brand: the card of a support question (G68).
 export const joinedAtOf = async (env: Bindings, id: number) =>

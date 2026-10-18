@@ -1,11 +1,15 @@
 import type { Location, PricingVariables, PricingVersion, RouteError } from '@platform/contracts';
 import type { Strategy } from '../domain/formula';
+import type { Names } from '../../../shared/team/who';
 import type { VariablesCache } from './variables';
+
+// A version as kept: who changed it by the Telegram ID, shown by the name (shared/team/who.ts).
+export type StoredPricingVersion = Omit<PricingVersion, 'changedBy'> & { readonly changedBy: number | null };
 
 // Ports of the pricing module: D1 in production, memory in tests.
 export type PricingRepository = {
   // Newest first; there is always at least the starting version (migrations/0006_pricing.sql).
-  versions(): Promise<PricingVersion[]>;
+  versions(): Promise<StoredPricingVersion[]>;
   addVersion(variables: PricingVariables, changedBy: number, at: number): Promise<void>;
   // Pairs are ordered (domain/direction.ts).
   manualPrice(from: string, to: string): Promise<number | undefined>;
@@ -38,6 +42,7 @@ export type PricingDeps = {
   readonly mainDirections: readonly (readonly [string, string])[];
   // Prices of real trips since a time: the median hint of the admin table (docs/09).
   readonly realPrices: (since: number) => Promise<readonly RealPrice[]>;
+  readonly names: Names;
   readonly now: () => number;
 };
 

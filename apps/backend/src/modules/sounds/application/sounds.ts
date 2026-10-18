@@ -1,4 +1,5 @@
 import type { SoundChoice, SoundsState } from '@platform/contracts';
+import { namer } from '../../../shared/team/who';
 import type { SoundsDeps } from './ports';
 
 // The set that plays: the last pick of the owner while the brand still has it, else the default.
@@ -14,10 +15,11 @@ export async function publicSounds(deps: SoundsDeps): Promise<SoundChoice> {
 // The admin screen of the owner: the set in use and the others to listen to (docs/02, G75).
 export async function soundsState(deps: SoundsDeps): Promise<SoundsState> {
   const pick = await current(deps);
+  const nameOf = await namer(deps.names, [pick?.changedBy ?? null]);
   return {
     set: pick?.set ?? deps.defaultSet,
     sets: [...deps.sets],
-    changedBy: pick?.changedBy ?? null,
+    changedBy: pick ? nameOf(pick.changedBy) : null,
     changedAt: pick?.changedAt ?? null,
   };
 }

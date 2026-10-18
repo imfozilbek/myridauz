@@ -1,5 +1,4 @@
-import type { CompanyVersion } from '@platform/contracts';
-import type { CompanyRepository } from '../application/ports';
+import type { CompanyRepository, StoredCompanyVersion } from '../application/ports';
 
 type VersionRow = {
   version: number;
@@ -12,7 +11,7 @@ type VersionRow = {
   changed_at: number;
 };
 
-const toVersion = (row: VersionRow): CompanyVersion => ({
+const toVersion = (row: VersionRow): StoredCompanyVersion => ({
   version: row.version,
   company: {
     legalName: row.legal_name,

@@ -22,7 +22,8 @@ type Saved = {
   readonly pitakId?: string | null;
 };
 
-// Every change of a pitak or a direction, the newest first (docs/72, as prices in docs/23).
+// Every change of a pitak or a direction with who made it, the newest first (docs/72, as prices in
+// docs/23, G45).
 export function PitakHistory({ pitaks, directory, onBack }: Props) {
   useScreenView('pitaks.history');
   const { t, formatDate, formatTime } = useI18n();
@@ -52,7 +53,7 @@ export function PitakHistory({ pitaks, directory, onBack }: Props) {
     return (
       <Cell
         key={`${change.at}-${index}`}
-        subtitle={`${formatDate(at)} ${formatTime(at)}`}
+        subtitle={t('pricing.versionBy', { date: `${formatDate(at)} ${formatTime(at)}`, who: change.by })}
         description={stateText(change)}
       >
         {subjectText(change.subject)}

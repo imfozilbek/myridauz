@@ -14,7 +14,7 @@ export function CompanyHistory({ history }: { readonly history: readonly Company
         const at = new Date(item.changedAt);
         const when = t('pricing.versionBy', {
           date: `${formatDate(at)} ${formatTime(at)}`,
-          who: `#${item.changedBy}`,
+          who: item.changedBy,
         });
         return (
           <ManageRow

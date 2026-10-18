@@ -44,7 +44,8 @@ export type PublicCompany = z.infer<typeof publicCompanySchema>;
 const companyVersionSchema = z.object({
   version: z.number().int().min(1),
   company: companySchema,
-  changedBy: z.number().int(),
+  // The first name of the owner who saved it, never the Telegram ID (docs/65 A3).
+  changedBy: z.string(),
   changedAt: z.number().int(),
 });
 export type CompanyVersion = z.infer<typeof companyVersionSchema>;

@@ -8,7 +8,7 @@ import {
 import { describe, expect, it } from 'vitest';
 import { app } from './app';
 import { changeModerator } from './modules/team';
-import { call, testEnv } from './test-api';
+import { call, registerUser, testEnv } from './test-api';
 
 const OWNER = 900;
 const MODERATOR = 906;
@@ -42,6 +42,7 @@ describe('company requisites (G34, docs/30)', () => {
   });
 
   it('lets only the owner read and save; each save is the next edition', async () => {
+    await registerUser(OWNER);
     expect(await changeModerator(testEnv, OWNER, MODERATOR, true)).toBe('ok');
     const refused = await save(MODERATOR, company);
     expect([refused.status, await refused.json()]).toEqual([403, { error: 'auth.not_owner' }]);
@@ -51,7 +52,8 @@ describe('company requisites (G34, docs/30)', () => {
     expect((await save(OWNER, company)).status).toBe(200);
     const second = (await (await save(OWNER, { ...company, form: 'AJ' })).json()) as CompanyState;
     expect(second.history.map((item) => item.version)).toEqual([2, 1]);
-    expect(second.current).toMatchObject({ company: { form: 'AJ' }, changedBy: OWNER });
+    // Who saved it: the first name of the owner, never the Telegram ID (docs/65 A3, G45).
+    expect(second.current).toMatchObject({ company: { form: 'AJ' }, changedBy: 'Ali' });
     // «Hujjatlar va kompaniya» is in «Boshqaruv»: the owner's only, reading too (docs/120, G75).
     expect((await call(ADMIN_COMPANY_PATH, MODERATOR, { app: 'admin' })).status).toBe(403);
     const read = (await (await call(ADMIN_COMPANY_PATH, OWNER, { app: 'admin' })).json()) as CompanyState;

@@ -61,6 +61,8 @@ export const pitakChangeSchema = z.object({
   subject: z.string(),
   before: z.string().nullable(),
   after: z.string().nullable(),
+  // Who changed it: the first name of the team member (G45, docs/72).
+  by: z.string(),
   at: z.number().int(),
 });
 export type PitakChange = z.infer<typeof pitakChangeSchema>;

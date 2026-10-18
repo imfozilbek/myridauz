@@ -1,4 +1,5 @@
 import type { Bindings } from '../../env';
+import { firstNames } from '../users';
 import type { SoundsDeps } from './application/ports';
 import { soundsRoutes } from './http/sounds-routes';
 import { d1Sounds } from './infrastructure/d1-sounds';
@@ -12,6 +13,7 @@ const soundsDeps = (env: Bindings): SoundsDeps => {
   const { sounds } = brandOf(env);
   return {
     sounds: env.DB ? d1Sounds(env.DB) : localSounds,
+    names: (ids) => firstNames(env, ids),
     sets: sounds.sets,
     defaultSet: sounds.defaultSet,
     now: Date.now,

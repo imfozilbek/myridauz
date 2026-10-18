@@ -10,9 +10,9 @@ afterEach(cleanup);
 
 const V: PricingVariables = { ratePerKm: 300, roundStep: 5000, minPrice: 30000, maxPrice: 600000 };
 const state: PricingState = {
-  current: { version: 2, variables: V, changedBy: 900, changedAt: 1 },
+  current: { version: 2, variables: V, changedBy: 'Fozil', changedAt: 1 },
   history: [
-    { version: 2, variables: V, changedBy: 900, changedAt: 1 },
+    { version: 2, variables: V, changedBy: 'Fozil', changedAt: 1 },
     { version: 1, variables: V, changedBy: null, changedAt: 0 },
   ],
 };
@@ -54,6 +54,9 @@ describe('Narxlar: the price engine for the team (docs/23)', () => {
   it('changes the formula with the new prices on the same screen (G78 sheet 4)', async () => {
     const pricing = setup();
     await tap('Narxlar');
+    // Who changed a version: the name, never the Telegram ID (docs/65 A3, G45).
+    expect(await screen.findByText(/, Fozil$/u)).toBeTruthy();
+    expect(document.body.textContent).not.toMatch(/#\d/u);
     await tap('Formulani oʻzgartirish');
     // Every field is named on every platform, not only by a header iOS hides (G27).
     fireEvent.change(screen.getByLabelText('Stavka (1 km uchun)'), { target: { value: '400' } });

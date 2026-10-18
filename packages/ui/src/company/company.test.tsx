@@ -23,8 +23,8 @@ const company: Company = {
 const AT = Date.parse('2026-10-20T07:00:00Z');
 const empty: CompanyState = { current: null, history: [] };
 const savedOnce: CompanyState = {
-  current: { version: 1, company, changedBy: 900, changedAt: AT },
-  history: [{ version: 1, company, changedBy: 900, changedAt: AT }],
+  current: { version: 1, company, changedBy: 'Fozil', changedAt: AT },
+  history: [{ version: 1, company, changedBy: 'Fozil', changedAt: AT }],
 };
 
 function open(
