@@ -1,4 +1,9 @@
-import type { Complaint } from '@platform/contracts';
+import {
+  COMPLAINT_DECISIONS,
+  PAST_COMPLAINTS,
+  type Complaint,
+  type ComplaintCase,
+} from '@platform/contracts';
 import { isHigh, type ComplaintRecord } from '../domain/complaint';
 import type { ComplaintsDeps, Ride, Side } from './ports';
 
@@ -32,4 +37,32 @@ export async function complaintView(
   const base = { id, reasons: [...reasons], high: isHigh(reasons), comment, status, createdAt };
   const refund = complaint.refund && { state: complaint.refund.state, amount: ride.commission };
   return { ...base, tripId: ride.tripId, departAt: ride.departAt, author, against, refund };
+}
+
+// «block:7:refund» → «block»: the kind of the decision, the days and the refund are elsewhere.
+const decisionOf = (label: string | null) =>
+  COMPLAINT_DECISIONS.find((decision) => label?.split(':')[0] === decision) ?? null;
+
+// The open case (docs/17, G45): the complaint and the newest complaints before it against the same
+// person.
+export async function caseView(
+  deps: ComplaintsDeps,
+  complaint: ComplaintRecord,
+): Promise<ComplaintCase | null> {
+  const [shown, all] = await Promise.all([
+    complaintView(deps, complaint),
+    deps.store.against([complaint.againstId], 0),
+  ]);
+  if (!shown) return null;
+  const past = all
+    .filter((other) => other.id !== complaint.id)
+    .sort((a, b) => b.createdAt - a.createdAt)
+    .slice(0, PAST_COMPLAINTS)
+    .map(({ id, reasons, decision, createdAt }) => ({
+      id,
+      reasons: [...reasons],
+      decision: decisionOf(decision),
+      at: createdAt,
+    }));
+  return { ...shown, past };
 }

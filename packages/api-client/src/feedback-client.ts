@@ -12,7 +12,7 @@ import {
   COMPLAINTS_PATH,
   complaintChatSchema,
   complaintQueueSchema,
-  complaintSchema,
+  complaintCaseSchema,
   reviewPath,
   REVIEWS_PATH,
   reviewTargetSchema,
@@ -21,6 +21,7 @@ import {
   type AdminReviews,
   type ChatLine,
   type Complaint,
+  type ComplaintCase,
   type ComplaintDecision,
   type ComplaintInput,
   type ComplaintNotes,
@@ -47,8 +48,8 @@ export function createFeedbackClient(options: SignedOptions) {
       complaintNotesSchema.parse(await (await request(COMPLAINT_NOTES_PATH)).json()),
     queue: async (): Promise<Complaint[]> =>
       complaintQueueSchema.parse(await (await request(ADMIN_COMPLAINTS_PATH)).json()).complaints,
-    complaint: async (id: string): Promise<Complaint> =>
-      complaintSchema.parse(await (await request(adminComplaintPath(id))).json()),
+    complaint: async (id: string): Promise<ComplaintCase> =>
+      complaintCaseSchema.parse(await (await request(adminComplaintPath(id))).json()),
     chat: async (id: string): Promise<ChatLine[]> =>
       complaintChatSchema.parse(await (await post(adminComplaintChatPath(id), {})).json()).lines,
     decide: async (id: string, decision: ComplaintDecision): Promise<void> =>
