@@ -58,6 +58,8 @@ export async function answer(
   driverId: number,
   id: string,
   action: Extract<BookingAction, 'decline' | 'driver_cancel'>,
+  // Who cancels: the driver, or the team for the driver (G45); the passenger hears who it was.
+  by: 'driver' | 'team' = 'driver',
 ): Promise<Result<Booking, AnswerError>> {
   const found = await mine(deps, driverId, id);
   if (!found) return { ok: false, error: 'bookings.not_found' };
@@ -71,7 +73,7 @@ export async function answer(
   const [forPassenger] = await bookingViews(deps, [next], 'passenger');
   if (forPassenger) {
     if (next.status === 'declined') await deps.notify.declined(forPassenger);
-    else await deps.notify.cancelled(forPassenger, 'driver');
+    else await deps.notify.cancelled(forPassenger, by);
   }
   return driverView(deps, next);
 }

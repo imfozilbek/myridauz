@@ -15,6 +15,8 @@ export const JOURNAL_KINDS = [
   'limits',
   // G83: the switch of the list, an opened direction, a new ad link (docs/181, docs/184).
   'waitlist',
+  // G45: the team cancelled one trip (Q5 of docs/111).
+  'trip',
 ] as const;
 export type JournalKind = (typeof JOURNAL_KINDS)[number];
 

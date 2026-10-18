@@ -99,9 +99,8 @@ export const publishPrivateTripFor = (env: Bindings, driverId: number, input: In
 export const openTripFor = (env: Bindings, driverId: number, tripId: string) =>
   openTrip(tripsDeps(env), driverId, tripId);
 export const releaseTripFor = (env: Bindings, tripId: string) => releaseTrip(tripsDeps(env), tripId);
-export const cancelFor = async (env: Bindings, driverId: number, tripId: string) => {
-  await cancelTrip(tripsDeps(env), driverId, tripId);
-};
+export const cancelFor = async (env: Bindings, driverId: number, tripId: string) =>
+  (await cancelTrip(tripsDeps(env), driverId, tripId)).ok;
 
 // Every trip of a Tashkent day: the boards and the summaries of the channels (G68, docs/122).
 export const tripsOfDate = (env: Bindings, date: string) => teamTrips(tripsDeps(env), date);

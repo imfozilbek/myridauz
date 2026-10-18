@@ -24,10 +24,17 @@ import { bookingRoutes } from './http/booking-routes';
 import { meetingRoutes } from './http/meeting-routes';
 import { offerRoutes } from './http/offer-routes';
 import { talkRoutes } from './http/talk-routes';
+import { teamCancelRoutes } from './http/team-cancel-routes';
+import { recordAction } from '../journal';
 import { bookingStore } from './infrastructure/store';
+
+// The team cancelled a trip (G45): the journal of the team keeps who and which trip.
+const tripCancelled = (env: Bindings, memberId: number, tripId: string) =>
+  recordAction(env, { memberId, kind: 'trip', subject: tripId, action: 'cancel', since: null });
 
 export const bookingsModule = new Hono<AppEnv>()
   .route('/', bookingRoutes(bookingsDeps))
+  .route('/', teamCancelRoutes(bookingsDeps, tripCancelled))
   .route('/', offerRoutes(bookingsDeps))
   .route('/', meetingRoutes(bookingsDeps))
   .route('/', talkRoutes(bookingsDeps));

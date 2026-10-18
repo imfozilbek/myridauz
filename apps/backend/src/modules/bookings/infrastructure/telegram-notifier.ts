@@ -8,6 +8,7 @@ import {
 } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { NotificationJob } from '../../notifications';
+import { escapeHtml } from '../../../shared/telegram/html';
 import { openButton } from '../../../shared/telegram/open-button';
 import type { BookingNotifier } from '../application/ports';
 import type { DriverNews, DriverRing } from './driver-news';
@@ -65,13 +66,18 @@ export function telegramNotifier(wiring: Wiring): BookingNotifier {
     cancelled: async (booking, by) => {
       await system(booking.chatKey, 'cancelled');
       await closeOnes(booking, 'cancelled');
-      if (by === 'driver') {
-        await passenger(booking, 'cancelledByDriver');
+      if (by !== 'passenger') {
+        await passenger(booking, by === 'team' ? 'cancelledByTeam' : 'cancelledByDriver');
         return tripOf(booking);
       }
       await passenger(booking);
       // A confirmed seat gives the commission back: the driver hears it; a request only edits its card.
       await tripOf(booking, booking.confirmedAt === null ? undefined : 'cancelled');
+    },
+    // The trip card of the driver says «Safar bekor qilindi» by itself; the reason comes in a message.
+    teamCancelled: async (driverId, reason) => {
+      const text = t('bot.dring.teamCancelled', { reason: escapeHtml(reason) });
+      await notify([{ bot: 'driver', chatId: driverId, text, html: true, markup: open('driver') }]);
     },
     offered: async (offer) => {
       await system(offer.chatKey, 'offered');

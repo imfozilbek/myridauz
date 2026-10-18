@@ -74,7 +74,10 @@ export function fakeTrips(
       const extra = extras.get(tripId);
       if (extra) extras.set(tripId, { ...extra, private: false });
     },
-    cancel: async (_driverId, tripId) => void notes.push(`trip cancelled ${tripId}`),
+    cancel: async (_driverId, tripId) => {
+      notes.push(`trip cancelled ${tripId}`);
+      return true;
+    },
   };
   return { trips, port, addTrip };
 }

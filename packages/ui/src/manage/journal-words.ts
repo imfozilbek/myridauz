@@ -25,6 +25,7 @@ const ACTIONS: Readonly<Record<string, TranslationKey>> = {
   'waitlist:list_close': 'manage.entry.listClose',
   'waitlist:open': 'manage.entry.directionOpen',
   'waitlist:ad': 'manage.entry.adLink',
+  'trip:cancel': 'manage.entry.tripCancelled',
 };
 const FOREVER = 'forever';
 const isLimit = (key: string): key is LimitKey => (LIMIT_KEYS as readonly string[]).includes(key);
@@ -60,9 +61,10 @@ const SIGNS: Readonly<Record<JournalKind, IconName>> = {
   team: 'team',
   limits: 'locked',
   waitlist: 'channel',
+  trip: 'trip',
 };
 const GOOD: ReadonlySet<string> = new Set(['approve', 'none', 'unblock', 'confirm', 'add']);
-const BAD: ReadonlySet<string> = new Set(['reject', 'block', 'remove']);
+const BAD: ReadonlySet<string> = new Set(['reject', 'block', 'remove', 'cancel']);
 
 export function entrySign({ kind, action }: Entry): { readonly icon: IconName; readonly tone?: RowTone } {
   const [what = ''] = action.split(':');

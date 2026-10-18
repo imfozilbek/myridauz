@@ -96,6 +96,7 @@
   "entry.refundProposed": "qaytarish taklif qilindi",
   "entry.teamAdd": "Jamoaga qoʻshildi",
   "entry.teamRemove": "Jamoadan olindi",
+  "entry.tripCancelled": "Safarni bekor qildi",
   "entry.limit": "{name}: {value}",
   "entry.listOpen": "Roʻyxatga yozish ochildi",
   "entry.listClose": "Roʻyxatga yozish yopildi",

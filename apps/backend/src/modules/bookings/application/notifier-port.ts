@@ -8,7 +8,9 @@ export type BookingNotifier = {
   confirmed(booking: Booking, own?: 'passenger'): Promise<void>;
   declined(booking: Booking): Promise<void>;
   expired(booking: Booking): Promise<void>;
-  cancelled(booking: Booking, by: 'passenger' | 'driver'): Promise<void>;
+  cancelled(booking: Booking, by: 'passenger' | 'driver' | 'team'): Promise<void>;
+  // The team cancelled the driver's trip (Q5 of docs/111, G45): the driver reads the reason.
+  teamCancelled(driverId: number, reason: string): Promise<void>;
   // The offer as the passenger sees it: the card of its request counts it, the first one rings (G68).
   offered(offer: Offer): Promise<void>;
   // The answer goes to the driver and, as a line, to the chat of the offer (G64: the talk's chat).

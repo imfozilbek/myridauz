@@ -32,6 +32,7 @@
   "ask.changed": "Bu soʻrov allaqachon oʻzgargan.",
   "dring.askAgain": "⏳ {name} hali javobingizni kutyapti: {time} gacha javob bering",
   "dring.cancelled": "🙋 {name} joyini bekor qildi. Komissiya hamyoningizga qaytdi.",
+  "dring.teamCancelled": "❌ Jamoa safaringizni bekor qildi. Sabab: {reason}",
   "dring.offerAccepted": "✅ {name} taklifingizni qabul qildi",
   "dring.soon": "🚏 Safarga 2 soat qoldi: {count} yoʻlovchi. Birinchisi {time} da kutadi: {place}",
   "dring.came": "📍 {name} uchrashuv joyiga keldi",

@@ -89,7 +89,8 @@ export type BookingsDeps = {
     publishPrivate(driverId: number, input: Required<TripInput>, requestId: string): Promise<Published>;
     open(driverId: number, tripId: string): Promise<Published>;
     release(tripId: string): Promise<void>;
-    cancel(driverId: number, tripId: string): Promise<void>;
+    // False when the trip is already on its way or over (docs/35).
+    cancel(driverId: number, tripId: string): Promise<boolean>;
   };
   readonly requests: {
     find(id: string): Promise<RequestFacts | undefined>;

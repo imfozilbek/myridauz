@@ -16,6 +16,7 @@ type PassengerRing =
   | 'declined'
   | 'expired'
   | 'cancelledByDriver'
+  | 'cancelledByTeam'
   | 'retimed'
   | 'soon'
   | 'departed'
