@@ -11,7 +11,7 @@ import { NAME, SITE, PROMO } from './production.mjs';
 import { theme } from '../../theme.ts';
 
 const DPI = 300, MM = DPI / 25.4;
-export const FLYER_MM = { width: 105, height: 216 };
+export const FLYER_MM = { width: 105, height: 216, bleed: 3 };
 const W = Math.round(FLYER_MM.width * MM), H = Math.round(FLYER_MM.height * MM);
 const M = Math.round(9 * MM), CW = W - 2 * M; // 3 mm of bleed and 6 mm of safe field
 const driverApp = theme.apps.driver;

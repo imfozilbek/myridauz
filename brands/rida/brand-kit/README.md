@@ -27,7 +27,8 @@ FFMPEG=… CHROMIUM=… pnpm promo --preview 1.5,30,100
 Результат: `kit/promo/rida-promo-1080x1920.mp4`. Режим `--preview` сохраняет кадры PNG.
 
 Флаеры направлений 99 × 210 мм: `CHROMIUM=… pnpm flyer`. Пишет в `kit/print/` PDF
-из двух страниц для типографии (вылеты 3 мм) и PNG 300 dpi каждой стороны. Направления
+из двух страниц для типографии (вылеты 3 мм), PNG 300 dpi каждой стороны и листы для
+резки: A4 с 3 флаерами в ряд, A3 с 6 (3 × 2); страница 1 попутчик, страница 2 водитель. Направления
 и ссылки QR: `data/flyers.json`. Экраны шагов снимает стенд:
 `pnpm stand:check e2e/stand/flyer-shots.spec.ts --shots` пишет их в `data/flyer-screens/<направление>/`.
 
