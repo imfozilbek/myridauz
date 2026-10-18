@@ -21,6 +21,7 @@ export const AREAS = {
     'g60',
     'g69',
     'g69-driver',
+    'flyer-shots',
   ],
   requests: ['passenger-requests', 'requests-review', 'g64', 'g64-salon'],
   driver: [

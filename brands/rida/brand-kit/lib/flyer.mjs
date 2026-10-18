@@ -1,5 +1,7 @@
-// Two-sided flyer 99 x 210 mm for one direction (owner, 18.10.2026): the passenger side and the driver side.
-// 300 dpi with 3 mm of bleed on every edge: 105 x 216 mm. Texts are the approved ones of the landing (docs/60).
+// Two-sided flyer 99 x 210 mm for one direction (owner, 18.10.2026): the passenger side and the driver side,
+// each with three steps on the screens of its Mini App. 300 dpi with 3 mm of bleed: 105 x 216 mm.
+// Texts are the approved ones of the landing (docs/60), the QR poster and the story of drivers (docs/38).
+import fs from 'node:fs';
 import { encode } from 'uqr';
 import { text, markR, layout } from './text.mjs';
 import { C, COMBOS, svg } from './palette.mjs';
@@ -20,46 +22,70 @@ const SIDES = {
   driver: { band: driverApp.brandStrong, soft: driverApp.brandSoft, light: driverApp.brandMint, box: C.teal, boxInk: C.white, logo: COMBOS[4], center: COMBOS[3] },
 };
 const sum = (n) => `${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} soʻm`;
+// steps: the caption in two lines and where the window on the screen starts (the screen is 780 x 1560).
 const COPY = {
   passenger: {
     role: 'Yoʻlovchi', title: 'Safar toping', sub: 'Viloyatlararo birga safarlar',
-    facts: [['ShieldCheck', 'Tekshirilgan haydovchilar'], ['EyeOff', 'Raqamingiz yashirin'], ['Venus', 'Mashinada ayol bor'], ['Send', 'Telegram ichida']],
-    steps: [['Skanerlang'], ['Safarni tanlang'], ['Joy band qiling']],
+    steps: [[['Yoʻnalishni', 'tanlang'], 0], [['Safarni', 'tanlang'], 0], [['Joy band', 'qiling'], 200]],
+    facts: [['ShieldCheck', ['Tekshirilgan', 'haydovchilar']], ['EyeOff', ['Raqamingiz', 'yashirin']], ['Venus', ['Mashinada', 'ayol bor']], ['Send', ['Telegram', 'ichida']]],
   },
   driver: {
     role: 'Haydovchi', title: 'Haydovchimisiz?', sub: 'Safaringizga yoʻlovchi toping',
-    facts: [['Banknote', 'Yoʻl xarajatini birga koʻtaring'], ['Clock', 'Pitakda kutish shart emas'], ['Repeat', 'Qaytishda ham yoʻlovchi']],
-    box: ['Gift', `${sum(PROMO.amount * PROMO.grants)}gacha bonus`, 'Yangi haydovchilarga'],
-    steps: [['Safaringizni', 'eʼlon qiling'], ['Yoʻlovchilar', 'sizni topadi'], ['Tasdiqlang,', 'joylar toʻladi']],
+    steps: [[['Safaringizni', 'eʼlon qiling'], 0], [['Yoʻlovchilar', 'sizni topadi'], 0], [['Tasdiqlang,', 'joylar toʻladi'], 0]],
+    facts: [['Banknote', ['Yoʻl xarajatini', 'birga koʻtaring']], ['Clock', ['Pitakda kutish', 'shart emas']], ['Repeat', ['Qaytishda ham', 'yoʻlovchi']],
+      ['Gift', ['Yangi haydovchilarga', `${sum(PROMO.amount * PROMO.grants)}gacha bonus`], true]],
   },
 };
 
 function band(s, copy) {
   const pill = layout(copy.role, { weight: 600, size: 40 }).width + 64;
-  return `<rect width="${W}" height="700" fill="${s.band}"/>` + squircle(M, 112, 150, s.logo.bg) + markR({ cx: M + 75, cy: 187, h: 93, fill: s.logo.fg }) +
-    text(NAME, { x: M + 186, y: 214, fill: C.white, size: 110 }) + text('Manzil sari', { x: M + 190, y: 266, fill: s.light, weight: 600, size: 42 }) +
-    `<rect x="${W - M - pill}" y="148" width="${pill}" height="78" rx="39" fill="${C.white}"/>` +
-    text(copy.role, { x: W - M - pill / 2, y: 201, anchor: 'middle', fill: s.band, weight: 600, size: 40 }) +
-    text(copy.title, { x: M, y: 470, fill: C.white, size: 150, maxWidth: CW }) +
-    text(copy.sub, { x: M, y: 556, fill: s.light, weight: 600, size: 52, maxWidth: CW });
+  return `<rect width="${W}" height="600" fill="${s.band}"/>` + squircle(M, 100, 150, s.logo.bg) + markR({ cx: M + 75, cy: 175, h: 93, fill: s.logo.fg }) +
+    text(NAME, { x: M + 186, y: 202, fill: C.white, size: 110 }) + text('Manzil sari', { x: M + 190, y: 254, fill: s.light, weight: 600, size: 42 }) +
+    `<rect x="${W - M - pill}" y="136" width="${pill}" height="78" rx="39" fill="${C.white}"/>` +
+    text(copy.role, { x: W - M - pill / 2, y: 189, anchor: 'middle', fill: s.band, weight: 600, size: 40 }) +
+    text(copy.title, { x: M, y: 422, fill: C.white, size: 140, maxWidth: CW }) +
+    text(copy.sub, { x: M, y: 502, fill: s.light, weight: 600, size: 50, maxWidth: CW });
 }
 
 // The line of a route of the brand (docs/38): teal start, dashes, amber finish; both ways.
 function route(from, to) {
-  const x = M + 84, dashes = Array.from({ length: 4 }, (_, i) => `<rect x="${x - 6}" y="${800 + i * 34}" width="12" height="22" rx="6" fill="${C.teal}"/>`).join('');
-  return `<rect x="${M}" y="628" width="${CW}" height="412" rx="40" fill="${C.white}" stroke="${C.divider}" stroke-width="6"/>` +
-    `<circle cx="${x}" cy="740" r="28" fill="${C.teal}"/>` + text(from, { x: M + 156, y: 770, fill: C.ink, size: 84, maxWidth: CW - 190 }) + dashes +
-    text('va orqaga', { x: M + 158, y: 872, fill: C.muted, weight: 600, size: 44 }) +
-    `<circle cx="${x}" cy="964" r="28" fill="${C.amber}"/>` + text(to, { x: M + 156, y: 994, fill: C.ink, size: 84, maxWidth: CW - 190 });
+  const y = 650, size = 56, toW = layout(to, { size }).width, a = M + 56, b = W - M - 56 - toW - 44;
+  const start = a + 40 + layout(from, { size }).width + 34, end = b - 34, n = Math.max(1, Math.floor((end - start) / 34));
+  const dashes = Array.from({ length: n }, (_, i) => `<rect x="${start + i * 34}" y="${y - 6}" width="22" height="12" rx="6" fill="${C.teal}"/>`).join('');
+  return `<rect x="${M}" y="560" width="${CW}" height="200" rx="40" fill="${C.white}" stroke="${C.divider}" stroke-width="6"/>` +
+    `<circle cx="${a}" cy="${y}" r="24" fill="${C.teal}"/>` + text(from, { x: a + 40, y: y + 20, fill: C.ink, size }) + dashes +
+    `<circle cx="${b}" cy="${y}" r="24" fill="${C.amber}"/>` + text(to, { x: b + 40, y: y + 20, fill: C.ink, size }) +
+    text('va orqaga', { x: W / 2, y: y + 76, anchor: 'middle', fill: C.muted, weight: 600, size: 36 });
 }
 
-const fact = (s, [name, label], y) => `<circle cx="${M + 46}" cy="${y}" r="46" fill="${s.soft}"/>` + icon(name, M + 46, y, 50, s.band, 2.25) +
-  text(label, { x: M + 124, y: y + 19, fill: C.ink, weight: 600, size: 52, maxWidth: CW - 124 });
+// Three screens of the Mini App of a side (e2e/stand/flyer-shots.spec.ts), each in a phone, the step under it.
+const SHOT = { width: 780, window: 1360 }, PHONE = { width: 316, bezel: 8, y: 810 };
+function steps(s, side, flyer) {
+  const inner = PHONE.width - 2 * PHONE.bezel, ih = Math.round(SHOT.window * inner / SHOT.width), h = ih + 2 * PHONE.bezel;
+  const gap = (CW - 3 * PHONE.width) / 2, y = PHONE.y;
+  return COPY[side].steps.map(([lines, top], i) => {
+    const x = M + i * (PHONE.width + gap), cx = x + PHONE.width / 2, id = `${side}-${i + 1}`;
+    const jpg = fs.readFileSync(new URL(`../data/flyer-screens/${flyer.id}/${id}.jpg`, import.meta.url)).toString('base64');
+    return `<clipPath id="clip-${id}"><rect x="${x + PHONE.bezel}" y="${y + PHONE.bezel}" width="${inner}" height="${ih}" rx="26"/></clipPath>` +
+      `<rect x="${x}" y="${y}" width="${PHONE.width}" height="${h}" rx="34" fill="${C.ink}"/>` +
+      `<g clip-path="url(#clip-${id})"><svg x="${x + PHONE.bezel}" y="${y + PHONE.bezel}" width="${inner}" height="${ih}" viewBox="0 ${top} ${SHOT.width} ${SHOT.window}">` +
+      `<image href="data:image/jpeg;base64,${jpg}" width="${SHOT.width}" height="1560"/></svg></g>` +
+      `<circle cx="${cx}" cy="${y + h + 56}" r="36" fill="${s.band}"/>` +
+      text(String(i + 1), { x: cx, y: y + h + 76, anchor: 'middle', fill: C.white, size: 56 }) +
+      lines.map((line, n) => text(line, { x: cx, y: y + h + 146 + n * 46, anchor: 'middle', fill: C.ink, weight: 600, size: 40, maxWidth: PHONE.width })).join('');
+  }).join('');
+}
 
-function bonus(s, [name, label, lead], y) {
-  return `<rect x="${M}" y="${y - 70}" width="${CW}" height="140" rx="32" fill="${s.box}"/>` + icon(name, M + 70, y, 60, s.boxInk, 2.25) +
-    text(lead, { x: M + 136, y: y - 14, fill: s.boxInk, weight: 600, size: 38, maxWidth: CW - 170 }) +
-    text(label, { x: M + 136, y: y + 44, fill: s.boxInk, size: 52, maxWidth: CW - 170 });
+// The facts of a side in a grid of two; a box of the other color stands out (the bonus of a driver).
+function facts(s, list) {
+  const w = (CW - 20) / 2, h = 110;
+  return list.map(([name, [first, second], box], i) => {
+    const x = M + (i % 2) * (w + 20), y = 1590 + Math.floor(i / 2) * (h + 20), ink = box ? s.boxInk : C.ink;
+    return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="28" fill="${box ? s.box : s.soft}"/>` +
+      `<circle cx="${x + 52}" cy="${y + h / 2}" r="32" fill="${box ? s.box : C.white}"/>` + icon(name, x + 52, y + h / 2, 40, box ? s.boxInk : s.band, 2.25) +
+      text(first, { x: x + 100, y: y + 48, fill: ink, weight: 600, size: box ? 30 : 36, maxWidth: w - 116 }) +
+      text(second, { x: x + 100, y: y + 92, fill: ink, weight: box ? 800 : 600, size: 36, maxWidth: w - 116 });
+  }).join('');
 }
 
 // The QR with the R tile in the middle: level H keeps it readable under the tile (docs/38).
@@ -78,25 +104,14 @@ function qr(url, x, y, size, s) {
     markR({ cx, cy, h: k * 1.24, fill: s.center.fg });
 }
 
-function steps(s, list, x, top, bottom) {
-  const gap = (bottom - top) / list.length;
-  return list.map((lines, i) => {
-    const cy = top + gap * (i + 0.5), first = cy + 17 - (lines.length - 1) * 30;
-    return `<circle cx="${x + 38}" cy="${cy}" r="38" fill="${s.band}"/>` + text(String(i + 1), { x: x + 38, y: cy + 21, anchor: 'middle', fill: C.white, size: 58 }) +
-      lines.map((line, n) => text(line, { x: x + 100, y: first + n * 60, fill: C.ink, weight: 600, size: 46, maxWidth: W - M - x - 100 })).join('');
-  }).join('');
-}
-
 // One side of the flyer of a direction: `side` is passenger or driver, `flyer` an entry of data/flyers.json.
 export function flyerSide(side, flyer) {
-  const s = SIDES[side], copy = COPY[side], top = 1110, step = 118;
-  const facts = copy.facts.map((f, i) => fact(s, f, top + i * step)).join('');
-  const box = copy.box ? bonus(s, copy.box, top + copy.facts.length * step + 30) : '';
-  const qrY = 1700, qrSize = 480;
-  return svg(W, H, `<rect width="${W}" height="${H}" fill="${C.white}"/>` + band(s, copy) + route(flyer.from, flyer.to) + facts + box +
-    text('Telefon kamerasi bilan skanerlang', { x: M, y: 1640, fill: C.muted, weight: 600, size: 44, maxWidth: CW }) +
-    qr(flyer[side], M, qrY, qrSize, s) + steps(s, copy.steps, M + qrSize + 48, qrY, qrY + qrSize) +
-    `<rect x="${M}" y="2290" width="120" height="14" rx="7" fill="${C.amber}"/>` +
-    text(SITE, { x: M + 150, y: 2320, fill: s.band, size: 64 }) +
-    text('Telegramda ochiladi. Ilova yuklab olish shart emas.', { x: M, y: 2410, fill: C.muted, weight: 600, size: 36, maxWidth: CW }));
+  const s = SIDES[side], copy = COPY[side], y = 1880, size = 460, x = M + size + 44;
+  const lines = (list, top, opts) => list.map((line, n) => text(line, { x, y: top + n * opts.gap, maxWidth: W - M - x, ...opts })).join('');
+  return svg(W, H, `<rect width="${W}" height="${H}" fill="${C.white}"/>` + band(s, copy) + route(flyer.from, flyer.to) +
+    steps(s, side, flyer) + facts(s, copy.facts) + qr(flyer[side], M, y, size, s) +
+    lines(['Telefon kamerasi', 'bilan skanerlang'], y + 64, { fill: C.ink, weight: 600, size: 44, gap: 56 }) +
+    `<rect x="${x}" y="${y + 200}" width="120" height="14" rx="7" fill="${C.amber}"/>` +
+    text(SITE, { x, y: y + 290, fill: s.band, size: 62, maxWidth: W - M - x }) +
+    lines(['Telegramda ochiladi.', 'Ilova yuklab olish shart emas.'], y + 360, { fill: C.muted, weight: 600, size: 32, gap: 42 }));
 }
