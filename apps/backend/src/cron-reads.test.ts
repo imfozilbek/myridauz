@@ -9,7 +9,7 @@ const HOUR = 60 * 60 * 1000;
 // 00:05 UTC: the first tick of the daily hour runs every job but the looks of half past (docs/180).
 const NOW = Date.UTC(2026, 9, 5, 0, 5);
 const HALF_PAST = NOW + 30 * 60_000;
-const TICK_JOBS = 13;
+const TICK_JOBS = 14;
 const ago = (hours: number) => NOW - hours * HOUR;
 
 // One row for each job to work on, so that every read of every job runs (G56).
@@ -26,11 +26,13 @@ INSERT INTO trips (id, driver_id, from_id, to_id, depart_at, ends_at, km, seats,
   VALUES ('t1', 1, '1726', '1718', ${ago(6)}, ${ago(1)}, 300, 4, 100000, 'active', 0),
   ('t2', 1, '1726', '1718', ${ago(40)}, ${ago(35)}, 300, 4, 100000, 'completed', 0),
   ('t3', 1, '1726', '1718', ${ago(-3)}, ${ago(-8)}, 300, 4, 100000, 'active', 0),
-  ('t4', 2, '1726', '1718', ${ago(1.5)}, ${ago(-5)}, 300, 4, 100000, 'active', 0);
+  ('t4', 2, '1726', '1718', ${ago(1.5)}, ${ago(-5)}, 300, 4, 100000, 'active', 0),
+  ('t5', 3, '1726', '1718', ${ago(6)}, ${ago(-1)}, 300, 4, 100000, 'active', 0);
 INSERT INTO bookings (id, trip_id, passenger_id, seats, price, commission, status, expires_at, created_at, updated_at)
   VALUES ('b1', 't1', 2, 1, 100000, 10000, 'confirmed', 0, 0, 0),
   ('b2', 't2', 2, 1, 100000, 10000, 'completed', 0, 0, 0),
-  ('b3', 't3', 2, 1, 100000, 10000, 'requested', ${ago(1)}, 0, 0);
+  ('b3', 't3', 2, 1, 100000, 10000, 'requested', ${ago(1)}, 0, 0),
+  ('b5', 't5', 1, 1, 100000, 10000, 'confirmed', 0, 0, 0);
 INSERT INTO rating_asks (booking_id, rater_id, ratee_id, asked_at) VALUES ('b2', 2, 1, ${ago(30)});
 INSERT INTO channel_posts (trip_id, channel, message_id, depart_at) VALUES ('t1', '@yol', 5, ${ago(6)});
 INSERT INTO route_subscriptions (id, user_id, kind, from_id, to_id, expires_at, pending, created_at)
@@ -57,7 +59,7 @@ describe('the reads of the Cron', () => {
     await db.exec(SEED);
     const env = { ...testEnv, DB: db } as unknown as Bindings;
     const jobs = [...cronJobs(env, NOW), ...cronJobs(env, HALF_PAST).slice(TICK_JOBS)];
-    expect(jobs).toHaveLength(27);
+    expect(jobs).toHaveLength(28);
     expect(await runJobs(jobs)).toEqual([]);
     expect(fullScans(db)).toEqual([]);
   });
@@ -65,9 +67,9 @@ describe('the reads of the Cron', () => {
   it('runs the rare jobs once an hour and once a day', () => {
     const names = (at: number) => cronJobs({ ...testEnv } as unknown as Bindings, at).map(([name]) => name);
     expect(names(NOW + 15 * 60_000)).toHaveLength(TICK_JOBS);
-    expect(names(NOW + 5 * HOUR)).toEqual([...names(NOW + 15 * 60_000), ...names(NOW).slice(TICK_JOBS, 22)]);
+    expect(names(NOW + 5 * HOUR)).toEqual([...names(NOW + 15 * 60_000), ...names(NOW).slice(TICK_JOBS, 23)]);
     expect(names(HALF_PAST)).toEqual([...names(NOW + 15 * 60_000), 'keepTelegramLooks']);
-    expect(names(NOW).slice(22)).toEqual([
+    expect(names(NOW).slice(23)).toEqual([
       'grantMissedBonuses',
       'warnBonusEnd',
       'purgeSupport',
@@ -75,6 +77,6 @@ describe('the reads of the Cron', () => {
     ]);
     // The stand runs the Cron by hand at any minute: every job runs.
     const stand = { ...testEnv, CRON_TIERS: 'off' } as unknown as Bindings;
-    expect(cronJobs(stand, NOW + 15 * 60_000)).toHaveLength(27);
+    expect(cronJobs(stand, NOW + 15 * 60_000)).toHaveLength(28);
   });
 });

@@ -4,6 +4,7 @@ import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { canComplain } from '../feedback/complain-cell';
+import { CoRiders } from './co-riders';
 import { Icon, type IconName } from '../icons';
 import { Screen } from '../screen/screen';
 import { ActionFailure } from '../states/action-failure';
@@ -78,6 +79,7 @@ export function ConfirmedBooking(props: Props) {
         )}
         <TripCard booking={booking} onPoint={(point) => openExternal(mapUrl(point))} />
       </div>
+      {booking.status === 'confirmed' ? <CoRiders bookingId={booking.id} /> : null}
       {booking.status === 'completed' ? (
         <>
           <DoneTools booking={booking} onOpen={onOpen} />

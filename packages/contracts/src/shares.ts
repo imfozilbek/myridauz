@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { VIA_PATTERN } from './arrival';
 import { CAR_COLORS } from './drivers';
 import { locationIdSchema } from './locations';
+import { NO_RATING, ratingSchema } from './ratings';
 import { DRIVER_BOOKINGS_PATH, PASSENGER_BOOKINGS_PATH } from './bookings';
 
 // "Yaqinlarimga yuborish" (docs/43): close people follow the trip by a link, without registration.
@@ -54,8 +55,13 @@ export const sharedTripSchema = z.object({
   // The time at the booking: a moved trip shows «Vaqt oʻzgardi» (docs/124 И).
   firstDepartAt: z.number().int(),
   km: z.number().int(),
+  // The face and the stars of the driver (G46): the public id opens the photo, never the Telegram ID;
+  // an older server sends neither.
   driver: z.object({
+    id: z.string().default(''),
     firstName: z.string(),
+    hasAvatar: z.boolean().default(false),
+    rating: ratingSchema.default(NO_RATING),
     car: z.object({ make: z.string(), model: z.string(), color: z.enum(CAR_COLORS) }),
   }),
   plate: z.string().nullable(),

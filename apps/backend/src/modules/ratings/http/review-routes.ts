@@ -30,10 +30,12 @@ export const reviewRoutes = (deps: (env: Bindings) => RatingsDeps) =>
       const result = await rate(deps(context.env), context.get('session').user.id, input.data);
       return result === 'ok' ? context.body(null, 204) : fail(result);
     })
+    // ?before=<ms> brings the next page (G46).
     .get('/users/:id/reviews', async (context) => {
       const userId = await deps(context.env).people.idOf(context.req.param('id'));
       if (userId === undefined) return fail('reviews.not_found');
-      return context.json(await reviewsOf(deps(context.env), userId));
+      const before = Number(context.req.query('before') ?? '') || Number.MAX_SAFE_INTEGER;
+      return context.json(await reviewsOf(deps(context.env), userId, before));
     })
     // «Sharhlar» of the team (G45): ?before=<ms> brings the next page.
     .get(ADMIN_REVIEWS_PATH, async (context) => {

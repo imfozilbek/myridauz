@@ -104,6 +104,7 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
     team: createTeamClient(signed),
     waitlist: createWaitlistClient(signed),
     growth: createGrowthClient(signed),
+    users,
   };
   const locations = createLocationsClient({ baseUrl, fetch });
   // The live channel is quiet: its failures never reach the error analytics (docs/64).

@@ -11,7 +11,7 @@ import { DriverRow } from '../trip/driver-row';
 const FACE = 44;
 
 export function FollowDriver({ trip }: { readonly trip: SharedTrip }) {
-  const { t, formatTime } = useI18n();
+  const { t, formatTime, formatRating } = useI18n();
   const directory = usePlaces();
   const { driver } = trip;
   const name = (id: string) => directory.find(id)?.name ?? '';
@@ -35,9 +35,14 @@ export function FollowDriver({ trip }: { readonly trip: SharedTrip }) {
   return (
     <div className="follow-card">
       <DriverRow
-        driver={{ id: '', firstName: driver.firstName, hasAvatar: false }}
+        driver={driver}
         car={driver.car}
-        note={`· ${t('share.follow.role')}`}
+        note={
+          // «★ 4,9 · haydovchi»: the stars of the driver too (G46, docs/43).
+          driver.rating.average === null
+            ? `· ${t('share.follow.role')}`
+            : `${t('find.stars', { rating: formatRating(driver.rating.average) })} · ${t('share.follow.role')}`
+        }
         plate={trip.plate}
         photo={FACE}
       />

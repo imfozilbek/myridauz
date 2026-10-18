@@ -15,7 +15,7 @@ afterEach(() => {
 });
 
 const review = { id: 'r1', authorName: 'Madina', stars: 5, tags: [], text: 'Juda yaxshi', at: NOW };
-const reviews = { rating: standing.rating, reviews: [review] };
+const reviews = { rating: standing.rating, reviews: [review], more: false };
 
 describe('«Profil» of a driver and how the other side sees the person (G65)', () => {
   it('shows the car with its plate; a tap changes it', () => {
@@ -58,8 +58,8 @@ describe('«Profil» of a driver and how the other side sees the person (G65)', 
     fireEvent.click(screen.getByText('Dilnoza'));
     fireEvent.click(await screen.findByText('Baholarim'));
     expect(await screen.findByText('Madina')).toBeTruthy();
-    expect(screen.getByText('Juda yaxshi')).toBeTruthy();
-    reviewsOf.mockResolvedValueOnce({ rating: { average: null, count: 0 }, reviews: [] });
+    expect(screen.getByText(/ · Juda yaxshi$/u)).toBeTruthy();
+    reviewsOf.mockResolvedValueOnce({ rating: { average: null, count: 0 }, reviews: [], more: false });
     fireEvent.click(screen.getByText('Orqaga'));
     fireEvent.click(await screen.findByText('Baholarim'));
     expect(await screen.findByText('Hali izoh yoʻq')).toBeTruthy();

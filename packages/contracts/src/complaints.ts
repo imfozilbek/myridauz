@@ -47,10 +47,13 @@ export const complaintReasonsSchema = z
   .min(1)
   .transform((picked) => COMPLAINT_REASONS.filter((reason) => picked.includes(reason)));
 
+// about: another passenger of the same trip (docs/111 Q4, G46); without it, the other side of the
+// booking.
 export const complaintInputSchema = z.object({
   bookingId: z.string().min(1).max(64),
   reasons: complaintReasonsSchema,
   comment: z.string().trim().max(COMPLAINT_COMMENT_MAX).default(''),
+  about: personIdSchema.optional(),
 });
 export type ComplaintInput = z.input<typeof complaintInputSchema>;
 

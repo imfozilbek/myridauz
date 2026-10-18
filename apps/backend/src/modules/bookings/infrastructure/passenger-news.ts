@@ -5,6 +5,7 @@ import type { Card, Ring } from '../../notifications';
 import type { Places } from '../../../shared/places/end-names';
 import { bold, escapeHtml } from '../../../shared/telegram/html';
 import { passengerTripCard } from '../../../shared/telegram/card-keys';
+import { arrivedButtons } from './arrived-buttons';
 import { chatRingButton, type ChatRing } from './chat-ring-button';
 import { passengerCard } from './passenger-card';
 
@@ -22,6 +23,8 @@ type PassengerRing =
   | 'departed'
   | 'driverCame'
   | 'noShow'
+  // An hour after the arrival without «Yetib keldim» (G46, docs/43): answered right in the bot.
+  | 'arrivedAsk'
   | ChatRing;
 
 // The trip starts now or a call rings: these ring at night too (docs/122 rule 3).
@@ -85,7 +88,9 @@ export const passengerNews =
             text: ringText(booking, ring),
             card: passengerTripCard(booking.id),
             quiet,
-            ...chatRingButton(brand, 'passenger', booking, ring),
+            ...(ring === 'arrivedAsk'
+              ? arrivedButtons(booking.id)
+              : chatRingButton(brand, 'passenger', booking, ring)),
           },
         ]
       : [];

@@ -8,6 +8,12 @@ export const POINTS_KEEP_DAYS = 30;
 
 // The end of a trip: the arrival and two hours more; the deadlines after the trip count from it.
 export const tripEndsAt = (departAt: number, km: number) => arrivalAt(departAt, km) + CLOSES_AFTER_MS;
+// «Yetib keldingizmi?» an hour after the arrival without «Yetib keldim» (docs/43, docs/129): the
+// sheet of the main screen and the passenger bot (G46).
+const ASK_ARRIVED_AFTER_MS = HOUR_MS;
+export const arrivedAskAt = (departAt: number, km: number) => arrivalAt(departAt, km) + ASK_ARRIVED_AFTER_MS;
+// The question comes this long before the end of the trip: the trips that end in a window ask.
+export const ARRIVED_ASK_BEFORE_END_MS = CLOSES_AFTER_MS - ASK_ARRIVED_AFTER_MS;
 
 // The deadlines after a trip in the brand config, with the owner's values (docs/128 §4): the chat and
 // the call stay afterTripHours from the arrival, then read only (a forgotten thing and «rahmat», not a

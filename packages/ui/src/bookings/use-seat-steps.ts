@@ -48,9 +48,11 @@ export function useSeatSteps(booking: Booking, onTold: (booking: Booking) => voi
       fail(caught);
     }
   };
-  const step = () =>
+  // «Ha, yetib keldim» to «Yetib keldingizmi?» also closes the link of close people (G46, docs/43).
+  const step = (closeLink: boolean) =>
     run(async () => {
       onTold(await chat.arrived(booking.id));
+      if (closeLink) await chat.stopSharing(booking.id);
       track({ name: 'arrived', screen: 'bookings.passenger' });
     }, 'told');
   const next = passengerStep(booking, Date.now(), meetMinutes);
@@ -58,7 +60,8 @@ export function useSeatSteps(booking: Booking, onTold: (booking: Booking) => voi
     failure,
     note,
     next,
-    step: () => (next ? void step() : undefined),
+    step: () => (next ? void step(false) : undefined),
+    answer: () => (next ? void step(true) : undefined),
     share: () => void run(() => shareTrip(booking.id), 'told'),
     stop: () => void run(() => chat.stopSharing(booking.id), 'stopped'),
   };

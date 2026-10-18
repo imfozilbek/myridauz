@@ -9,6 +9,7 @@ import {
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import { answer, confirm, driverBookings, teamTripBookings } from '../application/answer';
+import { coRiders } from '../application/co-riders';
 import type { BookingsDeps } from '../application/ports';
 import { markProgress } from '../application/progress';
 import { cancelByPassenger, passengerBookings, requestBooking } from '../application/request';
@@ -37,57 +38,73 @@ const fail = failWith(STATUS);
 const STEPS = ['came', 'arrived'] as const;
 
 export function bookingRoutes(deps: (env: Bindings) => BookingsDeps) {
-  return new Hono<AppEnv>()
-    .post(`${TRIPS_PATH}/${ONE}/bookings`, async (context) => {
-      const input = bookingInputSchema.safeParse(await context.req.json().catch(() => null));
-      if (!input.success) return fail(context, 'bookings.invalid_input');
-      const passengerId = context.get('session').user.id;
-      const result = await requestBooking(
-        deps(context.env),
-        passengerId,
-        context.req.param('id'),
-        input.data,
-      );
-      return result.ok ? context.json(result.value, 201) : fail(context, result.error);
-    })
-    .get(PASSENGER_BOOKINGS_PATH, async (context) => {
-      const passengerId = context.get('session').user.id;
-      const [bookings, unread] = await Promise.all([
-        passengerBookings(deps(context.env), passengerId),
-        unreadOf(context.env, passengerId),
-      ]);
-      // The messages of the driver the passenger has not read yet: the plate «1 xabar» (G53).
-      return context.json({
-        bookings: bookings.map((booking) => ({ ...booking, unread: unread.get(booking.chatKey) ?? 0 })),
-      });
-    })
-    .post(`${PASSENGER_BOOKINGS_PATH}/${ONE}/cancel`, async (context) => {
-      const passengerId = context.get('session').user.id;
-      const result = await cancelByPassenger(deps(context.env), passengerId, context.req.param('id'));
-      return result.ok ? context.json(result.value) : fail(context, result.error);
-    })
-    .post(`${PASSENGER_BOOKINGS_PATH}/${ONE}/:step{came|arrived}`, async (context) => {
-      const step = STEPS.find((each) => each === context.req.param('step')) ?? 'arrived';
-      const passengerId = context.get('session').user.id;
-      const result = await markProgress(deps(context.env), passengerId, context.req.param('id'), step);
-      return result.ok ? context.json(result.value) : fail(context, result.error);
-    })
-    .get(DRIVER_BOOKINGS_PATH, async (context) =>
-      context.json({ bookings: await driverBookings(deps(context.env), context.get('session').user.id) }),
-    )
-    .post(`${DRIVER_BOOKINGS_PATH}/${ONE}/:action{confirm|decline|cancel}`, async (context) => {
-      const driverId = context.get('session').user.id;
-      const id = context.req.param('id');
-      const action = context.req.param('action');
-      const result =
-        action === 'confirm'
-          ? await confirm(deps(context.env), driverId, id)
-          : await answer(deps(context.env), driverId, id, action === 'decline' ? 'decline' : 'driver_cancel');
-      return result.ok ? context.json(result.value) : fail(context, result.error);
-    })
-    .get(`${ADMIN_TRIPS_PATH}/${ONE}/bookings`, async (context) =>
-      context.get('session').isAdmin
-        ? context.json({ bookings: await teamTripBookings(deps(context.env), context.req.param('id')) })
-        : fail(context, 'auth.not_admin'),
-    );
+  return (
+    new Hono<AppEnv>()
+      .post(`${TRIPS_PATH}/${ONE}/bookings`, async (context) => {
+        const input = bookingInputSchema.safeParse(await context.req.json().catch(() => null));
+        if (!input.success) return fail(context, 'bookings.invalid_input');
+        const passengerId = context.get('session').user.id;
+        const result = await requestBooking(
+          deps(context.env),
+          passengerId,
+          context.req.param('id'),
+          input.data,
+        );
+        return result.ok ? context.json(result.value, 201) : fail(context, result.error);
+      })
+      .get(PASSENGER_BOOKINGS_PATH, async (context) => {
+        const passengerId = context.get('session').user.id;
+        const [bookings, unread] = await Promise.all([
+          passengerBookings(deps(context.env), passengerId),
+          unreadOf(context.env, passengerId),
+        ]);
+        // The messages of the driver the passenger has not read yet: the plate «1 xabar» (G53).
+        return context.json({
+          bookings: bookings.map((booking) => ({ ...booking, unread: unread.get(booking.chatKey) ?? 0 })),
+        });
+      })
+      .post(`${PASSENGER_BOOKINGS_PATH}/${ONE}/cancel`, async (context) => {
+        const passengerId = context.get('session').user.id;
+        const result = await cancelByPassenger(deps(context.env), passengerId, context.req.param('id'));
+        return result.ok ? context.json(result.value) : fail(context, result.error);
+      })
+      // The companions of a seat: their faces, whom a complaint can be about (G46, docs/05, docs/17).
+      .get(`${PASSENGER_BOOKINGS_PATH}/${ONE}/riders`, async (context) => {
+        const riders = await coRiders(
+          deps(context.env),
+          context.get('session').user.id,
+          context.req.param('id'),
+        );
+        return riders ? context.json({ riders }) : fail(context, 'bookings.not_found');
+      })
+      .post(`${PASSENGER_BOOKINGS_PATH}/${ONE}/:step{came|arrived}`, async (context) => {
+        const step = STEPS.find((each) => each === context.req.param('step')) ?? 'arrived';
+        const passengerId = context.get('session').user.id;
+        const result = await markProgress(deps(context.env), passengerId, context.req.param('id'), step);
+        return result.ok ? context.json(result.value) : fail(context, result.error);
+      })
+      .get(DRIVER_BOOKINGS_PATH, async (context) =>
+        context.json({ bookings: await driverBookings(deps(context.env), context.get('session').user.id) }),
+      )
+      .post(`${DRIVER_BOOKINGS_PATH}/${ONE}/:action{confirm|decline|cancel}`, async (context) => {
+        const driverId = context.get('session').user.id;
+        const id = context.req.param('id');
+        const action = context.req.param('action');
+        const result =
+          action === 'confirm'
+            ? await confirm(deps(context.env), driverId, id)
+            : await answer(
+                deps(context.env),
+                driverId,
+                id,
+                action === 'decline' ? 'decline' : 'driver_cancel',
+              );
+        return result.ok ? context.json(result.value) : fail(context, result.error);
+      })
+      .get(`${ADMIN_TRIPS_PATH}/${ONE}/bookings`, async (context) =>
+        context.get('session').isAdmin
+          ? context.json({ bookings: await teamTripBookings(deps(context.env), context.req.param('id')) })
+          : fail(context, 'auth.not_admin'),
+      )
+  );
 }

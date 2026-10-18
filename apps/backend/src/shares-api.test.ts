@@ -80,6 +80,9 @@ describe('"Yaqinlarimga yuborish" (docs/43)', () => {
     expect((await shared('x'.repeat(43))).status).toBe(404);
     const trip = await read<Record<string, unknown>>(shared(token));
     expect(trip).toMatchObject({ passengerName: 'Ali', plate: '01A123BC', status: 'waiting', via: null });
+    // The face and the stars of the driver, never the Telegram ID (G46, docs/43, docs/65 A3).
+    expect(trip.driver).toMatchObject({ id: expect.stringMatching(/^[0-9a-f]+$/u), hasAvatar: true });
+    expect(trip.driver).toMatchObject({ rating: { average: null, count: 0 } });
     // Close people see where the passenger boards and gets off (the owner, docs/111 Q1).
     expect(trip).toMatchObject({ meetingPoint: { lat: 41.292 }, dropoffPoint: { lat: 39.6547 } });
     for (const id of CLOSE.slice(0, 5))

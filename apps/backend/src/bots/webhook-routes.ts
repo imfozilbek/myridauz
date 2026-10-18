@@ -7,6 +7,7 @@ import { botToken } from '../shared/telegram/bot-config';
 import type { Fetch } from '../shared/telegram/telegram-api';
 import { fromTelegram } from '../shared/telegram/webhook-secret';
 import { onAdminCallback } from './admin-callbacks';
+import { isArrivedButton, onArrivedCallback } from './arrived-callbacks';
 import { isAskButton, onAskCallback } from './ask-callbacks';
 import { isNewsOffButton, onNewsOffCallback } from './news-callbacks';
 import { onAdminMessage } from './admin-messages';
@@ -14,6 +15,7 @@ import { onRatingCallback } from './rating-callbacks';
 import { onSupportMessage, SUPPORT_BOT, toSupportBot } from './support-bot';
 import type { BotContext } from './bot-context';
 import { botEventOf } from './bot-events';
+import { noteBotMember } from './bot-member';
 import { DOCUMENTS_COMMAND, documentsReply } from './documents-reply';
 import { isBotRole, type BotRole } from './bot-roles';
 import { noRepliesReply } from './no-replies';
@@ -42,6 +44,7 @@ export function webhookRoutes(fetch: Fetch) {
     if (event) recordServerEvent(context.env, event);
     const bot: BotContext = { env: context.env, brand: brandOf(context.env), fetch };
     try {
+      if (role !== SUPPORT_BOT) await noteBotMember(context.env, role, update.data);
       return context.json(await answer(bot, role, update.data));
     } catch (error) {
       // A broken step still answers 200: a retry would repeat a forward to the team (G42).
@@ -62,6 +65,7 @@ async function answer(bot: BotContext, role: BotRole | typeof SUPPORT_BOT, data:
   if (query) {
     if (role === 'admin') return onAdminCallback(bot, query);
     if (isNewsOffButton(query.data)) return onNewsOffCallback(bot, role, query);
+    if (role === 'passenger' && isArrivedButton(query.data)) return onArrivedCallback(bot, query);
     return role === 'driver' && isAskButton(query.data)
       ? onAskCallback(bot, query)
       : onRatingCallback(bot, role, query);

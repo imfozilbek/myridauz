@@ -1,5 +1,13 @@
 import type { BrandConfig } from '@platform/brands';
-import { REQUEST_LINK, SHEET_LINK, tashkentDayStart, type Offer } from '@platform/contracts';
+import {
+  FIND_LINK,
+  REQUEST_LINK,
+  requestsLinkValue,
+  SHEET_LINK,
+  tashkentDate,
+  tashkentDayStart,
+  type Offer,
+} from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Card, Ring } from '../../notifications';
 import { endNames, type Places } from '../../../shared/places/end-names';
@@ -72,6 +80,31 @@ export const firstOfferRing = (
   markup: {
     // The main screen with the sheet of the offer: «Qabul qilish» in one tap (G68, docs/122).
     inline_keyboard: [[appButton(brand, 'passenger', t('bot.open'), { name: SHEET_LINK, id: offer.id })]],
+  },
+  card: passengerRequestCard(request.id),
+  quiet,
+});
+
+// A request whose day is over without a driver rings under its card with the trips of the same route
+// from today (G46, docs/77 P64): the person does not stay waiting for nothing.
+export const expiredRing = (
+  brand: BrandConfig,
+  request: RequestFacts,
+  now: number,
+  quiet: boolean,
+): Ring => ({
+  bot: 'passenger',
+  chatId: request.passengerId,
+  text: t('bot.ring.requestExpired'),
+  markup: {
+    inline_keyboard: [
+      [
+        appButton(brand, 'passenger', t('bot.findOther'), {
+          name: FIND_LINK,
+          id: requestsLinkValue(request.from, request.to, tashkentDate(now)),
+        }),
+      ],
+    ],
   },
   card: passengerRequestCard(request.id),
   quiet,

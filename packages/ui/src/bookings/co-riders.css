@@ -1,0 +1,26 @@
+/* «Hamrohlaringiz» under the trip card of a seat (G46, docs/05): the rows of the driver card. */
+.co-riders {
+  padding: 4px 0;
+}
+
+.co-riders-title {
+  margin: 0;
+  padding: 8px 14px 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--reg-muted);
+}
+
+.co-rider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+}
+
+.co-rider-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 15px;
+  font-weight: 600;
+}

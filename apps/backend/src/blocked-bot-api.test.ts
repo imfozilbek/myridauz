@@ -1,6 +1,7 @@
 import { afterAll, describe, expect, it, vi } from 'vitest';
+import { app } from './app';
 import { approvedDriver, json, read } from './bookings-test-api';
-import { call, doorBooking, registerUser } from './test-api';
+import { call, doorBooking, registerUser, testEnv } from './test-api';
 
 const DRIVER = 97;
 const PASSENGER = 98;
@@ -8,6 +9,8 @@ const PASSENGER = 98;
 const BLOCKED = { ok: false, error_code: 403, description: 'Forbidden: bot was blocked by the user' };
 const sent: number[] = [];
 let refused = 0;
+let bookingId = '';
+let tripId = '';
 vi.stubGlobal('fetch', async (_input: string, init?: RequestInit) => {
   const body = typeof init?.body === 'string' ? (JSON.parse(init.body) as { chat_id?: number }) : {};
   if (body.chat_id === PASSENGER) {
@@ -44,6 +47,8 @@ describe('a person who blocked the bot', () => {
     const booked = await call(`/trips/${trip.id}/bookings`, PASSENGER, json(doorBooking(1)));
     expect(booked.status).toBe(201);
     const booking = await read<{ id: string }>(Promise.resolve(booked));
+    bookingId = booking.id;
+    tripId = trip.id;
     expect(sent).toContain(DRIVER);
     const confirmed = await call(`/driver/bookings/${booking.id}/confirm`, DRIVER, {
       method: 'POST',
@@ -57,4 +62,44 @@ describe('a person who blocked the bot', () => {
     );
     expect(mine.bookings.find((item) => item.id === booking.id)?.status).toBe('confirmed');
   });
+
+  // G46 (docs/191): after the first 403 the bot is quiet to her until she comes back with /start.
+  it('sends her nothing more until /start, then talks to her again', async () => {
+    refused = 0;
+    expect((await call(`/passenger/bookings/${bookingId}/cancel`, PASSENGER, json({}))).status).toBe(200);
+    expect(refused).toBe(0);
+    await bot({
+      message: { message_id: 1, text: '/start', chat: { id: PASSENGER }, from: { id: PASSENGER } },
+    });
+    const again = await call(`/trips/${tripId}/bookings`, PASSENGER, json(doorBooking(1)));
+    const booking = await read<{ id: string }>(Promise.resolve(again));
+    await call(`/driver/bookings/${booking.id}/confirm`, DRIVER, { method: 'POST', app: 'driver' });
+    expect(refused).toBeGreaterThan(0);
+  });
+
+  it('is quiet to a person Telegram says blocked the bot, before any message failed', async () => {
+    await bot({
+      my_chat_member: { chat: { id: PASSENGER, type: 'private' }, new_chat_member: { status: 'kicked' } },
+    });
+    refused = 0;
+    const mine = await read<{ bookings: { id: string; status: string }[] }>(
+      call('/passenger/bookings', PASSENGER),
+    );
+    const live = mine.bookings.find((item) => item.status === 'confirmed');
+    expect((await call(`/passenger/bookings/${live?.id}/cancel`, PASSENGER, json({}))).status).toBe(200);
+    expect(refused).toBe(0);
+  });
 });
+
+// An update of the passenger bot, as Telegram sends it.
+function bot(update: object) {
+  return app.request(
+    '/telegram/passenger',
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-telegram-bot-api-secret-token': 'hook' },
+      body: JSON.stringify(update),
+    },
+    { ...testEnv, TELEGRAM_WEBHOOK_SECRET: 'hook' },
+  );
+}

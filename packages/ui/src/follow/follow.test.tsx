@@ -1,10 +1,10 @@
 import { ApiError, type ChatClient } from '@platform/api-client';
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { TRIP_DAY, confirmed } from '../bookings/booking-test-kit';
 import { MyRequestsScreen } from '../market/my-requests-screen';
-import { renderMarket, tap } from '../market/market-test-kit';
-import { testClients } from '../test-shell';
+import { locations, renderMarket, tap } from '../market/market-test-kit';
+import { renderInShell, testClients } from '../test-shell';
 import { FollowScreen } from './follow-screen';
 
 afterEach(cleanup);
@@ -93,5 +93,32 @@ describe('the passenger shares the trip; in the car by the driver «Keldi» (doc
     expect(screen.queryByText('Ulashishni toʻxtatish')).toBeNull();
     await tap('Yaqinlarimga');
     expect(await screen.findByText('Ulashishni toʻxtatish')).toBeTruthy();
+  });
+
+  // G46 (docs/43): the face and the stars of the driver; close people get no signals of a trip that
+  // is not theirs, so the screen reads it again while it is open.
+  it('show the stars of the driver and the new status without a tap', async () => {
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] });
+    const sharedTrip = vi
+      .fn<ChatClient['sharedTrip']>()
+      .mockResolvedValueOnce(TRIP)
+      .mockResolvedValue({ ...TRIP, status: 'on_the_way' });
+    renderMarket(
+      <FollowScreen token={TOKEN} onJoin={() => undefined} />,
+      testClients({ chat: { sharedTrip } }),
+    );
+    expect(await screen.findByText(/★ 4,9/u)).toBeTruthy();
+    vi.advanceTimersByTime(60_000);
+    expect(await screen.findByText('Dilnoza yoʻlda')).toBeTruthy();
+    vi.useRealTimers();
+  });
+
+  // A close person has no account in Rida: the photo of the driver loads all the same (G46).
+  it('show the photo of the driver to a close person without an account', async () => {
+    // The photo itself is not needed: the call is.
+    const getAvatar = vi.fn(() => new Promise<Blob>(() => undefined));
+    const clients = testClients({ chat: { sharedTrip: async () => TRIP }, users: { getAvatar } });
+    renderInShell(<FollowScreen token={TOKEN} onJoin={() => undefined} />, false, true, locations, clients);
+    await waitFor(() => expect(getAvatar).toHaveBeenCalledWith('d1', false));
   });
 });

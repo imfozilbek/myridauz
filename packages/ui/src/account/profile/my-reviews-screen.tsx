@@ -21,7 +21,7 @@ export function MyReviewsScreen({
   const { value, failed, reload } = useLoad(() => feedback.reviewsOf(userId));
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
-  if (value.reviews.length > 0) return <ReviewsScreen reviews={value} onBack={onBack} />;
+  if (value.reviews.length > 0) return <ReviewsScreen userId={userId} reviews={value} onBack={onBack} />;
   return (
     <div className="market">
       <Screen onBack={onBack} />

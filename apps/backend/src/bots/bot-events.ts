@@ -1,13 +1,11 @@
 import type { ServerEvent } from '../modules/analytics';
 import type { BotName } from '../shared/telegram/bot-config';
-import type { BotCallback, BotMember, BotMessage } from './telegram-update';
+import { BLOCKED_STATUS, type BotCallback, type BotMember, type BotMessage } from './telegram-update';
 
 // A command or a button of a bot as an analytics event (G12, docs/29): only ids, never the text.
 const ID = /^[a-z][a-z0-9_]{0,31}$/;
 const OTHER = 'other';
 const idOf = (value: string) => (ID.test(value) ? value : OTHER);
-// The status of the bot in a private chat a person blocked it in (G87, docs/191).
-const BLOCKED = 'kicked';
 
 type Update = {
   readonly message?: BotMessage | undefined;
@@ -19,7 +17,7 @@ export function botEventOf(role: BotName, update: Update): ServerEvent | undefin
   const member = update.my_chat_member;
   // Blocked or back again: only the bot and the change, never who (G87).
   if (member?.chat.type === 'private') {
-    const code = member.new_chat_member.status === BLOCKED ? 'blocked' : 'unblocked';
+    const code = member.new_chat_member.status === BLOCKED_STATUS ? 'blocked' : 'unblocked';
     return { name: 'bot_member', source: role, code };
   }
   const data = update.callback_query?.data;

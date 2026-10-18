@@ -1,5 +1,7 @@
 import {
   adminTripCancelPath,
+  bookingRidersPath,
+  coRidersSchema,
   ADMIN_TRIPS_PATH,
   bookingSchema,
   bookingsSchema,
@@ -21,6 +23,7 @@ import {
   tripBookingsPath,
   type Booking,
   type BookingInput,
+  type CoRider,
   type DriverBookingAction,
   type DriverMeetStep,
   type Offer,
@@ -45,6 +48,9 @@ export function createBookingsClient(options: SignedOptions) {
     myBookings: async (): Promise<Booking[]> => bookings(await request(PASSENGER_BOOKINGS_PATH)),
     cancelMine: async (id: string): Promise<Booking> =>
       booking(await post(passengerBookingCancelPath(id), {})),
+    // The other passengers of the trip of a seat: their faces, whom a complaint can be about (G46).
+    riders: async (id: string): Promise<CoRider[]> =>
+      coRidersSchema.parse(await (await request(bookingRidersPath(id))).json()).riders,
     driverBookings: async (): Promise<Booking[]> => bookings(await request(DRIVER_BOOKINGS_PATH)),
     answer: async (id: string, action: DriverBookingAction): Promise<Booking> =>
       booking(await post(driverBookingPath(id, action), {})),

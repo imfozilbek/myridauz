@@ -89,4 +89,20 @@ describe('the rating of a person (docs/24)', () => {
     expect((await ratingsOf(deps, [DRIVER, 55])).get(55)).toEqual({ average: null, count: 0 });
     expect((await ratingsOf(deps, [DRIVER])).get(DRIVER)?.count).toBe(10);
   });
+
+  // «Barcha izohlar» shows every review (G46, docs/24): 20 at a time, the newest first, then older.
+  it('gives the reviews of a person page by page, the newest first', async () => {
+    const rides = Array.from({ length: 22 }, (_, n) => ride(n + 1));
+    const { deps, later } = setup(rides);
+    for (const one of rides) {
+      await rate(deps, one.passengerId, review(one.bookingId, 5));
+      later(1000);
+    }
+    later(8 * DAY_MS);
+    const first = await reviewsOf(deps, DRIVER);
+    expect([first.reviews.length, first.more, first.rating.count]).toEqual([20, true, 22]);
+    expect(first.reviews[0]?.authorName).toBe('P122');
+    const next = await reviewsOf(deps, DRIVER, first.reviews.at(-1)?.at);
+    expect([next.reviews.map((one) => one.authorName), next.more]).toEqual([['P102', 'P101'], false]);
+  });
 });

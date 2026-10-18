@@ -1,7 +1,6 @@
 import {
-  arrivalAt,
+  arrivedAskAt,
   DAY_MS,
-  HOUR_MS,
   meetingStartsAt,
   tripEndsAt,
   type Booking,
@@ -61,7 +60,6 @@ type Lists = {
   readonly rateDays: number;
 };
 
-const ASK_ARRIVED_AFTER_MS = HOUR_MS;
 const atPoint = (booking: Booking) =>
   booking.boardedAt === null && booking.metAt === null && booking.noShowAt === null;
 
@@ -85,7 +83,7 @@ function seatState(
   // Her own «Yetib keldim» ends the ride for her: the stars at once (G78 П6, docs/170).
   if (booking.arrivedAt !== null) return toRate();
   if (inCar(booking, now, meet)) {
-    const late = now >= arrivalAt(trip.departAt, trip.km) + ASK_ARRIVED_AFTER_MS;
+    const late = now >= arrivedAskAt(trip.departAt, trip.km);
     return late && !marks.stillOnWay.has(booking.id) ? of('arrivedAsk') : of('onRoad');
   }
   if (trip.firstDepartAt !== trip.departAt && !marks.agreed.has(booking.id) && now < trip.departAt)

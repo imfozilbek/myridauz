@@ -35,7 +35,13 @@ function bookingShared(deps: SharesDeps, booking: Booking, followers: number): S
     departAt: trip.departAt,
     firstDepartAt: trip.firstDepartAt,
     km: trip.km,
-    driver: { firstName: trip.driver.firstName, car: trip.driver.car },
+    driver: {
+      id: trip.driver.id,
+      firstName: trip.driver.firstName,
+      hasAvatar: trip.driver.hasAvatar,
+      rating: trip.driver.rating,
+      car: trip.driver.car,
+    },
     plate: booking.plate,
     // Where the passenger boards: the pitak or the own point at the door (docs/43, docs/70).
     meetingPoint: booking.pitak?.point ?? booking.pickup?.point ?? null,

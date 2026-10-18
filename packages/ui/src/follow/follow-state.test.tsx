@@ -14,7 +14,10 @@ const TRIP: SharedTrip = {
   departAt: Date.parse('2026-10-02T03:00:00Z'),
   firstDepartAt: Date.parse('2026-10-02T03:00:00Z'),
   km: 320,
-  driver: { firstName: 'Jasur', car: { make: 'Chevrolet', model: 'Cobalt', color: 'white' } },
+  driver: {
+    ...{ id: 'd1', firstName: 'Jasur', hasAvatar: false, rating: { average: null, count: 0 } },
+    car: { make: 'Chevrolet', model: 'Cobalt', color: 'white' },
+  },
   plate: '01A123BC',
   meetingPoint: { lat: 41.3, lng: 69.2 },
   dropoffPoint: { lat: 39.65, lng: 66.97 },
@@ -63,7 +66,7 @@ describe('the screen of the close people (G60, mockup g60/3)', () => {
     expect(await screen.findByText('Madina yetib keldi')).toBeTruthy();
     expect(screen.queryByText(/yetadi$/u)).toBeNull();
     expect(screen.getByText(/^Fargʻona shahri · \d\d:\d\d$/u)).toBeTruthy();
-    expect(screen.getByText(/^Kuzatish tugadi:/u)).toBeTruthy();
+    expect(screen.getByText(/^Kuzatish tugadi, havola yopildi\.$/u)).toBeTruthy();
     expect(screen.queryByText('Xabar olish')).toBeNull();
   });
 });

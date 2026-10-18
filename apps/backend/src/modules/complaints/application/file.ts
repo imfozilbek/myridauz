@@ -1,20 +1,30 @@
-import { complaintInputSchema, DAY_MS } from '@platform/contracts';
+import { complaintInputSchema, DAY_MS, type PersonId } from '@platform/contracts';
 import type { z } from 'zod';
 import { hiddenPeople } from '../domain/complaint';
-import type { ComplaintsDeps } from './ports';
+import type { ComplaintsDeps, Ride } from './ports';
 
 type Input = z.output<typeof complaintInputSchema>;
 
-// A complaint about the other side of one's own ride, once per ride (docs/17). High priority
-// goes to the team at once; the one complained about never learns who wrote it.
+// Whom a complaint is about: the other side of the ride, or another passenger of the same trip the
+// passenger named (docs/111 Q4, G46). undefined: nobody this author rode with.
+async function againstOf(deps: ComplaintsDeps, authorId: number, ride: Ride, about: PersonId | undefined) {
+  if (about === undefined) return authorId === ride.driverId ? ride.passengerId : ride.driverId;
+  if (authorId !== ride.passengerId) return undefined;
+  const [id, riders] = await Promise.all([deps.people.idOf(about), deps.coRiders(authorId, ride.bookingId)]);
+  return id !== undefined && riders?.includes(id) === true ? id : undefined;
+}
+
+// A complaint about someone of one's own ride, once per ride (docs/17). High priority goes to the
+// team at once; the one complained about never learns who wrote it.
 export async function fileComplaint(deps: ComplaintsDeps, authorId: number, input: Input) {
   const ride = await deps.ride(input.bookingId);
   if (!ride || (authorId !== ride.driverId && authorId !== ride.passengerId))
     return 'complaints.not_found' as const;
+  const againstId = await againstOf(deps, authorId, ride, input.about);
+  if (againstId === undefined) return 'complaints.not_found' as const;
   if (await deps.store.ofAuthor(authorId, input.bookingId)) return 'complaints.already' as const;
   // A week after the trip a complaint goes through «Yordam» (docs/129).
   if (ride.endsAt + deps.limits.days * DAY_MS <= deps.now()) return 'complaints.too_late' as const;
-  const againstId = authorId === ride.driverId ? ride.passengerId : ride.driverId;
   const complaint = {
     id: deps.newId(),
     authorId,

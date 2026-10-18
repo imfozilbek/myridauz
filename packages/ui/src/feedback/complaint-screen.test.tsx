@@ -45,4 +45,33 @@ describe('«Shikoyat» (G75, mockup g75/5 A, docs/17)', () => {
     expect(plaque.current).toBe('Shikoyatingiz yuborildi. Moderator koʻrib chiqadi.');
     showPlaque(null);
   });
+
+  // Q4 of docs/111 (G46): a passenger complains about the driver or about another passenger of the trip.
+  it('lets a passenger name another passenger of the trip', async () => {
+    const complain = vi.fn<FeedbackClient['complain']>(async () => undefined);
+    const riders = vi.fn(async () => [{ id: 'p2', firstName: 'Bobur', hasAvatar: false }]);
+    renderMarket(
+      <ComplaintScreen
+        bookingId="b1"
+        onBack={() => undefined}
+        onSent={() => undefined}
+        passenger={{ driverName: 'Jasur' }}
+      />,
+      testClients({ feedback: { complain }, bookings: { riders } }),
+    );
+    expect(await screen.findByText('Kimdan shikoyat qilasiz?')).toBeTruthy();
+    expect(screen.getByText('Jasur')).toBeTruthy();
+    await tap('Bobur');
+    await tap('Kelmadi');
+    await tap('Yuborish');
+    await waitFor(() =>
+      expect(complain).toHaveBeenCalledWith({
+        bookingId: 'b1',
+        reasons: ['no_show'],
+        comment: '',
+        about: 'p2',
+      }),
+    );
+    showPlaque(null);
+  });
 });

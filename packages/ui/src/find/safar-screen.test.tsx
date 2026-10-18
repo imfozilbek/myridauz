@@ -13,6 +13,7 @@ afterEach(cleanup);
 const REVIEWS = {
   rating: { average: 4.8, count: 37 },
   reviews: [{ id: 'r1', authorName: 'Dilnoza', stars: 5, tags: [], text: 'Yaxshi haydaydi', at: 1 }],
+  more: false,
 };
 const open = (
   shown: Trip,

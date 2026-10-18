@@ -66,7 +66,8 @@ export function SafarScreen({ trip, onBack, onBook, onOthers }: Props) {
       : trip.departAt <= Date.now()
         ? t('market.trip.departed')
         : null;
-  if (reviews) return <ReviewsScreen reviews={reviews} onBack={() => setReviews(null)} />;
+  if (reviews)
+    return <ReviewsScreen userId={trip.driver.id} reviews={reviews} onBack={() => setReviews(null)} />;
   const day = new Date(trip.departAt);
   return (
     <div className="find safar" style={brandVars(colors)}>

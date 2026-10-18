@@ -31,6 +31,8 @@ export const AREAS = {
     'g88',
     'g49-system',
     'flyer-shots',
+    'g46-trust',
+    'g46-screens',
   ],
   requests: ['passenger-requests', 'requests-review', 'g64', 'g64-salon'],
   driver: [

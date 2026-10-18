@@ -2,7 +2,7 @@ import { NO_RATING, type Rating, type UserReviews } from '@platform/contracts';
 import { isPublished, ratingOf } from '../domain/rating';
 import type { RatingsDeps } from './ports';
 
-// The newest published reviews of a person (docs/24).
+// The published reviews of a person a page at a time, the newest first (docs/24, G46).
 const SHOWN_REVIEWS = 20;
 
 async function published(deps: RatingsDeps, userIds: readonly number[]) {
@@ -11,15 +11,23 @@ async function published(deps: RatingsDeps, userIds: readonly number[]) {
   return about.filter((review) => isPublished(review, answered, now, deps.limits));
 }
 
-export async function reviewsOf(deps: RatingsDeps, userId: number): Promise<UserReviews> {
+// before: the moment of the last review shown, the next page starts after it.
+export async function reviewsOf(
+  deps: RatingsDeps,
+  userId: number,
+  before = Number.MAX_SAFE_INTEGER,
+): Promise<UserReviews> {
   const reviews = (await published(deps, [userId])).sort((a, b) => b.createdAt - a.createdAt);
-  const names = await deps.names([...new Set(reviews.map((review) => review.raterId))]);
+  const older = reviews.filter((review) => review.createdAt < before);
+  const page = older.slice(0, SHOWN_REVIEWS);
+  const names = await deps.names([...new Set(page.map((review) => review.raterId))]);
   return {
     rating: ratingOf(
       reviews.map((review) => review.stars),
       deps.limits,
     ),
-    reviews: reviews.slice(0, SHOWN_REVIEWS).map((review) => ({
+    more: older.length > page.length,
+    reviews: page.map((review) => ({
       id: review.id,
       authorName: names.get(review.raterId) ?? '',
       stars: review.stars,

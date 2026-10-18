@@ -15,7 +15,7 @@ describe('the reviews of a driver on a bad network (G43, docs/65 B3)', () => {
     const reviewsOf = vi
       .fn<FeedbackClient['reviewsOf']>()
       .mockRejectedValueOnce(new Error('offline'))
-      .mockResolvedValue({ rating: { average: 5, count: 1 }, reviews: [REVIEW] });
+      .mockResolvedValue({ rating: { average: 5, count: 1 }, reviews: [REVIEW], more: false });
     renderInShell(
       <PersonReviews userId={DRIVER} />,
       false,

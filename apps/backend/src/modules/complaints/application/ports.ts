@@ -53,6 +53,8 @@ export type ComplaintsDeps = {
   // A ride to complain about; the ride of a filed complaint, even after a later cancel.
   readonly ride: (bookingId: string) => Promise<Ride | undefined>;
   readonly filedRide: (bookingId: string) => Promise<Ride | undefined>;
+  // The other passengers of the trip of a seat: a passenger complains about one of them (docs/111 Q4).
+  readonly coRiders: (passengerId: number, bookingId: string) => Promise<readonly number[] | null>;
   readonly people: {
     find(
       id: number,
