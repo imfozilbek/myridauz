@@ -2,6 +2,7 @@ import type { BrandConfig } from '@platform/brands';
 import { botStartLink, channelVia, HOUR_MS } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../env';
+import { recordServerEvent } from '../modules/analytics';
 import { brandOf } from '../shared/brand/brand-of';
 import { askTelegram, sendFlags, type Fetch } from '../shared/telegram/telegram-api';
 import { welcomeCaption, welcomePicture } from './start-reply';
@@ -15,10 +16,12 @@ const ROLES = ['passenger', 'driver'] as const;
 type Role = (typeof ROLES)[number];
 // A few posts a tick: the Cron run shares its requests with the other jobs (docs/117).
 const PER_TICK = 12;
-// A channel that refused (the bot is not its admin yet) waits, so it does not hold the others.
+// A welcome without the number of its post waits, so it does not hold the others.
 const RETRY_MS = HOUR_MS;
-const REFUSED = /_4\d\d$/u;
-const TOO_MANY = '_429';
+// The status of Telegram in the error of askTelegram; none: Telegram never answered.
+const STATUS = /_(\d{3})$/u;
+const NO_ANSWER = 'lost';
+const TOO_MANY = '429';
 
 // Without sound: in a channel only the board of the day sounds (docs/122).
 const channelWelcome = (brand: BrandConfig, role: Role, chat: string) => ({
@@ -31,17 +34,16 @@ const channelWelcome = (brand: BrandConfig, role: Role, chat: string) => ({
   ...sendFlags({ quiet: true }),
 });
 
-// Table channel_welcomes (migration 0076). A welcome counts as posted once taken, so neither two ticks
-// nor a lost answer of Telegram post it twice: a double in a channel is seen by all, a lost one by
-// none. Only a post Telegram refused (4xx) is given back, and taken again after RETRY_MS.
-const DONE = 'SELECT chat, role FROM channel_welcomes WHERE posted_at IS NOT NULL OR tried_at > ?';
-const TAKE = `INSERT INTO channel_welcomes (chat, role, tried_at, posted_at) VALUES (?1, ?2, ?3, ?3)
-  ON CONFLICT (chat, role) DO UPDATE SET tried_at = excluded.tried_at, posted_at = excluded.posted_at
-  WHERE posted_at IS NULL AND tried_at <= ?4`;
-const KEEP = 'UPDATE channel_welcomes SET message_id = ? WHERE chat = ? AND role = ?';
-const GIVE_BACK = 'UPDATE channel_welcomes SET posted_at = NULL WHERE chat = ? AND role = ?';
+// Table channel_welcomes (migration 0076). A welcome is posted only when Telegram gave the number of
+// its post (owner, 18.10.2026): a refusal, a failure or no answer at all is tried again RETRY_MS
+// later. Taking the row first keeps two ticks from posting it at once.
+const DONE = 'SELECT chat, role FROM channel_welcomes WHERE message_id IS NOT NULL OR tried_at > ?';
+const TAKE = `INSERT INTO channel_welcomes (chat, role, tried_at) VALUES (?1, ?2, ?3)
+  ON CONFLICT (chat, role) DO UPDATE SET tried_at = excluded.tried_at
+  WHERE message_id IS NULL AND tried_at <= ?4`;
+const KEEP = 'UPDATE channel_welcomes SET message_id = ?, posted_at = ? WHERE chat = ? AND role = ?';
 
-// True when this tick took the welcome: a new one, or one refused RETRY_MS ago.
+// True when this tick took the welcome: a new one, or one without its post RETRY_MS later.
 async function take(db: D1Database, chat: string, role: Role, now: number): Promise<boolean> {
   const { meta } = await db
     .prepare(TAKE)
@@ -56,7 +58,7 @@ const welcomesOf = (brand: BrandConfig) =>
   );
 
 // Each welcome goes once, while the channel posts are on (docs/33). A post the owner deleted stays
-// deleted.
+// deleted. Every failure is a server error in «Statistika»; 429 or no answer ends the tick.
 export async function postChannelWelcomes(env: Bindings, fetch: Fetch, now: number): Promise<void> {
   const [db, token] = [env.DB, env.POSTER_BOT_TOKEN];
   if (!db || !token || env.CHANNEL_POSTS !== 'on') return;
@@ -74,14 +76,13 @@ export async function postChannelWelcomes(env: Bindings, fetch: Fetch, now: numb
       const post = await askTelegram<{ message_id: number }>(fetch, token, 'sendPhoto', welcome);
       await db
         .prepare(KEEP)
-        .bind(post?.message_id ?? null, chat, role)
+        .bind(post?.message_id ?? null, now, chat, role)
         .run();
     } catch (error) {
-      const message = String(error);
-      console.warn(JSON.stringify({ event: 'channel_welcome_failed', chat, role, message }));
-      if (!REFUSED.test(message)) continue;
-      await db.prepare(GIVE_BACK).bind(chat, role).run();
-      if (message.endsWith(TOO_MANY)) return;
+      const status = STATUS.exec(String(error))?.[1] ?? NO_ANSWER;
+      console.warn(JSON.stringify({ event: 'channel_welcome_failed', chat, role, status }));
+      recordServerEvent(env, { name: 'server_error', source: 'poster', code: `channel_welcome.${status}` });
+      if (status === TOO_MANY || status === NO_ANSWER) return;
     }
   }
 }
