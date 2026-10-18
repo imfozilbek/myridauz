@@ -1,6 +1,6 @@
 # 192. G87: новые тексты «Голоса людей» на согласие владельца
 
-> **Кратко:** все новые тексты G87 (`191`): шторка «Nega bekor qildingiz?» для людей и новые блоки «Statistika» и «Kanallar» для команды. Ключи в `packages/i18n/locales/uz-Latn/leave.json` (шторка), `stats.json` и `manage.json` (команда). Ждут согласия владельца и проверки носителем (`25`, `33`).
+> **Кратко:** все новые тексты G87 (`191`): шторка «Nega bekor qildingiz?» для людей и новые блоки «Statistika» и «Kanallar» для команды. Ключи в `packages/i18n/locales/uz-Latn/leave.json` (шторка), `stats.json` и `manage.json` (команда). Согласие владельца 18.10.2026; ждут проверки носителем (`25`).
 
 ## Шторка после отмены (видят люди)
 
@@ -51,3 +51,10 @@
 | Ilovadan foydalanish statistikasi: qaysi ekran ochildi, qaysi qadam bosildi. Unda ism, raqam va xabarlar boʻlmaydi. | Ilovadan foydalanish statistikasi: qaysi ekran ochildi, qaysi qadam bosildi, ilovaga nima orqali kirildi (bot xabari, menyu yoki havola). Unda ism, raqam va xabarlar boʻlmaydi. |
 | (нет) | Joy yoki safarni bekor qilganda, hisobni oʻchirganda tanlagan sababingiz, agar tanlasangiz. U ismsiz, faqat umumiy son sifatida hisoblanadi. |
 | (нет) | Botni bloklash va qayta ochish, kanalga kirish va chiqish, kanal postlaridagi reaksiyalar: faqat umumiy son. Kim ekani saqlanmaydi. |
+
+## Решение владельца
+
+| Дата | Что |
+|---|---|
+| 18.10.2026 | Тексты, вид блоков и политика 1.10: «да». В сессии infra на вопрос «напишите «да» на тексты, вид и политику 1.10, или пришлите правки»; в сессии myrida-deploy на вопрос «согласны с текстами docs/192, видом блоков … и политикой 1.10?» тоже «да» |
+| | Проверка носителем (`25`): ждёт |
