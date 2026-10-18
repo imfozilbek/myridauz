@@ -1,6 +1,7 @@
 import { loadBrand } from '@platform/brands';
 import { describe, expect, it } from 'vitest';
 import { heard, myChannels } from './application/my-channels';
+import { createMemoryChannelLife } from './infrastructure/channel-life';
 import { createMemoryChannelMembers } from './infrastructure/channel-members';
 
 const brand = loadBrand();
@@ -41,7 +42,8 @@ describe('«Kanallar» of a person (G80, docs/176)', () => {
 
   it('keeps a join only of a person of the brand in a channel of the brand (docs/30)', async () => {
     const members = createMemoryChannelMembers();
-    const deps = { members, chats: new Set([JOINED]), registered: async (id: number) => id === PERSON };
+    const registered = async (id: number) => id === PERSON;
+    const deps = { members, chats: new Set([JOINED]), registered, life: createMemoryChannelLife() };
     await heard(deps, { chat: JOINED, userId: 6, member: true, at: 1 });
     await heard(deps, { chat: '-100999', userId: PERSON, member: true, at: 1 });
     expect([...(await members.joined(6)), ...(await members.joined(PERSON))]).toEqual([]);

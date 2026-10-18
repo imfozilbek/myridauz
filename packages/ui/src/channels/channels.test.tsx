@@ -44,6 +44,7 @@ const kitob: Channel = {
   fixed: false,
 };
 
+const QUIET = { joined: 0, gone: 0, reactions: 0, topReactions: 0 };
 const health = (chat: string, subscribers: number | null, canPost: boolean | null, failed: number) => ({
   chat,
   title: chat,
@@ -52,6 +53,7 @@ const health = (chat: string, subscribers: number | null, canPost: boolean | nul
   checkedAt: 1,
   failed,
   arrivals: 12,
+  ...QUIET,
 });
 // The health of the channels from the Cron check (G75, docs/120).
 const HEALTH = { channels: [health(fixed.chat, 1200, true, 0), health('@ch_kitob', null, false, 2)] };

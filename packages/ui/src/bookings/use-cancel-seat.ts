@@ -3,6 +3,7 @@ import { useRef, useState } from 'react';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
+import { useAskLeaveReason } from '../leave/leave-reason';
 import { errorKey, isStale } from '../market/error-text';
 import { confirm, haptic } from '../telegram/feedback';
 
@@ -15,6 +16,7 @@ export function useCancelSeat(id: string, { onDone, onStale }: Done) {
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { bookings } = useApiClients();
+  const askReason = useAskLeaveReason();
   const [failure, setFailure] = useState<TranslationKey | null>(null);
   // One cancel at a time: a second tap while the first runs sends nothing (G52, docs/112).
   const running = useRef(false);
@@ -35,6 +37,8 @@ export function useCancelSeat(id: string, { onDone, onStale }: Done) {
       haptic.success();
       track({ name: 'booking_step', screen: 'bookings.passenger', step: 'cancelled' });
       onDone();
+      // Why, in one tap that may be skipped (G87, docs/191).
+      askReason('booking');
     } catch (caught) {
       haptic.error();
       setFailure(errorKey(caught));

@@ -4,6 +4,7 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { COMPLAIN_PARAM, RATE_PREFIX, rateFromBot, REVIEW_PARAM } from '../modules/ratings';
 import { isBlocked } from '../modules/users';
 import { botToken } from '../shared/telegram/bot-config';
+import { botMessageUrl } from '../shared/telegram/open-button';
 import { callTelegram } from '../shared/telegram/telegram-api';
 import { answerQuery as answer, type BotContext } from './bot-context';
 import type { BotCallback } from './telegram-update';
@@ -27,9 +28,17 @@ export async function onRatingCallback(
     return answer(query, t('bot.rating.late'));
   if (!query.message) return answer(query);
   const app = `https://${appHost(context.brand, role)}/`;
-  const review = [{ text: t('bot.rating.review'), web_app: { url: `${app}?${REVIEW_PARAM}=${bookingId}` } }];
+  const review = [
+    {
+      text: t('bot.rating.review'),
+      web_app: { url: botMessageUrl(`${app}?${REVIEW_PARAM}=${bookingId}`, REVIEW_PARAM) },
+    },
+  ];
   const complain = [
-    { text: t('bot.rating.complain'), web_app: { url: `${app}?${COMPLAIN_PARAM}=${bookingId}` } },
+    {
+      text: t('bot.rating.complain'),
+      web_app: { url: botMessageUrl(`${app}?${COMPLAIN_PARAM}=${bookingId}`, COMPLAIN_PARAM) },
+    },
   ];
   await callTelegram(context.fetch, token, 'editMessageText', {
     chat_id: query.message.chat.id,

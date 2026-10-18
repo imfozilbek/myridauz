@@ -1,5 +1,9 @@
 import { z } from 'zod';
 import { TRIP_STEPS } from './analytics';
+import { complaintReasonCountSchema, leaveCountSchema, openCountSchema, ratingsSummarySchema } from './voice';
+
+// G87: what people feel (docs/191) is a part of the dashboard.
+export * from './voice';
 
 // The dashboard of the admin Mini App (G12, docs/29): main numbers, funnels, errors.
 export const ADMIN_STATS_PATH = '/admin/stats';
@@ -96,6 +100,12 @@ export const botLoadSchema = z.object({
 });
 export type BotLoad = z.infer<typeof botLoadSchema>;
 
+// G87 (docs/191): the people who blocked a bot in the period and the ones who came back to it. A list
+// of its own: an open admin app of before G87 reads the new answer without it.
+export const BLOCK_BOTS = ['passenger', 'driver', 'admin', 'support', 'main'] as const;
+export const botBlockSchema = z.object({ bot: z.enum(BLOCK_BOTS), blocked: count, unblocked: count });
+export type BotBlock = z.infer<typeof botBlockSchema>;
+
 export const statsSchema = z.object({
   period: z.enum(STATS_PERIODS),
   numbers: z.record(z.enum(MAIN_NUMBERS), count),
@@ -107,6 +117,14 @@ export const statsSchema = z.object({
   errors: z.array(errorRowSchema),
   bots: z.array(botLoadSchema),
   queueOps: count,
+  // G87 (docs/191): the people who blocked the bots, the ratings and the reasons of the complaints from
+  // the database, the reasons of leaving and the ways the apps were opened from the events. A Worker
+  // rolled back to before G87 answers without them: empty then.
+  blocks: z.array(botBlockSchema).default([]),
+  ratings: ratingsSummarySchema.default({ count: 0, average: 0, low: 0, tags: [] }),
+  complaintReasons: z.array(complaintReasonCountSchema).default([]),
+  leaving: z.array(leaveCountSchema).default([]),
+  opens: z.array(openCountSchema).default([]),
   at: z.number().int(),
 });
 export type Stats = z.infer<typeof statsSchema>;

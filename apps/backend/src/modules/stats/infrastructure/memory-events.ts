@@ -70,6 +70,7 @@ export function memoryEvents(rows: readonly DataPoint[], now: () => number): Eve
         ({ blobs }) =>
           blobs[0] === 'bot_send' ||
           blobs[0] === 'queue_ops' ||
+          blobs[0] === 'bot_member' ||
           (blobs[0] === 'server_error' && blobs[5] === 'notification_dead'),
       );
       const rows = group(

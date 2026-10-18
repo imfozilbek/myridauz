@@ -6,6 +6,7 @@ import { useBalance } from '../bookings/use-balance';
 import { useTripStory } from '../comfort/use-trip-story';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
+import { useAskLeaveReason } from '../leave/leave-reason';
 import { useFailure } from '../states/use-failure';
 import { confirm, haptic } from '../telegram/feedback';
 import { canShareStory } from '../telegram/story';
@@ -30,6 +31,7 @@ type Options = {
 export function useOwnTripActions({ trip, stage, bookings, open, onChanged, onClosed }: Options) {
   const { t } = useI18n();
   const { market } = useApiClients();
+  const askReason = useAskLeaveReason();
   const balance = useBalance(bookings.some((booking) => booking.status === 'requested'));
   const { failure, fail, clear } = useFailure();
   // Why a tile cannot work now: it stays on the page and says so (docs/121).
@@ -84,6 +86,8 @@ export function useOwnTripActions({ trip, stage, bookings, open, onChanged, onCl
       await market.cancelTrip(trip.id);
       haptic.success();
       onClosed();
+      // Why, in one tap that may be skipped (G87, docs/191).
+      askReason('trip');
     } catch (caught) {
       fail(caught);
     } finally {

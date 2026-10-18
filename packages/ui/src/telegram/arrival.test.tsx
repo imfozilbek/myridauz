@@ -1,9 +1,13 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { launchArrival } from './arrival';
+import { launchArrival, sessionArrival } from './arrival';
 import { startParam } from './launch-param';
 
-const open = (start: string | null) =>
-  window.history.replaceState(null, '', start === null ? '/' : `/#tgWebAppStartParam=${start}`);
+const open = (start: string | null, query = '') =>
+  window.history.replaceState(
+    null,
+    '',
+    start === null ? `/${query}` : `/${query}#tgWebAppStartParam=${start}`,
+  );
 afterEach(() => open(null));
 
 describe('where the person came from (G55, docs/116)', () => {
@@ -26,5 +30,17 @@ describe('where the person came from (G55, docs/116)', () => {
     expect(launchArrival('browser')).toEqual({ source: 'direct', client: 'browser' });
     open('find_1703_1714');
     expect(launchArrival('android 9.6')).toEqual({ source: 'find', client: 'android 9.6' });
+  });
+
+  // G87 (docs/191): a button under a message of a bot is counted as such, the first touch stays.
+  it('counts an open from a message of a bot apart, and never as the first touch', () => {
+    open(null, '?booking=6f1c2f7e&via=bot-booking');
+    expect(sessionArrival('ios 9.6')).toEqual({ source: 'bot', via: 'bot-booking', client: 'ios 9.6' });
+    expect(launchArrival('ios 9.6')).toEqual({ source: 'direct', client: 'ios 9.6' });
+    // A startapp link wins: it is the way the person came; an odd mark is not a bot's.
+    open('trip_6f1c2f7e__ch-yol-samarqand', '?via=bot-booking');
+    expect(sessionArrival('ios 9.6').source).toBe('trip');
+    open(null, '?via=ad-insta1');
+    expect(sessionArrival('ios 9.6')).toEqual({ source: 'direct', client: 'ios 9.6' });
   });
 });

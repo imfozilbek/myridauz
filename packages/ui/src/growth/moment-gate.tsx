@@ -1,4 +1,4 @@
-import type { Moment, ShareMoment } from '@platform/contracts';
+import { BOT_VIA_PARAM, type Moment, type ShareMoment } from '@platform/contracts';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useApiClients } from '../context/api-clients';
 import { startParam } from '../telegram/launch-param';
@@ -27,11 +27,13 @@ function useDueMoment(enabled: boolean): Due | null | undefined {
 
 // Opened without a link: a moment not offered yet (the registration, the approval of a driver) once
 // per launch, over the page (docs/123). A link opens its own screen. No moment after a trip: the trip
-// ends with the stars (owner decision 15.10.2026).
+// ends with the stars (owner decision 15.10.2026). The mark of a bot button opens nothing (G87).
 let asked = false;
 const plainLaunch = () =>
   startParam() === null &&
-  [...new URLSearchParams(window.location.search).keys()].every((name) => name.startsWith('tgWebApp'));
+  [...new URLSearchParams(window.location.search).keys()].every(
+    (name) => name.startsWith('tgWebApp') || name === BOT_VIA_PARAM,
+  );
 
 export function MomentGate({
   enabled,

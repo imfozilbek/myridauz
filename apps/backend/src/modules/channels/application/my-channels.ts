@@ -1,5 +1,6 @@
 import type { BrandChannel } from '@platform/brands';
 import type { MyChannel } from '@platform/contracts';
+import type { ChannelLife } from './channel-life';
 import type { HealthRow } from './health';
 
 // One join or leave the bot of the posts heard in a channel (chat_member, docs/176).
@@ -41,6 +42,8 @@ export type HeardDeps = {
   // The chats of the channels of the brand.
   readonly chats: ReadonlySet<string>;
   readonly registered: (userId: number) => Promise<boolean>;
+  // The joins, leaves and reactions of every channel, counted without who (G87, docs/191).
+  readonly life: ChannelLife;
 };
 
 // Only the channels of the brand and only the people of the brand are kept: the id of anyone else

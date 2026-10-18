@@ -4,7 +4,7 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { isBlocked } from '../modules/users';
 import { mainStarted } from '../modules/waitlist';
 import { bold, escapeHtml, quote } from '../shared/telegram/html';
-import { appButton } from '../shared/telegram/open-button';
+import { startButton } from '../shared/telegram/open-button';
 import type { BotContext } from './bot-context';
 import { DOCUMENTS_COMMAND, documentsReply } from './documents-reply';
 import { noRepliesReply } from './no-replies';
@@ -36,7 +36,7 @@ function mainWelcome(brand: BrandConfig, chatId: number, name: string, open: boo
       ]
     : [hello, about('bot.main.openedAbout'), t('bot.main.findTrip'), t('bot.main.offerTrip')];
   const rows = open
-    ? [[appButton(brand, 'main', t('bot.main.join'))], [channel]]
+    ? [[startButton(brand, 'main', t('bot.main.join'))], [channel]]
     : [
         [trips(brand.bots.passenger, t('bot.main.find')), trips(brand.bots.driver, t('bot.main.publish'))],
         [channel],

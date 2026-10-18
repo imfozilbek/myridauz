@@ -6,6 +6,7 @@ import { useBrand } from '../../context/brand-context';
 import { useI18n } from '../../context/i18n-context';
 import { Screen } from '../../screen/screen';
 import { MainButton } from '../../telegram/bottom-button';
+import { useAskLeaveReason } from '../../leave/leave-reason';
 import { haptic } from '../../telegram/feedback';
 import { useScreenBackground } from '../../telegram/screen-background';
 import { brandVars } from '../../theme/brand-vars';
@@ -27,6 +28,7 @@ export function DeleteAccountScreen({ client, onBack }: ScreenProps) {
   const { colors } = useBrand().theme;
   const driver = useAccount()?.app === 'driver';
   const [stage, setStage] = useState<Stage>('confirm');
+  const askReason = useAskLeaveReason();
   if (stage === 'done') {
     return (
       <StepLayout hero icon="selected" title={t('account.delete.done')} hint={t('account.delete.doneHint')}>
@@ -39,6 +41,8 @@ export function DeleteAccountScreen({ client, onBack }: ScreenProps) {
       () => {
         haptic.success();
         setStage('done');
+        // Why, in one tap that may be skipped (G87, docs/191).
+        askReason('account');
       },
       () => {
         haptic.error();

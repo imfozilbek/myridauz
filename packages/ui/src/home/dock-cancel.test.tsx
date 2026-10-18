@@ -1,6 +1,6 @@
 import type { BookingsClient } from '@platform/api-client';
 import { DAY_MS } from '@platform/contracts';
-import { cleanup } from '@testing-library/react';
+import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { booking } from '../bookings/booking-test-kit';
 import { tap, trip } from '../market/market-test-kit';
@@ -37,5 +37,7 @@ describe('«Bekor qilish» in the block of a passenger (G76)', { timeout: 20_000
       'Joyni bekor qilasizmi? Haydovchi bu haqda xabar oladi.',
       'Joyni bekor qilish',
     );
+    // Why, in one tap that may be skipped (G87, docs/191).
+    expect(await screen.findByText('Nega joyni bekor qildingiz?')).toBeTruthy();
   });
 });

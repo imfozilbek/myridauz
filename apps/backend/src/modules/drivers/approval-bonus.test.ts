@@ -53,7 +53,7 @@ describe('the approval in the driver bot', () => {
       expect(card?.text).toContain(`t.me/${brand.mainChannel}`);
       expect(buttons.map((button) => button.text)).toEqual(['Kanalga oʻtish', 'Safar eʼlon qilish']);
       expect(buttons[0]?.url).toBe(`https://t.me/${brand.mainChannel}`);
-      expect(buttons[1]?.web_app?.url).toMatch(/\?open=new_trip$/u);
+      expect(buttons[1]?.web_app?.url).toMatch(/\?open=new_trip&via=bot-new-trip$/u);
     },
   );
 });

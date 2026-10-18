@@ -107,3 +107,6 @@ export const openComplaintsOf = async (env: Bindings, userId: number) =>
 // The rides of open complaints keep their points until the decision (docs/69).
 export const bookingsUnderComplaint = async (env: Bindings) =>
   new Set((await complaintsDeps(env).store.open()).map((complaint) => complaint.bookingId));
+
+// The reasons of a complaint as the column keeps them: the dashboard counts them (G87, docs/191).
+export { reasonsOf as complaintReasonsOf } from './infrastructure/complaint-row';
