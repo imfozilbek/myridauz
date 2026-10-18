@@ -68,25 +68,21 @@ describe('POST /telegram/setup', () => {
     });
   });
 
-  it('points the bot of the posts at the API for the joins and leaves only (docs/176)', async () => {
+  // The bots of people hear a block and a return (G87 V1); the bot of the posts the joins and leaves
+  // (docs/176).
+  it('points every bot at the API for the updates it reads', async () => {
     const { request, calls } = setup('hook', 200, 200, { POSTER_BOT_TOKEN: 'c' });
     expect(((await (await request).json()) as { configured: string[] }).configured).toContain('poster');
-    const poster = calls.filter((call) => call.url.startsWith('https://api.telegram.org/botc/'));
-    expect(poster.map((call) => call.url)).toEqual(['https://api.telegram.org/botc/setWebhook']);
-    expect(poster[0]?.body).toMatchObject({
-      url: `https://api.${brand.domain}/telegram/poster`,
-      secret_token: 'hook',
-      allowed_updates: ['chat_member'],
-    });
-  });
-
-  // G87 V1: the bots of people hear a block and a return, so the dashboard counts them.
-  it('lets the bots of people hear a block and a return after a block', async () => {
-    const { request, calls } = setup('hook');
-    await request;
     const hooks = calls.filter((call) => call.url.endsWith('/setWebhook'));
-    expect(hooks.length).toBeGreaterThan(0);
-    for (const hook of hooks)
+    const poster = hooks.filter((call) => call.url.startsWith('https://api.telegram.org/botc/'));
+    expect(poster.map((call) => call.body)).toEqual([
+      expect.objectContaining({
+        url: `https://api.${brand.domain}/telegram/poster`,
+        secret_token: 'hook',
+        allowed_updates: ['chat_member'],
+      }),
+    ]);
+    for (const hook of hooks.filter((call) => !poster.includes(call)))
       expect(hook.body).toMatchObject({ allowed_updates: ['message', 'callback_query', 'my_chat_member'] });
   });
 
