@@ -46,7 +46,8 @@ describe('the Cron of the Worker', () => {
     const trip = await db.prepare("SELECT status FROM trips WHERE id = 't1'").first<{ status: string }>();
     expect(trip?.status).toBe('completed');
     expect(sent).toHaveBeenCalled();
-    expect(sent.mock.calls.every(([url]) => String(url).startsWith(TELEGRAM))).toBe(true);
+    // The host itself, not a prefix of the address: «http://telegram.test.other» is another host.
+    expect(new Set(sent.mock.calls.map(([url]) => new URL(url).origin))).toEqual(new Set([TELEGRAM]));
   });
 
   it('counts each broken job as a server error on the dashboard', async () => {
