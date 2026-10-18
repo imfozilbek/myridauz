@@ -72,6 +72,12 @@ export async function preparedCards(): Promise<Record<string, unknown>[]> {
     .filter((call) => call.method === 'savePreparedInlineMessage')
     .map((call) => call.body['result'] as Record<string, unknown>);
 }
+// A person blocks the bots (docs/80 S07): Telegram refuses every message to them; the count of refusals.
+const BLOCKED = `http://localhost:${STAND_TELEGRAM_PORT}/__blocked`;
+export const blockBots = async (chatId: number) =>
+  void (await fetch(BLOCKED, { method: 'POST', body: String(chatId) }));
+export const refusedMessages = async (): Promise<number> =>
+  ((await (await fetch(BLOCKED)).json()) as { refused: number }).refused;
 
 // The local Worker reloads now and then after a write to its database from outside: then a scenario
 // waits for the Worker and asks once more.

@@ -17,6 +17,7 @@ const open = (rated: boolean) =>
     testClients({
       market: { myRequests: async () => [] },
       bookings: { myBookings: async () => [{ ...done, rated }], myOffers: async () => [] },
+      subscriptions: { mine: async () => [] },
     }),
   );
 
@@ -46,5 +47,15 @@ describe('«Oʻtgan» in «Mening safarlarim» (G60, mockup g60/6)', () => {
     expect(screen.getByText('Aniq joylar oʻchirildi')).toBeTruthy();
     expect(screen.queryByText('Baho berildi')).toBeNull();
     expect(screen.queryByText(/^Xabar · /u)).toBeNull();
+  });
+
+  // «Obunalar» lives under the past trips, one tap away (docs/24, G49).
+  it('opens the followed routes from under the past trips', async () => {
+    vi.setSystemTime(arrival + HOUR);
+    open(true);
+    await tap('Oʻtgan');
+    expect(screen.getByText('Yoʻnalish boʻyicha xabarlar')).toBeTruthy();
+    await tap('Obunalar');
+    expect(await screen.findByText('Hali obunalar yoʻq')).toBeTruthy();
   });
 });

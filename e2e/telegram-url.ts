@@ -5,7 +5,9 @@ const INIT_DATA = new URLSearchParams({
   signature: 'test',
   hash: 'test',
 }).toString();
-const launch = (platform: 'android' | 'ios', initData: string) =>
+// tdesktop: Telegram on a computer, without a camera (docs/78 D04).
+type LaunchPlatform = 'android' | 'ios' | 'tdesktop';
+const launch = (platform: LaunchPlatform, initData: string) =>
   new URLSearchParams({
     tgWebAppPlatform: platform,
     tgWebAppVersion: '9.0',
@@ -15,5 +17,5 @@ const launch = (platform: 'android' | 'ios', initData: string) =>
 
 // Most people in Uzbekistan use Android: the main screens are shot on both (lesson 52).
 // The stand (docs/75) passes launch data signed with its test bot token.
-export const telegramUrl = (url: string, platform: 'android' | 'ios' = 'ios', initData = INIT_DATA) =>
+export const telegramUrl = (url: string, platform: LaunchPlatform = 'ios', initData = INIT_DATA) =>
   `${url}#${launch(platform, initData)}`;

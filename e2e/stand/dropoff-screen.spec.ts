@@ -13,6 +13,8 @@ import { outsideCalls, type Person } from './stand-kit';
 // The screen of a point (G36, docs/100): the map in full, a sheet at the bottom. The pickup, the
 // dropoff found by its name, then again the dropoff by the last place in one tap. A narrow phone.
 test.use({ viewport: { width: 320, height: 640 } });
+// Two bookings and three maps take 27 … 31 seconds on a loaded stand: more than the usual 30 (G49).
+test.setTimeout(90_000);
 test.afterEach(() => expect(outsideCalls()).toEqual([]));
 
 const SEEKERS: Record<Platform, Person> = {

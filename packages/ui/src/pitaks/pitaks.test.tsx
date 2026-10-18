@@ -5,7 +5,11 @@ import { locations, tap } from '../market/market-test-kit';
 import { ManagementScreen } from '../manage/management-screen';
 import { renderInShell, testClients } from '../test-shell';
 
-afterEach(cleanup);
+const asked = vi.spyOn(window, 'confirm');
+afterEach(() => {
+  cleanup();
+  vi.clearAllMocks();
+});
 
 const QOYLIQ: AdminPitak = {
   id: 'qoyliq',
@@ -106,5 +110,25 @@ describe('Pitaklar: the pitaks of the team (G24, docs/72)', { timeout: 20_000 },
     await screen.findByText('Chorsu bozori yaqinida', {}, { timeout: 3000 });
     await tap('Shu yerda');
     expect(await screen.findByDisplayValue('Chorsu bozori')).toBeTruthy();
+  });
+
+  // G49: a pitak with a name keeps it when its point moves; «Orqaga» asks before losing a change.
+  it('renames a pitak, keeps the name when the point moves and asks before leaving a change', async () => {
+    const pitaks = open();
+    await tap('Pitaklar');
+    await tap('Toshkent shahri · Tanlangan, tekshirilmagan');
+    fireEvent.change(screen.getByLabelText('Pitak nomi'), { target: { value: 'Qoʻyliq bozori' } });
+    asked.mockReturnValueOnce(false);
+    await tap('Orqaga');
+    expect(asked).toHaveBeenCalledWith('Oʻzgarishlar saqlanmaydi. Chiqasizmi?');
+    await tap('Joyi xaritada');
+    await screen.findByText('Chorsu bozori yaqinida', {}, { timeout: 3000 });
+    await tap('Shu yerda');
+    expect(await screen.findByDisplayValue('Qoʻyliq bozori')).toBeTruthy();
+    await tap('Saqlash');
+    expect(pitaks.change).toHaveBeenCalledWith(
+      'qoyliq',
+      expect.objectContaining({ name: 'Qoʻyliq bozori', status: 'claude' }),
+    );
   });
 });
