@@ -18,9 +18,14 @@ const DAY = 24 * 60 * MINUTE;
 const SUMMARY_FROM = '21:00';
 const TEAM = [OWNER.id, KAMRON.id];
 
-const adminSaid = async (words: readonly string[]) =>
+// A ring of the admin bot: an answer under the card of «Navbat» or «Diqqat» (G68), never the card itself.
+const rings = async (words: readonly string[]) =>
   (await botMessages()).filter(
-    (m) => m.bot === 'admin' && TEAM.includes(m.chatId ?? 0) && words.every((w) => m.text.includes(w)),
+    (m) =>
+      m.bot === 'admin' &&
+      m.replyTo !== null &&
+      TEAM.includes(m.chatId ?? 0) &&
+      words.every((w) => m.text.includes(w)),
   );
 // The clock of the application moves back; the reminders already sent move with it (one sending).
 const waitedFor = (person: Person, minutes: number) => {
@@ -36,18 +41,18 @@ test('S76. an application waits: its moderator at 25 minutes, the owners at 30, 
   await clearBotMessages();
   waitedFor(NAVRUZ, 26);
   await runCron();
-  await expect.poll(async () => (await adminSaid(late)).length).toBe(1);
-  expect(await adminSaid(owners)).toHaveLength(0);
+  await expect.poll(async () => (await rings(late)).length).toBe(1);
+  expect(await rings(owners)).toHaveLength(0);
   waitedFor(NAVRUZ, 31);
   await runCron();
-  await expect.poll(async () => (await adminSaid(owners)).length).toBeGreaterThan(0);
+  await expect.poll(async () => (await rings(owners)).length).toBeGreaterThan(0);
   const sign = (await createTeamClient(await signedAs('admin', OWNER)).attention()).signs;
   expect(sign.some(({ sign: s }) => s.kind === 'late' && s.name === NAVRUZ.name)).toBe(true);
   // The next ticks ring no more for the same sending.
-  const rung = (await adminSaid(owners)).length;
+  const rung = (await rings(owners)).length;
   await runCron();
-  expect(await adminSaid(late)).toHaveLength(1);
-  expect(await adminSaid(owners)).toHaveLength(rung);
+  expect(await rings(late)).toHaveLength(1);
+  expect(await rings(owners)).toHaveLength(rung);
 });
 
 test('S77. the summary of the day: to the owner after 21:00 in Tashkent, once a day', async () => {

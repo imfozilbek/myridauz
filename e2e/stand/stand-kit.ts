@@ -82,7 +82,7 @@ export const outsideCalls = (): readonly string[] => leaks.map((url) => new URL(
 
 // Opens a Mini App of the stand as this person, as Telegram opens it on a phone. search: what a bot
 // button adds to the address, such as ?booking=<id> (docs/65 B5). stale: a launch older than a day.
-type OpenOptions = { platform?: 'android' | 'ios'; search?: string; stale?: boolean };
+type OpenOptions = { platform?: 'android' | 'ios' | 'tdesktop'; search?: string; stale?: boolean };
 export async function openAs(
   page: Page,
   app: MiniApp,
