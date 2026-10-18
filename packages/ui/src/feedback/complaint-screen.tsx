@@ -1,4 +1,9 @@
-import { COMPLAINT_COMMENT_MAX, COMPLAINT_REASONS, type ComplaintReason } from '@platform/contracts';
+import {
+  COMPLAINT_COMMENT_MAX,
+  COMPLAINT_REASONS,
+  type ComplaintReason,
+  type PersonId,
+} from '@platform/contracts';
 import { Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { Textarea } from '../components';
@@ -16,6 +21,7 @@ import { haptic } from '../telegram/feedback';
 import { useScreenBackground } from '../telegram/screen-background';
 import { brandVars } from '../theme/brand-vars';
 import './complaint.css';
+import { ComplaintAbout } from './complaint-about';
 import { DraftNote } from './draft-note';
 import { checkComplaintDraft, complaintDraftKey, type ComplaintDraft } from './feedback-draft';
 
@@ -24,13 +30,16 @@ type Props = {
   readonly onBack: () => void;
   // Sent: back to the screen it came from, the plaque says so (G78 П16).
   readonly onSent: () => void;
+  // A passenger may complain about another passenger of the trip too (docs/111 Q4, G46); the
+  // driver's first name when the screen knows it.
+  readonly passenger?: { readonly driverName: string | null };
 };
 type Step = 'edit' | { readonly failed: unknown };
 
-// A complaint about the other side of a ride (docs/17, mockup g75/5 A): one or more reasons as ticks
+// A complaint about someone of a ride (docs/17, mockup g75/5 A): one or more reasons as ticks
 // (owner decision 10.10.2026), a comment if needed. The other side never sees who complained. Sent,
 // it closes by itself, no screen of its own (G78 П16).
-export function ComplaintScreen({ bookingId, onBack, onSent }: Props) {
+export function ComplaintScreen({ bookingId, onBack, onSent, passenger }: Props) {
   useScreenView('complaints.form');
   const { t } = useI18n();
   const { track } = useAnalytics();
@@ -41,6 +50,7 @@ export function ComplaintScreen({ bookingId, onBack, onSent }: Props) {
   const [form, setForm] = useState<ComplaintDraft>(() => draft.restored ?? { reasons: [], comment: '' });
   const { reasons, comment } = form;
   const [step, setStep] = useState<Step>('edit');
+  const [about, setAbout] = useState<PersonId | undefined>(undefined);
   const change = (patch: Partial<ComplaintDraft>) => {
     const next = { ...form, ...patch };
     setForm(next);
@@ -57,6 +67,7 @@ export function ComplaintScreen({ bookingId, onBack, onSent }: Props) {
         bookingId,
         reasons: COMPLAINT_REASONS.filter((known) => reasons.includes(known)),
         comment: comment.trim(),
+        ...(about ? { about } : {}),
       });
       track({ name: 'complaint_sent', screen: 'complaints.form' });
       haptic.success();
@@ -76,6 +87,14 @@ export function ComplaintScreen({ bookingId, onBack, onSent }: Props) {
         <small>{t('complaints.reasonTitle')}</small>
       </h1>
       <DraftNote shown={draft.restored !== null} />
+      {passenger ? (
+        <ComplaintAbout
+          bookingId={bookingId}
+          driverName={passenger.driverName}
+          about={about}
+          onPick={setAbout}
+        />
+      ) : null}
       <div className="complaint-card">
         <TickRows
           ticks={COMPLAINT_REASONS.map((known) => ({ key: known, title: t(`complaints.reason.${known}`) }))}

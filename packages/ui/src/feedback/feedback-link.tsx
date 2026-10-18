@@ -39,7 +39,12 @@ export function FeedbackLink({ app, children }: { readonly app: MiniApp; readonl
   };
   const screen =
     open.screen === 'complain' ? (
-      <ComplaintScreen bookingId={open.bookingId} onBack={close} onSent={close} />
+      <ComplaintScreen
+        bookingId={open.bookingId}
+        onBack={close}
+        onSent={close}
+        {...(app === 'passenger' ? { passenger: { driverName: null } } : {})}
+      />
     ) : app === 'driver' ? (
       <PlacesGate onBack={close}>
         <RateLinkScreen bookingId={open.bookingId} onBack={close} onSent={done} />

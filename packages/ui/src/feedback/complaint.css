@@ -57,3 +57,12 @@
   line-height: 1.4;
   color: var(--reg-muted);
 }
+
+/* «Kimdan shikoyat qilasiz?» over the choice of the driver or a companion (G46, docs/111 Q4). */
+.complaint-about {
+  margin: 0;
+  padding: 4px 28px 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--reg-muted);
+}

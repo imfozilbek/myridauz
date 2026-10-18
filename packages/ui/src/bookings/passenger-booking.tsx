@@ -39,7 +39,14 @@ export function PassengerBooking({ booking: fresh, onClose, onStale, onHome, sta
     return <LinkedSearch ids={{ from, to, ...day }} onClose={back} />;
   }
   if (opened?.screen === 'complaint')
-    return <ComplaintScreen bookingId={booking.id} onBack={back} onSent={back} />;
+    return (
+      <ComplaintScreen
+        bookingId={booking.id}
+        onBack={back}
+        onSent={back}
+        passenger={{ driverName: booking.trip.driver.firstName }}
+      />
+    );
   if (opened?.screen === 'review')
     return (
       <ReviewScreen
