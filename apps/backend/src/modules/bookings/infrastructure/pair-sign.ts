@@ -6,9 +6,20 @@ import { peopleOf } from '../../users';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
-// «🤝 Jasur va Dilnoza 3 marta gaplashdi, lekin bron qilmadi» in «Diqqat» of the owner (docs/129
-// rule 5, G75): one line a pair a day. The team sees public ids, never Telegram IDs (docs/65 A3).
-export async function tellPairTalked(env: Bindings, driverId: number, passengerId: number, talks: number) {
+// pair: talked about requests and never booked (docs/129 rule 5, G75); pairCancel: confirmed and
+// cancelled seats again and again (G45, docs/83 N26).
+type PairKind = 'pair' | 'pairCancel';
+const TEXTS = { pair: 'bot.diqqat.pair', pairCancel: 'bot.diqqat.pairCancel' } as const;
+
+// «🤝 Jasur va Dilnoza 3 marta gaplashdi, lekin bron qilmadi» in «Diqqat» of the owner: one line a pair
+// a day. The team sees public ids, never Telegram IDs (docs/65 A3).
+export async function tellPair(
+  env: Bindings,
+  kind: PairKind,
+  driverId: number,
+  passengerId: number,
+  count: number,
+) {
   const people = peopleOf(env);
   const [driver, passenger] = await Promise.all([people.find(driverId), people.find(passengerId)]);
   if (!driver || !passenger) return;
@@ -17,12 +28,12 @@ export async function tellPairTalked(env: Bindings, driverId: number, passengerI
     driverId: driver.publicId,
     passenger: escapeHtml(passenger.firstName),
     passengerId: passenger.publicId,
-    count: String(talks),
+    count: String(count),
   };
   await tellOwners(env, {
-    id: `pair:${driver.publicId}:${passenger.publicId}`,
-    text: t('bot.diqqat.pair', values),
+    id: `${kind}:${driver.publicId}:${passenger.publicId}`,
+    text: t(TEXTS[kind], values),
     ring: false,
-    sign: { ...values, driver: driver.firstName, passenger: passenger.firstName, kind: 'pair', count: talks },
+    sign: { ...values, driver: driver.firstName, passenger: passenger.firstName, kind, count },
   });
 }

@@ -1,5 +1,6 @@
 import { onTheWay, type Booking } from '@platform/contracts';
 import { move, statusAt, type BookingAction, type BookingRecord } from '../domain/booking';
+import { watchPairCancels } from './pair-cancels';
 import type { BookingsDeps, Result } from './ports';
 import { bookingViews } from './views';
 import { withExtraWay } from './extra-way';
@@ -69,6 +70,9 @@ export async function answer(
   if (!(await deps.bookings.replace(next, record.status)))
     return { ok: false, error: 'bookings.wrong_status' };
   if (record.status === 'confirmed') await deps.wallet.refund(driverId, id);
+  // The team's own cancel rings nothing by itself (G45).
+  if (record.status === 'confirmed' && by === 'driver')
+    await watchPairCancels(deps, driverId, record.passengerId);
   if (next.status === 'declined') deps.track('declined');
   const [forPassenger] = await bookingViews(deps, [next], 'passenger');
   if (forPassenger) {

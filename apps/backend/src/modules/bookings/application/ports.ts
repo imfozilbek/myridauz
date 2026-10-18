@@ -115,6 +115,8 @@ export type BookingsDeps = {
   readonly notify: BookingNotifier;
   // A pair talked about requests this many times and never booked: «Diqqat» of the owner (docs/129).
   readonly pairTalked: (driverId: number, passengerId: number, talks: number) => Promise<void>;
+  // A pair confirmed and cancelled seats this many times in a month: «Diqqat» too (G45, docs/83 N26).
+  readonly pairCancelled: (driverId: number, passengerId: number, cancels: number) => Promise<void>;
   // A step of the booking funnel no Mini App sees: a refused or a burned request (docs/89 S2).
   readonly track: (step: 'declined' | 'expired') => void;
   // The names of a point and where a point of a trip may lie (docs/69), from the map module.

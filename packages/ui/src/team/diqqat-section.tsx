@@ -63,6 +63,13 @@ const CARDS: Record<Kind, Card> = {
     hintKey: 'team.diqqat.peopleLink',
     opens: PEOPLE_SECTION,
   },
+  pairCancel: {
+    icon: 'passengers',
+    fault: false,
+    titleKey: 'team.diqqat.pairCancel',
+    hintKey: 'team.diqqat.peopleLink',
+    opens: PEOPLE_SECTION,
+  },
 };
 const KINDS = Object.keys(CARDS) as Kind[];
 
@@ -71,7 +78,9 @@ const KINDS = Object.keys(CARDS) as Kind[];
 function personOf(sign: AttentionSign): PersonName | undefined {
   if (sign.kind === 'contact' || sign.kind === 'rating' || sign.kind === 'money')
     return { id: sign.person, name: sign.name };
-  return sign.kind === 'pair' ? { id: sign.driverId, name: sign.driver } : undefined;
+  return sign.kind === 'pair' || sign.kind === 'pairCancel'
+    ? { id: sign.driverId, name: sign.driver }
+    : undefined;
 }
 
 // One person: that person; more: the list of them; none: «Odamlar» as it is.

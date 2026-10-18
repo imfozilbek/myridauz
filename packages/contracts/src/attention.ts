@@ -38,6 +38,15 @@ export const attentionSignSchema = z.discriminatedUnion('kind', [
     passengerId: person,
     count,
   }),
+  // A pair confirmed and cancelled seats this many times in a month (G45, docs/81 A07, docs/83 N26).
+  z.object({
+    kind: z.literal('pairCancel'),
+    driver: name,
+    driverId: person,
+    passenger: name,
+    passengerId: person,
+    count,
+  }),
 ]);
 export type AttentionSign = z.infer<typeof attentionSignSchema>;
 
