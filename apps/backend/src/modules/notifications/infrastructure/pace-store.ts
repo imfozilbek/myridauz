@@ -1,3 +1,4 @@
+import { MINUTE_MS } from '@platform/contracts';
 import type { NotificationJob } from '../application/job';
 
 type Bot = NotificationJob['bot'];
@@ -19,7 +20,6 @@ const PAUSE = `INSERT INTO bot_pauses (bot, until) VALUES (?1, ?2)
 const FORGET = 'DELETE FROM chat_pace WHERE chat = ? AND minute < ?';
 const TAKE = `INSERT INTO chat_pace (chat, minute, sent) VALUES (?1, ?2, 1)
   ON CONFLICT (chat, minute) DO UPDATE SET sent = sent + 1 RETURNING sent`;
-const MINUTE_MS = 60_000;
 // A post never waits longer than this: a channel that busy is a fault, not a pace.
 const MAX_MINUTES = 60;
 
