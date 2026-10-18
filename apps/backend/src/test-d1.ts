@@ -56,6 +56,7 @@ const GROWING = [
   'complaints',
   'users',
   'rating_asks',
+  'reviews',
   'ratings',
   'channel_posts',
   'support_messages',

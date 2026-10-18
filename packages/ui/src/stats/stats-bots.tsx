@@ -13,9 +13,11 @@ export function BotsSection({
   readonly queueOps: number;
 }) {
   const { t, formatNumber } = useI18n();
+  // A bot that only lost people (G87) sent nothing: it is in «Botni bloklaganlar» alone.
+  const busy = bots.filter((load) => load.sent + load.limited + load.dead > 0);
   return (
     <ManageGroup title={t('stats.bots.title')}>
-      {bots.map((load) => (
+      {busy.map((load) => (
         <ManageRow
           key={load.bot}
           icon="send"
@@ -30,6 +32,27 @@ export function BotsSection({
         />
       ))}
       <ManageRow icon="statistics" title={t('stats.bots.queue')} value={formatNumber(queueOps)} />
+    </ManageGroup>
+  );
+}
+
+// «Botni bloklaganlar» (G87, docs/191): how many people blocked each bot in the period and how many
+// came back to it; only the numbers, never who. The bots nobody left are not shown.
+export function BlocksSection({ bots }: { readonly bots: readonly BotLoad[] }) {
+  const { t, formatNumber } = useI18n();
+  const left = bots.filter((load) => load.blocked + load.unblocked > 0);
+  if (left.length === 0) return null;
+  return (
+    <ManageGroup title={t('stats.blocks.title')}>
+      {left.map((load) => (
+        <ManageRow
+          key={load.bot}
+          icon="blocked"
+          title={t(`stats.bots.bot.${load.bot}`)}
+          hint={t('stats.blocks.back', { count: formatNumber(load.unblocked) })}
+          value={formatNumber(load.blocked)}
+        />
+      ))}
     </ManageGroup>
   );
 }

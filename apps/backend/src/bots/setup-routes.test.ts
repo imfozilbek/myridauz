@@ -68,7 +68,7 @@ describe('POST /telegram/setup', () => {
     });
   });
 
-  it('points the bot of the posts at the API for the joins and leaves only (docs/176)', async () => {
+  it('points the bot of the posts at the API for the joins, leaves and reactions (docs/176, G87)', async () => {
     const { request, calls } = setup('hook', 200, 200, { POSTER_BOT_TOKEN: 'c' });
     expect(((await (await request).json()) as { configured: string[] }).configured).toContain('poster');
     const poster = calls.filter((call) => call.url.startsWith('https://api.telegram.org/botc/'));
@@ -76,7 +76,7 @@ describe('POST /telegram/setup', () => {
     expect(poster[0]?.body).toMatchObject({
       url: `https://api.${brand.domain}/telegram/poster`,
       secret_token: 'hook',
-      allowed_updates: ['chat_member'],
+      allowed_updates: ['chat_member', 'message_reaction_count'],
     });
   });
 

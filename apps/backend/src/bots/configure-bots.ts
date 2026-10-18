@@ -13,6 +13,12 @@ import { menuButton } from './start-reply';
 import { SUPPORT_BOT } from './support-bot';
 
 const BOTS: readonly BotName[] = [...BOT_ROLES, SUPPORT_BOT];
+// Buttons of the moderation card come as callback queries (docs/04); a person who blocks a bot or
+// comes back is my_chat_member (G87, docs/191).
+const BOT_UPDATES = ['message', 'callback_query', 'my_chat_member'];
+// The bot of the posts hears who joins or leaves the channels (docs/176) and how many reactions a
+// post has (G87).
+const POSTER_UPDATES = ['chat_member', 'message_reaction_count'];
 
 // The team menu is not shown to everyone: admins open their Mini App from the /start button.
 // The support bot has no Mini App: people only write there (docs/50).
@@ -39,8 +45,7 @@ export async function configureBots(env: Bindings, fetch: Fetch, secret: string)
     await callTelegram(fetch, token, 'setWebhook', {
       url: hook,
       secret_token: secret,
-      // Buttons of the moderation card come as callback queries (docs/04).
-      allowed_updates: ['message', 'callback_query'],
+      allowed_updates: BOT_UPDATES,
       drop_pending_updates: true,
     });
     await setTextsWhenChanged(fetch, token, profile);
@@ -55,13 +60,12 @@ export async function configureBots(env: Bindings, fetch: Fetch, secret: string)
     }
     configured.push(role);
   }
-  // The bot of the posts hears only who joins or leaves the channels (docs/176).
   const poster = env.POSTER_BOT_TOKEN;
   if (poster) {
     await callTelegram(fetch, poster, 'setWebhook', {
       url: `https://${apiHost(brandOf(env))}${POSTER_WEBHOOK_PATH}`,
       secret_token: secret,
-      allowed_updates: ['chat_member'],
+      allowed_updates: POSTER_UPDATES,
       drop_pending_updates: true,
     });
     configured.push('poster');
@@ -79,7 +83,8 @@ export async function setupStamp(env: Bindings): Promise<string> {
     avatar,
     menu,
   ]);
-  const text = JSON.stringify([plans, Boolean(env.POSTER_BOT_TOKEN), apiHost(brandOf(env))]);
+  const updates = [BOT_UPDATES, POSTER_UPDATES];
+  const text = JSON.stringify([plans, Boolean(env.POSTER_BOT_TOKEN), apiHost(brandOf(env)), updates]);
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
   return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
 }

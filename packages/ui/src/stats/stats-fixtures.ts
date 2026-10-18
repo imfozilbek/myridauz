@@ -69,15 +69,67 @@ export const statsOf = (period: StatsPeriod, events: Stats['events'] = 'on'): St
           },
         ]
       : [],
-  // G85 T1: the passenger bot met one 429, the bot of the channels lost one post.
+  // G85 T1: the passenger bot met one 429, the bot of the channels lost one post. G87: three people
+  // blocked the passenger bot and one came back.
   bots:
     events === 'on'
       ? [
-          { bot: 'passenger', sent: period === 'day' ? 412 : 2730, limited: 1, dead: 0, peak: 18 },
-          { bot: 'driver', sent: period === 'day' ? 160 : 1104, limited: 0, dead: 0, peak: 6 },
-          { bot: 'poster', sent: period === 'day' ? 31 : 214, limited: 0, dead: 1, peak: 2 },
+          {
+            bot: 'passenger',
+            sent: period === 'day' ? 412 : 2730,
+            limited: 1,
+            dead: 0,
+            peak: 18,
+            blocked: period === 'day' ? 3 : 19,
+            unblocked: 1,
+          },
+          {
+            bot: 'driver',
+            sent: period === 'day' ? 160 : 1104,
+            limited: 0,
+            dead: 0,
+            peak: 6,
+            blocked: 1,
+            unblocked: 0,
+          },
+          {
+            bot: 'poster',
+            sent: period === 'day' ? 31 : 214,
+            limited: 0,
+            dead: 1,
+            peak: 2,
+            blocked: 0,
+            unblocked: 0,
+          },
         ]
       : [],
   queueOps: events === 'on' ? 96 : 0,
+  // G87: what people feel. The ratings and complaints come from the database, the rest from events.
+  ratings: {
+    count: period === 'day' ? 18 : 121,
+    average: 4.6,
+    low: period === 'day' ? 1 : 6,
+    tags: [
+      { tag: 'on_time', count: 11 },
+      { tag: 'polite', count: 7 },
+    ],
+  },
+  complaintReasons: [{ reason: 'price_changed', count: 2 }],
+  leaving:
+    events === 'on'
+      ? [
+          { kind: 'booking', reason: 'found_other', count: 4 },
+          { kind: 'trip', reason: 'no_passengers', count: 2 },
+          { kind: 'account', reason: 'no_trips', count: 1 },
+        ]
+      : [],
+  opens:
+    events === 'on'
+      ? [
+          { kind: 'bot', count: 63 },
+          { kind: 'direct', count: 140 },
+          { kind: 'link', count: 22 },
+        ]
+      : [],
   at: Date.parse('2026-10-05T09:30:00Z'),
 });

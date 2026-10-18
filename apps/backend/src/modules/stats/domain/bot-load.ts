@@ -1,7 +1,8 @@
 import { MESSAGE_BOTS, type BotLoad } from '@platform/contracts';
 
 // One group of the events of the bots (G85 T1): bot_send by its outcome, queue_ops with the count of
-// operations it stands for, server_error notification_dead by its bot.
+// operations it stands for, server_error notification_dead by its bot, bot_member blocked or
+// unblocked by its bot (G87).
 export type BotRow = {
   readonly name: string;
   readonly bot: string;
@@ -20,24 +21,22 @@ const sum = (rows: readonly BotRow[], match: (row: BotRow) => boolean, of: (row:
 // queue a day (docs/122).
 export function botLoadOf({ rows, peaks }: BotEvents, days: number): { bots: BotLoad[]; queueOps: number } {
   const bots = MESSAGE_BOTS.map((bot) => {
-    const sent = (code: string) =>
+    const of = (name: string, code?: string) =>
       sum(
         rows,
-        (row) => row.name === 'bot_send' && row.bot === bot && row.code === code,
+        (row) => row.name === name && row.bot === bot && (code === undefined || row.code === code),
         (row) => row.count,
       );
     return {
       bot,
-      sent: sent('sent'),
-      limited: sent('limited'),
-      dead: sum(
-        rows,
-        (row) => row.name === 'server_error' && row.bot === bot,
-        (row) => row.count,
-      ),
+      sent: of('bot_send', 'sent'),
+      limited: of('bot_send', 'limited'),
+      dead: of('server_error'),
       peak: Math.max(0, ...peaks.filter((peak) => peak.bot === bot).map((peak) => peak.count)),
+      blocked: of('bot_member', 'blocked'),
+      unblocked: of('bot_member', 'unblocked'),
     };
-  }).filter((load) => load.sent + load.limited + load.dead > 0);
+  }).filter((load) => load.sent + load.limited + load.dead + load.blocked + load.unblocked > 0);
   const operations = sum(
     rows,
     (row) => row.name === 'queue_ops',

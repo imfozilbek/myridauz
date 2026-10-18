@@ -1,6 +1,7 @@
 import { appHost, type BrandConfig } from '@platform/brands';
 import { LEGAL_DOCUMENTS } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { botMessageUrl } from '../shared/telegram/open-button';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 export const DOCUMENTS_COMMAND = '/hujjatlar';
@@ -10,7 +11,7 @@ export function documentsReply(brand: BrandConfig, role: 'passenger' | 'driver' 
   const rows = LEGAL_DOCUMENTS.map((document) => [
     {
       text: t(`legal.${document}.title`),
-      web_app: { url: `https://${appHost(brand, role)}/?doc=${document}` },
+      web_app: { url: botMessageUrl(`https://${appHost(brand, role)}/?doc=${document}`, 'doc') },
     },
   ]);
   return {

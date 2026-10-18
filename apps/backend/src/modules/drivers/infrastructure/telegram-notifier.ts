@@ -10,6 +10,7 @@ import {
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Card, Ring } from '../../notifications';
 import type { QueueNews } from '../../team-queue';
+import { botMessageUrl } from '../../../shared/telegram/open-button';
 import type { Application } from '../domain/application';
 import type { Bonus, ModerationNotifier } from '../application/ports';
 import { applicationCard, decisionRing } from './application-card';
@@ -55,7 +56,12 @@ function receivedText(brand: BrandConfig, sentAt: number): string {
 function approvedParts(brand: BrandConfig) {
   const publish = {
     text: t('bot.driver.publish'),
-    web_app: { url: `https://${appHost(brand, 'driver')}/?${OPEN_LINK}=${NEW_TRIP_SECTION}` },
+    web_app: {
+      url: botMessageUrl(
+        `https://${appHost(brand, 'driver')}/?${OPEN_LINK}=${NEW_TRIP_SECTION}`,
+        NEW_TRIP_SECTION,
+      ),
+    },
   };
   return {
     channel: t('bot.driver.channel', { username: brand.mainChannel }),

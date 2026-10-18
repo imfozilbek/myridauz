@@ -4,8 +4,9 @@ import { useI18n } from '../context/i18n-context';
 import { ManageGroup, ManageNote, ManageRow } from '../manage/manage-page';
 import { NumberTiles } from '../team/number-tiles';
 import { ArrivalsSections } from './stats-arrivals';
-import { BotsSection } from './stats-bots';
+import { BlocksSection, BotsSection } from './stats-bots';
 import { ErrorsSections } from './stats-errors';
+import { LeavingSections, RatingsSections } from './stats-voice';
 
 // A drop from this share is where people get stuck: it is marked (docs/29).
 const HIGH_DROP = 50;
@@ -37,11 +38,14 @@ export function StatsSections({ stats, gold }: { readonly stats: Stats; readonly
       ))}
       {gold}
       <ArrivalsSections arrivals={stats.arrivals} />
+      <RatingsSections ratings={stats.ratings} complaintReasons={stats.complaintReasons} />
+      {stats.events === 'on' ? <LeavingSections leaving={stats.leaving} opens={stats.opens} /> : null}
       {funnels.slice(listFunnels).map((funnel, index) => (
         <FunnelSection key={funnel.id} funnel={funnel} hint={listFunnels === 0 && index === 0} />
       ))}
       {stats.events === 'on' ? <ErrorsSections errors={stats.errors} /> : null}
       {stats.events === 'on' ? <BotsSection bots={stats.bots} queueOps={stats.queueOps} /> : null}
+      {stats.events === 'on' ? <BlocksSection bots={stats.bots} /> : null}
       <ManageNote>{t('stats.updated', { time: formatTime(new Date(stats.at)) })}</ManageNote>
     </>
   );

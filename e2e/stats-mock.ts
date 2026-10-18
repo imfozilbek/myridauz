@@ -100,13 +100,34 @@ const statsOf = (period: string) => {
         count: 1,
       },
     ],
-    // G85 T1: the bots under load.
+    // G85 T1: the bots under load; G87: the people who blocked a bot or came back.
     bots: [
-      { bot: 'passenger', sent: 412 * week, limited: 1, dead: 0, peak: 18 },
-      { bot: 'driver', sent: 160 * week, limited: 0, dead: 0, peak: 6 },
-      { bot: 'poster', sent: 31 * week, limited: 0, dead: 1, peak: 2 },
+      { bot: 'passenger', sent: 412 * week, limited: 1, dead: 0, peak: 18, blocked: 3 * week, unblocked: 1 },
+      { bot: 'driver', sent: 160 * week, limited: 0, dead: 0, peak: 6, blocked: 1, unblocked: 0 },
+      { bot: 'poster', sent: 31 * week, limited: 0, dead: 1, peak: 2, blocked: 0, unblocked: 0 },
     ],
     queueOps: 96,
+    // G87: what people feel (docs/191).
+    ratings: {
+      count: 18 * week,
+      average: 4.6,
+      low: week,
+      tags: [
+        { tag: 'on_time', count: 11 * week },
+        { tag: 'polite', count: 7 * week },
+      ],
+    },
+    complaintReasons: [{ reason: 'price_changed', count: 2 }],
+    leaving: [
+      { kind: 'booking', reason: 'found_other', count: 4 * week },
+      { kind: 'trip', reason: 'no_passengers', count: 2 },
+      { kind: 'account', reason: 'no_trips', count: 1 },
+    ],
+    opens: [
+      { kind: 'bot', count: 63 * week },
+      { kind: 'direct', count: 140 * week },
+      { kind: 'link', count: 22 * week },
+    ],
     at: Date.now(),
   };
 };

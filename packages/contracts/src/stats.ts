@@ -1,5 +1,9 @@
 import { z } from 'zod';
 import { TRIP_STEPS } from './analytics';
+import { complaintReasonCountSchema, leaveCountSchema, openCountSchema, ratingsSummarySchema } from './voice';
+
+// G87: what people feel (docs/191) is a part of the dashboard.
+export * from './voice';
 
 // The dashboard of the admin Mini App (G12, docs/29): main numbers, funnels, errors.
 export const ADMIN_STATS_PATH = '/admin/stats';
@@ -85,14 +89,18 @@ export type Arrivals = z.infer<typeof arrivalsSchema>;
 
 // G85 T1 (docs/122): the bots under load. sent: what Telegram took; limited: its 429 answers; dead:
 // the messages lost after the last try; peak: the most messages of the bot in one second. queueOps:
-// the operations of the queue a day (a write, a read, a delete).
-export const MESSAGE_BOTS = ['passenger', 'driver', 'admin', 'poster', 'main'] as const;
+// the operations of the queue a day (a write, a read, a delete). G87 (docs/191): blocked, the people
+// who blocked the bot; unblocked, the people who came back to it.
+export const MESSAGE_BOTS = ['passenger', 'driver', 'admin', 'support', 'poster', 'main'] as const;
 export const botLoadSchema = z.object({
   bot: z.enum(MESSAGE_BOTS),
   sent: count,
   limited: count,
   dead: count,
   peak: count,
+  // The site goes out before the Worker (lesson 314): an older answer has no G87 numbers yet.
+  blocked: count.default(0),
+  unblocked: count.default(0),
 });
 export type BotLoad = z.infer<typeof botLoadSchema>;
 
@@ -107,6 +115,13 @@ export const statsSchema = z.object({
   errors: z.array(errorRowSchema),
   bots: z.array(botLoadSchema),
   queueOps: count,
+  // G87 (docs/191): the ratings and the reasons of the complaints from the database, the reasons of
+  // leaving and the ways the apps were opened from the events.
+  // An older Worker answers without them (lesson 314): empty until it is out too.
+  ratings: ratingsSummarySchema.default({ count: 0, average: 0, low: 0, tags: [] }),
+  complaintReasons: z.array(complaintReasonCountSchema).default([]),
+  leaving: z.array(leaveCountSchema).default([]),
+  opens: z.array(openCountSchema).default([]),
   at: z.number().int(),
 });
 export type Stats = z.infer<typeof statsSchema>;
