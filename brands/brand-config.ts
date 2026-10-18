@@ -89,6 +89,9 @@ export type BrandChannel = {
   readonly page?: string;
 };
 
+// The pictures of the first message of the public bots (G34, G83): brand-kit/landing/bot.mjs makes them.
+export type BotWelcome = 'passenger' | 'driver' | 'support' | 'main' | 'main-open';
+
 type BotNames = {
   readonly passenger: string;
   readonly driver: string;
@@ -114,6 +117,8 @@ export type BrandConfig = PeopleRules & {
   readonly app?: AppName; // set by brandForApp: the colors and the drawings of one Mini App
   // Telegram usernames of the bots (docs/02, docs/46): deep links between them; support answers people (docs/50).
   readonly bots: BotNames;
+  // The version of every welcome picture, its own bytes: a new look, a new address (lesson №311).
+  readonly welcomes: Readonly<Record<BotWelcome, string>>;
   // An environment of the team only (owner, 17.10.2026, docs/179): anyone outside the team is sent
   // to these bots of production; null where people are welcome.
   readonly teamOnly: BotNames | null;

@@ -6,6 +6,7 @@ export type {
   AlertRules,
   BrandChannel,
   BrandColors,
+  BotWelcome,
   BrandConfig,
   CommissionRule,
   EnvironmentName,

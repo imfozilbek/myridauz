@@ -38,7 +38,7 @@ test('the driver bot: before «Start», the welcome, from the passenger bot, any
   await beforeStart(page, DRIVER_BOT, t('bot.profile.driver.description'));
   await shot(page, '01-bot-before-start');
   const welcome = await say('driver', NEWCOMERS.android, '/start');
-  expect(welcome.photo).toMatch(/\/bot\/driver-welcome\.png$/u);
+  expect(welcome.photo).toMatch(/\/bot\/driver-welcome\.png\?v=[0-9a-f]{8}$/u);
   expect(welcome.caption).toMatch(/500\s000/u);
   expect(buttonsOf(welcome)).toEqual([t('bot.open')]);
   await answered(page, DRIVER_BOT, '/start', welcome);

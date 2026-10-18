@@ -1,5 +1,7 @@
 import type { BrandBase } from '../brand-config';
 import { theme } from './theme.ts';
+// The versions of the welcome pictures of the bots: pnpm bot of the brand kit writes them (docs/38).
+import welcomes from './welcomes.json' with { type: 'json' };
 
 // The address, the bots and the channels differ by environment: environments.ts (docs/179).
 export const brandConfig: BrandBase = {
@@ -11,6 +13,7 @@ export const brandConfig: BrandBase = {
   promo: { amount: 500_000, grants: 3, days: 30, windowDays: 90 },
   theme,
   regionPhotos: true,
+  welcomes,
   pricing: 'per-km',
   // docs/29: 3 times the usual hour and at least 10 errors; a step 20 points worse than the week
   // from at least 20 people; the same signal once in 6 hours.

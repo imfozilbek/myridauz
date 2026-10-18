@@ -1,15 +1,15 @@
-import { appHost, type BrandConfig } from '@platform/brands';
+import { appHost, type BotWelcome, type BrandConfig } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { BotRole } from './bot-roles';
 
 const { t, formatMoney } = createI18n(DEFAULT_LOCALE);
 // A driver who came from the passenger bot already knows Rida: another first line (G34).
 const FROM_PASSENGER = 'from_passenger';
-// The welcome pictures of the public bots, served by the landing (brand-kit/landing/bot.mjs).
+// The welcome pictures of the public bots, served by the landing (brand-kit/landing/bot.mjs) under the
+// version of their look: Telegram keeps a picture by its address (lesson №311).
 // main-open: the main bot when the owner closed the list (G83, docs/181), without «Tez orada».
-type Welcome = 'passenger' | 'driver' | 'support' | 'main' | 'main-open';
-export const welcomePicture = (brand: BrandConfig, role: Welcome) =>
-  `https://${brand.domain}/bot/${role}-welcome.png`;
+export const welcomePicture = (brand: BrandConfig, role: BotWelcome) =>
+  `https://${brand.domain}/bot/${role}-welcome.png?v=${brand.welcomes[role]}`;
 
 // A close person opens the passenger Mini App to follow a trip, no registration (docs/43).
 const FOLLOW_PAYLOAD = /^follow_([A-Za-z0-9_-]{43})$/u;
