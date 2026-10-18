@@ -12,7 +12,8 @@ import { botCommands } from './documents-reply';
 import { menuButton } from './start-reply';
 import { SUPPORT_BOT } from './support-bot';
 
-const BOTS: readonly BotName[] = [...BOT_ROLES, SUPPORT_BOT];
+// The bots of the people and of the team (docs/02); the bot of the channels gets only its webhook.
+export const BOTS: readonly BotName[] = [...BOT_ROLES, SUPPORT_BOT];
 // Buttons of the moderation card come as callback queries (docs/04); a person who blocks a bot or
 // comes back is my_chat_member (G87, docs/191).
 const BOT_UPDATES = ['message', 'callback_query', 'my_chat_member'];

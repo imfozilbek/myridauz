@@ -57,7 +57,7 @@ describe('the reads of the Cron', () => {
     await db.exec(SEED);
     const env = { ...testEnv, DB: db } as unknown as Bindings;
     const jobs = [...cronJobs(env, NOW), ...cronJobs(env, HALF_PAST).slice(TICK_JOBS)];
-    expect(jobs).toHaveLength(26);
+    expect(jobs).toHaveLength(27);
     expect(await runJobs(jobs)).toEqual([]);
     expect(fullScans(db)).toEqual([]);
   });
@@ -65,9 +65,9 @@ describe('the reads of the Cron', () => {
   it('runs the rare jobs once an hour and once a day', () => {
     const names = (at: number) => cronJobs({ ...testEnv } as unknown as Bindings, at).map(([name]) => name);
     expect(names(NOW + 15 * 60_000)).toHaveLength(TICK_JOBS);
-    expect(names(NOW + 5 * HOUR)).toEqual([...names(NOW + 15 * 60_000), ...names(NOW).slice(TICK_JOBS, 21)]);
+    expect(names(NOW + 5 * HOUR)).toEqual([...names(NOW + 15 * 60_000), ...names(NOW).slice(TICK_JOBS, 22)]);
     expect(names(HALF_PAST)).toEqual([...names(NOW + 15 * 60_000), 'keepTelegramLooks']);
-    expect(names(NOW).slice(21)).toEqual([
+    expect(names(NOW).slice(22)).toEqual([
       'grantMissedBonuses',
       'warnBonusEnd',
       'purgeSupport',
@@ -75,6 +75,6 @@ describe('the reads of the Cron', () => {
     ]);
     // The stand runs the Cron by hand at any minute: every job runs.
     const stand = { ...testEnv, CRON_TIERS: 'off' } as unknown as Bindings;
-    expect(cronJobs(stand, NOW + 15 * 60_000)).toHaveLength(26);
+    expect(cronJobs(stand, NOW + 15 * 60_000)).toHaveLength(27);
   });
 });
