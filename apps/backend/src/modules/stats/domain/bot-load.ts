@@ -1,4 +1,4 @@
-import { MESSAGE_BOTS, type BotLoad } from '@platform/contracts';
+import { BLOCK_BOTS, MESSAGE_BOTS, type BotBlock, type BotLoad } from '@platform/contracts';
 
 // One group of the events of the bots (G85 T1): bot_send by its outcome, queue_ops with the count of
 // operations it stands for, server_error notification_dead by its bot, bot_member blocked or
@@ -21,22 +21,24 @@ const sum = (rows: readonly BotRow[], match: (row: BotRow) => boolean, of: (row:
 // queue a day (docs/122).
 export function botLoadOf({ rows, peaks }: BotEvents, days: number): { bots: BotLoad[]; queueOps: number } {
   const bots = MESSAGE_BOTS.map((bot) => {
-    const of = (name: string, code?: string) =>
+    const sent = (code: string) =>
       sum(
         rows,
-        (row) => row.name === name && row.bot === bot && (code === undefined || row.code === code),
+        (row) => row.name === 'bot_send' && row.bot === bot && row.code === code,
         (row) => row.count,
       );
     return {
       bot,
-      sent: of('bot_send', 'sent'),
-      limited: of('bot_send', 'limited'),
-      dead: of('server_error'),
+      sent: sent('sent'),
+      limited: sent('limited'),
+      dead: sum(
+        rows,
+        (row) => row.name === 'server_error' && row.bot === bot,
+        (row) => row.count,
+      ),
       peak: Math.max(0, ...peaks.filter((peak) => peak.bot === bot).map((peak) => peak.count)),
-      blocked: of('bot_member', 'blocked'),
-      unblocked: of('bot_member', 'unblocked'),
     };
-  }).filter((load) => load.sent + load.limited + load.dead + load.blocked + load.unblocked > 0);
+  }).filter((load) => load.sent + load.limited + load.dead > 0);
   const operations = sum(
     rows,
     (row) => row.name === 'queue_ops',
@@ -44,3 +46,15 @@ export function botLoadOf({ rows, peaks }: BotEvents, days: number): { bots: Bot
   );
   return { bots, queueOps: Math.round(operations / days) };
 }
+
+// The people who blocked each bot or came back to it (G87, docs/191); the bots nobody left are left out.
+export const botBlocksOf = (rows: readonly BotRow[]): BotBlock[] =>
+  BLOCK_BOTS.map((bot) => {
+    const of = (code: string) =>
+      sum(
+        rows,
+        (row) => row.name === 'bot_member' && row.bot === bot && row.code === code,
+        (row) => row.count,
+      );
+    return { bot, blocked: of('blocked'), unblocked: of('unblocked') };
+  }).filter((block) => block.blocked + block.unblocked > 0);

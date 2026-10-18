@@ -2,8 +2,9 @@ import { tashkentDate } from '@platform/contracts';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AppEnv, Bindings } from '../../../env';
+import { recordServerEvent } from '../../analytics';
 import { fromTelegram } from '../../../shared/telegram/webhook-secret';
-import { moveOf } from '../application/channel-life';
+import { lifeKey, moveOf } from '../application/channel-life';
 import { heard, type HeardDeps, type MemberChange } from '../application/my-channels';
 
 export const POSTER_WEBHOOK_PATH = '/telegram/poster';
@@ -48,7 +49,13 @@ export type ChannelChange = MemberChange & { readonly invite: string | null };
 
 const inChannel = (member: Member | undefined) =>
   member !== undefined && (IN_CHANNEL.includes(member.status) || member.is_member === true);
-const keyOf = (chat: Chat) => (chat.username ? `@${chat.username}` : String(chat.id));
+const keyOf = (chat: Chat) => lifeKey(chat.username ? `@${chat.username}` : String(chat.id));
+// A failed count never makes Telegram send the update again: the life of a channel is only numbers.
+const quietly = async (env: Bindings, write: () => Promise<void>) =>
+  write().catch((error: unknown) => {
+    console.error(JSON.stringify({ event: 'channel_life_failed', message: String(error) }));
+    recordServerEvent(env, { name: 'server_error', source: 'poster', code: 'channel_life' });
+  });
 
 // The bot of the posts hears who joins or leaves a channel (docs/176) and the reactions of its posts
 // (G87). Only requests with our secret_token are taken (docs/32); anything else is still answered
@@ -74,13 +81,15 @@ export const posterRoutes = (
       await heard(deps(context.env), heardChange);
       await changed(context.env, { ...heardChange, invite: change.invite_link?.invite_link ?? null });
       const move = moveOf(inChannel(change.old_chat_member), heardChange.member);
-      if (move) await deps(context.env).life.moved(tashkentDate(heardChange.at), keyOf(change.chat), move);
+      const day = tashkentDate(heardChange.at);
+      if (move) await quietly(context.env, () => deps(context.env).life.moved(day, keyOf(change.chat), move));
     }
     const reaction = update.success ? update.data.message_reaction_count : undefined;
     if (reaction) {
       const count = reaction.reactions.reduce((sum, one) => sum + one.total_count, 0);
       const at = reaction.date * SECOND_MS;
-      await deps(context.env).life.reacted(keyOf(reaction.chat), reaction.message_id, count, at);
+      const { life } = deps(context.env);
+      await quietly(context.env, () => life.reacted(keyOf(reaction.chat), reaction.message_id, count, at));
     }
     return context.json({});
   });

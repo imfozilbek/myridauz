@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { serverDataPoint } from '../analytics/domain/data-point';
-import { botLoadOf } from './domain/bot-load';
+import { botBlocksOf, botLoadOf } from './domain/bot-load';
 import { memoryEvents } from './infrastructure/memory-events';
 
 const NOW = Date.parse('2026-10-18T10:00:00Z');
@@ -27,14 +27,14 @@ describe('the bots under load', () => {
     const events = await memoryEvents(rows, () => NOW).bots(2);
     expect(botLoadOf(events, 2)).toEqual({
       bots: [
-        { bot: 'passenger', sent: 4, limited: 1, dead: 0, peak: 3, blocked: 0, unblocked: 0 },
-        { bot: 'poster', sent: 1, limited: 0, dead: 1, peak: 1, blocked: 0, unblocked: 0 },
+        { bot: 'passenger', sent: 4, limited: 1, dead: 0, peak: 3 },
+        { bot: 'poster', sent: 1, limited: 0, dead: 1, peak: 1 },
       ],
       queueOps: 35,
     });
   });
 
-  it('counts the people who blocked a bot or came back, a bot that only lost people too (G87)', async () => {
+  it('counts the people who blocked a bot or came back, apart from the load (G87)', async () => {
     const member = (bot: string, code: string) =>
       serverDataPoint({ name: 'bot_member', source: bot, code }, at(20));
     const rows = [
@@ -43,11 +43,13 @@ describe('the bots under load', () => {
       member('support', 'unblocked'),
       member('driver', 'blocked'),
     ];
-    const { bots } = botLoadOf(await memoryEvents(rows, () => NOW).bots(1), 1);
-    expect(bots).toEqual([
-      { bot: 'driver', sent: 0, limited: 0, dead: 0, peak: 0, blocked: 1, unblocked: 0 },
-      { bot: 'support', sent: 0, limited: 0, dead: 0, peak: 0, blocked: 2, unblocked: 1 },
+    const found = await memoryEvents(rows, () => NOW).bots(1);
+    expect(botBlocksOf(found.rows)).toEqual([
+      { bot: 'driver', blocked: 1, unblocked: 0 },
+      { bot: 'support', blocked: 2, unblocked: 1 },
     ]);
+    // Blocks are no load: «Botlar xabarlari» stays empty.
+    expect(botLoadOf(found, 1).bots).toEqual([]);
   });
 
   it('shows nothing for quiet bots', () => {

@@ -1,4 +1,4 @@
-import type { BotLoad } from '@platform/contracts';
+import type { BotBlock, BotLoad } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { ManageGroup, ManageRow } from '../manage/manage-page';
 
@@ -13,11 +13,9 @@ export function BotsSection({
   readonly queueOps: number;
 }) {
   const { t, formatNumber } = useI18n();
-  // A bot that only lost people (G87) sent nothing: it is in «Botni bloklaganlar» alone.
-  const busy = bots.filter((load) => load.sent + load.limited + load.dead > 0);
   return (
     <ManageGroup title={t('stats.bots.title')}>
-      {busy.map((load) => (
+      {bots.map((load) => (
         <ManageRow
           key={load.bot}
           icon="send"
@@ -37,20 +35,19 @@ export function BotsSection({
 }
 
 // «Botni bloklaganlar» (G87, docs/191): how many people blocked each bot in the period and how many
-// came back to it; only the numbers, never who. The bots nobody left are not shown.
-export function BlocksSection({ bots }: { readonly bots: readonly BotLoad[] }) {
+// came back to it; only the numbers, never who. The bots nobody left are not in the list.
+export function BlocksSection({ blocks }: { readonly blocks: readonly BotBlock[] }) {
   const { t, formatNumber } = useI18n();
-  const left = bots.filter((load) => load.blocked + load.unblocked > 0);
-  if (left.length === 0) return null;
+  if (blocks.length === 0) return null;
   return (
     <ManageGroup title={t('stats.blocks.title')}>
-      {left.map((load) => (
+      {blocks.map((block) => (
         <ManageRow
-          key={load.bot}
+          key={block.bot}
           icon="blocked"
-          title={t(`stats.bots.bot.${load.bot}`)}
-          hint={t('stats.blocks.back', { count: formatNumber(load.unblocked) })}
-          value={formatNumber(load.blocked)}
+          title={t(`stats.bots.bot.${block.bot}`)}
+          hint={t('stats.blocks.back', { count: formatNumber(block.unblocked) })}
+          value={formatNumber(block.blocked)}
         />
       ))}
     </ManageGroup>

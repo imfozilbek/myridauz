@@ -45,7 +45,7 @@ export function StatsSections({ stats, gold }: { readonly stats: Stats; readonly
       ))}
       {stats.events === 'on' ? <ErrorsSections errors={stats.errors} /> : null}
       {stats.events === 'on' ? <BotsSection bots={stats.bots} queueOps={stats.queueOps} /> : null}
-      {stats.events === 'on' ? <BlocksSection bots={stats.bots} /> : null}
+      {stats.events === 'on' ? <BlocksSection blocks={stats.blocks} /> : null}
       <ManageNote>{t('stats.updated', { time: formatTime(new Date(stats.at)) })}</ManageNote>
     </>
   );

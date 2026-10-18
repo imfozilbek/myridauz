@@ -20,6 +20,9 @@ export type ChannelLife = {
 
 export const NO_LIFE: Life = { joined: 0, gone: 0, reactions: 0, topReactions: 0 };
 
+// A public channel is «@name» in any case of letters, as the team typed it or Telegram sends it.
+export const lifeKey = (chat: string) => chat.toLowerCase();
+
 // A change of a member: joined when not in the channel before, gone when not in it any more.
 export const moveOf = (was: boolean, now: boolean): Move | null =>
   was === now ? null : now ? 'joined' : 'gone';

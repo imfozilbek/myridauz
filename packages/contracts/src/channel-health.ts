@@ -22,7 +22,7 @@ export const channelHealthSchema = z.object({
       checkedAt: z.number().int().nullable(),
       failed: count,
       arrivals: count,
-      // The site goes out before the Worker (lesson 314): an older answer has none of them yet.
+      // G87 (docs/191). A Worker rolled back to before G87 answers without them: 0 then.
       joined: count.default(0),
       gone: count.default(0),
       reactions: count.default(0),

@@ -69,41 +69,24 @@ export const statsOf = (period: StatsPeriod, events: Stats['events'] = 'on'): St
           },
         ]
       : [],
-  // G85 T1: the passenger bot met one 429, the bot of the channels lost one post. G87: three people
-  // blocked the passenger bot and one came back.
+  // G85 T1: the passenger bot met one 429, the bot of the channels lost one post.
   bots:
     events === 'on'
       ? [
-          {
-            bot: 'passenger',
-            sent: period === 'day' ? 412 : 2730,
-            limited: 1,
-            dead: 0,
-            peak: 18,
-            blocked: period === 'day' ? 3 : 19,
-            unblocked: 1,
-          },
-          {
-            bot: 'driver',
-            sent: period === 'day' ? 160 : 1104,
-            limited: 0,
-            dead: 0,
-            peak: 6,
-            blocked: 1,
-            unblocked: 0,
-          },
-          {
-            bot: 'poster',
-            sent: period === 'day' ? 31 : 214,
-            limited: 0,
-            dead: 1,
-            peak: 2,
-            blocked: 0,
-            unblocked: 0,
-          },
+          { bot: 'passenger', sent: period === 'day' ? 412 : 2730, limited: 1, dead: 0, peak: 18 },
+          { bot: 'driver', sent: period === 'day' ? 160 : 1104, limited: 0, dead: 0, peak: 6 },
+          { bot: 'poster', sent: period === 'day' ? 31 : 214, limited: 0, dead: 1, peak: 2 },
         ]
       : [],
   queueOps: events === 'on' ? 96 : 0,
+  // G87: three people blocked the passenger bot and one came back, one blocked the driver bot.
+  blocks:
+    events === 'on'
+      ? [
+          { bot: 'passenger', blocked: period === 'day' ? 3 : 19, unblocked: 1 },
+          { bot: 'driver', blocked: 1, unblocked: 0 },
+        ]
+      : [],
   // G87: what people feel. The ratings and complaints come from the database, the rest from events.
   ratings: {
     count: period === 'day' ? 18 : 121,

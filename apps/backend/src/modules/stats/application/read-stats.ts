@@ -1,6 +1,6 @@
 import { FUNNELS, type Funnel, type Stats, type StatsPeriod } from '@platform/contracts';
 import { arrivalsOf } from '../domain/arrivals';
-import { botLoadOf } from '../domain/bot-load';
+import { botBlocksOf, botLoadOf } from '../domain/bot-load';
 import { FUNNEL_EVENTS, funnelOf } from '../domain/funnels';
 import {
   complaintReasonCountsOf,
@@ -37,8 +37,11 @@ export const funnelsOf = (deps: StatsDeps, period: StatsPeriod): Promise<Funnel[
     return FUNNELS.map((id) => funnelOf(id, counters));
   });
 
-type EventsPart = Pick<Stats, 'events' | 'funnels' | 'errors' | 'bots' | 'queueOps' | 'leaving' | 'opens'>;
-const NO_EVENTS = { funnels: [], errors: [], bots: [], queueOps: 0, leaving: [], opens: [] };
+type EventsPart = Pick<
+  Stats,
+  'events' | 'funnels' | 'errors' | 'bots' | 'queueOps' | 'blocks' | 'leaving' | 'opens'
+>;
+const NO_EVENTS = { funnels: [], errors: [], bots: [], queueOps: 0, blocks: [], leaving: [], opens: [] };
 // G87 (docs/191): the reasons of leaving and the first screens of the sessions, in one query.
 const FEEL_EVENTS = [LEAVE_EVENT, FIRST_SCREEN];
 
@@ -52,7 +55,11 @@ async function eventsPart(deps: StatsDeps, period: StatsPeriod, at: number): Pro
       funnelsOf(deps, period),
       cached(deps.cache, `errors:${period}`, at, () => events.topErrors(days)),
       // The bots under load (G85 T1, docs/122).
-      cached(deps.cache, `bots:${period}`, at, async () => botLoadOf(await events.bots(days), days)),
+      // G87: the people who blocked the bots come in the same answer of Analytics Engine.
+      cached(deps.cache, `bots:${period}`, at, async () => {
+        const found = await events.bots(days);
+        return { ...botLoadOf(found, days), blocks: botBlocksOf(found.rows) };
+      }),
       cached(deps.cache, `feel:${period}`, at, async () => {
         const counters = await events.counters(days, FEEL_EVENTS);
         return { leaving: leavingOf(counters), opens: opensOf(counters) };

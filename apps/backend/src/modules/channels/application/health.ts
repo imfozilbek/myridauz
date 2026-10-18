@@ -8,7 +8,7 @@ import {
   type Channel,
   type ChannelHealth,
 } from '@platform/contracts';
-import { lifeOf, NO_LIFE, type ChannelLife } from './channel-life';
+import { lifeKey, lifeOf, NO_LIFE, type ChannelLife } from './channel-life';
 
 // What the Cron last read from Telegram about a channel (G75).
 export type HealthRow = {
@@ -60,7 +60,7 @@ export async function checkChannels(deps: HealthDeps): Promise<void> {
     ]);
     const checkedAt = deps.now();
     await deps.store.save({ channel: chat, subscribers, canPost, checkedAt, appLink });
-    if (subscribers !== null) await deps.life.counted(tashkentDate(checkedAt), chat, subscribers);
+    if (subscribers !== null) await deps.life.counted(tashkentDate(checkedAt), lifeKey(chat), subscribers);
   }
 }
 
@@ -93,7 +93,7 @@ export async function channelHealth(deps: HealthDeps): Promise<ChannelHealth> {
         checkedAt: row?.checkedAt ?? null,
         failed: failed.get(chat) ?? 0,
         arrivals: arrivals.get(channelVia(chat)) ?? 0,
-        ...(life.get(chat) ?? NO_LIFE),
+        ...(life.get(lifeKey(chat)) ?? NO_LIFE),
       };
     }),
   };
