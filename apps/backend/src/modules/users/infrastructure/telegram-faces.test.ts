@@ -16,6 +16,7 @@ function notifier() {
     avatars: { get: async () => undefined, put: async () => undefined, delete: async () => undefined },
     send: async (jobs) => void sent.push(...jobs),
     queue: async () => undefined,
+    nameOf: async () => null,
   });
   return { faces, sent };
 }

@@ -3,4 +3,4 @@ export const LEGAL_DOCUMENTS = ['offer', 'privacy', 'consent'] as const;
 export type LegalDocument = (typeof LEGAL_DOCUMENTS)[number];
 
 // The current edition: a new text gets a new version and date (docs/30).
-export const LEGAL_EDITION = { version: '1.7', date: '2026-10-15' } as const;
+export const LEGAL_EDITION = { version: '1.8', date: '2026-10-18' } as const;

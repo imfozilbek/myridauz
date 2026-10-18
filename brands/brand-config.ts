@@ -89,6 +89,15 @@ export type BrandChannel = {
   readonly page?: string;
 };
 
+type BotNames = {
+  readonly passenger: string;
+  readonly driver: string;
+  readonly admin: string;
+  readonly support: string;
+  // The main bot of the waitlist and its questionnaire (G83, docs/181).
+  readonly main: string;
+};
+
 export type BrandConfig = PeopleRules & {
   readonly id: string;
   readonly name: string;
@@ -104,14 +113,10 @@ export type BrandConfig = PeopleRules & {
   readonly regionPhotos: boolean;
   readonly app?: AppName; // set by brandForApp: the colors and the drawings of one Mini App
   // Telegram usernames of the bots (docs/02, docs/46): deep links between them; support answers people (docs/50).
-  readonly bots: {
-    readonly passenger: string;
-    readonly driver: string;
-    readonly admin: string;
-    readonly support: string;
-    // The main bot of the waitlist and its questionnaire (G83, docs/181).
-    readonly main: string;
-  };
+  readonly bots: BotNames;
+  // An environment of the team only (owner, 17.10.2026, docs/179): anyone outside the team is sent
+  // to these bots of production; null where people are welcome.
+  readonly teamOnly: BotNames | null;
   // Telegram channels of the directions (docs/15, docs/176): a trip goes to the channels of each end.
   readonly channels: readonly BrandChannel[];
   // The public main channel, without "@": a guide to every channel of the directions (docs/176).
@@ -132,6 +137,6 @@ export type EnvironmentName = 'internal' | 'production';
 // What differs between them: the name, the address, the bots, the channels. The rest is one for both.
 export type BrandEnvironment = Pick<
   BrandConfig,
-  'name' | 'domain' | 'indexed' | 'bots' | 'channels' | 'mainChannel' | 'posts'
+  'name' | 'domain' | 'indexed' | 'bots' | 'teamOnly' | 'channels' | 'mainChannel' | 'posts'
 >;
 export type BrandBase = Omit<BrandConfig, keyof BrandEnvironment>;

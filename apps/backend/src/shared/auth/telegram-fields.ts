@@ -4,6 +4,8 @@ import { z } from 'zod';
 const userSchema = z.object({
   id: z.number().int().positive(),
   first_name: z.string(),
+  // The public name of the account, if the person has one: the team sees it in the checks (owner, 17.10.2026).
+  username: z.string().max(64).optional(),
   allows_write_to_pm: z.boolean().optional(),
 });
 const contactSchema = z.object({
@@ -14,6 +16,7 @@ const contactSchema = z.object({
 export type TelegramUser = {
   readonly id: number;
   readonly firstName: string;
+  readonly username: string | null;
   readonly allowsWriteToPm: boolean;
 };
 export type TelegramContact = { readonly userId: number; readonly phone: string };
@@ -30,7 +33,12 @@ function readJson<T>(fields: ReadonlyMap<string, string>, key: string, schema: z
 export function readTelegramUser(fields: ReadonlyMap<string, string>): TelegramUser | undefined {
   const user = readJson(fields, 'user', userSchema);
   return (
-    user && { id: user.id, firstName: user.first_name, allowsWriteToPm: user.allows_write_to_pm ?? false }
+    user && {
+      id: user.id,
+      firstName: user.first_name,
+      username: user.username ?? null,
+      allowsWriteToPm: user.allows_write_to_pm ?? false,
+    }
   );
 }
 

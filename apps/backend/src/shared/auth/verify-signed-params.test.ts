@@ -14,8 +14,20 @@ describe('verifySignedParams', () => {
     expect(result.ok && readTelegramUser(result.fields)).toEqual({
       id: 42,
       firstName: 'Ali',
+      username: null,
       allowsWriteToPm: true,
     });
+  });
+
+  // The public name of the account, for the checks of the team (owner, 17.10.2026).
+  it('reads the public name of the account when the person has one', async () => {
+    const data = await signTelegramData(
+      TOKEN,
+      { user: { id: 43, first_name: 'Vali', username: 'vali_uz' } },
+      TEST_NOW,
+    );
+    const result = await verifySignedParams(data, options);
+    expect(result.ok && readTelegramUser(result.fields)?.username).toBe('vali_uz');
   });
 
   it('rejects initData of another bot', async () => {

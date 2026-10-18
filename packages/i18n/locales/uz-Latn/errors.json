@@ -54,6 +54,7 @@
   "shares.too_many": "Bu safarni kuzatuvchilar soni chegaraga yetdi.",
   "pitaks.not_found": "Bu pitak topilmadi. Roʻyxatni yangilang.",
   "auth.not_admin": "Bu boʻlim faqat jamoa uchun.",
+  "auth.moved": "Bu ilova faqat jamoa uchun.",
   "users.face_decided": "Bu rasm allaqachon koʻrib chiqilgan. Roʻyxatni yangilang.",
   "trips.too_early_to_depart": "Hali erta. «Yoʻlga chiqdim» safar vaqtidan 1 soat oldin ishlaydi.",
   "trips.already_departed": "Yoʻlga chiqqaningiz allaqachon belgilangan.",

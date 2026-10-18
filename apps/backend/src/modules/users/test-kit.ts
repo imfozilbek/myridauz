@@ -1,6 +1,7 @@
 import { createMemoryImages } from '../../shared/storage/memory-images';
 import type { TripRelations, UsersDeps } from './application/ports';
 import { createMemoryUsers } from './infrastructure/memory-stores';
+import { createMemoryTelegramNames } from './infrastructure/telegram-names';
 
 // Test helper: the users module in memory, and what it told the team and the person.
 export const NOW = 1_000_000;
@@ -16,6 +17,7 @@ export const jpeg = (size: number) => ({ body: new ArrayBuffer(size), type: 'ima
 export const noFaces = {
   faceLog: { add: async () => undefined },
   faces: { uploaded: async () => undefined, rejected: async () => undefined, decided: async () => undefined },
+  names: createMemoryTelegramNames(),
 };
 
 export function setup(relation: Awaited<ReturnType<TripRelations['relation']>> = 'none') {
@@ -33,6 +35,7 @@ export function setup(relation: Awaited<ReturnType<TripRelations['relation']>> =
       rejected: async (user, reason) => void told.push(`rejected:${user.id}:${reason}`),
       decided: async () => void told.push('queue'),
     },
+    names: createMemoryTelegramNames(),
     riding: async () => false,
     now: () => NOW,
     newId: () => `id${(id += 1)}`,
