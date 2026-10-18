@@ -104,6 +104,9 @@ export const waitingFaces = async (env: Bindings) =>
   }));
 export const decideFaceOf = (env: Bindings, moderatorId: number, userId: number, decision: FaceDecision) =>
   decideFace(usersDeps(env), moderatorId, userId, decision);
+// When the current face photo of a person came: a card of an older photo is stale (owner, 17.10.2026).
+export const faceAtOf = async (env: Bindings, userId: number) =>
+  (await usersDeps(env).users.find(userId))?.face?.at ?? null;
 // The invite to the channel of the zone goes once per person (docs/119).
 export const claimZoneInvite = (env: Bindings, userId: number) =>
   usersDeps(env).users.claimZoneInvite(userId, Date.now());

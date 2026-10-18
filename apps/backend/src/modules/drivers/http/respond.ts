@@ -18,8 +18,8 @@ export type DriversError = keyof typeof STATUS;
 
 export const fail = (context: Context<AppEnv>, error: DriversError) => context.json({ error }, STATUS[error]);
 
-// Personal photos: a short private cache only (docs/30).
+// Personal photos, never kept (docs/30): the team checks the photo that came last (owner, 17.10.2026).
 export const image = (context: Context<AppEnv>, found: StoredImage | undefined) =>
   found
-    ? context.body(found.body, 200, { 'content-type': found.type, 'cache-control': 'private, max-age=300' })
+    ? context.body(found.body, 200, { 'content-type': found.type, 'cache-control': 'private, no-store' })
     : fail(context, 'drivers.not_found');

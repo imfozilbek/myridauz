@@ -3,7 +3,7 @@ import type { AppEnv, Bindings } from '../../../env';
 import { readAvatar } from '../application/avatar';
 import type { UsersDeps } from '../application/ports';
 import { getPublicProfile } from '../application/profile';
-import { callerOf, fail } from './respond';
+import { fail } from './respond';
 
 // Private cache: the photo is personal data, shared caches must not keep it (docs/30). An hour: the
 // same faces in the lists ask the Worker once an hour, not every 5 minutes (G56, docs/117).
@@ -19,7 +19,10 @@ export function userRoutes(deps: (env: Bindings) => UsersDeps) {
       return result.ok ? context.json(result.profile) : fail(context, result.error);
     })
     .get('/users/:id{[0-9a-f]+}/avatar', async (context) => {
-      const result = await readAvatar(deps(context.env), callerOf(context), await ownerOf(context));
+      const { user, isAdmin, app } = context.get('session');
+      // The team sees photos in its own Mini App only; a driver never sees a passenger (docs/05).
+      const viewer = { id: user.id, isAdmin: isAdmin && app === 'admin', asDriver: app === 'driver' };
+      const result = await readAvatar(deps(context.env), viewer, await ownerOf(context));
       if (!result.ok) return fail(context, result.error);
       return context.body(result.image.body, 200, {
         'content-type': result.image.type,

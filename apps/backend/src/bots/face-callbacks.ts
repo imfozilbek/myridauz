@@ -1,6 +1,7 @@
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import {
   decideFaceOf,
+  faceAtOf,
   faceCardText,
   faceDecisionLine,
   faceMenu,
@@ -21,9 +22,14 @@ export async function onFaceButton(context: BotContext, query: BotCallback, toke
   const edit = (method: string, params: object) =>
     callTelegram(context.fetch, token, method, { ...target, ...params });
   if (action.kind !== 'decide') {
-    const markup = action.kind === 'menu' ? faceMenu(action.userId) : faceReasonMenu(action.userId);
+    const markup = action.kind === 'menu' ? faceMenu(action) : faceReasonMenu(action);
     await edit('editMessageReplyMarkup', { reply_markup: markup });
     return answer(query);
+  }
+  // A card of an older photo: the person put a new one, its own card came after (owner, 17.10.2026).
+  if (action.at !== null && action.at !== (await faceAtOf(context.env, action.userId))) {
+    await edit('editMessageReplyMarkup', { reply_markup: { inline_keyboard: [] } });
+    return answer(query, t('bot.face.changed'));
   }
   const result = await decideFaceOf(context.env, query.from.id, action.userId, action.decision);
   if (!result.ok) {

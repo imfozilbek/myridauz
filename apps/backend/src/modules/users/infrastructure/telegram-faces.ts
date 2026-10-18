@@ -34,7 +34,8 @@ export function telegramFaces(wiring: Wiring): FaceNotifier {
       if (!wiring.adminToken || !photo) return;
       // The photo is read once: each member gets the same bytes.
       const bytes = { body: await new Response(photo.body).arrayBuffer(), type: photo.type };
-      const card = { caption: faceCardText(user.firstName), markup: faceMenu(user.id) };
+      const markup = faceMenu({ userId: user.id, at: user.face?.at ?? null });
+      const card = { caption: faceCardText(user.firstName), markup };
       for (const chatId of await wiring.recipients(user.id)) {
         // A member who never opened the bot must not stop the upload of the photo.
         await sendPhoto(wiring.fetch, wiring.adminToken, chatId, bytes, card).catch((error: unknown) =>

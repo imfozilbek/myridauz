@@ -80,6 +80,12 @@ describe('registration and profile over HTTP', () => {
     expect(mine.status).toBe(200);
     expect(mine.headers.get('cache-control')).toBe('private, max-age=3600');
     expect((await call(`/users/${await pid(40)}/avatar`, 41)).status).toBe(404);
+    // The team sees a photo in its own Mini App only, never in the one of a driver (owner, 17.10.2026).
+    const owner = await pid(40);
+    const asTeam = (app: string) => call(`/users/${owner}/avatar`, 900, { app });
+    expect((await asTeam('admin')).status).toBe(200);
+    expect((await asTeam('driver')).status).toBe(404);
+    expect((await asTeam('passenger')).status).toBe(404);
     const big = { ...put, headers: { 'content-type': 'image/jpeg', 'content-length': String(400 * 1024) } };
     expect((await call('/me/avatar', 40, big)).status).toBe(413);
     const access = {
