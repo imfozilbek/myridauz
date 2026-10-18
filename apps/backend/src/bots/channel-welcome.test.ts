@@ -10,10 +10,9 @@ afterEach(() => vi.restoreAllMocks());
 
 const brand = loadBrand();
 const MAIN = `@${brand.mainChannel}`;
+const FIRST = brand.channels[0]?.chat ?? '';
 const ALL = 2 * (1 + brand.channels.length);
-// 11:00 and 01:00 in Tashkent: the day and the night of the bots (docs/122).
 const DAY = Date.UTC(2026, 9, 18, 6);
-const NIGHT = Date.UTC(2026, 9, 18, 20);
 
 type Post = {
   chat_id: string;
@@ -23,14 +22,14 @@ type Post = {
   reply_markup: { inline_keyboard: { text: string; url: string }[][] };
 };
 
-// Telegram that refuses the chats of `refused` with 400 and answers 429 from the post number `busyAt`.
-function telegram(refused: readonly string[] = [], busyAt = Infinity) {
+// Telegram that answers the chats of `answers` with their status, and 429 from the post number `busyAt`.
+function telegram(answers: Readonly<Record<string, number>> = {}, busyAt = Infinity) {
   const posts: Post[] = [];
   const fetch = async (_url: string, init?: RequestInit) => {
     const post = JSON.parse(String(init?.body)) as Post;
     posts.push(post);
-    if (posts.length >= busyAt) return new Response('{}', { status: 429 });
-    return new Response('{}', { status: refused.includes(post.chat_id) ? 400 : 200 });
+    const status = posts.length >= busyAt ? 429 : (answers[post.chat_id] ?? 200);
+    return Response.json({ ok: status === 200, result: { message_id: posts.length } }, { status });
   };
   return { posts, fetch, where: () => posts.map((post) => post.chat_id) };
 }
@@ -40,7 +39,8 @@ const envWith = (values: object = {}) =>
 
 describe('the welcomes of the bots in the channels (owner, 18.10.2026)', () => {
   it('posts both welcomes to the main channel first, then a few channels a tick, never twice', async () => {
-    const env = envWith();
+    const db = testD1();
+    const env = envWith({ DB: db });
     const first = telegram();
     await postChannelWelcomes(env, first.fetch, DAY);
     const [passenger, driver] = first.posts;
@@ -52,11 +52,18 @@ describe('the welcomes of the bots in the channels (owner, 18.10.2026)', () => {
       reply_markup: {
         inline_keyboard: [[{ text: 'Ochish', url: botStartLink(brand.bots.passenger, channelVia(MAIN)) }]],
       },
+      // In a channel only the board of the day sounds (docs/122).
+      disable_notification: true,
     });
     expect(driver?.photo).toBe(welcomePicture(brand, 'driver'));
     expect(driver?.reply_markup.inline_keyboard[0]?.[0]?.url).toBe(
       botStartLink(brand.bots.driver, channelVia(MAIN)),
     );
+    const kept = await db
+      .prepare('SELECT message_id FROM channel_welcomes WHERE chat = ? AND role = ?')
+      .bind(MAIN, 'driver')
+      .first<{ message_id: number }>();
+    expect(kept?.message_id).toBe(2);
     const sent = [...first.where()];
     for (let tick = 1; tick * first.posts.length < ALL; tick += 1) {
       const next = telegram();
@@ -70,22 +77,29 @@ describe('the welcomes of the bots in the channels (owner, 18.10.2026)', () => {
     expect(after.posts).toEqual([]);
   });
 
-  it('tries a refused channel again an hour later, stops at 429, posts at night without sound', async () => {
+  it('tries a refused channel an hour later, stops at 429, never posts again after a lost answer', async () => {
     vi.spyOn(console, 'warn').mockImplementation(() => undefined);
     const env = envWith();
-    const refusing = telegram([MAIN]);
-    await postChannelWelcomes(env, refusing.fetch, NIGHT);
-    expect(refusing.posts.every((post) => post.disable_notification === true)).toBe(true);
+    await postChannelWelcomes(env, telegram({ [MAIN]: 400, [FIRST]: 500 }).fetch, DAY);
     const soon = telegram();
-    await postChannelWelcomes(env, soon.fetch, NIGHT + 1);
+    await postChannelWelcomes(env, soon.fetch, DAY + 1);
     expect(soon.where()).not.toContain(MAIN);
-    const busy = telegram([], 1);
-    await postChannelWelcomes(env, busy.fetch, NIGHT + HOUR_MS + 1);
+    const busy = telegram({}, 1);
+    await postChannelWelcomes(env, busy.fetch, DAY + HOUR_MS + 1);
     expect(busy.where()).toEqual([MAIN]);
     const later = telegram();
-    await postChannelWelcomes(env, later.fetch, NIGHT + HOUR_MS + 2);
-    expect(later.where()[0]).toBe(MAIN);
-    expect(later.posts[0]?.photo).toBe(welcomePicture(brand, 'driver'));
+    await postChannelWelcomes(env, later.fetch, DAY + 2 * HOUR_MS + 2);
+    expect(later.where().slice(0, 2)).toEqual([MAIN, MAIN]);
+    expect([...soon.where(), ...busy.where(), ...later.where()]).not.toContain(FIRST);
+  });
+
+  it('posts each welcome once when two ticks run at once', async () => {
+    const env = envWith();
+    const [one, two] = [telegram(), telegram()];
+    await Promise.all([postChannelWelcomes(env, one.fetch, DAY), postChannelWelcomes(env, two.fetch, DAY)]);
+    const sent = [...one.posts, ...two.posts].map((post) => `${post.chat_id} ${post.photo}`);
+    expect(sent).toHaveLength(12);
+    expect(new Set(sent).size).toBe(12);
   });
 
   it('waits for the switch of the posts and the token of the bot of the posts', async () => {

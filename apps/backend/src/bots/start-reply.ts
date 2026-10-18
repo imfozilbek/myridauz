@@ -34,14 +34,14 @@ const becomeDriver = (brand: BrandConfig) => ({
   url: `https://t.me/${brand.bots.driver}?start=${FROM_PASSENGER}`,
 });
 
-// The words of a public bot's welcome: in its chat after /start and on its post in the main channel
-// (owner, 18.10.2026).
+// The words of a public bot's welcome: in its chat after /start and on its posts in the channels; the
+// bonus is every grant of the welcome promo together, «…gacha» (owner, 18.10.2026).
 export function welcomeCaption(brand: BrandConfig, role: 'passenger' | 'driver', payload = '') {
   const hello =
     role === 'driver' && payload === FROM_PASSENGER ? 'bot.driver.helloFromPassenger' : 'bot.hello';
   const about =
     role === 'driver'
-      ? t('bot.driver.welcome', { bonus: formatMoney(brand.promo.amount) })
+      ? t('bot.driver.welcome', { bonus: formatMoney(brand.promo.amount * brand.promo.grants) })
       : t('bot.passenger.welcome');
   return [t(hello, { brand: brand.name }), about].join('\n\n');
 }

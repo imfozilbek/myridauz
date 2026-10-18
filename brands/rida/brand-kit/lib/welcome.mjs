@@ -5,7 +5,7 @@ import { icon } from '../promo/icons.mjs';
 import { squircle } from './brand.mjs';
 import { C, COMBOS, svg } from './palette.mjs';
 import { NAME } from './production.mjs';
-import { markR, textCentered } from './text.mjs';
+import { layout, markR, textCentered } from './text.mjs';
 import { brandConfig } from '../../brand.config.ts';
 
 const hours = ({ from, to }) => `${from}:00 dan ${to}:00 gacha`;
@@ -19,7 +19,7 @@ const ROLES = {
       ['CarFront', 'Safar bir daqiqada'],
       ['Users', 'Yoʻlovchi sizni topadi'],
       ['Banknote', 'Yoʻl xarajati qaytadi'],
-      ['Gift', `${money(brandConfig.promo.amount)} bonus`],
+      ['Gift', `${money(brandConfig.promo.amount * brandConfig.promo.grants)}gacha\nbonus`],
     ],
   },
   // The passenger bot (owner request 03.10.2026): the same picture on the brand teal.
@@ -60,11 +60,20 @@ function mainWelcome(soon) {
   return svg(1280, 720, body);
 }
 
-function point(look, [name, line], index) {
+// A long sign goes on two lines, both of one size: the widest line sets it (docs/121).
+const LINE = 52;
+const SIGN_WIDTH = 360;
+function point(look, [name, sign], index) {
   const x = 80 + (index % 2) * 570, y = 300 + Math.floor(index / 2) * 190;
+  const lines = sign.split('\n');
+  const widths = lines.map((line) => layout(line, { weight: 600 }).width);
+  const widest = Math.max(...widths);
   return `<rect x="${x}" y="${y}" width="550" height="160" rx="36" fill="${look.card ?? C.white}"/>` +
     squircle(x + 28, y + 28, 104, look.tile) + icon(name, x + 80, y + 80, 60, look.sign, 2.2) +
-    textCentered(line, { cx: x + 345, cy: y + 80, h: 34, fill: C.deep, weight: 600, maxWidth: 360 });
+    lines.map((line, at) => textCentered(line, {
+      cx: x + 345, cy: y + 80 + (at - (lines.length - 1) / 2) * LINE, h: 34, fill: C.deep, weight: 600,
+      maxWidth: (SIGN_WIDTH * (widths[at] ?? widest)) / widest,
+    })).join('');
 }
 
 // The welcomes the bots send (apps/backend start-reply.ts) and the version of a picture: its drawing,

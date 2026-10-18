@@ -1,9 +1,9 @@
 import type { BrandConfig } from '@platform/brands';
-import { botStartLink, channelVia, HOUR_MS, isQuietTime } from '@platform/contracts';
+import { botStartLink, channelVia, HOUR_MS } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../env';
 import { brandOf } from '../shared/brand/brand-of';
-import { callTelegram, sendFlags, type Fetch } from '../shared/telegram/telegram-api';
+import { askTelegram, sendFlags, type Fetch } from '../shared/telegram/telegram-api';
 import { welcomeCaption, welcomePicture } from './start-reply';
 
 const { t } = createI18n(DEFAULT_LOCALE);
@@ -17,8 +17,10 @@ type Role = (typeof ROLES)[number];
 const PER_TICK = 12;
 // A channel that refused (the bot is not its admin yet) waits, so it does not hold the others.
 const RETRY_MS = HOUR_MS;
+const REFUSED = /_4\d\d$/u;
 const TOO_MANY = '_429';
 
+// Without sound: in a channel only the board of the day sounds (docs/122).
 const channelWelcome = (brand: BrandConfig, role: Role, chat: string) => ({
   chat_id: chat,
   photo: welcomePicture(brand, role),
@@ -26,15 +28,18 @@ const channelWelcome = (brand: BrandConfig, role: Role, chat: string) => ({
   reply_markup: {
     inline_keyboard: [[{ text: t('bot.open'), url: botStartLink(brand.bots[role], channelVia(chat)) }]],
   },
+  ...sendFlags({ quiet: true }),
 });
 
-// Table channel_welcomes (migration 0074): a welcome is taken before its post, so two ticks never
-// post it twice; a refused one is taken again after RETRY_MS.
+// Table channel_welcomes (migration 0074). A welcome counts as posted once taken, so neither two ticks
+// nor a lost answer of Telegram post it twice: a double in a channel is seen by all, a lost one by
+// none. Only a post Telegram refused (4xx) is given back, and taken again after RETRY_MS.
 const DONE = 'SELECT chat, role FROM channel_welcomes WHERE posted_at IS NOT NULL OR tried_at > ?';
-const TAKE = `INSERT INTO channel_welcomes (chat, role, tried_at) VALUES (?1, ?2, ?3)
-  ON CONFLICT (chat, role) DO UPDATE SET tried_at = excluded.tried_at
+const TAKE = `INSERT INTO channel_welcomes (chat, role, tried_at, posted_at) VALUES (?1, ?2, ?3, ?3)
+  ON CONFLICT (chat, role) DO UPDATE SET tried_at = excluded.tried_at, posted_at = excluded.posted_at
   WHERE posted_at IS NULL AND tried_at <= ?4`;
-const POSTED = 'UPDATE channel_welcomes SET posted_at = ? WHERE chat = ? AND role = ?';
+const KEEP = 'UPDATE channel_welcomes SET message_id = ? WHERE chat = ? AND role = ?';
+const GIVE_BACK = 'UPDATE channel_welcomes SET posted_at = NULL WHERE chat = ? AND role = ?';
 
 // True when this tick took the welcome: a new one, or one refused RETRY_MS ago.
 async function take(db: D1Database, chat: string, role: Role, now: number): Promise<boolean> {
@@ -65,12 +70,18 @@ export async function postChannelWelcomes(env: Bindings, fetch: Fetch, now: numb
   for (const { chat, role } of due.slice(0, PER_TICK)) {
     if (!(await take(db, chat, role, now))) continue;
     try {
-      const post = { ...channelWelcome(brand, role, chat), ...sendFlags({ quiet: isQuietTime(now) }) };
-      await callTelegram(fetch, token, 'sendPhoto', post);
-      await db.prepare(POSTED).bind(now, chat, role).run();
+      const welcome = channelWelcome(brand, role, chat);
+      const post = await askTelegram<{ message_id: number }>(fetch, token, 'sendPhoto', welcome);
+      await db
+        .prepare(KEEP)
+        .bind(post?.message_id ?? null, chat, role)
+        .run();
     } catch (error) {
-      console.warn(JSON.stringify({ event: 'channel_welcome_waits', chat, role, message: String(error) }));
-      if (String(error).endsWith(TOO_MANY)) return;
+      const message = String(error);
+      console.warn(JSON.stringify({ event: 'channel_welcome_failed', chat, role, message }));
+      if (!REFUSED.test(message)) continue;
+      await db.prepare(GIVE_BACK).bind(chat, role).run();
+      if (message.endsWith(TOO_MANY)) return;
     }
   }
 }
