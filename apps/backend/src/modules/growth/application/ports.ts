@@ -30,7 +30,6 @@ export type CardInput = {
 
 export type GrowthDeps = {
   readonly store: GrowthStore;
-  readonly joinedAt: (userId: number) => Promise<number | undefined>;
   readonly passengerBot: string;
   readonly now: () => number;
 };

@@ -83,7 +83,6 @@
 | Цена водителя (`market.price.hint`) | Tavsiya: {price}. Bu yoʻl xarajatining bir kishiga toʻgʻri keladigan qismi. | Tavsiya: {price}. |
 | «Haydovchi boʻling» (`home.becomeDriver.hint`) | Mashinangiz bormi? Xarajatni boʻling | Mashinangiz bormi? Yoʻlovchilar sizni topadi |
 | Момент водителя (`growth.why.driver.title`) | Joy toʻlsa, yoʻl xarajati koʻproq boʻlinadi. | Yoʻlovchilar sizni topadi. |
-| Карточка момента (`growth.fact.join`) | Birga borish, xarajatni boʻlish | Viloyatlararo birga safarlar |
 | История для соцсетей, рекламное видео (бренд-пакет) | Yoʻl xarajatini birga koʻtaring; Yoʻl xarajati hammaga boʻlinadi | Narxni oʻzingiz belgilaysiz; Tekshirilgan haydovchilar |
 
 - Не тронуто: оферта (`legal.offer.*`, юридический текст, `30`) и подписи сумм водителя «yoʻl xarajati» (`driverTrip.month.costs`, `driverAfter.done.sum`, урок №2).
@@ -91,3 +90,5 @@
 ## Удалено
 
 - `share.sendHint` («Yaqinlaringiz safarni kuzatib boradi»): нигде не показывается.
+- Праздник после регистрации (решение владельца 18.10.2026): `growth.title.join`, `lead.join`, `why.join.*`, `phrase.join.*`, `fact.join`, `toFriends` («Doʻstlarimga yuborish»).
+- «Rost»: петля `share-join` теперь называется «Yana ulashish» (`rost.loop.share-join`, тот же текст, что у кнопки `impact.share`); было «Roʻyxatdan keyin».

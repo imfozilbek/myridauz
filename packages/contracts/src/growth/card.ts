@@ -13,6 +13,3 @@ export function momentKeys(moment: ShareMoment, phrase: number) {
     link: `growth.link.${moment}`,
   } as const;
 }
-
-// The side of a moment: its card goes from the app of that side.
-export const momentSide = (moment: ShareMoment) => (moment === 'driver' ? 'driver' : 'passenger');

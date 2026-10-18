@@ -11,9 +11,9 @@ import { approvedDriver, register } from './seed';
 import { openAs, outsideCalls, type Person } from './stand-kit';
 import { runCron, standSql } from './stand-tools';
 
-// G69 (docs/123) on the whole local Rida, Android and iOS: the celebration after the registration, the
-// loops 2 and 3, no celebration after the review (owner decision 15.10.2026), «Sizning taʼsiringiz»,
-// the QR of a new driver and «Rost» of the owner. The shots go to screenshots/stand/g69/ (docs/33).
+// G69 (docs/123) on the whole local Rida, Android and iOS: no celebration after the registration (owner
+// decision 18.10.2026) nor after the review (15.10.2026), the loops 2 and 3, «Sizning taʼsiringiz», the
+// QR of a new driver and «Rost» of the owner. The shots go to screenshots/stand/g69/ (docs/33).
 const { t } = createI18n(DEFAULT_LOCALE);
 const brand = loadBrand().name;
 const HOUR = 60 * MINUTE;
@@ -48,15 +48,16 @@ test.beforeAll(async () => {
   await runCron();
 });
 
-test('the passenger: the celebrations, the group of the district and the free seats', async ({ browser }) => {
+test('the passenger: no celebrations, the group of the district and the free seats', async ({ browser }) => {
   for (const platform of PLATFORMS) {
     const passenger = PASSENGERS[platform];
     uncelebrate(passenger);
+    // Right after the registration: the main screen, no celebration (owner decision 18.10.2026).
     const first = await phone(browser);
     await openAs(first, 'passenger', passenger, { platform });
-    await expect(first.getByText(t('growth.title.join', { brand }))).toBeVisible();
-    await shot(first, `1-join-${platform}`, true);
-    await later(first);
+    await expect(first.getByText(t('home.chats.title'))).toBeVisible();
+    await expect(first.getByRole('button', { name: t('growth.later') })).toHaveCount(0);
+    await shot(first, `1-no-join-${platform}`);
     await first.context().close();
     // Loop 2: the request with no offer goes into the group of the district.
     const request = await askRide(passenger);
