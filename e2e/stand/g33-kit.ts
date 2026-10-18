@@ -3,6 +3,7 @@ import { createChatClient, createModerationClient } from '@platform/api-client';
 import { TEXT } from '../apps';
 import { openFromList } from '../market';
 import { fillCar } from '../driver-application';
+import { testClock } from '../test-clock';
 import { OWNER } from './people';
 import { NARROW } from './screen-tour';
 import { apply } from './seed';
@@ -76,7 +77,13 @@ export async function waitBubbles(page: Page, count: number) {
 }
 
 // A phone of its own: another person, nothing kept from the last one.
-export const phone = async (browser: Browser) => (await browser.newContext({ viewport: NARROW })).newPage();
+// A phone of its own, on the clock of the stand: moved with it by --at like the page of a test
+// (lesson 342), or the screen lives at the real hour beside a server at another one.
+export async function phone(browser: Browser): Promise<Page> {
+  const context = await browser.newContext({ viewport: NARROW });
+  await testClock(context, true);
+  return context.newPage();
+}
 
 // A new driver up to the car photos: Chevrolet Damas, white (G62: the car on one screen, no face).
 export async function toCarPhotos(page: Page) {
