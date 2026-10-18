@@ -23,7 +23,7 @@ describe('the main bot of the waitlist (G83, docs/181)', () => {
   it('greets with the picture, the three questions and «Roʻyxatga yozilish»', async () => {
     const answer = await welcome(41, '/start ad-k7f2qx');
     expect(answer.method).toBe('sendPhoto');
-    expect(answer.photo).toBe(`https://${brand.domain}/bot/main-welcome.png`);
+    expect(answer.photo).toBe(`https://${brand.domain}/bot/main-welcome.png?v=${brand.welcomes.main}`);
     expect(answer.caption).toContain('Assalomu alaykum, Ali! 👋');
     expect(answer.caption).toContain('🔎 Guruhlardan kerakli eʼlonni topish qiyinmi?');
     expect(answer.reply_markup.inline_keyboard[0]?.[0]?.web_app?.url).toBe(`https://main.${brand.domain}/`);
@@ -52,7 +52,9 @@ describe('the main bot of the waitlist (G83, docs/181)', () => {
       .run();
     const answer = await welcome(44, '/start');
     expect(answer.caption).toContain('ochildi');
-    expect(answer.photo).toBe(`https://${brand.domain}/bot/main-open-welcome.png`);
+    expect(answer.photo).toBe(
+      `https://${brand.domain}/bot/main-open-welcome.png?v=${brand.welcomes['main-open']}`,
+    );
     const urls = answer.reply_markup.inline_keyboard.flat().map((button) => button.url ?? '');
     expect(urls).toContain(`https://t.me/${brand.bots.passenger}?startapp=__main`);
     expect(urls).toContain(`https://t.me/${brand.bots.driver}?startapp=__main`);

@@ -1,15 +1,19 @@
 // The picture of the first message of a bot (G34, docs/95): what Rida gives this person, four
 // signs on the color of the bot. The bonus comes from the brand config, never typed here.
+import { createHash } from 'node:crypto';
 import { icon } from '../promo/icons.mjs';
 import { squircle } from './brand.mjs';
-import { C, svg } from './palette.mjs';
+import { C, COMBOS, svg } from './palette.mjs';
+import { NAME } from './production.mjs';
 import { markR, textCentered } from './text.mjs';
 import { brandConfig } from '../../brand.config.ts';
 
 const hours = ({ from, to }) => `${from}:00 dan ${to}:00 gacha`;
 const money = (amount) => `${String(amount).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} soʻm`;
+// The logo in the corner wears a combo of docs/36 that stands out of the color of the bot (lesson №313).
 const ROLES = {
   driver: {
+    logo: 5,
     bg: C.amber, tile: C.deep, sign: C.amber, ink: C.deep, title: 'Rida haydovchilar uchun',
     points: [
       ['CarFront', 'Safar bir daqiqada'],
@@ -20,6 +24,7 @@ const ROLES = {
   },
   // The passenger bot (owner request 03.10.2026): the same picture on the brand teal.
   passenger: {
+    logo: 2,
     bg: C.teal, tile: C.teal, sign: C.white, ink: C.deep, title: 'Rida yoʻlovchilar uchun', head: C.white,
     points: [
       ['Search', 'Safar bir daqiqada'],
@@ -31,6 +36,7 @@ const ROLES = {
   // The support bot (owner request 03.10.2026): its own white, as its avatar; the team hours come
   // from the brand config.
   support: {
+    logo: 1,
     bg: C.white, card: C.soft, tile: C.teal, sign: C.white, ink: C.deep, title: 'Rida yordam xizmati',
     points: [
       ['MessageCircle', 'Savolingizni yozing'],
@@ -49,7 +55,7 @@ function mainWelcome(soon) {
     `<stop offset="0" stop-color="${C.deep}"/><stop offset="1" stop-color="${C.teal}"/></linearGradient></defs>` +
     '<rect width="1280" height="720" fill="url(#g)"/>' + squircle(540, 150, 200, C.white) +
     markR({ cx: 640, cy: 250, h: 124, fill: C.teal }) +
-    textCentered(brandConfig.name, { cx: 640, cy: 470, h: 64, fill: C.white }) +
+    textCentered(NAME, { cx: 640, cy: 470, h: 64, fill: C.white }) +
     textCentered(soon ? `${brandConfig.slogan} · Tez orada` : brandConfig.slogan, { cx: 640, cy: 560, h: 34, fill: C.white, weight: 600 });
   return svg(1280, 720, body);
 }
@@ -61,12 +67,19 @@ function point(look, [name, line], index) {
     textCentered(line, { cx: x + 345, cy: y + 80, h: 34, fill: C.deep, weight: 600, maxWidth: 360 });
 }
 
+// The welcomes the bots send (apps/backend start-reply.ts) and the version of a picture: its drawing,
+// so a drawing changed without pnpm bot fails welcome.test.mjs.
+export const WELCOMES = ['driver', 'passenger', 'support', 'main', 'main-open'];
+const VERSION_LENGTH = 8;
+export const welcomeVersion = (drawing) => createHash('sha256').update(drawing).digest('hex').slice(0, VERSION_LENGTH);
+
 export function botWelcome(role = 'driver') {
   if (role === 'main' || role === 'main-open') return mainWelcome(role === 'main');
   const look = ROLES[role];
   const head = look.head ?? look.ink;
-  const body = `<rect width="1280" height="720" fill="${look.bg}"/>` + squircle(80, 80, 160, C.deep) +
-    markR({ cx: 160, cy: 160, h: 100, fill: role === 'driver' ? C.amber : C.white }) +
+  const logo = COMBOS[look.logo];
+  const body = `<rect width="1280" height="720" fill="${look.bg}"/>` + squircle(80, 80, 160, logo.bg) +
+    markR({ cx: 160, cy: 160, h: 100, fill: logo.fg }) +
     textCentered(look.title, { cx: 720, cy: 140, h: 56, fill: head, maxWidth: 820 }) +
     textCentered('Manzil sari', { cx: 720, cy: 210, h: 30, fill: head, weight: 600 }) +
     look.points.map((each, index) => point(look, each, index)).join('');

@@ -24,7 +24,7 @@ describe('the support bot', () => {
     };
     expect(welcome).toMatchObject({
       method: 'sendPhoto',
-      photo: `https://${brand.domain}/bot/support-welcome.png`,
+      photo: `https://${brand.domain}/bot/support-welcome.png?v=${brand.welcomes.support}`,
     });
     expect(welcome.caption).toContain(`Bu ${brand.name} yordam xizmati.`);
     expect(welcome.caption).toContain('har kuni soat 7:00 dan 23:00 gacha');
