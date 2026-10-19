@@ -31,8 +31,10 @@
 /* One line always: on a narrow phone the words get smaller, never cut (docs/121). */
 .case-progress span:first-child {
   flex: 1;
-  /* 12.5 px at 360 px: the words take the width left of the bar and the edges (91 px). */
-  font-size: min(12.5px, calc((100vw - 91px) * 0.0465));
+  /* The words take the width left of the bar and the edges (91 px). DejaVu Sans is 21.6 px wide per px
+     of size here; a browser that rounds every letter to whole dots draws it up to 4 % wider on small
+     sizes (CI, G73): 0.0428 leaves 6 % to spare, so it is never cut. */
+  font-size: min(12.5px, calc((100vw - 91px) * 0.0428));
   min-width: 0;
   white-space: nowrap;
 }

@@ -6,13 +6,6 @@
   overflow: hidden;
   background: var(--splash);
   color: var(--splash-ink);
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    Roboto,
-    'Helvetica Neue',
-    sans-serif;
   transition: opacity 0.3s ease-out;
 }
 .splash-out {

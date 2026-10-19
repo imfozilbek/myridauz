@@ -15,6 +15,7 @@ const site = renderSite(brand, {
   roads: ROADS,
   regions: REGIONS,
   script: 'run()',
+  faces: '',
 });
 const home = site['index.html'] ?? '';
 

@@ -6,7 +6,7 @@ import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { errorKey } from '../market/error-text';
 import { useLoad } from '../market/use-list';
-import { PICTURE_FONT } from '../media/story-paint';
+import { usePictureFont } from '../media/picture-font';
 import { usePassengerColors, usePictureChecks } from '../media/use-trip-texts';
 import { Screen } from '../screen/screen';
 import { ActionFailure } from '../states/action-failure';
@@ -34,6 +34,7 @@ export function QrScreen({ onBack }: { readonly onBack: () => void }) {
   const { growth } = useApiClients();
   const { value, failed, reload } = useLoad(() => growth.mine(), 'growth.mine');
   const done = useShareTrack('qr', 'growth.qr');
+  const pictureFont = usePictureFont();
   const [failure, setFailure] = useState<TranslationKey | null>(null);
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
@@ -43,7 +44,7 @@ export function QrScreen({ onBack }: { readonly onBack: () => void }) {
     try {
       // Passengers scan it: the picture in the colors of the passenger app (G88, docs/193).
       const texts = { brandName: brand.name, caption, checks };
-      const picture = await drawQrPicture(value.qr, texts, passengerColors, PICTURE_FONT);
+      const picture = await drawQrPicture(value.qr, texts, passengerColors, await pictureFont());
       if (!picture) throw new Error('ui.qr_not_drawn');
       await downloadPicture(await growth.qrPicture(picture), `${brand.id}-qr.png`);
       done();

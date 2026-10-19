@@ -5,7 +5,7 @@ import { useI18n } from '../context/i18n-context';
 import { haptic } from '../telegram/feedback';
 import { shareCard } from '../telegram/share-card';
 import { canShareStory, openStory } from '../telegram/story';
-import { PICTURE_FONT } from '../media/story-paint';
+import { usePictureFont } from '../media/picture-font';
 import { usePictureChecks } from '../media/use-trip-texts';
 import { drawMomentStory } from './moment-picture';
 import type { MomentWords } from './moment-words';
@@ -19,6 +19,7 @@ export function useMomentShare(found: Moment & { readonly moment: ShareMoment },
   const brand = useBrand();
   const done = useShareTrack(momentLoop(found.moment), 'growth.moment');
   const checks = usePictureChecks();
+  const pictureFont = usePictureFont();
   const story = async (phrase: number) => {
     const quote = t('growth.quote', { phrase: words.phrases[phrase] ?? '' });
     const picture = await drawMomentStory(
@@ -33,7 +34,7 @@ export function useMomentShare(found: Moment & { readonly moment: ShareMoment },
         checks,
       },
       brand.theme.colors,
-      PICTURE_FONT,
+      await pictureFont(),
     );
     if (!picture) throw new Error('ui.story_not_drawn');
     const imageUrl = await growth.momentStory(picture);

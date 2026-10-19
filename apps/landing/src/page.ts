@@ -17,6 +17,8 @@ type Page = {
   readonly head?: string;
   // The small script of the interactive parts, inline: one request for the whole page.
   readonly script?: string;
+  // The faces of the font of the brand and its first files asked for at once (G73).
+  readonly font: string;
   // A page of a direction: the passenger bot opens the search with the route (docs/89 S4).
   readonly start?: string;
   // The picture of the link preview: a direction shows its region (G68, the board of the day).
@@ -25,7 +27,7 @@ type Page = {
 
 // The frame of every page: head with the link preview, the header with the logo, the footer
 // with the documents and the contact (docs/30). CSS is inline: one request, a fast first screen.
-export function page({ brand, i18n, year, title, path, body, script = '', ...more }: Page) {
+export function page({ brand, i18n, year, title, path, body, script = '', font, ...more }: Page) {
   const { t } = i18n;
   const url = `https://${brand.domain}${path}`;
   const description = escape(more.description ?? t('landing.description', { brand: brand.name }));
@@ -46,7 +48,7 @@ export function page({ brand, i18n, year, title, path, body, script = '', ...mor
 <meta name="description" content="${description}">
 <meta name="theme-color" content="${brand.theme.colors.bg}">
 <link rel="canonical" href="${url}">
-<link rel="preload" href="/fonts/brand.woff2" as="font" type="font/woff2" crossorigin>
+${font}
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">

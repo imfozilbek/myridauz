@@ -4,13 +4,15 @@ import { expect, type Page } from '@playwright/test';
 export const WIDTHS = [320, 375, 430] as const;
 export const HEIGHT = 760;
 
-// No text is cut inside its box, and the page never scrolls sideways.
+// No text is cut inside its box, and the page never scrolls sideways. The words are measured in the
+// font of the brand, as people see them, not in the font that stands in while it loads (G73).
 export async function nothingCut(page: Page) {
+  await page.evaluate(() => document.fonts.ready);
   const cut = await page.evaluate(() =>
     [...document.querySelectorAll<HTMLElement>('body *')]
       .filter((e) => e.children.length === 0 && e.scrollWidth > e.clientWidth + 1)
-      .map((e) => e.textContent?.trim() ?? '')
-      .filter(Boolean),
+      .filter((e) => e.textContent?.trim())
+      .map((e) => `${e.textContent?.trim()} (${e.scrollWidth} > ${e.clientWidth})`),
   );
   expect(cut).toEqual([]);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
