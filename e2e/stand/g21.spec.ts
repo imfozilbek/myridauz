@@ -78,6 +78,8 @@ test('1b. the chat reconnects by itself after the connection drops', async ({ pa
   await expect.poll(() => drops, { timeout: 15000 }).toBeGreaterThan(1);
   await page.getByLabel(t('chat.placeholder')).fill('Salom, yoʻldaman');
   await page.getByRole('button', { name: t('chat.send') }).click();
+  // Delivered: the field keeps the words until the server took them, then it is empty (lesson 346).
+  await expect(page.getByLabel(t('chat.placeholder'))).toHaveValue('');
   await expect(page.getByText('Salom, yoʻldaman')).toBeVisible();
   await shot(page, '1-chat-reconnected');
 });
