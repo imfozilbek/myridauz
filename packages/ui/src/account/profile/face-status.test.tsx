@@ -6,12 +6,13 @@ import { renderInShell } from '../../test-shell';
 import { AccountContext, type Account } from '../account-context';
 import { active, fakeClient, profile } from '../account-test-kit';
 
-// The own face while the team checks it, and after a refusal (G58, docs/118).
+// The own face while the team checks it, and after a refusal (G58, docs/118). The photo never
+// loads: the test reads only the words around it.
 function open(face: Partial<MyProfile>, url = '/') {
   window.history.replaceState(null, '', url);
   const account: Account = {
     app: 'passenger',
-    client: fakeClient(active),
+    client: { ...fakeClient(active), getAvatar: vi.fn(() => new Promise<Blob>(() => undefined)) },
     profile: { ...profile, hasAvatar: false, ...face },
     avatarVersion: 0,
     onAvatarChanged: vi.fn(),
