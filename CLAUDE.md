@@ -121,7 +121,7 @@ Mini App, каналах, уведомлениях и лендинге. Код: 
 | `docs/02-architecture.md` | Три роли: пассажир, водитель, админ; три бота и Mini App; общий backend |
 | `docs/03-tech-stack.md` | Только Telegram + Cloudflare, стек кода, бесплатные лимиты |
 | `docs/04-driver-moderation.md` | Заявка водителя, статусы, модерация |
-| `docs/05-avatars.md` | Аватары: обязательны для водителя, позже для пассажира |
+| `docs/05-avatars.md` | Аватары: обязательны для водителя, по желанию для пассажира (проверка после, G51) |
 | `docs/06-woman-in-car.md` | Фича «В машине есть женщина» |
 | `docs/07-contacts-and-chat.md` | Прямые контакты не раскрываются никогда; маскировка; чат на Durable Objects |
 | `docs/08-voice-calls.md` | Голосовые звонки на Cloudflare Realtime |
