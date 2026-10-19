@@ -114,8 +114,12 @@ describe('AccountGate', () => {
     expect(await screen.findByText(/butunlay|qoʻllab-quvvatlash/)).toBeTruthy();
   });
 
-  it('asks for the face of both roles when it is missing and retries after an error', async () => {
+  // A passenger goes without a photo (owner decision 19.10.2026, G51); a driver shows the face.
+  it('asks a driver for the face when it is missing and retries after an error', async () => {
     const noFace = { state: 'active' as const, profile: { ...profile, hasAvatar: false } };
+    gate(fakeClient(noFace));
+    expect(await screen.findByText('inside')).toBeTruthy();
+    cleanup();
     gate(fakeClient(noFace), 'driver');
     expect(await screen.findByText('Rasmingizni qoʻshing')).toBeTruthy();
     const failing = fakeClient(new Error('offline'));

@@ -36,9 +36,19 @@ describe('FaceStatus (G58)', () => {
     expect(window.location.search).toBe('');
   });
 
-  it('a photo being checked: only the person sees it', async () => {
-    open({ avatarStatus: 'pending', avatarReason: null }, '/?profile=photo');
+  it('a driver photo being checked: only the person sees it', async () => {
+    open({ roles: ['passenger', 'driver'], avatarStatus: 'pending', avatarReason: null }, '/?profile=photo');
     expect(await screen.findByText(/Hozircha uni faqat siz koʻrasiz/)).toBeTruthy();
+  });
+
+  // A passenger photo shows at once, the team checks it after (owner decision 19.10.2026, G51).
+  it('a passenger photo being checked says nothing; without a photo the link says it is optional', async () => {
+    open({ hasAvatar: true, avatarStatus: 'pending', avatarReason: null }, '/?profile=photo');
+    expect(await screen.findByText('Rasmni almashtirish')).toBeTruthy();
+    expect(screen.queryByText(/tekshir/)).toBeNull();
+    cleanup();
+    open({ avatarStatus: null, avatarReason: null }, '/?profile=photo');
+    expect(await screen.findByText('Rasm qoʻshish (ixtiyoriy)')).toBeTruthy();
   });
 
   it('an approved photo says nothing; without the link the main screen opens', () => {

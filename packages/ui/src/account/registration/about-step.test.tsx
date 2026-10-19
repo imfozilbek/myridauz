@@ -16,18 +16,15 @@ vi.mock('../profile/compress-image', () => ({ compressImage: async (file: Blob) 
 const welcome = { logo: 'logo.svg', points: [] } as const;
 const SEND = 'Raqamni yuborish';
 const sendReady = () => !screen.getByRole('button', { name: SEND }).hasAttribute('disabled');
-async function openAbout() {
+async function openAbout(app: 'passenger' | 'driver' = 'passenger') {
+  const client = fakeClient({ state: 'unregistered', suggestedName: 'Dilnoza' });
   const view = renderInShell(
-    <AccountGate
-      app="passenger"
-      client={fakeClient({ state: 'unregistered', suggestedName: 'Dilnoza' })}
-      welcome={welcome}
-    >
+    <AccountGate app={app} client={client} welcome={welcome}>
       <p>inside</p>
     </AccountGate>,
   );
   await passWelcome();
-  return view.container;
+  return Object.assign(view.container, { client });
 }
 const chosen = (text: string) => screen.getByRole('radio', { name: text }).getAttribute('aria-checked');
 beforeEach(() => vi.clearAllMocks());
@@ -37,7 +34,8 @@ describe('Registration, screen 2: «Siz haqingizda» (G58)', () => {
   it('shows step 2 of 2, the face circle, the name under «Ism» and two gender tiles', async () => {
     const container = await openAbout();
     expect(container.querySelectorAll('.about-steps i')).toHaveLength(2);
-    expect(screen.getByRole('button', { name: 'Rasm qoʻshish' })).toBeTruthy();
+    // A passenger may go without a photo (owner decision 19.10.2026, G51).
+    expect(screen.getByRole('button', { name: 'Rasm (ixtiyoriy)' })).toBeTruthy();
     expect(screen.getByText('Ism')).toBeTruthy();
     expect(screen.getByDisplayValue('Dilnoza')).toBeTruthy();
     expect(screen.getAllByRole('radio')).toHaveLength(2);
@@ -54,8 +52,9 @@ describe('Registration, screen 2: «Siz haqingizda» (G58)', () => {
     expect(container.querySelector('.face-circle input')?.getAttribute('capture')).toBe('user');
   });
 
-  it('«Raqamni yuborish» works only with the photo, the name and the gender', async () => {
-    const container = await openAbout();
+  it('a driver: «Raqamni yuborish» works only with the photo, the name and the gender', async () => {
+    const container = await openAbout('driver');
+    expect(screen.getByRole('button', { name: 'Rasm qoʻshish' })).toBeTruthy();
     fireEvent.click(screen.getByText('Ayol'));
     expect(chosen('Ayol')).toBe('true');
     expect(sendReady()).toBe(false);
@@ -77,6 +76,16 @@ describe('Registration, screen 2: «Siz haqingizda» (G58)', () => {
     fireEvent.change(screen.getByDisplayValue('Ali 998'), { target: { value: 'Ali' } });
     expect(screen.queryByText(/Faqat harflardan/)).toBeNull();
     expect(sendReady()).toBe(true);
+  });
+
+  it('a passenger: registered with the name and the gender, no photo is sent (G51)', async () => {
+    const { client } = await openAbout();
+    fireEvent.click(screen.getByText('Ayol'));
+    expect(sendReady()).toBe(true);
+    fireEvent.click(screen.getByText(SEND));
+    expect(await screen.findByText('inside')).toBeTruthy();
+    expect(client.register).toHaveBeenCalled();
+    expect(client.uploadAvatar).not.toHaveBeenCalled();
   });
 
   it('«Orqaga» returns to the welcome', async () => {

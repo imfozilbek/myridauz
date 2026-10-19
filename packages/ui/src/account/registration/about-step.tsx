@@ -23,7 +23,7 @@ export type Answers = {
   readonly gender: Gender | null;
 };
 export type Registration = {
-  readonly photo: Blob;
+  readonly photo: Blob | null;
   readonly firstName: string;
   readonly gender: Gender;
   readonly contact: string;
@@ -38,11 +38,13 @@ type AboutStepProps = {
   readonly onAnswered: () => void;
   // Resolves false when the server refused the registration.
   readonly onSend: (registration: Registration) => Promise<boolean>;
+  // A passenger may go without a photo, a driver shows the face (owner decision 19.10.2026, G51).
+  readonly photoOptional: boolean;
 };
 
-// «Siz haqingizda» (G58, docs/118 variant A): the face (required for both roles), the name from
+// «Siz haqingizda» (G58, docs/118 variant A): the face (required of a driver, G51), the name from
 // Telegram, the gender in one tap, then the phone from Telegram itself (docs/19, docs/10 q. 33).
-export function AboutStep({ answers, onChange, onBack, onAnswered, onSend }: AboutStepProps) {
+export function AboutStep({ answers, onChange, onBack, onAnswered, onSend, photoOptional }: AboutStepProps) {
   useScreenView('registration.about');
   useScreenBackground();
   useOpenAtTop();
@@ -54,12 +56,13 @@ export function AboutStep({ answers, onChange, onBack, onAnswered, onSend }: Abo
   const { photo, gender } = answers;
   // A name from Telegram may be emoji: it is shown wrong only after a touch or a choice.
   const nameWrong = !name.success && (edited || gender !== null);
+  const faceReady = photo !== null || photoOptional;
 
   const choose = (value: Gender) => {
     haptic.select();
     onChange({ ...answers, gender: value });
   };
-  const send = async (face: Blob, firstName: string, chosen: Gender) => {
+  const send = async (face: Blob | null, firstName: string, chosen: Gender) => {
     onAnswered();
     const contact = await requestSignedContact();
     const accepted = contact !== null && (await onSend({ photo: face, firstName, gender: chosen, contact }));
@@ -77,7 +80,11 @@ export function AboutStep({ answers, onChange, onBack, onAnswered, onSend }: Abo
       </div>
       <h1 className="about-title">{t('account.about.title')}</h1>
       <p className="about-hint">{t('account.about.hint')}</p>
-      <FaceCircle photo={photo} onPhoto={(next) => onChange({ ...answers, photo: next })} />
+      <FaceCircle
+        photo={photo}
+        optional={photoOptional}
+        onPhoto={(next) => onChange({ ...answers, photo: next })}
+      />
       <label className="about-label" htmlFor="about-name">
         {t('account.name.label')}
       </label>
@@ -97,12 +104,12 @@ export function AboutStep({ answers, onChange, onBack, onAnswered, onSend }: Abo
         {t('account.about.hidden')}
       </p>
       {failed ? <p className="about-error">{t('account.phone.denied')}</p> : null}
-      {/* «Raqamni yuborish» works only with the face, the name and the gender (docs/118); before
-          it stands gray, as «Davom etish» of screen 1. */}
+      {/* «Raqamni yuborish» works with the name and the gender, and the face of a driver (docs/118,
+          G51); before it stands gray, as «Davom etish» of screen 1. */}
       <MainButton
         text={t('account.phone.send')}
-        disabled={!(photo && name.success && gender)}
-        onClick={() => (photo && name.success && gender ? send(photo, name.data, gender) : undefined)}
+        disabled={!(faceReady && name.success && gender)}
+        onClick={() => (faceReady && name.success && gender ? send(photo, name.data, gender) : undefined)}
       />
     </div>
   );

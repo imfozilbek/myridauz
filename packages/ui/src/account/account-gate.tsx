@@ -71,9 +71,17 @@ export function AccountGate({ app, client, welcome, children }: AccountGateProps
     if (me.state === 'unregistered' && preview)
       return <TripPreview id={preview} onDone={() => setPreview(null)} />;
     if (me.state === 'unregistered')
-      return <RegistrationFlow welcome={welcome} suggestedName={me.suggestedName} onFinished={setMe} />;
-    // The face is required for both roles (G58, docs/128 §1): a failed upload is asked again here.
-    if (!me.profile.hasAvatar) return <AvatarRequiredScreen />;
+      return (
+        <RegistrationFlow
+          welcome={welcome}
+          suggestedName={me.suggestedName}
+          onFinished={setMe}
+          photoOptional={app === 'passenger'}
+        />
+      );
+    // A driver shows the face (G58, docs/128 §1): a failed upload is asked again here. A passenger
+    // goes without a photo (owner decision 19.10.2026, G51).
+    if (!me.profile.hasAvatar && app === 'driver') return <AvatarRequiredScreen />;
     return me.block ? (
       <>
         <RidingBlockLine />
