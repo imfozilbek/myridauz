@@ -22,7 +22,7 @@ for (const app of MINI_APPS) {
       await expect(mainButton).toHaveText(TEXT.continue);
       // Gray until both ticks of the consent (G58).
       await expect(mainButton).toHaveCSS('background-color', hexToRgb(colors.disabled));
-      await register(page, app.welcome);
+      await register(page, app.welcome, undefined, app.name === 'passenger');
       await expect(page.getByLabel(TEXT.profile)).toBeVisible();
       expect(api.registrations).toEqual([
         expect.objectContaining({ consent: true, firstName: 'Dilnoza', gender: 'female' }),

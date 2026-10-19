@@ -12,7 +12,7 @@ for (const app of MINI_APPS) {
     await mockTelegram(page);
     await page.goto(telegramUrl(appUrl(app.port)));
     const shot = (name: string) => page.screenshot({ path: `screenshots/miniapp-${app.name}-${name}.png` });
-    if (app.welcome) await register(page, app.welcome, shot);
+    if (app.welcome) await register(page, app.welcome, shot, app.name === 'passenger');
     await expect(page.getByText(app.action).first()).toBeVisible();
     await shot('6-home');
     if (!app.welcome) return;

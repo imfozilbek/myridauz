@@ -4,8 +4,14 @@ import { TEXT } from './apps';
 type Shot = (name: string) => Promise<unknown>;
 
 // Goes through the first entry like a person, in two screens (G34): the welcome with the consent,
-// then «Siz haqingizda» (the name from Telegram, the gender) and the phone.
-export async function register(page: Page, welcome: string, shot: Shot = async () => undefined) {
+// then «Siz haqingizda» (the name from Telegram, the gender) and the phone. A passenger goes without
+// a photo (owner decision 19.10.2026, G51); a driver shows the face.
+export async function register(
+  page: Page,
+  welcome: string,
+  shot: Shot = async () => undefined,
+  photoOptional = false,
+) {
   const mainButton = page.locator('#tg-main-button');
   await expect(page.getByText(welcome)).toBeVisible();
   await expect(page.getByText(TEXT.offerLink)).toBeVisible();
@@ -15,8 +21,14 @@ export async function register(page: Page, welcome: string, shot: Shot = async (
   await passConsent(page, () => shot('1-welcome-ticked'));
   await expect(page.getByRole('textbox')).toHaveValue('Dilnoza');
   await page.getByRole('radio', { name: TEXT.female }).click();
-  // «Raqamni yuborish» waits for the face (G58): only the front camera (owner, 17.10.2026); here
-  // a file into the input of the camera app.
+  if (photoOptional) {
+    await expect(page.getByText(TEXT.optionalPhoto)).toBeVisible();
+    await expect(mainButton).toHaveText(TEXT.sendPhone);
+    await shot('2-about');
+    return mainButton.click();
+  }
+  // «Raqamni yuborish» of a driver waits for the face (G58): only the front camera (owner,
+  // 17.10.2026); here a file into the input of the camera app.
   await expect(mainButton).toBeDisabled();
   await shot('2-about');
   await addFace(page);
