@@ -3,7 +3,7 @@ import { useI18n } from '../context/i18n-context';
 import { AvatarPicker } from './profile/avatar-picker';
 import { StepLayout } from './step-layout';
 
-// Shown when the brand setting makes a photo required for passengers (docs/05).
+// The face a driver shows (docs/05): asked in the Mini App of a driver while there is none (G51).
 export function AvatarRequiredScreen() {
   useScreenView('avatar_required');
   const { t } = useI18n();

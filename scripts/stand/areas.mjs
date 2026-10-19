@@ -11,6 +11,7 @@ export const AREAS = {
     'all-passenger-flows',
     'trip-preview',
     'g49-people',
+    'g51-photo',
   ],
   search: ['passenger-search', 'passenger-directions', 'g24', 'combos', 'g33', 'g49-search'],
   map: ['g26', 'dropoff-screen', 'g48-map'],

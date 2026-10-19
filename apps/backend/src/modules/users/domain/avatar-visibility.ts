@@ -10,7 +10,8 @@ export type Viewer = { readonly id: number; readonly isAdmin: boolean; readonly 
 // docs/05: a driver photo is public; a passenger photo is seen only by the passenger, other
 // passengers of the same trip with confirmed bookings and moderators. Never by the driver: in the
 // Mini App of a driver only the own photo shows, whatever the person once was (owner, 17.10.2026).
-// A photo the team did not approve yet is seen only by its owner and the team (docs/118).
+// A driver photo the team did not approve yet and a refused photo are seen only by the owner and
+// the team (docs/118, G51).
 export function canSeeAvatar(viewer: Viewer, owner: User, relation: TripRelation): boolean {
   if (owner.avatarKey === null) return false;
   if (viewer.id === owner.id) return true;

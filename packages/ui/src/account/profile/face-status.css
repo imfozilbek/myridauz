@@ -1,0 +1,12 @@
+/* The line of the own face under the card of «Profil» (G58, G51): a block with the side padding of
+   the card, so every line of a long reason keeps it (docs/121: nothing touches the edge). */
+.face-status {
+  margin: 8px 26px 0;
+  font-size: 12.5px;
+  line-height: 16.65px;
+  color: var(--tgui--hint_color);
+}
+
+.face-status-error {
+  color: var(--tgui--destructive_text_color);
+}

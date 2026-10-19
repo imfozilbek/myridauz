@@ -30,8 +30,8 @@ async function saveBotAccess(client: UsersClient, me: MeResponse): Promise<MeRes
 
 // The face goes up right after the registration: only a registered person has a place for it.
 // A failed upload is asked again by the gate: the photo is required (G58, docs/128 §1).
-async function savePhoto(client: UsersClient, me: MeResponse, photo: Blob): Promise<MeResponse> {
-  if (me.state !== 'active') return me;
+async function savePhoto(client: UsersClient, me: MeResponse, photo: Blob | null): Promise<MeResponse> {
+  if (me.state !== 'active' || photo === null) return me;
   const saved = await client.uploadAvatar(photo).then(
     () => true,
     () => false,
@@ -43,10 +43,17 @@ type RegistrationFlowProps = {
   readonly welcome: Welcome;
   readonly suggestedName: string;
   readonly onFinished: (me: MeResponse) => void;
+  // A passenger may go without a photo (owner decision 19.10.2026, G51).
+  readonly photoOptional: boolean;
 };
 
 // First entry in two screens (G34): the welcome with the consent, then «Siz haqingizda» with the phone.
-export function RegistrationFlow({ welcome, suggestedName, onFinished }: RegistrationFlowProps) {
+export function RegistrationFlow({
+  welcome,
+  suggestedName,
+  onFinished,
+  photoOptional,
+}: RegistrationFlowProps) {
   const client = useUsersClient();
   const { track } = useAnalytics();
   const { client: app } = useContext(TelegramContext);
@@ -107,6 +114,7 @@ export function RegistrationFlow({ welcome, suggestedName, onFinished }: Registr
       onBack={toWelcome}
       onAnswered={answered}
       onSend={register}
+      photoOptional={photoOptional}
     />
   );
 }

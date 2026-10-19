@@ -1,9 +1,9 @@
-import { createChatClient, createModerationClient } from '@platform/api-client';
+import { createChatClient } from '@platform/api-client';
 import type { PersonId } from '@platform/contracts';
 import { expect, test } from '../crash-guard';
 import { TEXT } from '../apps';
 import { press } from './bot-kit';
-import { confirmedSeat } from './g27-kit';
+import { confirmedSeat, toldBy } from './g27-kit';
 import { OWNER } from './people';
 import { t } from './screen-tour';
 import { approvedDriver, PHOTO, register } from './seed';
@@ -36,25 +36,23 @@ test('P07. «Bot xabarlari» in «Profil» is always on: shown, never switched o
   await expect(bot).toBeDisabled();
 });
 
-test('P08, T65. a new face photo waits for «Rasm mos» of the team; until then only its owner sees it', async () => {
+// A passenger photo shows at once, the team checks it after (owner decision 19.10.2026, G51):
+// «Mos emas» on the card in the admin bot takes it away and the passenger bot says why.
+test('P08, T65. a new passenger photo shows at once; «Mos emas» of the team takes it away', async () => {
   const users = await register('passenger', NILUFAR, 'female');
   const me = await users.getMe();
   const id = me.state === 'active' ? me.profile.id : '';
-  const moderation = createModerationClient(await signedAs('admin', OWNER));
-  const approve = async () => {
-    if ((await moderation.faces()).some((face) => face.userId === id))
-      await moderation.decideFace(id, { action: 'approve' });
-  };
-  await approve();
-  expect(await photoShownTo(SABINA, id)).toBe(true);
   await users.uploadAvatar(PHOTO);
   const after = await users.getMe();
   expect(after.state === 'active' ? after.profile.avatarStatus : null).toBe('pending');
-  expect(await photoShownTo(SABINA, id)).toBe(false);
-  // «Rasm mos» under the card of the photo in the admin bot (G58, G68): one tap of the team.
+  expect(await photoShownTo(SABINA, id)).toBe(true);
   const [row] = standRows(`SELECT avatar_at FROM users WHERE id = ${NILUFAR.id}`);
-  await press('admin', OWNER, `face:${NILUFAR.id}:${Number(row?.['avatar_at']).toString(36)}:ok`);
-  await expect.poll(() => photoShownTo(SABINA, id)).toBe(true);
+  await press('admin', OWNER, `face:${NILUFAR.id}:${Number(row?.['avatar_at']).toString(36)}:no:0`);
+  await expect.poll(() => photoShownTo(SABINA, id)).toBe(false);
+  await toldBy('passenger', NILUFAR, t('moderation.faceReason.face_not_visible'));
+  // A new photo shows again at once.
+  await users.uploadAvatar(PHOTO);
+  expect(await photoShownTo(SABINA, id)).toBe(true);
 });
 
 test('S75. «Men ham yoʻlga chiqaman» on the card of a close one leads into the registration', async ({

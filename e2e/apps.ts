@@ -33,6 +33,7 @@ export const TEXT = {
   female: t('account.gender.female'),
   sendPhone: t('account.phone.send'),
   changePhoto: t('account.avatar.change'),
+  optionalPhoto: t('account.avatar.optional'),
   profile: t('account.profile.open'),
   blocked: t('account.blocked.title'),
   from: t('places.from'),

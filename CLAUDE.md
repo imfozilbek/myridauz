@@ -121,7 +121,7 @@ Mini App, каналах, уведомлениях и лендинге. Код: 
 | `docs/02-architecture.md` | Три роли: пассажир, водитель, админ; три бота и Mini App; общий backend |
 | `docs/03-tech-stack.md` | Только Telegram + Cloudflare, стек кода, бесплатные лимиты |
 | `docs/04-driver-moderation.md` | Заявка водителя, статусы, модерация |
-| `docs/05-avatars.md` | Аватары: обязательны для водителя, позже для пассажира |
+| `docs/05-avatars.md` | Аватары: обязательны для водителя, по желанию для пассажира (проверка после, G51) |
 | `docs/06-woman-in-car.md` | Фича «В машине есть женщина» |
 | `docs/07-contacts-and-chat.md` | Прямые контакты не раскрываются никогда; маскировка; чат на Durable Objects |
 | `docs/08-voice-calls.md` | Голосовые звонки на Cloudflare Realtime |
@@ -234,6 +234,7 @@ Mini App, каналах, уведомлениях и лендинге. Код: 
 | `docs/193-share-cards.md`, `docs/194-g88-texts.md` | G88: все 19 мест «поделиться», строки пользы из флаера и рекламы, код автора, картинки; новые тексты на согласие владельца |
 | `docs/196-g45-texts.md` | G45: новые тексты инструментов команды (отмена поездки командой, копия поддержки, «Sharhlar», «Odamlar», «Masofa», описания «Cheklovlar») на согласие владельца |
 | `docs/202-g46-texts.md` | G46: новые тексты доверия («Yetib keldingizmi?» в боте, истёкшая заявка, «Hamrohlaringiz», выбор в жалобе, конец слежения близких) на согласие владельца |
+| `docs/203-g51-texts.md` | G51: новые тексты фото попутчика по желанию («Rasm (ixtiyoriy)», «Rasm qoʻshish (ixtiyoriy)») на согласие владельца |
 | `docs/197-blablacar-history.md` … `docs/201-carpooling-histories-summary.md` | Истории сервисов попутчиков и уроки для Rida: BlaBlaCar, inDrive (три попытки в Узбекистане), Zimride и Lyft, Didi Hitch и Dida; сводка: что общего, кто не дошёл, три числа после запуска |
 | `docs/187-g69-texts.md`, `docs/188-growth-loops.md` | G69: новые тексты петель роста на согласие владельца; петли роста как сделано: код автора в метке, моменты «Men Rida bilan», QR водителя, «Sizning taʼsiringiz», «Rost» |
 | `docs/goals/INDEX.md` | Цели по порядку (G01 … G20) и операционные цели владельца (OPS) |

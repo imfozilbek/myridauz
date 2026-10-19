@@ -11,12 +11,14 @@ const CAMERA_ICON = 34;
 type FaceCircleProps = {
   readonly photo: Blob | null;
   readonly onPhoto: (photo: Blob) => void;
+  // A passenger may go without a photo: the circle says so (owner decision 19.10.2026, G51).
+  readonly optional: boolean;
 };
 
 // The face of screen 2 (G58, docs/118): a circle «Rasm qoʻshish», then the photo and
 // «Rasmni almashtirish». Only the front camera, never the gallery (owner, 17.10.2026): our camera
 // with the oval, the camera app of the phone where ours cannot open.
-export function FaceCircle({ photo, onPhoto }: FaceCircleProps) {
+export function FaceCircle({ photo, onPhoto, optional }: FaceCircleProps) {
   const { t } = useI18n();
   const { colors } = useBrand().theme;
   const [failed, setFailed] = useState(false);
@@ -38,7 +40,9 @@ export function FaceCircle({ photo, onPhoto }: FaceCircleProps) {
       title: t('account.avatar.cameraTitle'),
       hint: t('account.avatar.cameraHint'),
     });
-  const label = t(photo ? 'account.avatar.change' : 'account.avatar.add');
+  const label = t(
+    photo ? 'account.avatar.change' : optional ? 'account.avatar.optional' : 'account.avatar.add',
+  );
   return (
     <div className="face-circle">
       {camera.element}

@@ -41,9 +41,9 @@ describe('the face photo check over HTTP (docs/118, G51)', () => {
     expect(String(card?.body.reply_markup)).toMatch(
       new RegExp(`"callback_data":"face:${PERSON}:[0-9a-z]+:ok"`, 'u'),
     );
-    // Others see a person without a photo until the team approves it.
+    // A passenger photo shows at once, the team checks it after (owner decision 19.10.2026, G51).
     const shown = await (await call(`/users/${await pid(PERSON)}`, OTHER)).json();
-    expect(shown).toMatchObject({ hasAvatar: false });
+    expect(shown).toMatchObject({ hasAvatar: true });
   });
 
   it('gives the queue and the photo only to the team', async () => {
@@ -71,6 +71,9 @@ describe('the face photo check over HTTP (docs/118, G51)', () => {
       avatarStatus: 'rejected',
       avatarReason: 'face_not_visible',
     });
+    // «Mos emas» takes the photo away from the others (G51).
+    const shown = await (await call(`/users/${await pid(PERSON)}`, OTHER)).json();
+    expect(shown).toMatchObject({ hasAvatar: false });
     expect(await (await call(path, OWNER, decide({ action: 'approve' }))).json()).toEqual({
       error: 'users.face_decided',
     });

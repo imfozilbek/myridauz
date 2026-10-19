@@ -28,6 +28,8 @@
   "profile.phone": "Telefon",
   "profile.navigator": "Navigator",
   "avatar.add": "Rasm qoʻshish",
+  "avatar.optional": "Rasm (ixtiyoriy)",
+  "avatar.addOptional": "Rasm qoʻshish (ixtiyoriy)",
   "avatar.change": "Rasmni almashtirish",
   "avatar.cameraTitle": "Yuzingiz rasmi",
   "avatar.cameraHint": "Yuzingizni ramka ichiga joylang",

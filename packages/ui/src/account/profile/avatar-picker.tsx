@@ -25,7 +25,9 @@ export function AvatarPicker({
     // Only the tap that opened the page: a new render must not open the camera again.
   }, [pick]);
   if (!account) return null;
-  const label = t(account.profile.hasAvatar ? 'account.avatar.change' : 'account.avatar.add');
+  // A passenger may go without a photo: the link says so (owner decision 19.10.2026, G51).
+  const add = account.app === 'passenger' ? 'account.avatar.addOptional' : 'account.avatar.add';
+  const label = t(account.profile.hasAvatar ? 'account.avatar.change' : add);
   return (
     <>
       {face.element}

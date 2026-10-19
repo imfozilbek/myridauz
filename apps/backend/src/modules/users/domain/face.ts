@@ -22,7 +22,14 @@ export function judgeFace(face: FaceCheck, decision: FaceDecision): FaceCheck | 
 // An approved driver application approves the face in it: the team saw it there (docs/04).
 export const approvedFace = (face: FaceCheck): FaceCheck => ({ ...face, status: 'approved', reason: null });
 
-// Other people see a photo only once the team approved it; until then the person looks like one
-// without a photo (docs/118). The owner always sees their own.
-export const faceShown = (user: { readonly avatarKey: string | null; readonly face: FaceCheck | null }) =>
-  user.avatarKey !== null && user.face?.status === 'approved';
+// A driver photo is public: others see it once the team approved it (docs/118). A passenger photo
+// the team checks after: it shows at once and goes on «Mos emas» (owner decision 19.10.2026, G51).
+// Who may see it at all is docs/05 (avatar-visibility.ts). The owner always sees their own.
+export const faceShown = (user: {
+  readonly avatarKey: string | null;
+  readonly isDriver: boolean;
+  readonly face: FaceCheck | null;
+}) => {
+  if (user.avatarKey === null) return false;
+  return user.isDriver ? user.face?.status === 'approved' : user.face?.status !== 'rejected';
+};
