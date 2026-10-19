@@ -8,3 +8,4 @@ test-results/
 screenshots/
 *.md
 apps/backend/seed/district-borders.json
+brands/*/public/fonts/

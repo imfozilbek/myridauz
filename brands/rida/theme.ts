@@ -2,6 +2,8 @@ import type { BrandTheme } from '../brand-config';
 
 // The color table of docs/20. Light theme only, never dark.
 export const theme: BrandTheme = {
+  // DejaVu Sans, the font of the mockups (G73, owner decision 07.10.2026).
+  font: 'dejavu-sans',
   colors: {
     bg: '#FFFFFF',
     bgGrouped: '#F2F3F5',

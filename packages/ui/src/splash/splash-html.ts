@@ -1,4 +1,4 @@
-import type { BrandConfig } from '@platform/brands';
+import { fontStack, type BrandConfig } from '@platform/brands';
 
 // The splash of docs/121 §4: drawn by index.html itself, with no script, so it is there from the first
 // frame and nothing white blinks before it. The build puts it in (packages/config/vite.config.js).
@@ -21,7 +21,7 @@ function pick(svg: string, pattern: RegExp): string {
 export type SplashParts = { readonly head: string; readonly body: string };
 
 // The brand comes as one Mini App sees it (brandForApp): the page and the letter in its main color, the
-// square and the words white (docs/20, docs/36).
+// square and the words white (docs/20, docs/36), the words in the font of the brand (G73).
 export function splashHtml(brand: BrandConfig, logoSvg: string, css: string): SplashParts {
   const { brandStrong: color, bg: white } = brand.theme.colors;
   const [viewBox, corner, letter] = [VIEW_BOX, CORNER, LETTER].map((pattern) => pick(logoSvg, pattern));
@@ -30,7 +30,7 @@ export function splashHtml(brand: BrandConfig, logoSvg: string, css: string): Sp
     `<rect width="100%" height="100%" rx="${corner}" fill="${white}"/><path d="${letter}" fill="${color}"/></svg>`;
   const head =
     `<style id="${SPLASH_STYLE_ID}">html{background:${color}}` +
-    `#${SPLASH_ID}{--splash:${color};--splash-ink:${white}}${css}</style>`;
+    `#${SPLASH_ID}{--splash:${color};--splash-ink:${white};font-family:${fontStack(brand.theme.font)}}${css}</style>`;
   const body =
     `<div id="${SPLASH_ID}" class="splash" aria-hidden="true"><div class="splash-loader"></div>` +
     `<div class="splash-mark">${logo}<b class="splash-name">${escape(brand.name)}</b>` +

@@ -8,7 +8,14 @@ import { MAP, REGIONS, ROADS } from './test-map';
 
 const brand = loadBrand();
 const { t } = createI18n(DEFAULT_LOCALE);
-const site = renderSite(brand, { year: 2027, map: MAP, roads: ROADS, regions: REGIONS, script: 'run()' });
+const site = renderSite(brand, {
+  year: 2027,
+  map: MAP,
+  roads: ROADS,
+  regions: REGIONS,
+  script: 'run()',
+  faces: '',
+});
 const page = site['yonalish/samarqand-toshkent/index.html'] ?? '';
 const values = { from: 'Samarqand', to: 'Toshkent', brand: brand.name };
 const jsonLd = (html: string) =>
@@ -81,9 +88,14 @@ describe('directions for search engines (docs/60)', () => {
   // docs/179: the site of the team is not for people, search engines stay out of it.
   it('closes the site of the internal environment to search engines', () => {
     const internal = loadBrand(brand.id, 'internal');
-    const robots = renderSite(internal, { year: 2027, map: MAP, roads: ROADS, regions: REGIONS, script: '' })[
-      'robots.txt'
-    ];
+    const robots = renderSite(internal, {
+      year: 2027,
+      map: MAP,
+      roads: ROADS,
+      regions: REGIONS,
+      script: '',
+      faces: '',
+    })['robots.txt'];
     expect(robots).toBe('User-agent: *\nDisallow: /\n');
   });
 });

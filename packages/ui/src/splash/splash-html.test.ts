@@ -1,4 +1,4 @@
-import { brandForApp, loadBrand } from '@platform/brands';
+import { brandForApp, fontStack, loadBrand } from '@platform/brands';
 import { describe, expect, it } from 'vitest';
 import { splashHtml } from './splash-html';
 
@@ -24,6 +24,12 @@ describe('splashHtml (G72)', () => {
     expect(body).toContain(`>${brand.name}</b>`);
     expect(body).toContain(`>${brand.slogan}</span>`);
     expect(body).not.toMatch(/<button|<script/);
+  });
+
+  // G73: the name and the slogan in the font of the brand from the first frame.
+  it('writes the words in the font of the brand', () => {
+    const { head } = splashHtml(brand, LOGO, '');
+    expect(head).toContain(`font-family:${fontStack(brand.theme.font)}`);
   });
 
   it('keeps the words of a brand as text', () => {

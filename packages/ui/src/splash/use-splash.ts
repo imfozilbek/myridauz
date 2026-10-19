@@ -13,6 +13,10 @@ const SETTLE_MS = 150;
 const OUT = 'splash-out';
 type Timer = ReturnType<typeof setTimeout> | undefined;
 
+// The words under the splash are in the font of the brand when it leaves: never invisible, never a
+// jump from another font (G73). A browser without the font list leaves at once.
+const fontsIn = (): Promise<unknown> => ('fonts' in document ? document.fonts.ready : Promise.resolve());
+
 function leave(splash: HTMLElement): void {
   paintSplash(undefined);
   splash.classList.add(OUT);
@@ -32,11 +36,15 @@ export function useSplash(color: string, onReady: (ms: number) => void): void {
     paintSplash(color);
     let settling: Timer;
     let leaving: Timer;
+    let gone = false;
     const ready = () => {
       stop();
       const ms = Math.round(performance.now());
       onReady(ms);
-      leaving = setTimeout(() => leave(splash), Math.max(0, SHOW_AT_LEAST_MS - ms));
+      void fontsIn().then(() => {
+        const wait = Math.max(0, SHOW_AT_LEAST_MS - performance.now());
+        if (!gone) leaving = setTimeout(() => leave(splash), wait);
+      });
     };
     const watch = (busy: number) => {
       clearTimeout(settling);
@@ -45,6 +53,7 @@ export function useSplash(color: string, onReady: (ms: number) => void): void {
     const stop = activity.subscribe(watch);
     watch(activity.busy());
     return () => {
+      gone = true;
       stop();
       clearTimeout(settling);
       clearTimeout(leaving);
