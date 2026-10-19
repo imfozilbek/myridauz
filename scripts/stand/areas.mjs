@@ -13,7 +13,7 @@ export const AREAS = {
     'g49-people',
   ],
   search: ['passenger-search', 'passenger-directions', 'g24', 'combos', 'g33', 'g49-search'],
-  map: ['g26', 'dropoff-screen'],
+  map: ['g26', 'dropoff-screen', 'g48-map'],
   booking: [
     'passenger-booking',
     'g21',
