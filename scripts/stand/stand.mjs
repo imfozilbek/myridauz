@@ -6,6 +6,7 @@ import { randomBytes } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { loadBrand } from '../../brands/index.ts';
+import { MAP_ARCHIVE } from '../../packages/contracts/src/map.ts';
 import { baseIsCurrent, buildIsFresh, copyState, markBase, markBuilt } from './reuse.mjs';
 import { serveApp } from './serve-app.mjs';
 import { serveTelegram } from './telegram-stub.mjs';
@@ -77,6 +78,10 @@ if (existsSync(STAND_BASE) && !baseIsCurrent(BASE_STAMP, MIGRATIONS)) {
   migrate(STAND_BASE);
   markBase(BASE_STAMP, MIGRATIONS);
 }
+// A new map (MAP_ARCHIVE, G48): the base is made again with it, once, from a clean state.
+const mapOf = (dir) => (existsSync(`${dir}/map-ready`) ? readFileSync(`${dir}/map-ready`, 'utf8') : null);
+if (existsSync(STAND_BASE) && mapOf(STAND_BASE) !== MAP_ARCHIVE)
+  for (const dir of [STAND_BASE, STAND_STATE]) rmSync(dir, { recursive: true, force: true });
 // A stand with no data yet starts from the base too.
 const fresh = existsSync(STAND_BASE) && (process.argv.includes('--fresh') || !existsSync(STAND_STATE));
 const prepare = process.argv.includes('--prepare');
@@ -86,9 +91,9 @@ if (fresh) {
   copyState(STAND_BASE, STAND_STATE);
 } else if (!prepare || !existsSync(STAND_BASE)) migrate(STAND_STATE);
 if (!existsSync(STAND_BASE)) {
-  if (!existsSync(STAND_MAP_READY)) {
+  if (mapOf(STAND_STATE) !== MAP_ARCHIVE) {
     run('node', ['scripts/map-data.mjs', `--brand=${brand.id}`, '--local']);
-    writeFileSync(STAND_MAP_READY, new Date().toISOString());
+    writeFileSync(STAND_MAP_READY, MAP_ARCHIVE);
   }
   cpSync(STAND_STATE, STAND_BASE, { recursive: true });
   markBase(BASE_STAMP, MIGRATIONS);

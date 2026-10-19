@@ -36,6 +36,15 @@ describe('the places of the search index from the map (G23)', () => {
     expect(place?.name).toBe('Chorsu');
   });
 
+  // A fifth of the names of the map are Cyrillic (docs/100 F1): people read them in Uzbek Latin (G48).
+  it('writes a Cyrillic name in Uzbek Latin and still finds it by the Cyrillic spelling', () => {
+    const [place] = collectPlaces([raw({ kind: 'school', name: 'Школа №6' })], nearest, inside);
+    expect(place?.name).toBe('Shkola №6');
+    expect(place?.words).toBe('maktab 6');
+    const [street] = collectPlaces([raw({ name: "Mаxtumkuli ko''chasi" })], nearest, inside);
+    expect(street?.name).toBe('Maxtumkuli koʻchasi');
+  });
+
   it('keeps one street per district and one landmark per spot', () => {
     const street = (lat: number) =>
       raw({ layer: 'roads', kind: 'minor_road', name: 'Bunyodkor', point: { lat, lng: 69.2 } });

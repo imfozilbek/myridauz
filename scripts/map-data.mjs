@@ -12,7 +12,7 @@ import border from '../packages/contracts/src/uzbekistan-border.json' with { typ
 import { writePlaceIndex } from './map-places.mjs';
 import { STAND_STATE } from './stand/paths.ts';
 import { ensureAccountOf } from './deploy/account.mjs';
-import { dropOldMaps, ensureMapBucket, putMapObject } from './deploy/map-bucket.mjs';
+import { ensureMapBucket, putMapObject } from './deploy/map-bucket.mjs';
 import { targetOf } from './deploy/target.mjs';
 import { workerConfig } from './deploy/worker-config.mjs';
 
@@ -21,8 +21,11 @@ const PMTILES = {
   url: 'https://github.com/protomaps/go-pmtiles/releases/download/v1.28.1/go-pmtiles_1.28.1_Linux_x86_64.tar.gz',
   sha256: 'e2b6480cf8bcb3edb5b857a7658fff488fa73dd3107dc3e92a5f037ed457289e',
 };
-// The mirror of the Protomaps build on Source Cooperative: build.protomaps.com cuts long downloads.
-const SOURCE = 'https://data.source.coop/protomaps/openstreetmap/v4.pmtiles';
+// The daily builds of Protomaps live about two months (a fresh map, G48); the mirror on Source
+// Cooperative keeps one older build and never cut a download (lesson 44). The first with the date
+// of MAP_ARCHIVE wins.
+const BUILDS = 'https://build.protomaps.com';
+const MIRROR = 'https://data.source.coop/protomaps/openstreetmap/v4.pmtiles';
 const DATA_DATE = 'planetiler:osm:osmosisreplicationtime';
 const FONTS = 'https://raw.githubusercontent.com/protomaps/basemaps-assets/main/fonts';
 // Latin, Latin extended, the oʻ and gʻ letters, Cyrillic, quotes and dashes of names.
@@ -82,15 +85,20 @@ if (createHash('sha256').update(tool).digest('hex') !== PMTILES.sha256)
 writeFileSync(join(WORK, 'pmtiles.tar.gz'), tool);
 run('tar', ['xzf', join(WORK, 'pmtiles.tar.gz'), '-C', WORK, 'pmtiles']);
 
-// The mirror moves to a new build from time to time: the name must say the date of the data.
-const metadata = JSON.parse(read(join(WORK, 'pmtiles'), ['show', '--metadata', SOURCE]));
-const date = String(metadata[DATA_DATE] ?? '')
-  .slice(0, 10)
-  .replaceAll('-', '');
-if (date !== build)
-  throw new Error(
-    `map-data: the source has the data of ${date}, set MAP_ARCHIVE to uzbekistan-${date}.pmtiles`,
-  );
+// The name of the archive says the date of its data: the source must have exactly that date.
+const dateOf = (source) => {
+  try {
+    const metadata = JSON.parse(read(join(WORK, 'pmtiles'), ['show', '--metadata', source]));
+    return String(metadata[DATA_DATE] ?? '')
+      .slice(0, 10)
+      .replaceAll('-', '');
+  } catch {
+    return null;
+  }
+};
+const SOURCE = [`${BUILDS}/${build}.pmtiles`, MIRROR].find((source) => dateOf(source) === build);
+if (!SOURCE)
+  throw new Error(`map-data: no build of ${build}; the mirror has ${dateOf(MIRROR)}, see ${BUILDS}`);
 
 const region = join(WORK, 'uzbekistan.geojson');
 writeFileSync(region, JSON.stringify({ type: 'MultiPolygon', coordinates: border }));
@@ -118,7 +126,7 @@ for (const font of MAP_FONTS)
     writeFileSync(file, await download(`${FONTS}/${encodeURIComponent(font)}/${range}.pbf`));
     put(`map/fonts/${font}/${range}.pbf`, file, 'application/x-protobuf');
   }
-if (!local) await dropOldMaps(media, bucket, MAP_ARCHIVE);
+// The older archive stays: the Mini Apps read it until the deploy of the new name drops it (G48).
 console.log(`map-data: ${MAP_ARCHIVE} (${Math.round(size / 1e6)} MB) and the fonts are in ${bucket}`);
 
 // The search by name (G23): the places of the same archive, the whole index made again in D1.

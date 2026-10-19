@@ -63,9 +63,9 @@ export async function ensureMapBucket(brand, apps) {
   return name;
 }
 
-// The archive answers by parts at its public address: the Mini Apps may read it there.
-export async function mapServed(host, archive) {
-  const response = await fetch(`https://${host}/map/${archive}`, { headers: { range: 'bytes=0-15' } }).catch(
+// A file of the map answers by parts at its public address: the Mini Apps may read it there.
+export async function mapServed(host, key) {
+  const response = await fetch(`https://${host}/map/${key}`, { headers: { range: 'bytes=0-15' } }).catch(
     () => null,
   );
   return response?.status === 206;

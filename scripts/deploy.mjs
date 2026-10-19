@@ -4,7 +4,7 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { apiHost, appHost, mapHost } from '../brands/index.ts';
-import { MAP_ARCHIVE } from '../packages/contracts/src/map.ts';
+import { MAP_ARCHIVE, MAP_FONTS } from '../packages/contracts/src/map.ts';
 import { ensureAccountOf } from './deploy/account.mjs';
 import { miniApps } from './deploy/hosts.mjs';
 import { copyMap, dropOldMaps, ensureMapBucket, ensureStoriesRule, mapServed } from './deploy/map-bucket.mjs';
@@ -36,10 +36,13 @@ const step = async (name, work, fallback) => {
 await step('stories rule', () => ensureStoriesRule(media));
 const mapBucket = await step('map bucket', () => ensureMapBucket(brand, apps), null);
 if (mapBucket) await step('map copy', () => copyMap(media, mapBucket));
-const served = mapBucket !== null && (await mapServed(mapHost(brand), MAP_ARCHIVE));
-// The copy in MEDIA goes only once the public address answers: the API keeps it until then.
-if (served) await step('old maps', () => dropOldMaps(media, mapBucket, MAP_ARCHIVE));
-else console.warn(`deploy: ${mapHost(brand)} does not answer yet, the map stays on the API`);
+const answers = async (key) => mapBucket !== null && (await mapServed(mapHost(brand), key));
+// The address answers once the fonts of the map are there. An archive of a new date comes with «Map
+// data» before or after the deploy (G48): the older ones and the copy in MEDIA go once it answers.
+const served = await answers(`fonts/${encodeURIComponent(MAP_FONTS[0])}/0-255.pbf`);
+if (served && (await answers(MAP_ARCHIVE)))
+  await step('old maps', () => dropOldMaps(media, mapBucket, MAP_ARCHIVE));
+else if (!served) console.warn(`deploy: ${mapHost(brand)} does not answer yet, the map stays on the API`);
 
 run('pnpm', ['--filter', './apps/miniapp-*', '--filter', './apps/landing', 'build'], {
   VITE_BRAND: brand.id,
