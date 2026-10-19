@@ -39,7 +39,9 @@ describe('the note of a request', () => {
       }),
     );
     await call(`/passenger/offers/${offer.id}/accept`, PASSENGER, { method: 'POST' });
-    const { bookings } = await read<{ bookings: Seat[] }>(call('/driver/bookings', DRIVER, { app: 'driver' }));
+    const { bookings } = await read<{ bookings: Seat[] }>(
+      call('/driver/bookings', DRIVER, { app: 'driver' }),
+    );
     expect(bookings[0]?.note).toMatch(/^Koʻk darvoza, /u);
     expect(bookings[0]?.note).not.toMatch(/123/u);
   });
