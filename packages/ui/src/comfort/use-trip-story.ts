@@ -2,7 +2,7 @@ import type { Trip } from '@platform/contracts';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { usePictureFont } from '../media/picture-font';
+import { PICTURE_FONT } from '../media/story-paint';
 import { usePassengerColors, useTripTexts } from '../media/use-trip-texts';
 import { haptic } from '../telegram/feedback';
 import { openStory } from '../telegram/story';
@@ -20,10 +20,9 @@ export function useTripStory(trip: Trip) {
   const { chat } = useApiClients();
   const colors = usePassengerColors();
   const texts = useTripTexts();
-  const pictureFont = usePictureFont();
   return async () => {
     const words = texts(trip);
-    const picture = await drawStory(words, colors, await pictureFont());
+    const picture = await drawStory(words, colors, PICTURE_FONT);
     if (!picture) throw new Error('ui.story_not_drawn');
     const story = await chat.putTripStory(trip.id, picture);
     const day = new Date(trip.departAt);

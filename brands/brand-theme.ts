@@ -102,9 +102,6 @@ export type BrandColors = {
 export type AppName = 'passenger' | 'driver' | 'admin';
 
 export type BrandTheme = {
-  // The font of every screen (G73, owner decision 07.10.2026): its folder in brands/<brand>/public/fonts
-  // and its name in CSS. Another font is one line here and its folder (brands/font.ts).
-  readonly font: string;
   readonly colors: BrandColors;
   // What an app changes in the colors above; an app not listed uses them as they are.
   readonly apps: Readonly<Partial<Record<AppName, Partial<BrandColors>>>>;

@@ -104,18 +104,12 @@ for (const width of [360, ...WIDTHS])
     await openTripAt(page, PUBLISHED, false, { publicity: PUBLICITY });
     const text = page.locator('.own-channel-share span');
     await expect(text).toHaveText(t('driverTrip.channel.share'));
-    // Counted in the font of the brand, as people see it (G73).
-    await page.evaluate(() => document.fonts.ready);
     const lines = await text.evaluate((span) => {
       const range = document.createRange();
       range.selectNodeContents(span);
       return new Set([...range.getClientRects()].map((box) => Math.round(box.top))).size;
     });
-    const room = await text.evaluate(
-      (span) =>
-        `${span.scrollWidth} in ${span.parentElement?.clientWidth} at ${getComputedStyle(span).fontSize}`,
-    );
-    expect(lines, room).toBe(1);
+    expect(lines).toBe(1);
     await nothingCut(page);
   });
 

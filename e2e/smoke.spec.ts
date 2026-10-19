@@ -32,19 +32,6 @@ for (const app of MINI_APPS) {
     expect(await telegramEvents(page, 'web_app_set_header_color')).toContainEqual({ color: colors.bg });
     expect(await telegramEvents(page, 'web_app_set_bottom_bar_color')).toContainEqual({ color: colors.bg });
     await expect(page.getByText(app.action).first()).toBeVisible();
-    // G73: the words of the app are in the font of the brand, which the app serves itself; the buttons
-    // of Telegram keep the font of the phone.
-    const { font } = brand.theme;
-    await expect(page.locator('.app-shell')).toHaveCSS('font-family', new RegExp(`^"?${font}"?,`));
-    const loaded = () =>
-      page.evaluate(
-        (name) =>
-          [...document.fonts].some(
-            (face) => face.family.replaceAll('"', '') === name && face.status === 'loaded',
-          ),
-        font,
-      );
-    await expect.poll(loaded).toBe(true);
     if (app.mainButton) {
       await expect(mainButton).toHaveText(app.mainButton);
       await expect(mainButton).toHaveCSS('background-color', hexToRgb(colors.brandStrong));

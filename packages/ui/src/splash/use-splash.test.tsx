@@ -52,20 +52,4 @@ describe('splash (G72)', () => {
     expect(splash()?.classList.contains('splash-out')).toBe(true);
     expect(tracked.find((event) => event.name === 'app_ready')).toMatchObject({ ms: 1750 });
   });
-
-  // G73: the words under the splash are in the font of the brand when it leaves, never a blink.
-  it('leaves only when the font of the brand is in place', async () => {
-    let fontsIn: () => void = () => undefined;
-    const ready = new Promise<void>((resolve) => {
-      fontsIn = resolve;
-    });
-    Object.defineProperty(document, 'fonts', { value: { ready }, configurable: true });
-    renderInShell(<div />);
-    await pass(1000);
-    expect(splash()?.className).toBe('splash');
-    await act(async () => fontsIn());
-    await pass(0);
-    expect(splash()?.classList.contains('splash-out')).toBe(true);
-    Reflect.deleteProperty(document, 'fonts');
-  });
 });

@@ -55,7 +55,7 @@ export function AppShell({
               appearance="light"
               platform={session.platform}
               className="app-shell"
-              style={themeVars(brand.theme)}
+              style={themeVars(brand.theme.colors)}
             >
               <LocationsClientContext.Provider value={locations}>
                 <ApiClientsContext.Provider value={clients}>

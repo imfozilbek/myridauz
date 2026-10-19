@@ -19,27 +19,4 @@ describe('style files', { timeout: 20_000 }, () => {
       .map((file) => file.pathname);
     expect(long).toEqual([]);
   });
-
-  // G73: the font is named once, in the theme of the brand; a style takes it from TelegramUI's variable
-  // or its parent. Only the plate and the codes keep the even letters of a monospace font.
-  it('name no font but the one of the brand', () => {
-    const own = ROOTS.flatMap(styles).flatMap((file) =>
-      [...readFileSync(file, 'utf8').matchAll(/font-family:\s*([^;}]+)/g)]
-        .map(([, value]) => value.trim())
-        .filter((value) => !/^(var\(--tgui--font-family[),]|inherit$)|monospace$/.test(value))
-        .map((value) => `${file.pathname}: ${value}`),
-    );
-    expect(own).toEqual([]);
-  });
-
-  // G73: code names no font either: the screens, the splash and the pictures take it from the brand.
-  it('keep the code free of font names', () => {
-    const code = ROOTS.flatMap((root) =>
-      readdirSync(root, { recursive: true, encoding: 'utf8' })
-        .filter((name) => /\.tsx?$/.test(name) && !/\.test\.tsx?$|node_modules|dist\//.test(name))
-        .map((name) => new URL(name, root)),
-    );
-    const named = code.filter((file) => /sans-serif|system-ui|Roboto/.test(readFileSync(file, 'utf8')));
-    expect(named.map((file) => file.pathname)).toEqual([]);
-  });
 });
