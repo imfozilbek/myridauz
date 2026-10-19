@@ -59,10 +59,12 @@ for (const platform of PLATFORMS)
     await mapReady(page, 'way.point.to');
     await shot('02-dropoff');
     await page.getByPlaceholder(t('way.point.search')).fill('Bahor');
-    await expect(page.getByText(PLACE, { exact: true })).toBeVisible();
+    // The map of 18.10.2026 has two mahallas of this name in Guliston, 760 m apart (G48).
+    const place = page.getByText(PLACE, { exact: true }).first();
+    await expect(place).toBeVisible();
     await shot('03-dropoff-search');
     const before = await page.getByRole('status').textContent();
-    await page.getByText(PLACE, { exact: true }).click();
+    await place.click();
     // The map came to the place: its name under the pin is new (lesson 77).
     await expect(page.getByRole('status')).not.toHaveText(before ?? '', { timeout: SLOW_MS });
     await expect(page.getByRole('status')).not.toHaveText(/aniqlanmoqda|hududida emas/u, {

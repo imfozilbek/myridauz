@@ -2,6 +2,7 @@ import type { PlaceKind, Point } from '@platform/contracts';
 import { districtAt, type Border } from '../domain/borders.ts';
 import { fineCell, placeCell } from '../domain/place-cell.ts';
 import { placeKind } from '../domain/place-kind.ts';
+import { toLatin } from '../../../../../../packages/contracts/src/latin.ts';
 import { searchKey } from '../../../../../../packages/contracts/src/search-key.ts';
 
 // The places of the search index (G23, docs/67), built by pnpm map-data from the same archive
@@ -85,7 +86,8 @@ export function collectPlaces(
   const seen = new Map<string, Point[]>();
   for (const raw of raws) {
     const kind = placeKind(raw.layer, raw.kind);
-    const name = (raw.uz ?? raw.name).trim();
+    // People read the name in Uzbek Latin: a fifth of the map writes it in Cyrillic (G48).
+    const name = toLatin((raw.uz ?? raw.name).trim());
     const key = searchKey(name);
     if (kind === null || key === '' || !inside(raw.point)) continue;
     const area = areaOf(raw.point);

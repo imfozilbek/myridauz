@@ -80,12 +80,13 @@ export const dayAfterTomorrow = () => tashkentDate(Date.now() + 2 * DAY);
 // 09:00 in Tashkent, or the first time after it the driver makes (docs/103).
 const NINE = '09:00';
 
-export async function askRide(passenger: Person, date = tomorrow()) {
+// note: «Izoh» of the request for the driver (G48).
+export async function askRide(passenger: Person, date = tomorrow(), note = '') {
   freshPassenger(passenger);
   const market = createMarketClient(await signedAs('passenger', passenger));
   const { price } = await market.recommend(CHILONZOR, SAMARQAND);
   const input = { from: CHILONZOR, to: SAMARQAND, date, seats: 1, price, pickupMode: 'door' as const };
-  return market.publishRequest({ ...input, ...TO_SAMARQAND });
+  return market.publishRequest({ ...input, ...TO_SAMARQAND, note });
 }
 export async function offerOn(driver: Person, requestId: string, date = tomorrow()) {
   freshDriver(driver);

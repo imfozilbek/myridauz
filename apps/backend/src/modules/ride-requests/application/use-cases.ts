@@ -3,10 +3,9 @@ import {
   tashkentDayStart,
   type RequestSearch,
   type RideRequest,
-  type Point,
   type RideRequestData,
 } from '@platform/contracts';
-import { placeMatches, regionIn } from '../../../shared/places/place-match';
+import { placeMatches } from '../../../shared/places/place-match';
 import {
   cancel,
   dateError,
@@ -17,6 +16,7 @@ import {
 } from '../domain/ride-request';
 import type { RequestsDeps, Result } from './ports';
 import { routeByPoints } from './request-route';
+import { plain, wayError } from './request-way';
 import { views } from './views';
 import { upcomingFirst } from '../../../shared/order/upcoming-first';
 
@@ -31,19 +31,6 @@ type PublishError =
   | 'locations.inside_city'
   | 'bookings.wrong_mode'
   | 'bookings.outside_area';
-
-const plain = ({ lat, lng }: Point) => ({ lat, lng });
-
-// The way of a request (docs/70): «Pitakdan» only where the direction has a pitak; a point at the
-// door unless only the pitak suits; the points in the districts of the route (docs/69).
-async function wayError(deps: RequestsDeps, input: RideRequestData) {
-  const regionOf = regionIn(await deps.places());
-  const pitak = await deps.pitakOf(regionOf(input.from), regionOf(input.to));
-  if (input.pickupMode === 'pitak' && !pitak) return 'bookings.wrong_mode';
-  if (input.pickupMode !== 'pitak' && !input.pickup) return 'bookings.wrong_mode';
-  const pickupFits = input.pickupMode === 'pitak' || (input.pickup && deps.fits(input.pickup, input.from));
-  return pickupFits && deps.fits(input.dropoff, input.to) ? null : 'bookings.outside_area';
-}
 
 export async function publishRequest(
   deps: RequestsDeps,
@@ -77,6 +64,7 @@ export async function publishRequest(
     withWoman: keepsWithWoman(input.withWoman, input.seats, passenger?.gender === 'female'),
     pickup: input.pickupMode === 'pitak' || !input.pickup ? null : plain(input.pickup),
     dropoff: plain(input.dropoff),
+    note: input.note ? deps.mask(input.note) : null,
     id: deps.newId(),
     passengerId,
     expiresAt: expiresAt(input.date),

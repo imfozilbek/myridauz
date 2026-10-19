@@ -3,28 +3,14 @@ import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { quickRoute, ROUTE, takePoint, tap } from './market-test-kit';
 import { recentRoutes } from './recent-routes';
-import { openRequest } from './request-test-kit';
+import { openRequest, row, toPoints } from './request-test-kit';
 import { pickDay } from '../days/week-test-kit';
 
 afterEach(cleanup);
 beforeEach(() => localStorage.clear());
 
-const row = (label: string) => screen.getByText(label).closest('button') as HTMLElement;
 const more = (index: number) =>
   fireEvent.click(screen.getAllByRole('button', { name: 'Oshirish' })[index] as HTMLElement);
-
-// The route and tomorrow, then «Qayerdan, qayerga?» with both points chosen on their maps: the map of
-// the end opens right after the start (G78 П4).
-async function toPoints() {
-  await quickRoute();
-  await pickDay(1);
-  expect(await screen.findByText('Qayerdan, qayerga?')).toBeTruthy();
-  fireEvent.click(row('Olib ketish joyi'));
-  await takePoint('Chorsu bozori yaqinida');
-  expect(await screen.findByText('Qayerda tushasiz?')).toBeTruthy();
-  await takePoint('Yangi Margʻilon');
-  await screen.findByText('Qayerdan, qayerga?');
-}
 
 describe('«Soʻrov qoldirish» on one screen (G61, docs/118 path 4)', { timeout: 20_000 }, () => {
   it('the people and the price by − and +, the sum, an error of the API, then sent', async () => {

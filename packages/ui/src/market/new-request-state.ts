@@ -20,6 +20,8 @@ export type RequestAnswer = {
   readonly price?: number;
   readonly withWoman?: boolean;
   readonly wholeCar?: boolean;
+  // «Izoh» for the driver (G48): the seat of an accepted offer takes it.
+  readonly note?: string;
 };
 // The people, the price and the car of a request sent again: as they were (G79 П11).
 export type RequestRepeat = Pick<RequestAnswer, 'seats' | 'price' | 'wholeCar' | 'withWoman'>;

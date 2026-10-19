@@ -18,6 +18,8 @@ export type RequestFacts = {
   readonly pickupMode: PickupMode;
   readonly pickup: Point | null;
   readonly dropoff: Point | null;
+  // «Izoh» of the request (G48): the seat of an accepted offer takes it with the points.
+  readonly note: string | null;
   readonly open: boolean;
   // Open, matched to an offer, cancelled or burned (docs/35): its card in the bot says it (G68).
   readonly status: RideRequest['status'];
