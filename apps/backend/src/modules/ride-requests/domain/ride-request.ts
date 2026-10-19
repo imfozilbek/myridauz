@@ -25,6 +25,8 @@ export type RequestRecord = {
   readonly pickupMode: PickupMode;
   readonly pickup: Point | null;
   readonly dropoff: Point | null;
+  // «Izoh» for the driver without contacts (G48): it lives and goes with the points.
+  readonly note: string | null;
   // The passenger turned the calls of drivers off (G64, docs/127).
   readonly callsOff: boolean;
   readonly createdAt: number;
@@ -35,6 +37,7 @@ export const withoutPoints = (request: RequestRecord): RequestRecord => ({
   ...request,
   pickup: null,
   dropoff: null,
+  note: null,
 });
 
 export const expiresAt = (date: string) => tashkentDayStart(date) + DAY_MS;

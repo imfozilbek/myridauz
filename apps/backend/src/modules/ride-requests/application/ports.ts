@@ -66,6 +66,8 @@ export type RequestsDeps = {
   readonly seatHeld: (passengerId: number) => Promise<boolean>;
   // The seats of a request, the days ahead (brand with the owner's values, docs/128 §4).
   readonly limits: Pick<BrandConfig, 'requests' | 'schedule'>;
+  // Phones and usernames out of the note, as in the chat (docs/07).
+  readonly mask: (text: string) => string;
   readonly newId: () => string;
   readonly now: () => number;
 };

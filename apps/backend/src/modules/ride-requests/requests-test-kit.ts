@@ -4,6 +4,7 @@ import type { RequestsDeps } from './application/ports';
 import { createMemoryRequests } from './infrastructure/memory-requests';
 import { createMemoryRequestViews } from './infrastructure/request-views';
 import { publicIdOf } from '../../test-people';
+import { maskContacts } from '../chat';
 
 // The ride requests of the tests: a driver (id 9) with a car of 4 seats, two regions and a pitak.
 // 2026-10-01 06:00 in Tashkent.
@@ -89,6 +90,7 @@ export function setup() {
     ratings: async (ids) => new Map(ids.map((userId) => [userId, { average: 4.8, count: 12 }])),
     seatHeld: async () => seatHeld,
     limits: loadBrand(),
+    mask: (text) => maskContacts(text).text,
     newId: () => `request-${(id += 1)}`,
     now: () => now,
   };
@@ -103,6 +105,7 @@ export function setup() {
     dropoff: AWAY,
     wholeCar: false,
     withWoman: false,
+    note: '',
   };
   return {
     deps,

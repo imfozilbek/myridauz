@@ -1,11 +1,13 @@
 import type { MapClient, MarketClient } from '@platform/api-client';
 import type { Location, RideRequest, RideRequestInput } from '@platform/contracts';
-import { vi } from 'vitest';
+import { fireEvent, screen } from '@testing-library/react';
+import { expect, vi } from 'vitest';
+import { pickDay } from '../days/week-test-kit';
 import { PassengerData } from '../home/passenger-data';
 import { MapEngineContext } from '../map/map-engine';
 import { fakeMap, testMap } from '../map/map-test-kit';
 import { testClients } from '../test-shell';
-import { recommendation, renderMarket } from './market-test-kit';
+import { quickRoute, recommendation, renderMarket, takePoint } from './market-test-kit';
 import { NewRequestFlow } from './new-request-flow';
 
 type Options = {
@@ -69,4 +71,19 @@ export function openRequest({
     gender,
   );
   return publishRequest;
+}
+
+export const row = (label: string) => screen.getByText(label).closest('button') as HTMLElement;
+
+// The route and tomorrow, then «Qayerdan, qayerga?» with both points chosen on their maps: the map of
+// the end opens right after the start (G78 П4).
+export async function toPoints() {
+  await quickRoute();
+  await pickDay(1);
+  expect(await screen.findByText('Qayerdan, qayerga?')).toBeTruthy();
+  fireEvent.click(row('Olib ketish joyi'));
+  await takePoint('Chorsu bozori yaqinida');
+  expect(await screen.findByText('Qayerda tushasiz?')).toBeTruthy();
+  await takePoint('Yangi Margʻilon');
+  await screen.findByText('Qayerdan, qayerga?');
 }

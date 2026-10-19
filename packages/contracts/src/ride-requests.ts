@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { BOOKING_NOTE_MAX } from './bookings';
 import { MAX_SEATS } from './drivers';
 import { personIdSchema } from './person-id';
 import { locationIdSchema } from './locations';
@@ -34,6 +35,9 @@ export const rideRequestInputSchema = z.object({
   // and more (G61, docs/06 rule 4, docs/118 path 4).
   wholeCar: z.boolean().default(false),
   withWoman: z.boolean().default(false),
+  // «Izoh» for the driver («Koʻk darvoza», G48, docs/68): as short as the note of a booking, the
+  // seat of an accepted offer takes it; drivers never see it on the request itself.
+  note: z.string().trim().max(BOOKING_NOTE_MAX).default(''),
 });
 export type RideRequestInput = z.input<typeof rideRequestInputSchema>;
 export type RideRequestData = z.output<typeof rideRequestInputSchema>;

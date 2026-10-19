@@ -6,6 +6,7 @@ import { peopleOf } from '../users';
 import { districtOf, pointFitsPlace } from '../map';
 import { pitakOf } from '../pitaks';
 import { ratingsOfPeople } from '../ratings';
+import { maskContacts } from '../chat';
 import type { RequestsDeps } from './application/ports';
 import { cancelRequest } from './application/use-cases';
 import { views } from './application/views';
@@ -75,6 +76,7 @@ const requestsDeps = (env: Bindings): RequestsDeps => ({
   ratings: (userIds) => ratingsOfPeople(env, userIds),
   seatHeld: (passengerId) => seatHeldOf(env, passengerId),
   limits: brandOf(env),
+  mask: (text) => maskContacts(text).text,
   newId: () => crypto.randomUUID(),
   now: Date.now,
 });
@@ -103,6 +105,7 @@ const factsOf = (request: RequestRecord, now: number) => ({
   pickupMode: request.pickupMode,
   pickup: request.pickup,
   dropoff: request.dropoff,
+  note: request.note,
   open: isOpen(request, now),
   status: statusAt(request, now),
   callsOff: request.callsOff,
