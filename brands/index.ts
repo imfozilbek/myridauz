@@ -15,7 +15,6 @@ export type {
 } from './brand-config';
 export { channelOf } from './channels.ts';
 export { commissionFor } from './commission.ts';
-export { fontHead, fontStack } from './font.ts';
 export { apiHost, appHost, mapHost } from './hosts.ts';
 
 // A brand in each of its environments: the common config with the values of the environment.

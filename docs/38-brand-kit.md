@@ -60,7 +60,7 @@
 | Сайт | `web/`: favicon (svg, ico), иконка iPhone, 192, 512, превью ссылки 1200 × 630 |
 | Боты (G34) | `pnpm bot`: картинки приветствия водителя, попутчика и поддержки `driver-welcome.png`, `passenger-welcome.png`, `support-welcome.png` и JPG-аватары 4 ботов в `brands/rida/landing/bot/`; сайт отдаёт их, бот шлёт картинку по адресу с версией из `brands/rida/welcomes.json` (её пишет `pnpm bot`, урок №311), аватары ставит `/telegram/setup` (`setMyProfilePhoto`) |
 | Лендинг | `pnpm landing`: картинки из сцен ролика в `brands/rida/landing/art/` и дороги карты `data/hero-roads.json` (`59`, `60`) |
-| Шрифт продукта | `python3 tools/web-font.py` (нужны `fonts-dejavu-core`, `fonttools`, `brotli`): DejaVu Sans в `brands/rida/public/fonts/dejavu-sans/`, лицензия и `font.css` рядом (G73, `204`) |
+| Шрифт сайта | `python3 tools/web-font.py` (нужен `fonttools`, `brotli`): Rubik 300…900 в `brands/rida/landing/fonts/brand.woff2`, знак ʻ из глифа ‘ (`60`) |
 | Соцсети | `social/`: посты «Tez orada», запуск, «Mashinada ayol bor»; сторис для водителей и «Yangi safar» |
 | Печать | `print/`: наклейка на машину 200 мм, QR-плакат A4 (ведёт на сайт прода, сейчас https://ridaone.uz) |
 | Telegram Ads (18.10.2026) | `pnpm ads`: 6 картинок 16:9, 1920 × 1080 PNG: 3 для бота попутчика (бирюзовые), 3 для бота водителя (янтарные). Заголовок, строка под ним и 2 настоящих экрана Mini App (те же, что на флаере). Тексты: согласованные с лендинга, флаера и постов; владелец назвал их выбранными и подтверждёнными (18.10.2026); ждёт «да» на вид |

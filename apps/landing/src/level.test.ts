@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { fontStack, loadBrand } from '@platform/brands';
+import { loadBrand } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { initCount } from './client/count';
@@ -8,24 +8,17 @@ import { MAP, REGIONS, ROADS } from './test-map';
 
 const brand = loadBrand();
 const { t } = createI18n(DEFAULT_LOCALE);
-const FACES = '@font-face{font-family:"dejavu-sans"}';
 const home =
-  renderSite(brand, { year: 2027, map: MAP, roads: ROADS, regions: REGIONS, script: '', faces: FACES })[
-    'index.html'
-  ] ?? '';
+  renderSite(brand, { year: 2027, map: MAP, roads: ROADS, regions: REGIONS, script: '' })['index.html'] ?? '';
 
 afterEach(() => vi.unstubAllGlobals());
 
 describe('the level of the landing (docs/60)', () => {
-  // G73: the words in the font of the brand, the same as in the Mini Apps; the logo stays Rubik (docs/36).
-  it('loads the font of the brand before the first screen', () => {
+  it('loads the brand font before the first screen', () => {
     expect(home).toContain(
-      '<link rel="preload" href="/fonts/dejavu-sans/regular-latin.woff2" as="font" type="font/woff2" crossorigin>',
+      '<link rel="preload" href="/fonts/brand.woff2" as="font" type="font/woff2" crossorigin>',
     );
-    expect(home).toContain(`<style>${FACES}</style>`);
-    expect(home).toContain(`--font:${fontStack('dejavu-sans')}`);
-    expect(home).toContain('body{font:17px/1.5 var(--font);');
-    expect(home).not.toContain('brand.woff2');
+    expect(home).toContain('font-family:Brand;src:url(/fonts/brand.woff2)');
   });
 
   it('moves a light along every road of the map picture', () => {

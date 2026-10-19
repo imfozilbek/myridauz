@@ -1,10 +1,8 @@
-import { fontStack, type BrandConfig } from '@platform/brands';
+import type { BrandColors } from '@platform/brands';
 
-// The colors and the font of the brand replace those of TelegramUI (G73, docs/22). Radii and spacing
-// stay Telegram's (docs/19).
-export function themeVars({ colors, font }: BrandConfig['theme']): Record<string, string> {
+// Brand colors replace only TelegramUI colors. Radii, spacing and fonts stay Telegram's (docs/19).
+export function themeVars(colors: BrandColors): Record<string, string> {
   return {
-    '--tgui--font-family': fontStack(font),
     '--tgui--bg_color': colors.bg,
     '--tgui--secondary_bg_color': colors.bgGrouped,
     '--tgui--header_bg_color': colors.bg,

@@ -1,4 +1,4 @@
-import { fontHead, type BrandConfig } from '@platform/brands';
+import type { BrandConfig } from '@platform/brands';
 import { LEGAL_DOCUMENTS } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE, legalTitle } from '@platform/i18n';
 import { directionPage, directionQuestions, startOf } from './direction-page';
@@ -17,8 +17,6 @@ type Build = {
   roads: HeroRoads;
   regions: readonly RegionName[];
   script: string;
-  // The faces of the font of the brand (brands/<brand>/public/fonts/<font>/font.css, G73).
-  faces: string;
 };
 
 // The picture of the region of a direction, the hub has none (brands/<brand>/landing/og, G68).
@@ -29,12 +27,11 @@ const imageOf = ({ from, to }: Direction) => {
 
 // Every file of the landing in dist: the main page, a page of every direction (docs/60),
 // the three documents and the files for search engines.
-// The map, the script and the faces come from the build (prerender.ts): rendering stays a pure function.
+// The map and the script come from the build (prerender.ts), so rendering stays a pure function.
 export function renderSite(
   brand: BrandConfig,
-  { year, map, roads, regions, script, faces }: Build,
+  { year, map, roads, regions, script }: Build,
 ): Record<string, string> {
-  const font = fontHead(brand.theme.font, faces);
   const i18n = createI18n(DEFAULT_LOCALE);
   const { t } = i18n;
   const all = directions(map);
@@ -49,7 +46,6 @@ export function renderSite(
       body: home(brand, i18n, { map, roads, all, items, regions }),
       head: organization(brand, t('landing.description', { brand: brand.name })) + faqPage(items),
       script,
-      font,
     }),
   };
   for (const current of all) {
@@ -71,7 +67,6 @@ export function renderSite(
       ...imageOf(current),
       head: faqPage(own) + breadcrumbs(brand, trail),
       script,
-      font,
     });
   }
   for (const document of LEGAL_DOCUMENTS) {
@@ -83,7 +78,6 @@ export function renderSite(
       path: `/${document}/`,
       body: documentPage(document, brand, i18n),
       script,
-      font,
     });
   }
   const paths = ['/', ...all.map((item) => item.path), ...LEGAL_DOCUMENTS.map((document) => `/${document}/`)];
