@@ -73,7 +73,7 @@ describe('canSeeAvatar (docs/05)', () => {
     expect(canSeeAvatar({ id: 1, isAdmin: true }, { ...sampleUser, avatarKey: null }, 'none')).toBe(false);
   });
 
-  it('shows a photo the team did not approve only to its owner and the team (docs/118)', () => {
+  it('shows a driver photo the team did not approve only to its owner and the team (docs/118)', () => {
     for (const face of [newFace(NOW), { status: 'rejected', reason: 'not_real_photo', at: NOW } as const]) {
       const waiting = { ...sampleUser, isDriver: true, face };
       expect(canSeeAvatar({ id: 1, isAdmin: false }, waiting, 'none')).toBe(true);
@@ -81,6 +81,22 @@ describe('canSeeAvatar (docs/05)', () => {
       expect(canSeeAvatar(stranger, waiting, 'co_passenger')).toBe(false);
       expect(toPublicProfile(waiting).hasAvatar).toBe(false);
     }
+  });
+
+  // The team checks a passenger photo after (owner decision 19.10.2026, G51): co passengers see it at
+  // once, the driver of the trip never; «Mos emas» takes it away.
+  it('shows a waiting passenger photo to co passengers at once, a refused one to nobody else', () => {
+    const waiting = { ...sampleUser, face: newFace(NOW) };
+    expect(canSeeAvatar(stranger, waiting, 'co_passenger')).toBe(true);
+    expect(canSeeAvatar(stranger, waiting, 'trip_driver')).toBe(false);
+    expect(toPublicProfile(waiting).hasAvatar).toBe(true);
+    const refused = {
+      ...sampleUser,
+      face: { status: 'rejected', reason: 'not_real_photo', at: NOW } as const,
+    };
+    expect(canSeeAvatar(stranger, refused, 'co_passenger')).toBe(false);
+    expect(canSeeAvatar({ id: 1, isAdmin: false }, refused, 'none')).toBe(true);
+    expect(toPublicProfile(refused).hasAvatar).toBe(false);
   });
 });
 

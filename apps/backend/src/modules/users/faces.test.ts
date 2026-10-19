@@ -13,7 +13,9 @@ const vali = { id: 2, firstName: 'Vali', isAdmin: false };
 const valiInput = { ...input, firstName: 'Vali', contact: { userId: 2, phone: '998901234568' } };
 
 describe('the face photo check (docs/118, G51)', () => {
-  it('sends every new photo to the team and lets the owner see it waiting', async () => {
+  // A passenger never waits: the photo shows at once to whom docs/05 allows, the team checks it
+  // after (owner decision 19.10.2026, G51).
+  it('sends every new photo to the team; a passenger photo shows at once', async () => {
     const { deps, told } = setup();
     await register(deps, ali, input);
     await setAvatar(deps, ali, jpeg(10));
@@ -25,8 +27,19 @@ describe('the face photo check (docs/118, G51)', () => {
       avatarReason: null,
     });
     const shown = await getPublicProfile(deps, 1);
-    expect(shown.ok && shown.profile.hasAvatar).toBe(false);
+    expect(shown.ok && shown.profile.hasAvatar).toBe(true);
+    expect((await people(deps).find(1))?.avatarShown).toBe(true);
+  });
+
+  // A driver photo is public: it waits for the team as before (docs/05, docs/118).
+  it('keeps a new driver photo hidden from others until the team approves it', async () => {
+    const { deps } = setup();
+    await register(deps, ali, input);
+    await people(deps).setDriver(1, true);
+    await setAvatar(deps, ali, jpeg(10));
     expect((await people(deps).find(1))?.avatarShown).toBe(false);
+    await decideFace(deps, MODERATOR, 1, { action: 'approve' });
+    expect((await people(deps).find(1))?.avatarShown).toBe(true);
   });
 
   it('lists waiting photos the oldest first and gives the team the photo', async () => {
@@ -61,7 +74,7 @@ describe('the face photo check (docs/118, G51)', () => {
     expect(await pendingFaces(deps)).toEqual([]);
   });
 
-  it('rejects with a reason: the person hears it and a new photo waits again', async () => {
+  it('rejects with a reason: the photo goes, the person hears it, a new one shows again', async () => {
     const { deps, told } = setup();
     await register(deps, ali, input);
     await setAvatar(deps, ali, jpeg(10));
@@ -77,6 +90,8 @@ describe('the face photo check (docs/118, G51)', () => {
       avatarStatus: 'rejected',
       avatarReason: 'face_not_visible',
     });
+    // «Mos emas» takes the photo away from the others at once.
+    expect((await people(deps).find(1))?.avatarShown).toBe(false);
     await setAvatar(deps, ali, jpeg(10));
     const again = await getMe(deps, ali);
     expect(again.state === 'active' && again.profile.avatarStatus).toBe('pending');

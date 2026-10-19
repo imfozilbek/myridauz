@@ -83,10 +83,11 @@ describe('avatar', () => {
     await register(deps, ali, input);
     await setAvatar(deps, ali, jpeg(10));
     const other = { id: 3, firstName: 'Vali', isAdmin: false };
-    // Until the team approves the photo, others see a person without a photo (docs/118).
-    expect(await readAvatar(deps, other, 1)).toEqual({ ok: false, error: 'users.avatar_hidden' });
-    await decideFace(deps, 900, 1, { action: 'approve' });
+    // A passenger photo shows at once; the team checks it after (owner decision 19.10.2026, G51).
     expect((await readAvatar(deps, other, 1)).ok).toBe(true);
+    await decideFace(deps, 900, 1, { action: 'reject', reason: 'not_real_photo' });
+    expect(await readAvatar(deps, other, 1)).toEqual({ ok: false, error: 'users.avatar_hidden' });
+    await setAvatar(deps, ali, jpeg(10));
     for (const key of avatars.keys()) await avatars.delete(key);
     expect(await readAvatar(deps, other, 1)).toEqual({ ok: false, error: 'users.not_found' });
   });
