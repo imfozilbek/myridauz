@@ -69,9 +69,9 @@
   color: var(--reg-deep);
   font: inherit;
   /* One line on any phone: the words get smaller with the room beside the paper plane (docs/121).
-     DejaVu Sans bold is 18.5 … 18.8 px wide per px of size here, by the browser (G73): 0.0524 leaves
-     2 % to spare. */
-  font-size: min(14.5px, calc((100vw - 88px) * 0.0524));
+     DejaVu Sans bold is 18.5 px wide per px of size here; a browser that rounds every letter to whole
+     dots draws it up to 4 % wider on small sizes (CI, G73): 0.0505 leaves 6 % to spare. */
+  font-size: min(14.5px, calc((100vw - 88px) * 0.0505));
   font-weight: 700;
   text-align: left;
   cursor: pointer;
