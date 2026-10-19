@@ -35,7 +35,8 @@ async function toRequest(page: Page, person: Person) {
   await openHome(page, 'passenger', person, 'android');
   await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
   await searchTo(page, 'Termiz shahri');
-  await page.getByText(t('common.passenger.leaveRequest')).first().click();
+  // The words are on the hidden button of Telegram too (G79 П10).
+  await page.getByText(t('common.passenger.leaveRequest')).locator('visible=true').first().click();
 }
 
 test.beforeAll(async () => {
