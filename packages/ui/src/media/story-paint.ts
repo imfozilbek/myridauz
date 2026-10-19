@@ -38,11 +38,6 @@ export const write = (
   paint.fillText(text, x, y);
 };
 
-// The font of a picture: the system font of the phone, as TelegramUI and the splash have it (docs/19).
-// The body of the page has none of its own: a canvas given its font draws with serifs (G88).
-export const PICTURE_FONT =
-  'system-ui, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif';
-
 // A Telegram story is 1080 × 1920; null: the browser cannot draw (no canvas), the button stays hidden.
 export const STORY = { width: 1080, height: 1920 } as const;
 const JPEG_QUALITY = 0.9;

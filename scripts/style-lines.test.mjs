@@ -31,4 +31,15 @@ describe('style files', { timeout: 20_000 }, () => {
     );
     expect(own).toEqual([]);
   });
+
+  // G73: code names no font either: the screens, the splash and the pictures take it from the brand.
+  it('keep the code free of font names', () => {
+    const code = ROOTS.flatMap((root) =>
+      readdirSync(root, { recursive: true, encoding: 'utf8' })
+        .filter((name) => /\.tsx?$/.test(name) && !/\.test\.tsx?$|node_modules|dist\//.test(name))
+        .map((name) => new URL(name, root)),
+    );
+    const named = code.filter((file) => /sans-serif|system-ui|Roboto/.test(readFileSync(file, 'utf8')));
+    expect(named.map((file) => file.pathname)).toEqual([]);
+  });
 });

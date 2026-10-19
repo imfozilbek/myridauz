@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import { useApiClients } from '../context/api-clients';
 import { useShareTrack } from '../growth/use-share-track';
 import { errorKey } from '../market/error-text';
-import { PICTURE_FONT } from '../media/story-paint';
+import { usePictureFont } from '../media/picture-font';
 import { usePassengerColors, useTripTexts } from '../media/use-trip-texts';
 import { haptic } from '../telegram/feedback';
 import { shareCard } from '../telegram/share-card';
@@ -18,11 +18,12 @@ export function useTripCard(trip: Trip) {
   const { growth } = useApiClients();
   const colors = usePassengerColors();
   const texts = useTripTexts();
+  const pictureFont = usePictureFont();
   const done = useShareTrack('trip', 'market.own_trip');
   const [failure, setFailure] = useState<TranslationKey | null>(null);
   const running = useRef(false);
   const pictureId = async () => {
-    const picture = await drawTripCardPicture(texts(trip), colors, PICTURE_FONT);
+    const picture = await drawTripCardPicture(texts(trip), colors, await pictureFont());
     return picture ? growth.cardPicture(picture) : null;
   };
   const send = async () => {
