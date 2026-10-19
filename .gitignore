@@ -31,3 +31,6 @@ apps/landing/.client/
 .vitest/
 .tsc/
 .eslintcache
+
+# board prototype data: token, group export, outputs (never committed)
+scripts/doska/data/
