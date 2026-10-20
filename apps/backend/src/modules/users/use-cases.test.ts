@@ -32,6 +32,13 @@ describe('registration', () => {
     await users.blockPhone('+998901234567', { until: null }, 0);
     expect(await register(deps, ali, input)).toEqual({ ok: false, error: 'users.blocked' });
   });
+
+  // G89 U13: a blocked person who deleted the account sees the block and its end, not the registration.
+  it('shows the block of a Telegram account without a registration', async () => {
+    const { deps, users } = setup();
+    await users.blockId(1, { until: NOW + 10 }, NOW);
+    expect(await getMe(deps, ali)).toEqual({ state: 'blocked', until: NOW + 10 });
+  });
 });
 
 describe('blocking (docs/17)', () => {

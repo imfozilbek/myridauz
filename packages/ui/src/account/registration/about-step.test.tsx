@@ -103,6 +103,17 @@ describe('Registration, screen 2: «Siz haqingizda» (G58)', () => {
     expect(await screen.findByText('inside')).toBeTruthy();
   });
 
+  // G89 U13: a photo of a passenger lost on the way is sent once more, not dropped without a word.
+  it('sends the photo once more when the first upload fails', async () => {
+    const container = await openAbout();
+    await addFace(container);
+    fireEvent.click(screen.getByText('Ayol'));
+    container.client.uploadAvatar.mockRejectedValueOnce(new ApiError(0, 'network.timeout'));
+    fireEvent.click(screen.getByText(SEND));
+    expect(await screen.findByText('inside')).toBeTruthy();
+    expect(container.client.uploadAvatar).toHaveBeenCalledTimes(2);
+  });
+
   it('«Orqaga» returns to the welcome', async () => {
     await openAbout();
     fireEvent.click(screen.getByText('Orqaga'));

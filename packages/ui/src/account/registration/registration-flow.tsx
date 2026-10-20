@@ -30,13 +30,17 @@ async function saveBotAccess(client: UsersClient, me: MeResponse): Promise<MeRes
 }
 
 // The face goes up right after the registration: only a registered person has a place for it.
-// A failed upload is asked again by the gate: the photo is required (G58, docs/128 §1).
+// A failed upload goes once more (G89 U13); still failed, the gate asks a driver again (G58,
+// docs/128 §1), a passenger adds it in «Profil».
 async function savePhoto(client: UsersClient, me: MeResponse, photo: Blob | null): Promise<MeResponse> {
   if (me.state !== 'active' || photo === null) return me;
-  const saved = await client.uploadAvatar(photo).then(
-    () => true,
-    () => false,
-  );
+  const upload = () => client.uploadAvatar(photo);
+  const saved = await upload()
+    .catch(upload)
+    .then(
+      () => true,
+      () => false,
+    );
   return saved ? { ...me, profile: { ...me.profile, hasAvatar: true } } : me;
 }
 
