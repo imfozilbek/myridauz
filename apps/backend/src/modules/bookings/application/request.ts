@@ -16,6 +16,7 @@ type RequestError =
   | 'bookings.no_seats'
   | 'bookings.too_many'
   | 'bookings.wrong_status'
+  | 'trips.wrong_status'
   | ChoiceError
   | PointsError;
 
@@ -35,7 +36,9 @@ export async function requestBooking(
   const { seats } = input;
   const now = deps.now();
   const facts = await deps.trips.find(tripId);
-  if (!facts?.live) return { ok: false, error: 'bookings.not_found' };
+  if (!facts) return { ok: false, error: 'bookings.not_found' };
+  // Cancelled or over while the passenger chose the points: the trip changed (G89 U2).
+  if (!facts.live) return { ok: false, error: 'trips.wrong_status' };
   // A trip that already left takes no seats: an old link or "Sevimli" opens it (docs/65 B8). An early
   // «Yoʻlga chiqdim» of the driver counts too (G63).
   if (onTheWay(facts, now)) return { ok: false, error: 'bookings.departed' };

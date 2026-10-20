@@ -1,5 +1,5 @@
 import { ApiError, type BookingsClient } from '@platform/api-client';
-import type { Border } from '@platform/contracts';
+import type { ApiErrorCode, Border } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { takePoint, tap } from '../market/market-test-kit';
@@ -33,16 +33,20 @@ describe('«Qayerdan, qayerga?» (G59, docs/118 path 2, B)', { timeout: 20_000 }
   });
 
   // The last seat went while the person chose the points (G75, docs/158 А): the same route on.
-  it('offers «Oʻxshash safarlar» when the last seat was taken', async () => {
+  // G89 U2: a trip cancelled or changed meanwhile leads on the same way, with its reason.
+  it.each<[ApiErrorCode, string]>([
+    ['bookings.no_seats', 'Boʻsh joy qolmagan. Boshqa safarni tanlang.'],
+    ['trips.wrong_status', 'Bu safar allaqachon oʻzgargan. Roʻyxatni yangilang.'],
+  ])('offers «Oʻxshash safarlar» after %s', async (code, text) => {
     const book = vi.fn<BookingsClient['book']>(async () => {
-      throw new ApiError(409, 'bookings.no_seats');
+      throw new ApiError(409, code);
     });
     const { onClose } = openBook('both', {}, book);
     fireEvent.click(row('Tushirish joyi'));
     await screen.findByText('Yangi Margʻilon', {}, { timeout: 3000 });
     await tap('Shu yerda tushaman');
     await tap('Soʻrov yuborish');
-    expect(await screen.findByText('Boʻsh joy qolmagan. Boshqa safarni tanlang.')).toBeTruthy();
+    expect(await screen.findByText(text)).toBeTruthy();
     await tap('Oʻxshash safarlar');
     expect(onClose).toHaveBeenCalled();
   });

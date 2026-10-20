@@ -26,6 +26,7 @@ const STATUS = {
   'bookings.own_trip': 422,
   'bookings.wrong_status': 409,
   'bookings.departed': 409,
+  'trips.wrong_status': 409,
   'bookings.outside_country': 422,
   'bookings.outside_area': 422,
   'bookings.wrong_mode': 422,

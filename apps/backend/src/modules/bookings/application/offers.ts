@@ -22,7 +22,9 @@ export async function sendOffer(
   const now = deps.now();
   const [car, request] = await Promise.all([deps.approvedCar(driverId), deps.requests.find(requestId)]);
   if (!car) return { ok: false, error: 'trips.not_driver' };
-  if (!request?.open) return { ok: false, error: 'bookings.not_found' };
+  if (!request) return { ok: false, error: 'bookings.not_found' };
+  // Closed while the driver looked at the board: the request changed, the board loads again (G89 U7).
+  if (!request.open) return { ok: false, error: 'bookings.wrong_status' };
   if (request.passengerId === driverId) return { ok: false, error: 'bookings.own_trip' };
   if (request.seats > car.seats) return { ok: false, error: 'bookings.no_seats' };
   const plan = input.tripId

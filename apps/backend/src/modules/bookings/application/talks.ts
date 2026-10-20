@@ -3,7 +3,7 @@ import type { TalkRecord } from '../domain/talk';
 import { watchPair } from './pair-talks';
 import type { BookingsDeps, Result } from './ports';
 
-type TalkError = 'trips.not_driver' | 'bookings.not_found' | 'bookings.own_trip';
+type TalkError = 'trips.not_driver' | 'bookings.not_found' | 'bookings.own_trip' | 'bookings.wrong_status';
 
 type Asked = { readonly id: string; readonly passengerId: number };
 
@@ -28,7 +28,8 @@ export async function openTalk(
 ): Promise<Result<{ readonly chatKey: string }, TalkError>> {
   const [car, request] = await Promise.all([deps.approvedCar(driverId), deps.requests.find(requestId)]);
   if (!car) return { ok: false, error: 'trips.not_driver' };
-  if (!request?.open) return { ok: false, error: 'bookings.not_found' };
+  if (!request) return { ok: false, error: 'bookings.not_found' };
+  if (!request.open) return { ok: false, error: 'bookings.wrong_status' };
   if (request.passengerId === driverId) return { ok: false, error: 'bookings.own_trip' };
   const talk = await talkOf(deps, request, driverId);
   return { ok: true, value: { chatKey: chatKeyOfTalk(talk.id) } };
