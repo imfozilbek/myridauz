@@ -1,7 +1,7 @@
 import { driverTripCancelPath, type ApiErrorCode } from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
-import { ridingNow } from './application/riding';
+import { ridingChat, ridingNow } from './application/riding';
 import { bookingsDeps } from './deps';
 import { boardTrip } from './application/board-trip';
 import { cancelEverything } from './application/cancel-all';
@@ -77,6 +77,9 @@ export const erasePointsOf = (env: Bindings, userId: number) => bookingStore(env
 // For the chat: who may open it (docs/07).
 export const chatMemberOf = (env: Bindings, key: string, userId: number) =>
   chatMember(bookingsDeps(env), key, userId);
+// The chat a person blocked on the road still writes to: the one of the trip on the way (G89 C3).
+export const ridingChatOf = (env: Bindings, key: string, userId: number) =>
+  ridingChat(bookingsDeps(env), key, userId);
 export const chatAboutOf = (env: Bindings, key: string, userId: number) =>
   chatAbout(bookingsDeps(env), key, userId);
 export const bookingForShare = (env: Bindings, id: string) => passengerView(bookingsDeps(env), id);

@@ -1,6 +1,7 @@
 import { CHATS_UNREAD_PATH, MY_CHANNELS_PATH } from '@platform/contracts';
 import { Hono } from 'hono';
 import { setupRoutes } from './bots/setup-routes';
+import { chatRights, chatSide } from './chat-rights';
 import { webhookRoutes } from './bots/webhook-routes';
 import type { AppEnv } from './env';
 import './account-deletion';
@@ -8,14 +9,8 @@ import './module-events';
 import './board-events';
 import './seat-events';
 import { analyticsModule } from './modules/analytics';
-import {
-  bookingForShare,
-  bookingsModule,
-  chatAboutOf,
-  chatMemberOf,
-  tripCancelWatch,
-} from './modules/bookings';
-import { callsModule, callsReady } from './modules/calls';
+import { bookingForShare, bookingsModule, chatAboutOf, tripCancelWatch } from './modules/bookings';
+import { callsModule } from './modules/calls';
 import { channelsModule, publicityModule, zoneWatch } from './modules/channels';
 import { looksModule } from './modules/looks';
 import { chatRoutes } from './modules/chat';
@@ -129,16 +124,10 @@ export const app = new Hono<AppEnv>()
   .route('/', walletModule)
   .route('/', waitlistModule)
   .route('/', growthModule)
+  .route('/', chatRoutes(chatRights, chatAboutOf))
   .route(
     '/',
-    chatRoutes(async (env, key, userId) => {
-      const member = await chatMemberOf(env, key, userId);
-      return member && { ...member, canCall: member.canCall && callsReady(env) };
-    }, chatAboutOf),
-  )
-  .route(
-    '/',
-    callsModule(async (env, key, userId) => (await chatMemberOf(env, key, userId))?.canCall === true),
+    callsModule(async (env, key, userId) => (await chatSide(env, key, userId))?.canCall === true),
   )
   .route('/', feedRoutes)
   .route('/', sharesModule(bookingForShare, tripForFamily))

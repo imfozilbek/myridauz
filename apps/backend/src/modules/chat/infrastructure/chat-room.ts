@@ -9,9 +9,12 @@ import { botSignals } from './bot-signals';
 import { d1Unread } from './d1-unread';
 import { sqlMessages } from './sql-messages';
 import { closeCodeFor } from '../../../shared/sockets/close-code';
+import { rightsNow } from './fresh-rights';
 import { brandOf } from '../../../shared/brand/brand-of';
 
 const HISTORY_LIMIT = 100;
+// The socket of a person who may not write or ring any more (G89 C1): a block, a deletion, a cancel.
+const NO_RIGHTS = 4403;
 const SECOND = 1000;
 const KEY = 'key';
 
@@ -79,9 +82,13 @@ export class ChatRoom extends DurableObject<Bindings> {
     return new Response(null, { status: 101, webSocket: client });
   }
 
+  // Each event asks again who may write and ring now: the rights of the ticket do not last (G89 C1).
   override async webSocketMessage(ws: WebSocket, message: string | ArrayBuffer): Promise<void> {
     if (typeof message !== 'string') return;
-    const { key } = ws.deserializeAttachment() as { key: string };
+    const { key, member } = ws.deserializeAttachment() as { member: Member; key: string };
+    const fresh = await rightsNow(this.env, key, member.userId);
+    if (!fresh) return ws.close(NO_RIGHTS, 'rights');
+    ws.serializeAttachment({ member: fresh, key });
     await received(this.deps(key), this.socket(ws), message);
   }
 

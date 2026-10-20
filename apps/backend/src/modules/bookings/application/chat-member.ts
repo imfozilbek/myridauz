@@ -109,7 +109,7 @@ export async function chatBooking(
   return view ? { booking: view, role: member.role } : null;
 }
 
-async function chatBookingRecord(deps: BookingsDeps, key: string) {
+export async function chatBookingRecord(deps: BookingsDeps, key: string) {
   const id = key.slice(1);
   if (key.startsWith('b')) return deps.bookings.find(id);
   const talk = key.startsWith('t') ? await deps.talks.find(id) : undefined;
