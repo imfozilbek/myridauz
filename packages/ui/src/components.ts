@@ -6,7 +6,6 @@ export {
   Modal,
   Multiselectable,
   Radio,
-  SegmentedControl,
   Snackbar,
   Spinner,
   Textarea,
@@ -14,4 +13,5 @@ export {
 export { Cell } from './cell';
 export { Field } from './field';
 export { Section } from './section';
+export { SegmentedControl } from './segmented-control';
 export { Switch } from './switch';
