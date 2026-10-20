@@ -1,9 +1,10 @@
+import { ApiError } from '@platform/api-client';
 import { loadBrand } from '@platform/brands';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderInShell } from '../../test-shell';
 import { AccountGate } from '../account-gate';
-import { fakeClient } from '../account-test-kit';
+import { active, fakeClient } from '../account-test-kit';
 import { addFace, passWelcome } from './registration-test-kit';
 
 const permissions = vi.hoisted(() => ({
@@ -86,6 +87,20 @@ describe('Registration, screen 2: «Siz haqingizda» (G58)', () => {
     expect(await screen.findByText('inside')).toBeTruthy();
     expect(client.register).toHaveBeenCalled();
     expect(client.uploadAvatar).not.toHaveBeenCalled();
+  });
+
+  // G89 U4: a lost network is not a refused number; a lost answer of a saved registration lets in.
+  it('says the network failed, and lets in after an answer lost on the way', async () => {
+    const { client } = await openAbout();
+    fireEvent.click(screen.getByText('Ayol'));
+    client.register.mockRejectedValueOnce(new ApiError(0, 'network.timeout'));
+    fireEvent.click(screen.getByText(SEND));
+    expect(await screen.findByText(/^Internet bilan aloqa yoʻq/u)).toBeTruthy();
+    expect(screen.queryByText(/^Raqamsiz/u)).toBeNull();
+    client.register.mockRejectedValueOnce(new ApiError(409, 'users.already_registered'));
+    client.getMe.mockResolvedValueOnce(active);
+    fireEvent.click(screen.getByText(SEND));
+    expect(await screen.findByText('inside')).toBeTruthy();
   });
 
   it('«Orqaga» returns to the welcome', async () => {
