@@ -57,7 +57,12 @@ async function acceptTaken(
     // The trip of an offer is the passenger's request: seats as asked, or the whole car (docs/09).
     bookingRule: request.wholeCar ? 'car_only' : 'seats',
   });
-  if (!published.ok) return { ok: false, error: 'bookings.wrong_status' };
+  // A trip that cannot open now (another live trip of the driver, a price out of bounds) never will:
+  // the offer ends instead of waiting for a tap that always fails (G89 B2).
+  if (!published.ok) {
+    await deps.offers.replace({ ...offer, status: 'expired' }, 'accepted');
+    return { ok: false, error: 'bookings.wrong_status' };
+  }
   const trip = published.value;
   const booking = await offerBooking(deps, offer, request, trip.id, trip.pitak?.id ?? null);
   if ((await deps.wallet.charge(offer.driverId, booking.id, booking.commission)) !== 'ok') {

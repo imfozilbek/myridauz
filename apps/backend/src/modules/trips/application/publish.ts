@@ -30,6 +30,7 @@ export async function publishTrip(
   driverId: number,
   input: Input,
   forRequest: string | null = null,
+  lead = true,
 ): Promise<Result<Trip, PublishError>> {
   const now = deps.now();
   const [car, driver] = await Promise.all([deps.approvedCar(driverId), deps.people.find(driverId)]);
@@ -44,7 +45,7 @@ export async function publishTrip(
     return { ok: false, error: 'trips.price_out_of_bounds' };
   if (input.pickupMode !== 'door' && !(await directionPitak(deps, input.from, input.to)))
     return { ok: false, error: 'trips.no_pitak' };
-  const busy = await scheduleError(deps, driverId, input.departAt);
+  const busy = await scheduleError(deps, driverId, input.departAt, lead);
   if (busy) return { ok: false, error: busy };
   const trip: TripRecord = {
     ...input,
@@ -82,5 +83,7 @@ export async function publishOfferTrip(
   driverId: number,
   input: Omit<Input, 'pickupMode'>,
 ): Promise<Result<Trip, PublishError>> {
-  return publishTrip(deps, driverId, { ...input, pickupMode: await offerWay(deps, input.from, input.to) });
+  // The passenger takes an offer sent in time: its trip opens until the departure (G89 B2).
+  const pickupMode = await offerWay(deps, input.from, input.to);
+  return publishTrip(deps, driverId, { ...input, pickupMode }, null, false);
 }
