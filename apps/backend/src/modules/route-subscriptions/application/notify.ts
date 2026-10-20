@@ -13,8 +13,11 @@ async function fitting(deps: SubscriptionsDeps, kind: SubscriptionKind, match: M
 
 // A new trip or request: each fitting subscription hears about it at once. The news card of the
 // route rings once a day; the next news of the day edit it without sound (docs/122 rule 4).
+// A request reaches only approved drivers, as the board does (G89 B17).
 export async function matchNew(deps: SubscriptionsDeps, kind: SubscriptionKind, match: Match): Promise<void> {
-  for (const subscription of await fitting(deps, kind, match)) await deps.tell.one(subscription, match);
+  for (const subscription of await fitting(deps, kind, match))
+    if (kind === 'trips' || (await deps.approvedDriver(subscription.userId)))
+      await deps.tell.one(subscription, match);
 }
 
 // A trip became cheaper (G39, docs/104, 9): its line in the news card says so.

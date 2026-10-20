@@ -24,6 +24,8 @@ export type SubscriptionsDeps = {
   readonly subscriptions: SubscriptionRepository;
   readonly placeMatches: () => Promise<(placeId: string, searchId: string) => boolean>;
   readonly tell: SubscriptionTeller;
+  // An approved driver: only they read the requests of passengers (docs/24, G89 B17).
+  readonly approvedDriver: (userId: number) => Promise<boolean>;
   // At most max live ones; one for any date lives anyDateDays (brand, docs/128 §4).
   readonly limits: { readonly max: number; readonly anyDateDays: number };
   readonly newId: () => string;

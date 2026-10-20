@@ -43,6 +43,15 @@ describe('telling about new trips and requests (docs/24)', () => {
     expect(told).toEqual(['one 1 t1']);
   });
 
+  // G89 B17: the requests of passengers reach approved drivers only, as the board does.
+  it('tells a new request only to an approved driver', async () => {
+    const { deps, told } = setup();
+    await subscribe(deps, 4, 'requests', ROUTE);
+    await subscribe(deps, 9, 'requests', ROUTE);
+    await matchNew(deps, 'requests', { ...TRIP, id: 'r1', ownerId: 7 });
+    expect(told).toEqual(['one 4 r1']);
+  });
+
   it('tells every match at once: the news card of the day takes them all (docs/122 rule 4)', async () => {
     const { deps, told } = setup();
     await subscribe(deps, 1, 'trips', { ...ROUTE, date: null });
