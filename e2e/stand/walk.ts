@@ -29,6 +29,8 @@ export type WalkReport = {
 
 const { t } = createI18n(DEFAULT_LOCALE);
 const LIMITS = { depth: 7, taps: 300, perScreen: 30 };
+// No path of the apps is deeper than this: «Назад» so many times always reaches the main screen.
+const MOST_BACKS = 8;
 
 export async function walk(page: Page, open: () => Promise<void>, limits = LIMITS): Promise<WalkReport> {
   const effects = watchEffects(page);
@@ -51,9 +53,18 @@ export async function walk(page: Page, open: () => Promise<void>, limits = LIMIT
     add(nothing ? 'dead_end' : 'no_back', state, path, state.text.slice(0, 200));
   };
 
-  const replay = async (path: readonly Target[]) => {
+  // A new open brings back the last screen, as Telegram does (docs/94): «Назад» down to the main one.
+  const start = async () => {
     await open();
     await settle(page);
+    for (let step = 0; step < MOST_BACKS && (await readScreen(page)).back; step += 1) {
+      await pressBack(page);
+      await settle(page);
+    }
+  };
+
+  const replay = async (path: readonly Target[]) => {
+    await start();
     for (const step of path) {
       await press(page, step);
       await settle(page);
@@ -125,8 +136,7 @@ export async function walk(page: Page, open: () => Promise<void>, limits = LIMIT
     }
   };
 
-  await open();
-  await settle(page);
+  await start();
   await visit([], await readScreen(page));
   await flushScreens(page);
   return { findings, screens: seen.size, taps, named: [...new Set(effects.screens)].sort() };
