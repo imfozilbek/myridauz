@@ -89,4 +89,15 @@ describe('face photos and the zone invite in D1', () => {
     await users.save({ ...stale, writeAccess: true, updatedAt: 3 });
     expect(await users.find(5)).toMatchObject({ block: { until: null }, writeAccess: true });
   });
+
+  // G89 M16: a person registered again after the deletion starts from the new join date.
+  it('starts a new join date for a person registered again after the deletion', async () => {
+    const users = d1Users(testD1());
+    await users.save(person(6, null));
+    await users.erase(6, 50);
+    await users.save({ ...person(6, null), createdAt: 60, updatedAt: 60 });
+    expect(await users.find(6)).toMatchObject({ createdAt: 60 });
+    await users.save({ ...person(6, null), createdAt: 70, updatedAt: 70 });
+    expect(await users.find(6)).toMatchObject({ createdAt: 60, updatedAt: 70 });
+  });
 });

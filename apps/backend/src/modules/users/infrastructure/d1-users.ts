@@ -50,7 +50,9 @@ const toUser = (row: UserRow): User => ({
   updatedAt: row.updated_at,
 });
 
-// Table users (migrations/0002_users.sql). A change of a person never writes the block: a block that
+// Table users (migrations/0002_users.sql). A person registered again after the deletion is a new one:
+// the join date and the zone invite start again (docs/58, G89 M16). A change of a person never writes
+// the block: a block that
 // came between the read and the write stays (G89, the face and the block in one second). Only
 // blockId and unblockId write it.
 export const d1Users = (db: D1Database): UserRepository => ({
@@ -79,6 +81,8 @@ export const d1Users = (db: D1Database): UserRepository => ({
            avatar_status = excluded.avatar_status, avatar_reason = excluded.avatar_reason,
            avatar_at = excluded.avatar_at,
            write_access = excluded.write_access, consent_at = excluded.consent_at,
+           created_at = CASE WHEN users.deleted_at IS NULL THEN users.created_at ELSE excluded.created_at END,
+           zone_invite_at = CASE WHEN users.deleted_at IS NULL THEN users.zone_invite_at END,
            updated_at = excluded.updated_at, deleted_at = NULL`,
       )
       .bind(
