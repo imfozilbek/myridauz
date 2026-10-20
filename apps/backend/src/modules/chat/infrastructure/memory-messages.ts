@@ -21,5 +21,11 @@ export function createMemoryMessages(): MessageStore {
     saveCall: (call) => void (current = call),
     rings: (userId) => rang.get(userId) ?? 0,
     rang: (userId) => void rang.set(userId, (rang.get(userId) ?? 0) + 1),
+    forget: () => {
+      messages.length = 0;
+      notifiedAt.clear();
+      rang.clear();
+      current = null;
+    },
   };
 }
