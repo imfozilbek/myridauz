@@ -1,6 +1,7 @@
 import { loadBrand } from '@platform/brands';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { fakeClient } from '../account/account-test-kit';
 import { AppGates } from '../app-gates';
 import { renderInShell, testClients } from '../test-shell';
 import { LegalGate } from './legal-gate';
@@ -64,12 +65,10 @@ describe('legal documents (docs/30)', () => {
   // G90 BOT-1: «/hujjatlar» of the main bot opens the document, not the questionnaire.
   it('opens a document of the main bot before its questionnaire', () => {
     window.history.replaceState(null, '', '/?doc=offer');
-    const clients = testClients({});
+    const users = fakeClient({ state: 'unregistered', suggestedName: '' });
     const connect = async () => '';
     const Page = () => <p>questionnaire</p>;
-    renderInShell(
-      <AppGates app="main" welcome={undefined} users={clients.users} connect={connect} Page={Page} />,
-    );
+    renderInShell(<AppGates app="main" welcome={undefined} users={users} connect={connect} Page={Page} />);
     expect(screen.getByText('Ommaviy oferta')).toBeTruthy();
     fireEvent.click(screen.getByText('Orqaga'));
     expect(screen.getByText('questionnaire')).toBeTruthy();

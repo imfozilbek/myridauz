@@ -1,3 +1,4 @@
+import type { AdminReviews, Journal, SoundsState } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { TeamReviewsScreen } from '../feedback/team-reviews-screen';
@@ -35,14 +36,19 @@ describe('a failure on a screen of the team', { timeout: 20_000 }, () => {
   });
 
   it('of a tap: the reason under it', async () => {
-    const state = async () => ({ set: '1', sets: ['1', '2'] });
+    const state = async (): Promise<SoundsState> => ({
+      set: '1',
+      sets: ['1', '2'],
+      changedBy: null,
+      changedAt: null,
+    });
     renderMarket(<SoundsScreen onBack={back} />, testClients({ sounds: { state, pick: down } }));
     fireEvent.click(await screen.findByText('2-variant'));
     expect(await screen.findByText(SAID)).toBeTruthy();
     cleanup();
-    const entry = { at: 1, member: 'Ali', subject: 'x', action: 'block' };
+    const entry = { at: 1, member: 'Ali', kind: 'block' as const, subject: 'x', action: 'block:7' };
     let calls = 0;
-    const journal = async () => (calls++ === 0 ? { entries: [entry] } : down());
+    const journal = async (): Promise<Journal> => (calls++ === 0 ? { entries: [entry] } : down());
     renderMarket(<JournalScreen onBack={back} />, testClients({ team: { journal } }));
     fireEvent.click(await screen.findByText('Yana'));
     expect(await screen.findByText(SAID)).toBeTruthy();
@@ -54,11 +60,12 @@ describe('a failure on a screen of the team', { timeout: 20_000 }, () => {
       tags: [],
       at: 1,
       hidden: false,
-      author: { firstName: 'Ali' },
-      about: { firstName: 'Vali' },
+      author: { id: '00000000000000000000000000000001', firstName: 'Ali' },
+      about: { id: '00000000000000000000000000000002', firstName: 'Vali' },
     };
     let asked = 0;
-    const teamReviews = async () => (asked++ === 0 ? { reviews: [review], more: true } : down());
+    const teamReviews = async (): Promise<AdminReviews> =>
+      asked++ === 0 ? { reviews: [review], more: true } : down();
     renderMarket(<TeamReviewsScreen onBack={back} />, testClients({ feedback: { teamReviews } }));
     fireEvent.click(await screen.findByText('Yana'));
     expect(await screen.findByText(SAID)).toBeTruthy();
