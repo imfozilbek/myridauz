@@ -109,6 +109,21 @@ describe('the trip in the channel on «Mening safarim» (owner decision 08.10.20
     expect(screen.queryByText(/koʻrdi/u)).toBeNull();
   });
 
+  // G91 (robot): the card takes a moment; the button says it is busy, a tap never looks like nothing.
+  it('is busy while the card is made', async () => {
+    let made: (card: typeof CARD) => void = () => undefined;
+    const loopCard = vi.fn<GrowthClient['loopCard']>(() => new Promise((done) => void (made = done)));
+    open(trip, async () => publicity, loopCard);
+    await openTrip();
+    vi.spyOn(window, 'open').mockReturnValue(null);
+    const button = (await screen.findByText('Havolani yoʻlovchilarga yuborish')).closest('button');
+    fireEvent.click(button as HTMLElement);
+    await vi.waitFor(() => expect(loopCard).toHaveBeenCalled());
+    expect(button?.getAttribute('aria-busy')).toBe('true');
+    made(CARD);
+    await vi.waitFor(() => expect(button?.getAttribute('aria-busy')).toBe('false'));
+  });
+
   it('keeps the link button before any channel posted the trip', async () => {
     open(trip, async () => ({ ...publicity, channels: [] }));
     await openTrip();
