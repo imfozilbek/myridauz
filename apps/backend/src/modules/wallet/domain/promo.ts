@@ -22,13 +22,21 @@ export const welcomeGrant = (operations: readonly Operation[], rule: PromoRule, 
   grants(operations).length === 0 ? grant(rule, now) : null;
 
 // The next bonus comes at once when the previous one is spent in its days, within the window
-// after the approval, at most `grants` times (docs/12, question 27).
-export function nextGrant(operations: readonly Operation[], rule: PromoRule, now: number): Grant | null {
+// after the approval, at most `grants` times (docs/12, question 27). A rest smaller than the commission
+// `need` pays no seat: it counts as spent, the next bonus pays the seat with it (G89 M1).
+export function nextGrant(
+  operations: readonly Operation[],
+  rule: PromoRule,
+  now: number,
+  need = 0,
+): Grant | null {
   const given = grants(operations);
   const first = given[0];
   const latest = given.at(-1);
   if (!first || !latest || given.length >= rule.grants) return null;
-  if (balanceOf(operations, 'bonus') > 0) return null;
+  const left = balanceOf(operations, 'bonus');
+  // After a charge the bonus is spent to the end; before one, a rest is there but too small for it.
+  if (need === 0 ? left > 0 : left <= 0 || left >= need) return null;
   if (latest.expiresAt === null || now >= latest.expiresAt) return null;
   // A bonus closed before its time (a deleted account) was not spent: no next one (docs/65 A5).
   if (operations.some((op) => op.kind === 'bonus_expired' && op.createdAt >= latest.createdAt)) return null;

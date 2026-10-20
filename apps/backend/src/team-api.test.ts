@@ -53,4 +53,13 @@ describe('«Jamoa»', () => {
     expect((await call(ADMIN_TEAM_PATH, OTHER, add(await pid(PERSON)))).status).toBe(403);
     expect(await teamRole(testEnv, PERSON)).toBeNull();
   });
+
+  // G89 M3: a moderator who deletes the account leaves the team; nothing hidden stays with access.
+  it('takes a moderator who deleted the account out of the team', async () => {
+    const leaving = 65;
+    await registerUser(leaving);
+    expect((await call(ADMIN_TEAM_PATH, OWNER, add(await pid(leaving)))).status).toBe(204);
+    expect((await call('/me', leaving, { method: 'DELETE' })).status).toBe(204);
+    expect(await teamRole(testEnv, leaving)).toBeNull();
+  });
 });

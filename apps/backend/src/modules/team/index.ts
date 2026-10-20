@@ -17,6 +17,8 @@ const teamOf = (env: Bindings): Team => ({
 // The team for the rest of the backend: auth, bots, moderation.
 export const teamRole = (env: Bindings, userId: number) => roleOf(teamOf(env), userId);
 export const teamMembers = (env: Bindings) => members(teamOf(env));
+// A moderator who deleted the account leaves the team at once (G89 M3).
+export const forgetModerator = (env: Bindings, userId: number) => teamOf(env).repository.remove(userId);
 // A change of the team goes to the journal by the public id (G75, docs/65 A3).
 export async function changeModerator(env: Bindings, actorId: number, userId: number, isModerator: boolean) {
   const result = await setModerator(teamOf(env), actorId, userId, isModerator, Date.now());

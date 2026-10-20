@@ -39,13 +39,22 @@ const usable = (operations: readonly Operation[], now: number): Operation[] => {
   return [...operations, burn];
 };
 
+// The money for a seat: a bonus rest too small for it brings the next bonus first (G89 M1).
+function forSeat(deps: WalletDeps, driverId: number, operations: readonly Operation[], amount: number) {
+  const old = usable(operations, deps.now());
+  const early = splitCharge(old, amount) ? null : nextGrant(old, deps.promo, deps.now(), amount);
+  const first = early ? [grantRow(deps, driverId, early)] : [];
+  return { held: [...old, ...first], first };
+}
+
 export async function canAfford(deps: WalletDeps, driverId: number, amount: number) {
-  return splitCharge(usable(await deps.wallet.operations(driverId), deps.now()), amount) !== null;
+  const { held } = forSeat(deps, driverId, await deps.wallet.operations(driverId), amount);
+  return splitCharge(held, amount) !== null;
 }
 
 // How much is missing for this commission: 0 when the money is there (G75, docs/158 Г).
 export async function shortage(deps: WalletDeps, driverId: number, amount: number) {
-  const held = usable(await deps.wallet.operations(driverId), deps.now());
+  const { held } = forSeat(deps, driverId, await deps.wallet.operations(driverId), amount);
   const money = Math.max(0, balanceOf(held, 'bonus')) + Math.max(0, balanceOf(held, 'main'));
   return Math.max(0, amount - money);
 }
@@ -58,9 +67,10 @@ export async function charge(
   amount: number,
 ): Promise<'ok' | 'not_enough' | 'duplicate'> {
   const operations = await deps.wallet.operations(driverId);
-  const held = usable(operations, deps.now());
+  const { held, first } = forSeat(deps, driverId, operations, amount);
   const split = splitCharge(held, amount);
   if (!split) return 'not_enough';
+  if (first.length > 0) await deps.wallet.append(first);
   const rows = (['bonus', 'main'] as const)
     .filter((balance) => split[balance] > 0)
     .map((balance) =>
@@ -68,7 +78,7 @@ export async function charge(
     );
   const appended = await appendCharge(deps.wallet, rows);
   if (appended !== 'ok') return appended;
-  const next = nextGrant([...operations, ...rows], deps.promo, deps.now());
+  const next = nextGrant([...operations, ...first, ...rows], deps.promo, deps.now());
   const granted = next ? [grantRow(deps, driverId, next)] : [];
   if (granted.length > 0) await deps.wallet.append(granted);
   await tellFewSeats(deps, driverId, held, [...held, ...rows, ...granted]);
