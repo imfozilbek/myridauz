@@ -1,9 +1,14 @@
 import { defineConfig } from 'vitest/config';
 
-// Coverage rules from docs/31: business logic 90%, everything else 70%.
+// Coverage rules from docs/31: business logic 90% of lines, functions and branches (branches since
+// G89), everything else 70%.
 const BUSINESS_LOGIC_THRESHOLD = 90;
 const DEFAULT_THRESHOLD = 70;
-const businessLogic = { lines: BUSINESS_LOGIC_THRESHOLD, functions: BUSINESS_LOGIC_THRESHOLD };
+const businessLogic = {
+  lines: BUSINESS_LOGIC_THRESHOLD,
+  functions: BUSINESS_LOGIC_THRESHOLD,
+  branches: BUSINESS_LOGIC_THRESHOLD,
+};
 // A part of the tests in CI (--shard) covers a part of the code: the rules hold for all parts
 // together, in the job test:coverage (docs/45).
 const PART = process.argv.some((arg) => arg.startsWith('--shard'));
