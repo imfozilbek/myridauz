@@ -10,6 +10,7 @@ import { useTripOffer } from '../requests/use-trip-offer';
 import { ActionFailure } from '../states/action-failure';
 import { useOneAtATime } from '../telegram/one-at-a-time';
 import { ShortfallSheet } from '../wallet/shortfall-sheet';
+import '../requests/board.css';
 import './talk.css';
 
 type Props = {
@@ -46,6 +47,9 @@ export function TalkAction({ request, onSent, onTrip, className = 'talk-action' 
     setSheet(null);
     offering.short(need, request);
   };
+  // A live trip that the request does not fit: as on the board, a new offer waits until the trip is
+  // over; the server refuses it (one at a time, docs/172, G90 DRV-4).
+  if (board?.busy && !trip) return <p className="board-busy">{t('requests.board.busy')}</p>;
   return (
     <>
       <ActionFailure error={offering.failure} />
