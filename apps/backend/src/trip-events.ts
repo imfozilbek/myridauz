@@ -6,6 +6,8 @@ import {
   tellTripPassengers,
 } from './modules/bookings';
 import { channelBoards, channels } from './modules/channels';
+import { hiddenByComplaints } from './modules/complaints';
+import { peopleOf } from './modules/users';
 import { tellFavoriteFans } from './modules/favorites';
 import { handleAfterSent } from './modules/notifications';
 import { tripCheaper, tripPublished } from './modules/route-subscriptions';
@@ -41,7 +43,8 @@ handleTripChange(async (env, tripId, event) => {
     await endOffersOfNewTrip(env, tripId);
     await tripChannels.posted(env, tripId);
     const trip = await tripOf(env, tripId);
-    if (trip) await tripPublished(env, trip).then(() => tellFavoriteFans(env, trip));
+    if (trip && (await inNews(env, trip.driver.id)))
+      await tripPublished(env, trip).then(() => tellFavoriteFans(env, trip));
     return;
   }
   await tripChannels.changed(env, tripId);
@@ -56,8 +59,23 @@ handleTripChange(async (env, tripId, event) => {
     await tellBookedOfRetime(env, tripId);
     await tellTripFamilyRetimed(env, tripId, tripForFamily);
   }
-  if (event === 'cheaper' && trip) await tripCheaper(env, trip);
+  // A full or private trip is no news for the subscribers (G89 T10).
+  if (
+    event === 'cheaper' &&
+    trip &&
+    trip.seatsLeft > 0 &&
+    !trip.private &&
+    (await inNews(env, trip.driver.id))
+  )
+    await tripCheaper(env, trip);
 });
+
+// A person hidden from search by complaints is in no news either: subscribers and fans hear nothing
+// of them until the moderator decides (docs/17, G89 B15).
+export async function inNews(env: Bindings, publicId: string): Promise<boolean> {
+  const userId = await peopleOf(env).idOf(publicId);
+  return userId !== undefined && !(await hiddenByComplaints(env, [userId])).has(userId);
+}
 
 // The Cron job: channel posts of trips that left say so (docs/15); the boards of the day follow the
 // clock too (G68, docs/122).
