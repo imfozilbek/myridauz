@@ -10,8 +10,8 @@
   (`apps/backend/src/shared/auth`). Подпись чужого бота не проходит.
 - initData старше 24 часов не принимается (`auth.expired`),
   подделка: `auth.invalid`. Cookie и паролей нет.
-- Админ Mini App: только Telegram ID из секрета `ADMIN_TELEGRAM_IDS`
-  (`46`), иначе `auth.not_admin`.
+- Админ Mini App: только команда: владельцы из секрета `ADMIN_TELEGRAM_IDS`
+  (`46`) и модераторы из «Jamoa» (`team_members`, `50`); иначе `auth.not_admin`.
 
 ## Пользователь
 
