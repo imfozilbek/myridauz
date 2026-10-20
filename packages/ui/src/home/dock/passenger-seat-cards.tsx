@@ -81,7 +81,7 @@ export function PassengerSeatCard({ kind, booking, words, act, go, directory }: 
             who={{ ...who, tools: [] }}
           />
           <SecondaryButton beside text={t('bookings.disagree')} onClick={act.cancel(booking)} />
-          <MainButton text={t('home.dock.agree')} onClick={() => markAgreed(booking.id)} />
+          <MainButton text={t('home.dock.agree')} onClick={() => markAgreed(booking)} />
         </>
       );
     }

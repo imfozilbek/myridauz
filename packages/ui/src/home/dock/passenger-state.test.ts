@@ -2,6 +2,7 @@ import { arrivalAt, DAY_MS, HOUR_MS, MINUTE_MS } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { booking, offer, request } from '../../bookings/booking-test-kit';
 import { trip } from '../../market/market-test-kit';
+import { agreedTo } from './passenger-marks';
 import { passengerState, passengerStates, type PassengerMarks } from './passenger-state';
 
 const MEET = 30;
@@ -41,9 +42,11 @@ describe('the block of a passenger: one state by its level (G76, docs/165)', () 
   it('asks about a moved time until «Roziman»', () => {
     const moved = { ...seat, trip: { ...trip, firstDepartAt: at(-HOUR_MS) } };
     expect(kind({ bookings: [moved] }, at(-DAY_MS))).toBe('moved');
-    expect(kind({ bookings: [moved] }, at(-DAY_MS), { ...none, agreed: new Set([seat.id]) })).toBe(
-      'confirmed',
-    );
+    const agreed = { ...none, agreed: new Set([agreedTo(moved)]) };
+    expect(kind({ bookings: [moved] }, at(-DAY_MS), agreed)).toBe('confirmed');
+    // G89 U14: a second move of the same trip asks again.
+    const again = { ...moved, trip: { ...moved.trip, departAt: moved.trip.departAt + HOUR_MS } };
+    expect(kind({ bookings: [again] }, at(-DAY_MS), agreed)).toBe('moved');
   });
 
   it('is on the road after boarding, asks an hour after the arrival, until «Hali yoʻldaman»', () => {

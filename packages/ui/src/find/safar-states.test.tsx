@@ -53,6 +53,10 @@ describe('«Safar» that cannot be booked', () => {
     expect(await screen.findByText('Bu safar yoʻlga chiqqan. Joy band qilib boʻlmaydi.')).toBeTruthy();
     expect(screen.queryByText(BOOK)).toBeNull();
     cleanup();
+    // G89 U14: «Yoʻlga chiqdim» an hour early closes it too.
+    open({ ...trip, departAt: Date.now() + 60 * 60 * 1000, departedAt: Date.now() });
+    expect(await screen.findByText('Bu safar yoʻlga chiqqan. Joy band qilib boʻlmaydi.')).toBeTruthy();
+    cleanup();
     open({ ...trip, status: 'cancelled' });
     expect(await screen.findByText('Haydovchi bu safarni bekor qildi. Boshqa safarni tanlang.')).toBeTruthy();
     // One plate of how it ended for a seat, «Safar» and a request (G75, docs/158 А).
