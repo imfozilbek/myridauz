@@ -64,6 +64,9 @@ export async function decide(deps: ComplaintsDeps, moderator: Moderator, id: str
   const side = sideOf(ride, against);
   if (decision.action === 'block' && !moderator.owner && (await deps.isTeam(against)))
     return 'auth.not_owner' as const;
+  // A moderator who is a side of the complaint leaves it to the owner (G89).
+  if (!moderator.owner && [against, complaint.authorId].includes(moderatorId))
+    return 'auth.not_owner' as const;
   const now = deps.now();
   const days = decision.action === 'block' ? (decision.days ?? null) : null;
   const label = decision.action === 'block' ? `block:${days ?? 'forever'}` : decision.action;
