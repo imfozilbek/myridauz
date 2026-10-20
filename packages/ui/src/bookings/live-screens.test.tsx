@@ -1,8 +1,9 @@
 import { ApiError, type BookingsClient, type MarketClient } from '@platform/api-client';
 import type { Booking } from '@platform/contracts';
-import { act, cleanup, screen } from '@testing-library/react';
+import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FeedContext } from '../feed/feed-context';
+import { testFeed } from '../feed/test-feed';
 import { renderMarket, tap, trip, openOwnTrip } from '../market/market-test-kit';
 import { MyRequestsScreen } from '../market/my-requests-screen';
 import { MyTripsScreen } from '../market/my-trips-screen';
@@ -14,19 +15,9 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-// A channel the test fires: "another person changed something" (docs/64).
-function feed() {
-  const listeners = new Set<() => void>();
-  const subscribe = (listener: () => void) => (
-    listeners.add(listener),
-    () => void listeners.delete(listener)
-  );
-  return { subscribe, fire: () => act(() => listeners.forEach((listener) => listener())) };
-}
-
 describe('an open booking stays fresh and clear (docs/65 B2, B3, B4)', () => {
   it('shows the driver cancel on the open booking without closing it', async () => {
-    const channel = feed();
+    const channel = testFeed();
     let mine: Booking[] = [confirmed];
     renderMarket(
       <FeedContext.Provider value={channel.subscribe}>
@@ -46,7 +37,7 @@ describe('an open booking stays fresh and clear (docs/65 B2, B3, B4)', () => {
 
   it('hides the tools of a confirmed seat once the driver cancels it', async () => {
     vi.setSystemTime(TRIP_DAY);
-    const channel = feed();
+    const channel = testFeed();
     // In the car by the driver's «Keldi» (G76): «Yetib keldim» stands.
     let mine: Booking[] = [{ ...confirmed, boardedAt: TRIP_DAY }];
     renderMarket(

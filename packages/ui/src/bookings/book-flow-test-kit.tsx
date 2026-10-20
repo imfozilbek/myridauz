@@ -1,6 +1,8 @@
 import type { BookingsClient } from '@platform/api-client';
 import { screen } from '@testing-library/react';
 import { vi } from 'vitest';
+import { FeedContext } from '../feed/feed-context';
+import { testFeed } from '../feed/test-feed';
 import { MapEngineContext } from '../map/map-engine';
 import { fakeMap, testMap } from '../map/map-test-kit';
 import { renderMarket, trip } from '../market/market-test-kit';
@@ -26,20 +28,23 @@ export const openBook = (
   const map = fakeMap();
   const onHome = vi.fn();
   const onClose = vi.fn();
+  const feed = testFeed();
   renderMarket(
-    <MapEngineContext.Provider value={async () => map.engine}>
-      <PlacesGate>
-        <BookFlow
-          trip={{ ...trip, pickupMode }}
-          choice={TWO}
-          onBack={() => undefined}
-          onClose={onClose}
-          onHome={onHome}
-        />
-      </PlacesGate>
-    </MapEngineContext.Provider>,
+    <FeedContext.Provider value={feed.subscribe}>
+      <MapEngineContext.Provider value={async () => map.engine}>
+        <PlacesGate>
+          <BookFlow
+            trip={{ ...trip, pickupMode }}
+            choice={TWO}
+            onBack={() => undefined}
+            onClose={onClose}
+            onHome={onHome}
+          />
+        </PlacesGate>
+      </MapEngineContext.Provider>
+    </FeedContext.Provider>,
     testClients({ bookings: { book, ...bookings }, map: testMap(calls) }),
   );
-  return { book, map, onHome, onClose };
+  return { book, map, onHome, onClose, fire: feed.fire };
 };
 export const row = (label: string) => screen.getByText(label).closest('button') as HTMLElement;

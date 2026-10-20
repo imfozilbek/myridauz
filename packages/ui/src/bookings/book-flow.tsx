@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useI18n } from '../context/i18n-context';
 import type { SeatChoice } from '../find/seat-choice';
 import { DraftRestored } from '../flow/draft-restored';
+import { useFeedChange } from '../feed/feed-context';
 import { usePlaces } from '../market/places-gate';
 import { CommentSheet } from '../market/trip-steps';
 import { rememberedWay } from '../way/remembered-way';
@@ -94,9 +95,10 @@ export function BookFlow({ trip, choice, onBack, onClose, onHome }: Props) {
 type SentProps = { readonly booking: Booking; readonly onClose: () => void; readonly onHome: () => void };
 
 // The request just sent: its cancel is the one of the page of the seat (G77). Changed meanwhile (the
-// driver answered): the page of the seat as it is now (G52, docs/112).
+// driver answered): the page of the seat as it is now (G52, docs/112), at the signal too (G89 U3).
 function SentSeat({ booking, onClose, onHome }: SentProps) {
   const [stale, setStale] = useState(false);
+  useFeedChange(() => setStale(true));
   const { cancel, failure } = useCancelSeat(booking.id, { onDone: onClose, onStale: () => setStale(true) });
   if (stale) return <AcceptedBooking bookingId={booking.id} onClose={onClose} onHome={onHome} />;
   return (
