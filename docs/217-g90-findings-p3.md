@@ -43,5 +43,6 @@
 | 6 | Уход без «Yuborish» после нового фото | Arizani yuboring, aks holda tekshiruv boshlanmaydi. |
 | 7 | Шторка водителя в «Sevimli» | Sevimlilardan olib tashlash |
 | 8 | Подсказка пустого «Sevimli» (вместо старой) | Safar tugagach, baho berishda haydovchini sevimlilarga qoʻshing. |
+| 9 | Команда: заявки больше нет (человек удалил аккаунт) | Bu ariza endi yoʻq. |
 
 Заявка, когда уже есть место: старый текст B19 `bookings.has_seat` (согласован в G89).
