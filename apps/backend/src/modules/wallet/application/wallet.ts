@@ -59,13 +59,21 @@ export async function shortage(deps: WalletDeps, driverId: number, amount: numbe
   return Math.max(0, amount - money);
 }
 
+type Charged = 'ok' | 'not_enough' | 'duplicate';
+
 // The commission at the confirmation (docs/12): the bonus first. 'duplicate': it is already taken.
-export async function charge(
+// A bonus burnt or another charge between the read and the write: one more read decides (G89 M15).
+export async function charge(deps: WalletDeps, driverId: number, bookingId: string, amount: number) {
+  const charged = await chargeOnce(deps, driverId, bookingId, amount);
+  return charged === 'not_enough' ? chargeOnce(deps, driverId, bookingId, amount) : charged;
+}
+
+async function chargeOnce(
   deps: WalletDeps,
   driverId: number,
   bookingId: string,
   amount: number,
-): Promise<'ok' | 'not_enough' | 'duplicate'> {
+): Promise<Charged> {
   const operations = await deps.wallet.operations(driverId);
   const { held, first } = forSeat(deps, driverId, operations, amount);
   const split = splitCharge(held, amount);
