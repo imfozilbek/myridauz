@@ -18,8 +18,9 @@ const grant = (rule: PromoRule, now: number): Grant => ({
 });
 
 // Bonus 1 right after the approval, once: a driver approved again after a new photo gets nothing.
+// The owner's 0 bonuses or a bonus of 0 in «Cheklovlar» means none at all (G89 M4).
 export const welcomeGrant = (operations: readonly Operation[], rule: PromoRule, now: number) =>
-  grants(operations).length === 0 ? grant(rule, now) : null;
+  grants(operations).length === 0 && rule.grants > 0 && rule.amount > 0 ? grant(rule, now) : null;
 
 // The next bonus comes at once when the previous one is spent in its days, within the window
 // after the approval, at most `grants` times (docs/12, question 27). A rest smaller than the commission
