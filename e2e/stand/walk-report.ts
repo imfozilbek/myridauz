@@ -23,7 +23,7 @@ function write(name: string, report: WalkReport) {
   const lines = [
     `# ${name}`,
     '',
-    `Screens: ${report.screens}; taps: ${report.taps}; named screens: ${report.named.join(', ')}`,
+    `Screens: ${report.screens}; taps: ${report.taps}; drifts: ${report.drifts}; named: ${report.named.join(', ')}`,
     '',
     '| Kind | Screen | Path | Detail |',
     '|---|---|---|---|',
@@ -53,12 +53,16 @@ export function walkEach(
     await prepare();
   });
   const seen = new Map<MiniApp, Set<string>>();
+  const found: Finding[] = [];
   for (const [name, app, person] of people)
-    test(`${name}: every screen has a way out and every tap does something`, async ({ page }) => {
+    test(`${name}: the robot walks every screen it reaches`, async ({ page }) => {
       test.setTimeout(WALK_MS);
       const walked = seen.get(app) ?? new Set<string>();
       seen.set(app, walked);
-      const report = await walkAs(page, name, app, person, walked);
-      expect.soft(report.findings).toEqual([]);
+      found.push(...(await walkAs(page, name, app, person, walked)).findings);
     });
+  // The people of a file walk one after another; the findings of all of them fail the file at the end.
+  test('every screen has a way out and every tap does something', () => {
+    expect(found).toEqual([]);
+  });
 }

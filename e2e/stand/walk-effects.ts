@@ -85,26 +85,32 @@ export function watchEffects(page: Page): Effects {
   return { calls, screens, telegram };
 }
 
-// The marks of a screen that change without new words: a switch, a chosen chip, a typed value.
+// A sound is a change too (the sounds of «Ovozlar», G54): every start of one is counted.
+export const countSounds = (page: Page) =>
+  page.addInitScript(() => {
+    const start = AudioScheduledSourceNode.prototype.start;
+    const counted = window as unknown as { __walkSounds?: number };
+    AudioScheduledSourceNode.prototype.start = function (...args) {
+      counted.__walkSounds = (counted.__walkSounds ?? 0) + 1;
+      return start.apply(this, args);
+    };
+  });
+
+// The marks of a screen that change without new words: a switch, a chosen chip, a typed value, a sound.
 export const marksOf = (page: Page): Promise<string> =>
-  page.evaluate(() =>
-    [
+  page.evaluate(() => {
+    const marks = [
       ...document.querySelectorAll<HTMLElement>(
         '[aria-checked],[aria-selected],[aria-expanded],[aria-pressed],input,textarea',
       ),
-    ]
-      .map((el) =>
-        [
-          el.getAttribute('aria-checked'),
-          el.getAttribute('aria-selected'),
-          el.getAttribute('aria-expanded'),
-          el.getAttribute('aria-pressed'),
-          (el as HTMLInputElement).value ?? '',
-          String((el as HTMLInputElement).checked ?? ''),
-        ].join(','),
-      )
-      .join('|'),
-  );
+    ].map((el) =>
+      ['aria-checked', 'aria-selected', 'aria-expanded', 'aria-pressed']
+        .map((name) => el.getAttribute(name))
+        .concat((el as HTMLInputElement).value ?? '', String((el as HTMLInputElement).checked ?? ''))
+        .join(','),
+    );
+    return [...marks, String((window as unknown as { __walkSounds?: number }).__walkSounds ?? 0)].join('|');
+  });
 
 // The app reports its screens when it goes to the background: the walk sends them at the end.
 export async function flushScreens(page: Page) {

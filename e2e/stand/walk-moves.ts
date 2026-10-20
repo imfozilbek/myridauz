@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { readScreen, tap, type ScreenState, type Target } from './walk-screen';
+import { readScreen, shape, tap, type ScreenState, type Target } from './walk-screen';
 
 // The moves of the walk (G90): the two buttons of Telegram are targets too, and the order of taps
 // on a screen puts the ones that change much last.
@@ -33,8 +33,8 @@ export const order = (state: ScreenState): Target[] => {
 // target on it. The rest of the screen may change on the way: a new trip, a remembered route.
 export const standsFor = async (page: Page, state: ScreenState, target: Target) => {
   const now = await readScreen(page);
-  if (now.heading !== state.heading || now.back !== state.back) return false;
+  if (shape(now.heading) !== shape(state.heading) || now.back !== state.back) return false;
   if (target === MAIN) return now.main !== null;
   if (target === SECOND) return now.second !== null;
-  return now.targets.some((there) => there.label === target.label && there.nth === target.nth);
+  return now.targets.some((there) => shape(there.label) === shape(target.label) && there.nth === target.nth);
 };

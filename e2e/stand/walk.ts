@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { pressBack } from '../telegram-mock';
-import { flushScreens, marksOf, settle, watchEffects } from './walk-effects';
+import { countSounds, flushScreens, marksOf, settle, watchEffects } from './walk-effects';
 import { order, press, standsFor } from './walk-moves';
 import { readScreen, type ScreenState, type Target } from './walk-screen';
 
@@ -11,9 +11,10 @@ import { readScreen, type ScreenState, type Target } from './walk-screen';
 //  no_back: not the main screen and no «Назад»: Android «Назад» closes the whole app there;
 //  dead_tap: a tap that changes nothing, calls nothing, opens nothing;
 //  refused: the screen offered a tap and the server said no to it;
-//  error_screen: the screen shows the general error;
-//  lost: after a tap the robot cannot come back by «Назад» or by the same taps from the start.
-type FindingKind = 'dead_end' | 'no_back' | 'dead_tap' | 'refused' | 'error_screen' | 'lost';
+//  error_screen: the screen shows the general error.
+// drifts: how often the world changed under the robot (a seat confirmed, a trip cancelled) and a
+// screen it walked was not there any more: counted, not a finding.
+type FindingKind = 'dead_end' | 'no_back' | 'dead_tap' | 'refused' | 'error_screen';
 export type Finding = {
   readonly kind: FindingKind;
   readonly at: string;
@@ -24,6 +25,7 @@ export type WalkReport = {
   readonly findings: Finding[];
   readonly screens: number;
   readonly taps: number;
+  readonly drifts: number;
   readonly named: string[];
 };
 
@@ -45,6 +47,7 @@ export async function walk(
   const until = Date.now() + limits.ms;
   const walked = seen.size;
   let taps = 0;
+  let drifts = 0;
   const add = (kind: FindingKind, state: ScreenState, path: readonly Target[], detail: string) =>
     findings.push({
       kind,
@@ -99,13 +102,7 @@ export async function walk(
     for (const target of order(state).slice(0, limits.perScreen)) {
       if (taps >= limits.taps || Date.now() > until) return;
       if (!(await reach(path, state, target))) {
-        const there = await readScreen(page);
-        add(
-          'lost',
-          state,
-          path,
-          `before «${target.label}»: found «${there.heading}», ${there.targets.length} targets`,
-        );
+        drifts += 1;
         continue;
       }
       const now = await readScreen(page);
@@ -134,8 +131,9 @@ export async function walk(
     }
   };
 
+  await countSounds(page);
   await start();
   await visit([], await readScreen(page));
   await flushScreens(page);
-  return { findings, screens: seen.size - walked, taps, named: [...new Set(effects.screens)].sort() };
+  return { findings, screens: seen.size - walked, taps, drifts, named: [...new Set(effects.screens)].sort() };
 }

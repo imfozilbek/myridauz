@@ -21,15 +21,18 @@ const TAPPABLE = [
   'a[href]',
   'select',
   'summary',
-  'input[type=checkbox]',
-  'input[type=radio]',
+  'textarea',
+  'input:not([type])',
+  ...['checkbox', 'radio', 'text', 'tel', 'number', 'search'].map((type) => `input[type=${type}]`),
+  'label:has(input[type=checkbox])',
+  'label:has(input[type=radio])',
   ...['button', 'link', 'tab', 'switch', 'checkbox', 'radio', 'option', 'menuitem'].map((r) => `[role=${r}]`),
 ].join(',');
 // The two buttons of Telegram are drawn by the mock outside the page (e2e/telegram-mock.ts).
 const NATIVE = ['tg-main-button', 'tg-secondary-button'];
 
 // Numbers, times and prices change from one open to the next: the key of a screen does not hold them.
-const shape = (words: string) => words.replace(/\d+/gu, '#').replace(/\s+/gu, ' ').trim();
+export const shape = (words: string) => words.replace(/\d+/gu, '#').replace(/\s+/gu, ' ').trim();
 
 // The tap targets of the screen in the order a person sees them, each marked for the next tap.
 async function readTargets(page: Page): Promise<{ label: string }[]> {
@@ -44,15 +47,18 @@ async function readTargets(page: Page): Promise<{ label: string }[]> {
         el.hasAttribute('disabled') || el.getAttribute('aria-disabled') === 'true';
       // A button inside a button is one target: the outer one.
       const inner = (el: HTMLElement) => el.parentElement?.closest(tappable) !== null;
-      // The open tab is not a target: a tap on it rightly changes nothing.
-      const open = (el: HTMLElement) =>
-        el.getAttribute('role') === 'tab' && el.getAttribute('aria-selected') === 'true';
+      // The chosen one of a group is not a target: a tap on it rightly changes nothing.
+      const chosen = (el: HTMLElement) =>
+        el.getAttribute('aria-pressed') === 'true' ||
+        (['tab', 'radio', 'option'].includes(el.getAttribute('role') ?? '') &&
+          [el.getAttribute('aria-selected'), el.getAttribute('aria-checked')].includes('true'));
       const found = [...document.querySelectorAll<HTMLElement>(tappable)].filter(
-        (el) => !native.includes(el.id) && seen(el) && !off(el) && !inner(el) && !open(el),
+        (el) => !native.includes(el.id) && seen(el) && !off(el) && !inner(el) && !chosen(el),
       );
       return found.map((el, index) => {
         el.dataset['walk'] = String(index);
-        const words = el.getAttribute('aria-label') ?? el.innerText ?? el.title;
+        const words =
+          el.getAttribute('aria-label') || el.innerText || el.getAttribute('placeholder') || el.title;
         return { label: (words.split('\n')[0] ?? '').trim().slice(0, 60) || el.tagName.toLowerCase() };
       });
     },
@@ -95,18 +101,23 @@ export async function readScreen(page: Page): Promise<ScreenState> {
   return { key, back, main, second, targets, text, heading: heading.trim(), home };
 }
 
-// Taps the target the way a person does; false when it is not on the screen any more.
+// Taps the target the way a person does; a field gets typed words. False when it is gone.
+const TYPED: Record<string, string> = { tel: '901234567', number: '2' };
 export async function tap(page: Page, target: Target): Promise<boolean> {
   const raw = await readTargets(page);
   const index = raw
     .map((item, at) => ({ ...item, at }))
-    .filter((item) => item.label === target.label)
+    .filter((item) => shape(item.label) === shape(target.label))
     .at(target.nth)?.at;
   if (index === undefined) return false;
   const element = page.locator(`[data-walk="${index}"]`);
   await element.scrollIntoViewIfNeeded().catch(() => undefined);
-  return element
-    .click({ timeout: 3_000 })
-    .then(() => true)
-    .catch(() => false);
+  const field = await element.evaluate((el) =>
+    el instanceof HTMLTextAreaElement ||
+    (el instanceof HTMLInputElement && !['checkbox', 'radio'].includes(el.type))
+      ? el.type
+      : null,
+  );
+  const done = field ? element.fill(TYPED[field] ?? 'Salom') : element.click({ timeout: 3_000 });
+  return done.then(() => true).catch(() => false);
 }
