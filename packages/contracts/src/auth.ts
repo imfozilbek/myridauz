@@ -94,6 +94,7 @@ export const API_ERRORS = [
   'reviews.not_found',
   'reviews.not_over',
   'reviews.too_late',
+  'reviews.published',
   'reviews.invalid_input',
   'complaints.not_found',
   'complaints.already',

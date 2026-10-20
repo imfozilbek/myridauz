@@ -36,6 +36,16 @@ export const isPublished = (
   !review.hidden &&
   (answered.has(counterpartKey(review)) || review.rideEndsAt + rule.blindDays * DAY_MS <= now);
 
+// A review that shows keeps its stars and words (owner decision 20.10.2026, G89 A7): its rater may
+// have read the other side's review by now.
+export const isSettled = (
+  review: StoredReview | undefined,
+  otherRated: boolean,
+  now: number,
+  rule: Pick<RatingRule, 'blindDays'>,
+) =>
+  review !== undefined && isPublished(review, new Set(otherRated ? [counterpartKey(review)] : []), now, rule);
+
 const TENTHS = 10;
 
 // "⭐ 4,8 (37)": the average of published stars, one decimal; "Yangi" below minShown.

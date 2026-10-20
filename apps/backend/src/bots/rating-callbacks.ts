@@ -24,8 +24,10 @@ export async function onRatingCallback(
   if (prefix !== RATE_PREFIX || !bookingId || !STARS.some((star) => star === stars) || !token)
     return answer(query);
   if (await isBlocked(context.env, query.from.id)) return answer(query);
-  if ((await rateFromBot(context.env, query.from.id, bookingId, stars)) !== 'ok')
-    return answer(query, t('bot.rating.late'));
+  const rated = await rateFromBot(context.env, query.from.id, bookingId, stars);
+  // A review that shows keeps its stars (G89 A7); any other failure is a late tap.
+  if (rated === 'reviews.published') return answer(query, t('errors.reviews.published'));
+  if (rated !== 'ok') return answer(query, t('bot.rating.late'));
   if (!query.message) return answer(query);
   const app = `https://${appHost(context.brand, role)}/`;
   const review = [

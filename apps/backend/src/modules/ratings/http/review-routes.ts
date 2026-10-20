@@ -10,6 +10,7 @@ const STATUS = {
   'reviews.not_found': 404,
   'reviews.not_over': 409,
   'reviews.too_late': 409,
+  'reviews.published': 409,
   'reviews.invalid_input': 400,
   'auth.not_admin': 403,
 } as const satisfies Partial<Record<ApiErrorCode, number>>;

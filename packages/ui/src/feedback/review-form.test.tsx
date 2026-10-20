@@ -1,4 +1,4 @@
-import type { ComfortClient, FeedbackClient } from '@platform/api-client';
+import { ApiError, type ComfortClient, type FeedbackClient } from '@platform/api-client';
 import type { ReviewTarget } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -55,6 +55,15 @@ describe('the review (G60, mockup g60/5): one short screen', () => {
     await vi.waitFor(() => expect(onBack).toHaveBeenCalled());
     expect(review).toHaveBeenCalledWith({ bookingId: done.id, stars: 5, tags: ['on_time'], text: '' });
     expect(screen.queryByText('Rahmat. Bahongiz saqlandi.')).toBeNull();
+  });
+
+  // G89 A7: a review that shows keeps its stars; the person reads why, not «Xatolik».
+  it('says the review is published and cannot change', async () => {
+    const review = async () => Promise.reject(new ApiError(409, 'reviews.published'));
+    open({ review });
+    fireEvent.click(await screen.findByRole('button', { name: '1' }));
+    await tap('Yuborish');
+    expect(await screen.findByText('Baho eʼlon qilindi. Endi uni oʻzgartirib boʻlmaydi.')).toBeTruthy();
   });
 
   it('saves the driver as a favourite by the switch', async () => {

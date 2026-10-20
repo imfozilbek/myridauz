@@ -6,12 +6,12 @@ import {
   type ReviewTarget,
 } from '@platform/contracts';
 import type { z } from 'zod';
-import { needsModerator, ratingOf } from '../domain/rating';
+import { isSettled, needsModerator, ratingOf } from '../domain/rating';
 import type { RatingsDeps, Ride } from './ports';
 import { published } from './read';
 
 type Input = z.output<typeof reviewInputSchema>;
-type Failure = 'reviews.not_found' | 'reviews.not_over' | 'reviews.too_late';
+type Failure = 'reviews.not_found' | 'reviews.not_over' | 'reviews.too_late' | 'reviews.published';
 
 // Only the two sides of a ride that is over, within the brand's days (docs/24).
 async function rideFor(deps: RatingsDeps, bookingId: string, raterId: number): Promise<Ride | Failure> {
@@ -31,6 +31,11 @@ export async function rate(deps: RatingsDeps, raterId: number, input: Input, fro
   const rateeId = rateeOf(ride, raterId);
   const allowed: readonly string[] = rateeId === ride.driverId ? DRIVER_TAGS : PASSENGER_TAGS;
   const now = deps.now();
+  const [mine, theirs] = await Promise.all([
+    deps.store.review(input.bookingId, raterId),
+    deps.store.review(input.bookingId, rateeId),
+  ]);
+  if (isSettled(mine, theirs !== undefined, now, deps.limits)) return 'reviews.published';
   const review = {
     id: deps.newId(),
     bookingId: input.bookingId,

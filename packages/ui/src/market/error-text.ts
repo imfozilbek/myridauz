@@ -68,6 +68,8 @@ const EXPLAINED: readonly string[] = [
   // G89 U1: codes with a text that the screens did not show.
   'complaints.too_late',
   'users.face_decided',
+  // G89 A7: a review that shows keeps its stars.
+  'reviews.published',
 ];
 
 // Codes that mean the same for a person as an explained one.
