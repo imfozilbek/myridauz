@@ -26,6 +26,8 @@ export type BookingRepository = MarkStore & {
   replace(booking: BookingRecord, expected: BookingRecord['status']): Promise<boolean>;
   // Confirms only if the seats still fit: two confirms cannot both take the last seat (docs/65 A4).
   confirmWithin(booking: BookingRecord, tripSeats: number): Promise<boolean>;
+  // «Men keldim» or «Yetib keldim» of the passenger, once, on a seat still confirmed (G89 B9).
+  markStep(id: string, step: 'came' | 'arrived', now: number): Promise<boolean>;
   find(id: string): Promise<BookingRecord | undefined>;
   byTrips(tripIds: readonly string[]): Promise<BookingRecord[]>;
   byPassenger(passengerId: number): Promise<BookingRecord[]>;
@@ -38,6 +40,9 @@ export type BookingRepository = MarkStore & {
   // The erasure of points (docs/69): which bookings made before this time still keep points.
   keepingPoints(before: number): Promise<{ readonly id: string; readonly tripId: string }[]>;
   erasePoints(ids: readonly string[]): Promise<void>;
+  // Seats cancelled after their confirmation since this time: the hourly repair gives back a
+  // commission a broken cancel kept (G89 M6).
+  cancelledSince(since: number): Promise<BookingRecord[]>;
   erasePointsOf(passengerId: number): Promise<void>;
 };
 
@@ -91,6 +96,8 @@ export type BookingsDeps = {
     release(tripId: string): Promise<void>;
     // False when the trip is already on its way or over (docs/35).
     cancel(driverId: number, tripId: string): Promise<boolean>;
+    // Cancelled trips leaving after this time: the hourly repair ends their seats (G89 T2).
+    cancelledAfter(after: number): Promise<string[]>;
   };
   readonly requests: {
     find(id: string): Promise<RequestFacts | undefined>;

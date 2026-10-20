@@ -38,6 +38,8 @@ export type TripRepository = {
   cancel(id: string): Promise<boolean>;
   // Live trips without «Yoʻlga chiqdim» whose time is in [from, to]: the Cron reminds and departs.
   notDeparted(from: number, to: number): Promise<TripRecord[]>;
+  // Cancelled trips leaving after this time: the hourly repair ends their seats (G89 T2).
+  cancelledAfter(after: number): Promise<string[]>;
 };
 
 // retimed and cheaper: the driver moved the time or lowered the price (G39, docs/104); departed:

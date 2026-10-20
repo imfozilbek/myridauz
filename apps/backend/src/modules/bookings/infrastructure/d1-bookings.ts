@@ -8,7 +8,7 @@ import {
   toBooking,
   type BookingRow,
 } from './booking-row';
-import { MARK_COLUMNS, markOnceSql } from './mark-row';
+import { MARK_COLUMNS, markOnceSql, passengerStepSql } from './mark-row';
 
 // Table bookings (migrations/0008_bookings_wallet.sql, 0024, 0026, 0047).
 const marks = (count: number) => Array.from({ length: count }, () => '?').join(', ');
@@ -22,10 +22,15 @@ const UPSERT = `INSERT INTO bookings (${ROW_COLUMNS.join(', ')}, id) VALUES (${m
     confirmed_at = excluded.confirmed_at, boarded_at = COALESCE(excluded.boarded_at, bookings.boarded_at),
     arrived_at = excluded.arrived_at, came_at = excluded.came_at, ${KEEP_MARKS},
     updated_at = excluded.updated_at`;
-// One statement: the seats of the trip are counted and the booking confirmed at once (docs/65 A4).
+// One statement: the seats of the trip are counted and the booking confirmed at once (docs/65 A4), only
+// while the trip is live: a cancel of the trip in the same second wins (G89 T3).
 const CONFIRM_WITHIN = `UPDATE bookings SET status = 'confirmed', confirmed_at = ?1, updated_at = ?1
   WHERE id = ?2 AND status = 'requested' AND seats + (SELECT COALESCE(SUM(seats), 0) FROM bookings
-  WHERE trip_id = ?3 AND status = 'confirmed') <= ?4`;
+  WHERE trip_id = ?3 AND status = 'confirmed') <= ?4
+  AND EXISTS (SELECT 1 FROM trips WHERE id = ?3 AND status IN ('active', 'full'))`;
+// Through the index bookings_status (docs/117).
+const CANCELLED_SINCE = `SELECT * FROM bookings WHERE status IN ('cancelled_by_driver', 'cancelled_by_passenger')
+  AND confirmed_at IS NOT NULL AND updated_at >= ?`;
 // A request without an answer ends, and its points with it (docs/69).
 const EXPIRE = `UPDATE bookings SET status = 'expired', ${NO_POINTS}, updated_at = ?1
   WHERE status = 'requested' AND expires_at <= ?1 RETURNING *`;
@@ -45,11 +50,21 @@ export const d1Bookings = (db: D1Database): BookingRepository => ({
       .bind(...rowValues(booking), booking.id)
       .run();
   },
-  // The status and the points move together: a cancel erases the points in the same step.
+  // The status and the points move together: a cancel erases the points in the same step. A seat
+  // that went back to a request after a failed charge loses its confirmation time (G89 B4).
   replace: async (booking, expected) => {
     const result = await db
-      .prepare(`UPDATE bookings SET status = ?, ${SET_POINTS}, updated_at = ? WHERE id = ? AND status = ?`)
-      .bind(booking.status, ...pointValues(booking), booking.updatedAt, booking.id, expected)
+      .prepare(
+        `UPDATE bookings SET status = ?, ${SET_POINTS}, confirmed_at = ?, updated_at = ? WHERE id = ? AND status = ?`,
+      )
+      .bind(
+        booking.status,
+        ...pointValues(booking),
+        booking.confirmedAt,
+        booking.updatedAt,
+        booking.id,
+        expected,
+      )
       .run();
     return result.meta.changes === 1;
   },
@@ -62,6 +77,8 @@ export const d1Bookings = (db: D1Database): BookingRepository => ({
   },
   markOnce: async (id, step, now) =>
     (await db.prepare(markOnceSql(step)).bind(now, id).run()).meta.changes === 1,
+  markStep: async (id, step, now) =>
+    (await db.prepare(passengerStepSql(step)).bind(now, id).run()).meta.changes === 1,
   find: async (id) => {
     const row = await db.prepare('SELECT * FROM bookings WHERE id = ?').bind(id).first<BookingRow>();
     return row ? toBooking(row) : undefined;
@@ -73,6 +90,7 @@ export const d1Bookings = (db: D1Database): BookingRepository => ({
   byPassenger: async (passengerId) =>
     all(db.prepare('SELECT * FROM bookings WHERE passenger_id = ?').bind(passengerId)),
   expireOver: (now) => all(db.prepare(EXPIRE).bind(now)),
+  cancelledSince: (since) => all(db.prepare(CANCELLED_SINCE).bind(since)),
   waitingPastHalf: (now, since) => all(db.prepare(PAST_HALF).bind(now, since)),
   keepingPoints: async (before) =>
     (await db.prepare(WITH_POINTS).bind(before).all<{ id: string; trip_id: string }>()).results.map(

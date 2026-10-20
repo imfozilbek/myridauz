@@ -134,4 +134,12 @@ export const d1Trips = (db: D1Database): TripRepository => ({
         .bind(from, to)
         .all<Row>()
     ).results.map(toTrip),
+  // Through trips_search (status, depart_at) (docs/117).
+  cancelledAfter: async (after) =>
+    (
+      await db
+        .prepare("SELECT id FROM trips WHERE status = 'cancelled' AND depart_at > ?")
+        .bind(after)
+        .all<{ id: string }>()
+    ).results.map((row) => row.id),
 });

@@ -66,4 +66,12 @@ describe('«Yoʻlga chiqdim» and «Yetib keldik» in D1', () => {
     expect(await trips.find('soon')).toMatchObject({ status: 'cancelled' });
     expect(await trips.find('late')).toMatchObject({ status: 'active' });
   });
+
+  // G89 T2: the hourly repair reads the cancelled trips of two days back and ahead, through an index.
+  it('reads the cancelled trips leaving after a time', async () => {
+    const { db, trips } = await seeded();
+    expect(await trips.cancelledAfter(NOW - 2 * HOUR)).toEqual(['cancelled']);
+    expect(await trips.cancelledAfter(NOW)).toEqual([]);
+    expect(fullScans(db)).toEqual([]);
+  });
 });

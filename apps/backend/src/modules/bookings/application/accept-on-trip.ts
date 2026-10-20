@@ -1,6 +1,7 @@
 import { onTheWay, type Offer } from '@platform/contracts';
 import type { OfferRecord } from '../domain/offer';
 import { acceptedWith, offerBooking, type AcceptError } from './accept-steps';
+import { chargeSeat } from './charge-seat';
 import type { BookingsDeps, Result } from './ports';
 import type { RequestFacts } from './request-facts';
 
@@ -23,7 +24,9 @@ export async function acceptOnTrip(
     await deps.bookings.save({ ...booking, status: 'expired', confirmedAt: null });
     return { ok: false, error: 'bookings.no_seats' };
   }
-  if ((await deps.wallet.charge(offer.driverId, booking.id, booking.commission)) !== 'ok') {
+  const charged = await chargeSeat(deps, offer.driverId, booking);
+  if (charged === 'gone') return { ok: false, error: 'bookings.wrong_status' };
+  if (charged === 'not_enough') {
     await deps.bookings.save({ ...booking, status: 'expired' });
     return { ok: false, error: 'wallet.not_enough' };
   }

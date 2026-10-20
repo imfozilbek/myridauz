@@ -71,5 +71,9 @@ export function createMemoryTrips(): TripRepository {
       [...trips.values()].filter(
         (trip) => live(trip) && trip.departedAt === null && trip.departAt >= from && trip.departAt <= to,
       ),
+    cancelledAfter: async (after) =>
+      [...trips.values()]
+        .filter((trip) => trip.status === 'cancelled' && trip.departAt > after)
+        .map((trip) => trip.id),
   };
 }

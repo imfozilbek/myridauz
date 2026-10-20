@@ -4,8 +4,8 @@ import { markMeeting } from './application/meeting';
 import { markProgress } from './application/progress';
 import { cancelByPassenger } from './application/request';
 import { ratableRideOf } from './application/rides';
-import { booked, MEETING } from './test-booked';
-import { DILNOZA, DRIVER } from './test-kit';
+import { booked, DEPART, MEETING } from './test-booked';
+import { DILNOZA, DRIVER, HOUR } from './test-kit';
 
 const REFUSED = { ok: false, error: 'bookings.wrong_status' };
 
@@ -24,7 +24,8 @@ describe('the marks of the meeting hold (docs/35, docs/65 A4, G63)', () => {
 
   it('«Kelmadi» is refused once the passenger said «Yetib keldim»; the ride stays to rate', async () => {
     const { deps, id, notes, setNow } = await booked();
-    setNow(MEETING);
+    // «Yetib keldim» comes once the passenger is in the car: here the time of the meeting passed (G89 B1).
+    setNow(DEPART + HOUR);
     await markProgress(deps, DILNOZA, id, 'arrived');
     expect(await markMeeting(deps, DRIVER, id, 'no_show')).toEqual(REFUSED);
     expect(notes.some((note) => note.startsWith('complaint'))).toBe(false);

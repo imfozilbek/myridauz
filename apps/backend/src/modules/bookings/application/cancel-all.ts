@@ -1,19 +1,20 @@
-import { answer } from './answer';
+import { onTheWay } from '@platform/contracts';
+import { meetingBegun } from './meeting';
 import type { BookingsDeps } from './ports';
 import { cancelByPassenger } from './request';
+import { endSeatsOfTrip } from './trip-ended';
 
 const OPEN = new Set(['requested', 'confirmed']);
 
 // A blocked person (docs/17): every live trip of theirs is cancelled with its bookings, and every
-// open booking, request and sent offer of theirs too (docs/65 A5). The other sides hear it from the
-// usual bot messages; commissions go back.
+// open booking, request and sent offer of theirs too (docs/65 A5). The other sides hear the team did
+// it; commissions go back. A trip already on the way, by the clock, «Yoʻlga chiqdim» or «Keldi» of
+// the driver, goes on to its end (owner decision 10.10.2026, docs/17, G89 T4).
 export async function cancelEverything(deps: BookingsDeps, userId: number): Promise<void> {
   for (const tripId of await deps.trips.ofDriver(userId)) {
     const trip = await deps.trips.find(tripId);
-    if (!trip?.live) continue;
-    for (const booking of await deps.bookings.byTrips([tripId]))
-      if (OPEN.has(booking.status)) await answer(deps, userId, booking.id, 'driver_cancel');
-    await deps.trips.cancel(userId, tripId);
+    if (!trip?.live || onTheWay(trip, deps.now()) || (await meetingBegun(deps, userId, tripId))) continue;
+    if (await deps.trips.cancel(userId, tripId)) await endSeatsOfTrip(deps, userId, tripId, 'team');
   }
   for (const booking of await deps.bookings.byPassenger(userId)) {
     const trip = OPEN.has(booking.status) ? await deps.trips.find(booking.tripId) : undefined;

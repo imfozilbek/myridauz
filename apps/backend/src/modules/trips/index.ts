@@ -137,14 +137,4 @@ export const upcomingTripsOf = (env: Bindings, driverIds: readonly number[]) =>
 // Real prices of trips that left, not cancelled: the team's median hint (docs/09).
 export const realPricesSince = (env: Bindings, from: number) => realPrices(tripsDeps(env), from);
 
-// The Cron job (G63, docs/35): live trips without «Yoʻlga chiqdim» whose time is in [from, to], and
-// the departure the Cron writes by itself.
-export const tripsNotDeparted = async (env: Bindings, from: number, to: number) =>
-  (await tripsDeps(env).trips.notDeparted(from, to)).map(({ id, driverId, departAt }) => ({
-    id,
-    driverId,
-    departAt,
-  }));
-export const departByCron = async (env: Bindings, tripId: string, at: number) => {
-  await tripsDeps(env).trips.depart(tripId, at);
-};
+export { cancelledTripsAfter, departByCron, tripsNotDeparted } from './cron-reads';

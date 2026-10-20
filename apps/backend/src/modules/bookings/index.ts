@@ -1,7 +1,6 @@
 import { driverTripCancelPath, type ApiErrorCode } from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
-import { answer } from './application/answer';
 import { ridingNow } from './application/riding';
 import { bookingsDeps } from './deps';
 import { boardTrip } from './application/board-trip';
@@ -18,7 +17,9 @@ import { pastRides } from './application/past';
 import { passengerView } from './application/progress';
 import { filedRideOf, ratableRideOf, rideOf, ridesOf } from './application/rides';
 import { expireTripOffers } from './application/salon-trip';
+import { settleBookings } from './application/settle';
 import { tellTripRetimed } from './application/trip-change';
+import { endSeatsOfTrip } from './application/trip-ended';
 import { bookingRoutes } from './http/booking-routes';
 import { meetingRoutes } from './http/meeting-routes';
 import { offerRoutes } from './http/offer-routes';
@@ -50,9 +51,7 @@ export const tripCancelWatch = new Hono<AppEnv>().use(CANCEL_PATH, async (contex
     return context.json({ error: 'trips.wrong_status' satisfies ApiErrorCode }, 409);
   await next();
   if (context.res.status !== 200) return;
-  for (const booking of await deps.bookings.byTrips([context.req.param('id') ?? '']))
-    if (booking.status === 'requested' || booking.status === 'confirmed')
-      await answer(deps, driverId, booking.id, 'driver_cancel');
+  await endSeatsOfTrip(deps, driverId, context.req.param('id') ?? '', 'driver');
   await expireTripOffers(deps, driverId, context.req.param('id') ?? '');
 });
 
@@ -60,6 +59,8 @@ export const tripCancelWatch = new Hono<AppEnv>().use(CANCEL_PATH, async (contex
 export const tellBookedOfRetime = (env: Bindings, tripId: string) =>
   tellTripRetimed(bookingsDeps(env), tripId);
 
+// The hourly Cron job (G89 T2, M6): a cancel that broke halfway is finished, seats and money.
+export const settleSeats = (env: Bindings) => settleBookings(bookingsDeps(env));
 // The Cron job (docs/35): requests without an answer in time become expired, the passenger hears it.
 export const expireBookings = (env: Bindings, now: number) => expireRequests(bookingsDeps(env), now);
 // «Yoʻlga chiqdim» before the time (G63): the requests of the trip end, the passengers hear it.

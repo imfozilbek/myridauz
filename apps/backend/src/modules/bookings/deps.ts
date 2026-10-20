@@ -14,6 +14,7 @@ import {
 } from '../ride-requests';
 import {
   cancelFor,
+  cancelledTripsAfter,
   driverTripIds,
   openTripFor,
   publishOfferTripFor,
@@ -76,6 +77,7 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => {
       open: (driverId, tripId) => openTripFor(env, driverId, tripId),
       release: (tripId) => releaseTripFor(env, tripId),
       cancel: (driverId, tripId) => cancelFor(env, driverId, tripId),
+      cancelledAfter: (after) => cancelledTripsAfter(env, after),
     },
     requests: {
       find: (id) => requestFacts(env, id),
