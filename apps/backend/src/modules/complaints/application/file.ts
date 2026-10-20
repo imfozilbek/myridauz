@@ -40,7 +40,7 @@ export async function fileComplaint(deps: ComplaintsDeps, authorId: number, inpu
     refund: null,
   };
   const hiddenBefore = (await hiddenFromSearch(deps, [againstId])).has(againstId);
-  await deps.store.save(complaint);
+  if (!(await deps.store.add(complaint))) return 'complaints.already' as const;
   const against = await deps.people.find(againstId);
   await deps.tell.team(complaint, { firstName: against?.firstName ?? '', publicId: against?.publicId ?? '' });
   // This complaint hid the person from search: they hear it once (G75, docs/158 З).

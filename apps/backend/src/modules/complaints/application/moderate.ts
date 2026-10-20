@@ -24,7 +24,7 @@ export async function openComplaint(deps: ComplaintsDeps, id: string) {
   const complaint = await deps.store.find(id);
   if (!complaint) return undefined;
   const taken = complaint.status === 'new' ? { ...complaint, status: 'in_review' as const } : complaint;
-  if (taken !== complaint) await deps.store.save(taken);
+  if (taken !== complaint) await deps.store.take(id);
   return (await caseView(deps, taken)) ?? undefined;
 }
 

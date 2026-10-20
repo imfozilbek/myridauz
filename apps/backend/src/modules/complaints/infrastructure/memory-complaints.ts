@@ -10,7 +10,16 @@ export function createMemoryComplaints(): ComplaintStore & { readonly reads: Cha
   const all = () => [...complaints.values()];
   return {
     reads,
-    save: async (complaint) => void complaints.set(complaint.id, complaint),
+    add: async (complaint) => {
+      const { authorId, bookingId } = complaint;
+      if (all().some((known) => known.authorId === authorId && known.bookingId === bookingId)) return false;
+      complaints.set(complaint.id, complaint);
+      return true;
+    },
+    take: async (id) => {
+      const complaint = complaints.get(id);
+      if (complaint?.status === 'new') complaints.set(id, { ...complaint, status: 'in_review' });
+    },
     resolve: async (complaint) => {
       if (complaints.get(complaint.id)?.status === 'resolved') return false;
       complaints.set(complaint.id, complaint);
