@@ -102,6 +102,10 @@ export const approvedCar = async (env: Bindings, userId: number) => {
   return application?.status === 'approved' ? application.car : null;
 };
 
+// A person who sent a driver application lives in the driver bot (G89 M7).
+export const appliedAsDriver = async (env: Bindings, userId: number) =>
+  ((await driversDeps(env).applications.find(userId))?.status ?? 'draft') !== 'draft';
+
 // "Maʼlumotlarimni oʻchirish" (docs/30): the car photos and the plate go, the application starts over.
 export const forgetDriver = async (env: Bindings, userId: number) => {
   const deps = driversDeps(env);

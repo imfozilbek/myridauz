@@ -101,7 +101,10 @@ export const complaintRoutes = (deps: (env: Bindings) => ComplaintsDeps) =>
         by: id,
         byOwner: owner,
         reason: 'admin',
-        side: 'driver' as const,
+        // The bot the person has: a pure passenger never opened the driver bot (G89 A6).
+        side: (await deps(context.env).people.isDriver(userId))
+          ? ('driver' as const)
+          : ('passenger' as const),
       };
       const result = await blockPerson(deps(context.env), order);
       if (result !== 'ok') return fail(result);

@@ -20,6 +20,8 @@ type Wiring = {
   readonly adminToken: string | undefined;
   // Who of the team gets the card: the member who gets the person's application that day (docs/92).
   readonly recipients: (userId: number) => Promise<number[]>;
+  // The person sent a driver application: the driver bot is theirs (G89 M7).
+  readonly applicant: (userId: number) => Promise<boolean>;
   readonly avatars: ImageStore;
   readonly send: (jobs: readonly NotificationJob[]) => Promise<void>;
   // «Navbat» of the team (G68, docs/122): a new photo is a case.
@@ -61,8 +63,9 @@ export function telegramFaces(wiring: Wiring): FaceNotifier {
     },
     rejected: async (user, reason) => {
       const text = t('bot.face.rejected', { reason: t(`moderation.faceReason.${reason}`) });
-      // A driver hears it in the driver bot: a driver may never have opened the passenger bot.
-      const bot = user.isDriver ? 'driver' : 'passenger';
+      // A driver or an applicant hears it in the driver bot: they may never have opened the passenger
+      // bot; a driver under a new check is not a driver for the moment (G89 M7).
+      const bot = user.isDriver || (await wiring.applicant(user.id)) ? 'driver' : 'passenger';
       const markup = openButton(wiring.brand, bot, t('bot.face.change'), PROFILE_PHOTO_LINK);
       await wiring.send([{ bot, chatId: user.id, text, markup }]);
     },

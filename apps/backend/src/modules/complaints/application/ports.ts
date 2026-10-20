@@ -63,6 +63,7 @@ export type ComplaintsDeps = {
     >;
     // The Telegram ID behind a public id from an admin path (docs/65 A3).
     idOf(publicId: string): Promise<number | undefined>;
+    isDriver(id: number): Promise<boolean>;
     block(
       id: number,
       days: number | null,

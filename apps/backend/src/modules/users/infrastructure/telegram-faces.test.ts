@@ -6,13 +6,14 @@ import { telegramFaces } from './telegram-faces';
 
 // A refused face is told in the bot of the person's role (G58): a driver may never have opened the
 // passenger bot.
-function notifier() {
+function notifier(applicants: readonly number[] = []) {
   const sent: NotificationJob[] = [];
   const faces = telegramFaces({
     fetch: vi.fn(),
     brand: loadBrand(),
     adminToken: undefined,
     recipients: async () => [],
+    applicant: async (userId) => applicants.includes(userId),
     avatars: { get: async () => undefined, put: async () => undefined, delete: async () => undefined },
     send: async (jobs) => void sent.push(...jobs),
     queue: async () => undefined,
@@ -20,7 +21,7 @@ function notifier() {
   });
   return { faces, sent };
 }
-const person = (isDriver: boolean) => ({ id: 7, isDriver }) as User;
+const person = (isDriver: boolean, id = 7) => ({ id, isDriver }) as User;
 
 describe('telegramFaces.rejected (G58)', () => {
   it('tells a passenger in the passenger bot and a driver in the driver bot', async () => {
@@ -29,5 +30,12 @@ describe('telegramFaces.rejected (G58)', () => {
     await faces.rejected(person(true), 'not_one_person');
     expect(sent.map((job) => job.bot)).toEqual(['passenger', 'driver']);
     expect(JSON.stringify(sent[1])).toContain('?profile=photo');
+  });
+
+  // G89 M7: an applicant, or a driver whose new photo is checked again, lives in the driver bot.
+  it('tells a driver applicant in the driver bot', async () => {
+    const { faces, sent } = notifier([8]);
+    await faces.rejected(person(false, 8), 'face_not_visible');
+    expect(sent.map((job) => job.bot)).toEqual(['driver']);
   });
 });

@@ -31,6 +31,8 @@ export function people(deps: UsersDeps) {
     },
     // The Telegram ID behind a public id from a path; undefined: no such person (docs/65 A3).
     idOf: async (publicId: string) => (await deps.users.byPublicId(publicId))?.id,
+    // A driver hears the team from the driver bot, a passenger from the passenger bot (G89 A6).
+    isDriver: async (id: number) => (await deps.users.find(id))?.isDriver === true,
     // Only an approved driver may publish trips (docs/04).
     setDriver: (id: number, isDriver: boolean) => update(id, { isDriver }),
     // The team approved a driver application: the face in it is approved too (docs/04, G51).

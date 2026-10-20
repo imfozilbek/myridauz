@@ -20,7 +20,7 @@ import { wireChatRings } from './modules/chat';
 import { hiddenByComplaints, wireComplaints } from './modules/complaints';
 import { assignTo } from './modules/assignments';
 import { inviteFromMark, tripViewCounts } from './modules/channels';
-import { approvedCar, wireLiveTrips } from './modules/drivers';
+import { appliedAsDriver, approvedCar, wireLiveTrips } from './modules/drivers';
 import { wireFavorites } from './modules/favorites';
 import {
   handleRequestChanged,
@@ -40,7 +40,7 @@ import {
   upcomingTripsOf,
   wireTripStanding,
 } from './modules/trips';
-import { peopleOf, wireFaceTeam, wireRegistered, wireRiding } from './modules/users';
+import { peopleOf, wireApplicants, wireFaceTeam, wireRegistered, wireRiding } from './modules/users';
 import { refundNoShow, wireWalletLinks } from './modules/wallet';
 
 // What one module does after another: set here, the one place that knows every module, so the
@@ -50,6 +50,7 @@ export { closeDepartedPosts, sendChannelSummaries, showChannelBoards } from './t
 // A new face goes to the member who gets the person's application that day (docs/92, G51); a new
 // person who came by a channel post hears of the channel of that zone (docs/119).
 wireFaceTeam((env, userId) => assignTo(env, 'application', userId));
+wireApplicants(appliedAsDriver);
 wireRegistered((env) => (userId, came) => inviteFromMark(env, userId, came?.via));
 
 // A message or a call about a seat rings under its trip card in the bot (G68, docs/122 rule 5).

@@ -36,6 +36,9 @@ export const wireRegistered = (next: (env: Bindings) => Registered) => void (reg
 type RidingOf = (env: Bindings, userId: number) => Promise<boolean>;
 let ridingOf: RidingOf = async () => false;
 export const wireRiding = (next: RidingOf) => void (ridingOf = next);
+// A driver applicant hears about the face in the driver bot (G89 M7).
+let applicantOf: RidingOf = async () => false;
+export const wireApplicants = (next: RidingOf) => void (applicantOf = next);
 
 const avatarsOf = (env: Bindings) => (env.MEDIA ? r2Images(env.MEDIA) : localAvatars);
 // Without D1 (tests and the stand) the names stay in memory.
@@ -56,6 +59,7 @@ const usersDeps = (env: Bindings): UsersDeps => ({
     brand: brandOf(env),
     adminToken: env.ADMIN_BOT_TOKEN,
     recipients: (userId) => faceTeam(env, userId),
+    applicant: (userId) => applicantOf(env, userId),
     avatars: avatarsOf(env),
     send: (jobs) => notify(env, jobs),
     queue: (news) => showQueue(env, news),
