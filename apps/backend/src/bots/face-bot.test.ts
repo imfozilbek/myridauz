@@ -1,6 +1,7 @@
 import { afterAll, describe, expect, it, vi } from 'vitest';
+import { peopleOf } from '../modules/users';
 import { call, registerUser } from '../test-api';
-import { botSender, fakeTelegram } from './test-bot';
+import { botEnv, botSender, fakeTelegram } from './test-bot';
 
 const telegram = fakeTelegram();
 vi.stubGlobal('fetch', telegram.fetch);
@@ -41,6 +42,14 @@ describe('admin bot: the card of a new face photo (docs/120, G51)', () => {
   it('approves a new photo with «Rasm mos»', async () => {
     await call('/me/avatar', PERSON, photo);
     expect((await reply(await send('admin', press(`face:${PERSON}:ok`)))).text).toBe('Tasdiqlandi');
+  });
+
+  // G89 M10: a blocked member of the team decides nothing from the buttons of the bot.
+  it('ignores the buttons of a blocked member of the team', async () => {
+    await call('/me/avatar', PERSON, photo);
+    await registerUser(8);
+    await peopleOf(botEnv as never).block(8, null, { by: OWNER, reason: 'admin' });
+    expect((await reply(await send('admin', press(`face:${PERSON}:ok`, 8)))).text).toBeUndefined();
   });
 
   it('ignores broken buttons and strangers', async () => {

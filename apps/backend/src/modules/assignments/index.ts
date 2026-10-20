@@ -6,7 +6,7 @@ import { adminIds } from '../../shared/telegram/bot-config';
 import { notify } from '../notifications';
 import { teamMembers } from '../team';
 import { caseName, showQueue, tellOwners } from '../team-queue';
-import { blockOf, peopleOf } from '../users';
+import { blockOf, isBlocked, peopleOf } from '../users';
 import { assign } from './application/assign';
 import { steadyOperator } from './domain/operator';
 import { sendDigest, type DigestDeps } from './application/digest';
@@ -28,7 +28,12 @@ const storeOf = (env: Bindings) => (env.DB ? d1Assignments(env.DB) : localAssign
 
 const deps = (env: Bindings, sources: Sources = NO_SOURCES): DigestDeps => ({
   store: storeOf(env),
-  teamIds: async () => (await teamMembers(env)).map((member) => member.id),
+  // A blocked member gets no new cases (G89 M10).
+  teamIds: async () => {
+    const ids = (await teamMembers(env)).map((member) => member.id);
+    const blocked = await Promise.all(ids.map((id) => isBlocked(env, id)));
+    return ids.filter((_, index) => !blocked[index]);
+  },
   now: Date.now,
   random: Math.random,
   ...sources,
