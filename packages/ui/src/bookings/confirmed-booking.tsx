@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
-import { canComplain } from '../feedback/complain-cell';
+import { useCanComplain } from '../feedback/complain-cell';
 import { CoRiders } from './co-riders';
 import { Icon, type IconName } from '../icons';
 import { Screen } from '../screen/screen';
@@ -47,6 +47,7 @@ export function ConfirmedBooking(props: Props) {
   useScreenBackground();
   const { t, formatRating } = useI18n();
   const callsOn = useCallsOn();
+  const canComplain = useCanComplain();
   const { driver } = booking.trip;
   const brand = useBrand();
   const { colors } = brand.theme;
@@ -119,7 +120,7 @@ export function ConfirmedBooking(props: Props) {
             />
           ) : null}
           <div className="booking-links">
-            {canComplain(booking.status) ? (
+            {canComplain(booking) ? (
               <button type="button" className="booking-link" onClick={() => onOpen('complaint')}>
                 {t('complaints.title')}
               </button>

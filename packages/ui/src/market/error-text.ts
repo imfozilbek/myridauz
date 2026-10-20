@@ -65,6 +65,9 @@ const EXPLAINED: readonly string[] = [
   'trips.no_pitak',
   // The answer of the team from the admin app did not reach the person (G75).
   'support.not_sent',
+  // G89 U1: codes with a text that the screens did not show.
+  'complaints.too_late',
+  'users.face_decided',
 ];
 
 // Codes that mean the same for a person as an explained one.
