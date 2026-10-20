@@ -54,3 +54,24 @@ describe('the seat of a passenger', () => {
     expect(screen.getByText('Joy soʻraldi')).toBeTruthy();
   });
 });
+
+// G90 DRV-6: the server keeps a seat that rode or was missed, and every seat once the car left
+// (docs/35); the page offers no «Bekor qilish» it would refuse.
+describe('a seat the driver cannot cancel any more', () => {
+  it('has no «Joyni bekor qilish» after «Keldi», «Kelmadi» or the departure', async () => {
+    const { departAt } = confirmed.trip;
+    open(confirmed);
+    expect(await screen.findByText('Joyni bekor qilish')).toBeTruthy();
+    cleanup();
+    for (const seat of [
+      { ...confirmed, metAt: departAt - 60_000 },
+      { ...confirmed, noShowAt: departAt - 60_000 },
+      { ...confirmed, trip: { ...confirmed.trip, departedAt: departAt } },
+    ]) {
+      open(seat);
+      expect(await screen.findByText('Dilnoza')).toBeTruthy();
+      expect(screen.queryByText('Joyni bekor qilish')).toBeNull();
+      cleanup();
+    }
+  });
+});
