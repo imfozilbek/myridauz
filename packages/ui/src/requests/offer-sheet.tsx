@@ -52,7 +52,8 @@ function OfferForm({
   const day = useRequestDay();
   const ends = useEnds()(request);
   const when = useOfferTime(request);
-  const bounds = useLoad(() => market.recommend(request.from, request.to)).value;
+  const recommended = useLoad(() => market.recommend(request.from, request.to));
+  const bounds = recommended.value;
   const { failure, fail, clear } = useFailure();
   const [asked, setAsked] = useState(() => draftOf('price', request.id) ?? request.price);
   const price = bounds ? Math.min(bounds.maxPrice, Math.max(bounds.minPrice, asked)) : asked;
@@ -99,6 +100,13 @@ function OfferForm({
       </div>
       <ActionFailure error={failure} />
       {when?.departAt && bounds ? <MainButton text={t('bookings.offer.send')} onClick={send} /> : null}
+      {/* The bounds of the price did not come: the reason and a new try, never an empty sheet (G89 U15). */}
+      {recommended.failed ? (
+        <>
+          <ActionFailure error="errors.generic.description" />
+          <MainButton text={t('common.retry')} onClick={recommended.reload} />
+        </>
+      ) : null}
     </>
   );
 }
