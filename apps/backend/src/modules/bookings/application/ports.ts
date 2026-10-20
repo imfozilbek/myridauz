@@ -26,6 +26,8 @@ export type BookingRepository = MarkStore & {
   replace(booking: BookingRecord, expected: BookingRecord['status']): Promise<boolean>;
   // Confirms only if the seats still fit: two confirms cannot both take the last seat (docs/65 A4).
   confirmWithin(booking: BookingRecord, tripSeats: number): Promise<boolean>;
+  // An accept that failed leaves no seat the passenger never asked for (G89 B18): a request only.
+  discard(id: string): Promise<void>;
   // «Men keldim» or «Yetib keldim» of the passenger, once, on a seat still confirmed (G89 B9).
   markStep(id: string, step: 'came' | 'arrived', now: number): Promise<boolean>;
   find(id: string): Promise<BookingRecord | undefined>;

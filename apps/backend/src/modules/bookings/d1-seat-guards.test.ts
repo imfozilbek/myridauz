@@ -90,4 +90,15 @@ describe('the guards of a seat in D1 (G89)', () => {
     expect((await bookings.cancelledSince(NOW - 5)).map((found) => found.id)).toEqual(['b1']);
     expect(fullScans(db)).toEqual([]);
   });
+
+  // G89 B18: a failed accept takes its request away; a confirmed seat is never discarded.
+  it('discards a request only', async () => {
+    const bookings = d1Bookings(db);
+    await bookings.save(seat());
+    await bookings.save(seat({ id: 'b2', status: 'confirmed', confirmedAt: NOW }));
+    await bookings.discard('b1');
+    await bookings.discard('b2');
+    expect(await bookings.find('b1')).toBeUndefined();
+    expect((await bookings.find('b2'))?.status).toBe('confirmed');
+  });
 });

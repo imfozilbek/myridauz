@@ -23,13 +23,15 @@ export async function acceptOnTrip(
     return { ok: false, error: 'wallet.not_enough' };
   await deps.bookings.save({ ...booking, status: 'requested', confirmedAt: null });
   if (!(await deps.bookings.confirmWithin(booking, trip.seats))) {
-    await deps.bookings.save({ ...booking, status: 'expired', confirmedAt: null });
+    await deps.bookings.discard(booking.id);
     return { ok: false, error: 'bookings.no_seats' };
   }
   const charged = await chargeSeat(deps, offer.driverId, booking);
   if (charged === 'gone') return { ok: false, error: 'bookings.wrong_status' };
   if (charged === 'not_enough') {
-    await deps.bookings.save({ ...booking, status: 'expired' });
+    // The seat goes back and the row with it: the passenger never asked for it (G89 B18).
+    await deps.bookings.save({ ...booking, status: 'requested', confirmedAt: null });
+    await deps.bookings.discard(booking.id);
     return { ok: false, error: 'wallet.not_enough' };
   }
   if (trip.private) await deps.trips.release(tripId);

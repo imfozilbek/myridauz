@@ -70,6 +70,9 @@ export function createMemoryBookings(): BookingRepository {
       for (const booking of list())
         if (ids.includes(booking.id)) rows.set(booking.id, withoutPoints(booking));
     },
+    discard: async (id) => {
+      if (rows.get(id)?.status === 'requested') rows.delete(id);
+    },
     erasePointsOf: async (passengerId) => {
       for (const booking of list())
         if (booking.passengerId === passengerId) rows.set(booking.id, withoutPoints(booking));

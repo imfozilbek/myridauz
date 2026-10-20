@@ -99,3 +99,22 @@ describe('a salon trip from a request (G64)', () => {
     expect(notes).toContain(`trip opened ${tripId}`);
   });
 });
+
+// G89 B18: an accept that failed leaves the passenger no seat they never asked for.
+describe('an offer on a trip that became full', () => {
+  it('refuses the accept and leaves no booking behind', async () => {
+    const { deps, addTrip, addRequest, bonus } = setup();
+    await bonus();
+    const tripId = addTrip({ departAt: ON_THE_DAY, seats: 2 });
+    const sent = await sendOffer(deps, DRIVER, addRequest(), { departAt: 0, price: 1, tripId });
+    if (!sent.ok) throw new Error(sent.error);
+    const other = await requestBooking(deps, ALI, tripId, seats(2));
+    if (!other.ok) throw new Error(other.error);
+    await confirm(deps, DRIVER, other.value.id);
+    expect(await acceptOffer(deps, DILNOZA, sent.value.id)).toEqual({
+      ok: false,
+      error: 'bookings.no_seats',
+    });
+    expect(await passengerBookings(deps, DILNOZA)).toEqual([]);
+  });
+});

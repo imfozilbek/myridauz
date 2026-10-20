@@ -102,6 +102,9 @@ export const d1Bookings = (db: D1Database): BookingRepository => ({
   erasePoints: async (ids) => {
     await allIn(db, (list) => `UPDATE bookings SET ${NO_POINTS} WHERE id IN (${list})`, ids);
   },
+  discard: async (id) => {
+    await db.prepare("DELETE FROM bookings WHERE id = ? AND status = 'requested'").bind(id).run();
+  },
   erasePointsOf: async (passengerId) => {
     await db.prepare(`UPDATE bookings SET ${NO_POINTS} WHERE passenger_id = ?`).bind(passengerId).run();
   },
