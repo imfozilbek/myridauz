@@ -1,3 +1,4 @@
+import { HOUR_MS as HOUR } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { closeDeparted, closePosts, postTrip, refreshPosts, rememberPost } from './application/channels';
 import { channelsOf } from './domain/route-channels';
@@ -119,5 +120,19 @@ describe('posting and editing through the queue (docs/15)', () => {
     later(TRIP.departAt);
     await closeDeparted(deps);
     expect(sent).toHaveLength(1);
+  });
+
+  // G89 T1: the driver moved the trip an hour later; the old time closes nothing.
+  it('closes the posts of a moved trip at its new time', async () => {
+    const { deps, sent, change, later } = setup();
+    await rememberPost(deps, { tripId: 'trip-1', channel: '@ch_samarqand', messageId: 7 }, 'active 3 true');
+    change({ departAt: TRIP.departAt + HOUR });
+    later(TRIP.departAt + 1);
+    await closeDeparted(deps);
+    expect(sent).toEqual([]);
+    later(TRIP.departAt + HOUR);
+    await closeDeparted(deps);
+    expect(sent).toHaveLength(1);
+    expect(sent[0]?.text.startsWith('<b>🚗 Yoʻlga chiqdi</b>')).toBe(true);
   });
 });

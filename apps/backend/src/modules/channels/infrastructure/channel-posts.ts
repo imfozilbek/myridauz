@@ -29,9 +29,12 @@ export const d1ChannelPosts = (db: D1Database): ChannelPostStore => ({
   close: async (tripId) => {
     await db.prepare('UPDATE channel_posts SET closed = 1 WHERE trip_id = ?').bind(tripId).run();
   },
+  moveTo: async (tripId, departAt) => {
+    await db.prepare('UPDATE channel_posts SET depart_at = ? WHERE trip_id = ?').bind(departAt, tripId).run();
+  },
 });
 
-type Kept = ChannelPost & { readonly departAt: number; closed: boolean };
+type Kept = ChannelPost & { departAt: number; closed: boolean };
 
 // In memory: tests and local runs without D1.
 export function createMemoryChannelPosts(): ChannelPostStore {
@@ -51,6 +54,9 @@ export function createMemoryChannelPosts(): ChannelPostStore {
     ],
     close: async (tripId) => {
       for (const post of posts) if (post.tripId === tripId) post.closed = true;
+    },
+    moveTo: async (tripId, departAt) => {
+      for (const post of posts) if (post.tripId === tripId) post.departAt = departAt;
     },
   };
 }

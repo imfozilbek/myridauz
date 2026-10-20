@@ -10,6 +10,8 @@ export type ChannelPostStore = {
   // Trips that left by now while their posts still offer seats; closed ones once edited.
   departed(now: number): Promise<string[]>;
   close(tripId: string): Promise<void>;
+  // The driver moved the time of the trip later: its posts close at the new time (G89 T1).
+  moveTo(tripId: string, departAt: number): Promise<void>;
 };
 
 type Place = { readonly name: string; readonly parentId: string | null };
