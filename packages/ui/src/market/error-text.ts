@@ -79,6 +79,8 @@ const EXPLAINED: readonly string[] = [
   'users.not_found',
   'reviews.not_found',
   'drivers.not_found',
+  // G90 text 4: a second request of a passenger (PAS-2).
+  'trips.request_open',
 ];
 
 // Codes that mean the same for a person as an explained one.

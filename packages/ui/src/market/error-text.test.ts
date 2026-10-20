@@ -28,6 +28,7 @@ const G27_CODES = [
   'users.not_found',
   'reviews.not_found',
   'drivers.not_found',
+  'trips.request_open',
 ] as const;
 
 describe('errorKey (docs/83 N04)', () => {

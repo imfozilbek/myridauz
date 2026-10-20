@@ -31,7 +31,8 @@ test('P11, A13. a request inside one city is refused; one open request (docs/172
   const days = [1, 2].map((day) => tashkentDate(Date.now() + day * 24 * HOUR));
   const answers = [];
   for (const date of days) answers.push(await outcome(askRide(NARGIZA, date)));
-  expect(answers).toEqual(['ok', 'trips.too_many']);
+  // The second one hears the passenger's own reason (G90 PAS-2).
+  expect(answers).toEqual(['ok', 'trips.request_open']);
 });
 
 test('V02. a seat asked 10 minutes before the departure waits only until the departure', async () => {

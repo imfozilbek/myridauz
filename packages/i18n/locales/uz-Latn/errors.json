@@ -68,5 +68,6 @@
   "trips.not_found": "Bu safar endi yoʻq.",
   "users.not_found": "Odam topilmadi.",
   "reviews.not_found": "Bu safarni baholab boʻlmaydi.",
-  "drivers.not_found": "Bu ariza endi yoʻq."
+  "drivers.not_found": "Bu ariza endi yoʻq.",
+  "trips.request_open": "Sizda ochiq soʻrov bor. Yangisini qoldirish uchun avval uni bekor qiling."
 }
