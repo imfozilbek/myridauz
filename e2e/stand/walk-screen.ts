@@ -121,10 +121,13 @@ export async function tap(page: Page, target: Target): Promise<boolean> {
     .evaluate((el) =>
       el instanceof HTMLTextAreaElement ||
       (el instanceof HTMLInputElement && !['checkbox', 'radio'].includes(el.type))
-        ? el.type
+        ? { type: el.type, value: el.value }
         : null,
     )
     .catch(() => null);
-  const done = field ? element.fill(TYPED[field] ?? 'Salom') : element.click({ timeout: 3_000 });
+  // A field typed before keeps its words (a draft): the robot types other ones, a change to see.
+  const words = field && (TYPED[field.type] ?? 'Salom');
+  const typed = words && field?.value === words ? `${words}1` : words;
+  const done = typed ? element.fill(typed) : element.click({ timeout: 3_000 });
   return done.then(() => true).catch(() => false);
 }

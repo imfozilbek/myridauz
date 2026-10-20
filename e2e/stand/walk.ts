@@ -10,7 +10,7 @@ import type { Finding, FindingKind, WalkReport } from './walk-types';
 // reaches, as a person may, and writes down where a person gets stuck (the kinds: walk-types.ts).
 const { t } = createI18n(DEFAULT_LOCALE);
 // A walk of one person stops after this: the stand runs several people in one file.
-const LIMITS = { depth: 7, taps: 400, perScreen: 30, ms: 10 * 60 * 1000 };
+const LIMITS = { depth: 12, taps: 400, perScreen: 30, ms: 8 * 60 * 1000 };
 // No path of the apps is deeper than this: «Назад» so many times always reaches the main screen.
 const MOST_BACKS = 8;
 
@@ -89,6 +89,7 @@ export async function walk(
     seen.add(state.key);
     judge(path, state);
     if (path.length >= limits.depth) return;
+    const kept: Target[] = [];
     for (const target of order(state).slice(0, limits.perScreen)) {
       if (taps >= limits.taps || Date.now() > until) return;
       if (!(await reach(path, state, target))) {
@@ -115,9 +116,12 @@ export async function walk(
         );
       const same = after.key === now.key && after.text === now.text;
       const quiet = calls.length === 0 && (await effects.telegram()) === before.telegram;
-      if (same && quiet && (await marksOf(page)) === before.marks)
-        add('dead_tap', state, [...path, target], 'nothing changed');
-      if (after.key !== state.key) await visit([...path, target], after);
+      const marked = (await marksOf(page)) !== before.marks;
+      if (same && quiet && !marked) add('dead_tap', state, [...path, target], 'nothing changed');
+      // Ticks and typed words stay on the screen: the next screen comes after all of them (two
+      // consents, then «Davom etish»), so its path holds them too.
+      if (after.key === state.key && (marked || !same)) kept.push(target);
+      if (after.key !== state.key) await visit([...path, ...kept, target], after);
     }
   };
 
