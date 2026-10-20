@@ -2,6 +2,7 @@ import { DAY_MS, type TripInput } from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
 import { openTrip, publishPrivateTrip, releaseTrip } from './application/private-trip';
+import { completeOverTrips } from './application/progress';
 import { publishOfferTrip, type Input } from './application/publish';
 import { realPrices } from './application/prices';
 import { regionTrips } from './application/trip-counts';
@@ -25,10 +26,7 @@ export const tripsModule = new Hono<AppEnv>()
   .route('/', progressRoutes(tripsDeps));
 
 // The Cron job (docs/35): trips over by now become completed, and their live cards say so (G68).
-export const completeTrips = async (env: Bindings, now: number) => {
-  const deps = tripsDeps(env);
-  for (const id of await deps.trips.completeOver(now)) await deps.changed(id, 'completed');
-};
+export const completeTrips = (env: Bindings, now: number) => completeOverTrips(tripsDeps(env), now);
 
 // For bookings (G08): the facts of a trip, the views, a trip from an accepted offer, a cancel.
 export const tripFacts = async (env: Bindings, id: string) => {
