@@ -1,9 +1,10 @@
 import { loadBrand } from '@platform/brands';
-import { arrivalAt } from '@platform/contracts';
+import { arrivalAt, DAY_MS, tashkentDayStart } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { chatMember } from './application/chat-member';
+import { openTalk } from './application/talks';
 import { NO_MARKS, type BookingRecord } from './domain/booking';
-import { DILNOZA, HOUR, NOW, setup } from './test-kit';
+import { DILNOZA, DRIVER, HOUR, NOW, setup } from './test-kit';
 
 const KM = 300;
 const TALK_HOURS = loadBrand().chat.afterTripHours;
@@ -67,5 +68,41 @@ describe('chat and call 24 hours after the trip (docs/129, G60)', () => {
   it('a cancelled seat may still read and write, never call', async () => {
     const { member } = await ride('cancelled_by_driver');
     expect(await member()).toMatchObject({ canCall: false, canWrite: true });
+  });
+
+  // G89 B11 (owner decision 20.10.2026): a seat that will not ride keeps the chat a day more, as
+  // after a ride, then read only: the pair does not move past Rida (docs/83 N26).
+  it.each(['cancelled_by_driver', 'cancelled_by_passenger', 'declined', 'expired'] as const)(
+    'a %s seat writes 24 hours from its end, then reads only',
+    async (status) => {
+      const { kit, member } = await ride(status);
+      kit.setNow(NOW + (TALK_HOURS - 1) * HOUR);
+      expect(await member()).toMatchObject({ canCall: false, canWrite: true });
+      kit.setNow(NOW + TALK_HOURS * HOUR);
+      expect(await member()).toMatchObject({ canCall: false, canWrite: false });
+    },
+  );
+
+  it('a waiting seat that burned writes 24 hours from the time to answer', async () => {
+    const { kit, member } = await ride('requested');
+    kit.setNow(NOW + (TALK_HOURS - 1) * HOUR);
+    expect(await member()).toMatchObject({ canWrite: true });
+    kit.setNow(NOW + TALK_HOURS * HOUR);
+    expect(await member()).toMatchObject({ canWrite: false });
+  });
+
+  it('a talk whose request closed writes until a day after the day of the request', async () => {
+    const kit = setup();
+    const requestId = kit.addRequest();
+    const opened = await openTalk(kit.deps, DRIVER, requestId);
+    if (!opened.ok) throw new Error(opened.error);
+    const member = () => chatMember(kit.deps, opened.value.chatKey, DILNOZA);
+    kit.close(requestId);
+    // The request is of 2026-10-02: its day ends at the start of 2026-10-03 in Tashkent.
+    const closes = tashkentDayStart('2026-10-02') + DAY_MS + TALK_HOURS * HOUR;
+    kit.setNow(closes - HOUR);
+    expect(await member()).toMatchObject({ canWrite: true });
+    kit.setNow(closes);
+    expect(await member()).toMatchObject({ canWrite: false });
   });
 });
