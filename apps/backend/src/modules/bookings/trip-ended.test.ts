@@ -8,7 +8,7 @@ import { cancelByPassenger, requestBooking } from './application/request';
 import { settleBookings } from './application/settle';
 import { cancelTripByTeam } from './application/team-cancel';
 import { booked, DEPART, MEETING } from './test-booked';
-import { DILNOZA, DRIVER, HOUR, seats, setup } from './test-kit';
+import { ALI, DILNOZA, DRIVER, HOUR, seats, setup } from './test-kit';
 
 const idOf = (result: { ok: boolean; value?: { id: string } }) =>
   result.ok && result.value ? result.value.id : '';
@@ -88,5 +88,19 @@ describe('the hourly repair of seats and money (G89 T2, M6)', () => {
     await settleBookings(deps);
     await settleBookings(deps);
     expect(balanceOf(await wallet(), 'bonus')).toBe(500_000);
+  });
+});
+
+// G89 B3: a request the full car can no longer take ends at once; the passenger is free to book on.
+describe('a trip that became full', () => {
+  it('says no at once to the requests that no longer fit', async () => {
+    const { deps, addTrip, bonus, notes } = setup();
+    await bonus();
+    const tripId = addTrip({ seats: 2 });
+    const big = idOf(await requestBooking(deps, DILNOZA, tripId, seats(2)));
+    const small = idOf(await requestBooking(deps, ALI, tripId, seats(1)));
+    expect((await confirm(deps, DRIVER, big)).ok).toBe(true);
+    expect((await deps.bookings.find(small))?.status).toBe('declined');
+    expect(notes).toContain('passenger: declined');
   });
 });

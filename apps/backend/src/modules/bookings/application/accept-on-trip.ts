@@ -1,7 +1,9 @@
 import { onTheWay, type Offer } from '@platform/contracts';
 import type { OfferRecord } from '../domain/offer';
 import { acceptedWith, offerBooking, type AcceptError } from './accept-steps';
+import { answer } from './answer';
 import { chargeSeat } from './charge-seat';
+import { declineCrowdedOut } from './crowded-out';
 import type { BookingsDeps, Result } from './ports';
 import type { RequestFacts } from './request-facts';
 
@@ -31,5 +33,7 @@ export async function acceptOnTrip(
     return { ok: false, error: 'wallet.not_enough' };
   }
   if (trip.private) await deps.trips.release(tripId);
+  const decline = (other: string) => answer(deps, offer.driverId, other, 'decline');
+  await declineCrowdedOut(deps, tripId, trip.seats, decline);
   return acceptedWith(deps, offer, request, booking);
 }

@@ -1,6 +1,7 @@
 import { onTheWay, type Booking } from '@platform/contracts';
 import { move, statusAt, type BookingAction, type BookingRecord } from '../domain/booking';
 import { chargeSeat } from './charge-seat';
+import { declineCrowdedOut } from './crowded-out';
 import { watchPairCancels } from './pair-cancels';
 import type { BookingsDeps, Result } from './ports';
 import { bookingViews } from './views';
@@ -51,6 +52,7 @@ export async function confirm(
   }
   const [forPassenger] = await bookingViews(deps, [next], 'passenger');
   if (forPassenger) await deps.notify.confirmed(forPassenger);
+  await declineCrowdedOut(deps, facts.id, facts.seats, (other) => answer(deps, driverId, other, 'decline'));
   return driverView(deps, next);
 }
 
