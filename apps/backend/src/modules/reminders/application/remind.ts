@@ -21,6 +21,8 @@ export type RemindersDeps = {
   readonly bookings: (tripIds: readonly string[]) => Promise<readonly Booking[]>;
   // True the first time a key is seen: each reminder goes once.
   readonly first: (key: string) => Promise<boolean>;
+  // The keys of reminders the queue refused go: the next run holds them again (G89).
+  readonly forget: (keys: readonly string[]) => Promise<void>;
   // Holds the reminders until their moments.
   readonly schedule: (
     reminders: readonly { readonly reminder: Reminder; readonly at: number }[],
@@ -46,20 +48,28 @@ export async function remindTrips(deps: RemindersDeps): Promise<void> {
   if (due.length === 0) return;
   const bookings = await deps.bookings(due.map(({ trip }) => trip.id));
   const held: { reminder: Reminder; at: number }[] = [];
+  const keys: string[] = [];
+  const claim = async (key: string) => (await deps.first(key)) && keys.push(key) > 0;
   for (const { trip, kind, at } of due) {
     const riders = bookings.filter((booking) => booking.trip.id === trip.id);
     if (riders.length === 0) continue;
     const base = { kind, tripId: trip.id, departAt: trip.departAt };
     for (const booking of riders)
-      if (await deps.first(`${booking.id}:${kind}`))
+      if (await claim(`${booking.id}:${kind}`))
         held.push({ reminder: { ...base, bookingId: booking.id }, at });
-    if (await deps.first(`${trip.id}:${kind}:driver`)) held.push({ reminder: base, at });
+    if (await claim(`${trip.id}:${kind}:driver`)) held.push({ reminder: base, at });
   }
   if (held.length === 0) return;
   // Many reminders of one moment (08:00, a round hour) go a few a second, not all at once (G85 T6).
   const sorted = [...held].sort((one, other) => one.at - other.at);
   const moments = spreadMoments(sorted.map(({ at }) => at));
-  await deps.schedule(sorted.map((item, index) => ({ ...item, at: moments[index] ?? item.at })));
+  try {
+    await deps.schedule(sorted.map((item, index) => ({ ...item, at: moments[index] ?? item.at })));
+  } catch (error) {
+    // The queue refused: the reminders are not lost, the next run holds them again (G89).
+    await deps.forget(keys);
+    throw error;
+  }
 }
 
 // The statuses of a trip that still goes.

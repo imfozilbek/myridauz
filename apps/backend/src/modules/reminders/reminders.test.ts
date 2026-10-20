@@ -4,12 +4,8 @@ import { remindTrips, tellReminder, type Reminder, type RemindersDeps } from './
 import { reminderAt, spreadMoments } from './domain/due';
 import { createMemoryFirst } from './infrastructure/reminder-store';
 import { reminderOf, reminderTask } from './infrastructure/reminder-task';
-import { publicIdOf } from '../../test-people';
+import { booking, HOUR, MINUTE, MORNING, trip } from './reminders-test-kit';
 
-const HOUR = 3_600_000;
-const MINUTE = 60_000;
-// 2026-10-01 10:00 in Tashkent: day time.
-const MORNING = Date.parse('2026-10-01T05:00:00Z');
 // 2026-10-01 23:30 in Tashkent: night.
 const NIGHT = Date.parse('2026-10-01T18:30:00Z');
 // 2026-10-02 08:00 in Tashkent: the day time after that night.
@@ -33,19 +29,17 @@ describe('the moment a trip is reminded (G10, G85 R3)', () => {
   });
 });
 
-const trip = (id: string, departAt: number) => ({ id, departAt, driver: { id: publicIdOf(1) } }) as Trip;
-const booking = (id: string, tripId: string) =>
-  ({ id, seats: 1, trip: { id: tripId }, passenger: { id: publicIdOf(50) } }) as Booking;
-
 describe('holding reminders until their moment, once (G10, G85 R3)', () => {
   it('holds the reminders of the next 15 minutes for each passenger and the driver', async () => {
     let now = MORNING;
     const held: string[] = [];
     const departAt = MORNING + 24 * HOUR + 10 * MINUTE;
+    const first = createMemoryFirst();
     const deps: RemindersDeps = {
       trips: async () => [trip('t1', departAt), trip('t2', departAt)],
       bookings: async () => [booking('b1', 't1'), booking('b2', 't1')],
-      first: createMemoryFirst(),
+      first,
+      forget: first.forget,
       schedule: async (items) =>
         void held.push(
           ...items.map(
