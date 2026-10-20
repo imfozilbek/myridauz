@@ -8,7 +8,7 @@ const SPECS = readdirSync('e2e/stand')
 const ALL = Object.keys(AREAS);
 
 describe('the pieces of the stand (G71)', () => {
-  it('has the eight themes of the goal and the map', () => {
+  it('has the eight themes of the goal, the map and the walk', () => {
     expect(ALL).toEqual([
       'registration',
       'search',
@@ -19,6 +19,7 @@ describe('the pieces of the stand (G71)', () => {
       'team',
       'bots',
       'channels',
+      'walk',
     ]);
   });
 

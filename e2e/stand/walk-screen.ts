@@ -1,0 +1,125 @@
+import type { Page } from '@playwright/test';
+import { telegramEvents } from '../telegram-mock';
+
+// What the walk of the screens (G90) reads from a screen: the way out, the buttons, the words.
+// A tap target is any element a person can press: buttons, links, rows with role=button, switches.
+export type Target = { readonly label: string; readonly nth: number };
+export type ScreenState = {
+  readonly key: string;
+  readonly back: boolean;
+  readonly main: string | null;
+  readonly second: string | null;
+  readonly targets: readonly Target[];
+  readonly text: string;
+  readonly heading: string;
+  // The main screen of the app: no «Назад» there, Android «Назад» closes the app (docs/94).
+  readonly home: boolean;
+};
+
+const TAPPABLE = [
+  'button',
+  'a[href]',
+  'select',
+  'summary',
+  'input[type=checkbox]',
+  'input[type=radio]',
+  ...['button', 'link', 'tab', 'switch', 'checkbox', 'radio', 'option', 'menuitem'].map((r) => `[role=${r}]`),
+].join(',');
+// The two buttons of Telegram are drawn by the mock outside the page (e2e/telegram-mock.ts).
+const NATIVE = ['tg-main-button', 'tg-secondary-button'];
+
+// Numbers, times and prices change from one open to the next: the key of a screen does not hold them.
+const shape = (words: string) => words.replace(/\d+/gu, '#').replace(/\s+/gu, ' ').trim();
+
+// The tap targets of the screen in the order a person sees them, each marked for the next tap.
+async function readTargets(page: Page): Promise<{ label: string }[]> {
+  return page.evaluate(
+    ({ tappable, native }) => {
+      const seen = (el: HTMLElement) => {
+        const box = el.getBoundingClientRect();
+        if (box.width < 2 || box.height < 2) return false;
+        return getComputedStyle(el).visibility !== 'hidden' && el.checkVisibility({ opacityProperty: true });
+      };
+      const off = (el: HTMLElement) =>
+        el.hasAttribute('disabled') || el.getAttribute('aria-disabled') === 'true';
+      // A button inside a button is one target: the outer one.
+      const inner = (el: HTMLElement) => el.parentElement?.closest(tappable) !== null;
+      const found = [...document.querySelectorAll<HTMLElement>(tappable)].filter(
+        (el) => !native.includes(el.id) && seen(el) && !off(el) && !inner(el),
+      );
+      return found.map((el, index) => {
+        el.dataset['walk'] = String(index);
+        const words = el.getAttribute('aria-label') ?? el.innerText ?? el.title;
+        return { label: (words.split('\n')[0] ?? '').trim().slice(0, 60) || el.tagName.toLowerCase() };
+      });
+    },
+    { tappable: TAPPABLE, native: NATIVE },
+  );
+}
+
+const nativeText = (page: Page, id: string) =>
+  page.evaluate((name) => {
+    const button = document.getElementById(name) as HTMLButtonElement | null;
+    if (!button || button.style.display !== 'block' || button.disabled) return null;
+    return button.textContent ?? '';
+  }, id);
+
+async function backShown(page: Page): Promise<boolean> {
+  const setups = await telegramEvents(page, 'web_app_setup_back_button');
+  return setups.at(-1)?.['is_visible'] === true;
+}
+
+export async function readScreen(page: Page): Promise<ScreenState> {
+  const raw = await readTargets(page);
+  const count = new Map<string, number>();
+  const targets = raw.map(({ label }) => {
+    const nth = count.get(label) ?? 0;
+    count.set(label, nth + 1);
+    return { label, nth };
+  });
+  const [back, main, second] = await Promise.all([
+    backShown(page),
+    nativeText(page, 'tg-main-button'),
+    nativeText(page, 'tg-secondary-button'),
+  ]);
+  const { text, heading, home } = await page.evaluate(() => ({
+    text: document.body.innerText,
+    heading: document.querySelector('h1, h2, [role=heading]')?.textContent ?? '',
+    home: document.querySelector('.home')?.checkVisibility() === true,
+  }));
+  const labels = [...new Set(targets.map((target) => shape(target.label)))].sort();
+  const key = JSON.stringify([back, main && shape(main), second && shape(second), shape(heading), labels]);
+  return { key, back, main, second, targets, text, heading: heading.trim(), home };
+}
+
+// The screen has settled: the answers came, nothing is loading, the sheet stopped moving.
+export async function settle(page: Page): Promise<void> {
+  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => undefined);
+  // The splash of a new start leaves first (docs/121 §4).
+  await page
+    .locator('#splash')
+    .waitFor({ state: 'detached', timeout: 5_000 })
+    .catch(() => undefined);
+  await page
+    .locator('[aria-busy="true"]')
+    .first()
+    .waitFor({ state: 'detached', timeout: 5_000 })
+    .catch(() => undefined);
+  await page.waitForTimeout(250);
+}
+
+// Taps the target the way a person does; false when it is not on the screen any more.
+export async function tap(page: Page, target: Target): Promise<boolean> {
+  const raw = await readTargets(page);
+  const index = raw
+    .map((item, at) => ({ ...item, at }))
+    .filter((item) => item.label === target.label)
+    .at(target.nth)?.at;
+  if (index === undefined) return false;
+  const element = page.locator(`[data-walk="${index}"]`);
+  await element.scrollIntoViewIfNeeded().catch(() => undefined);
+  return element
+    .click({ timeout: 3_000 })
+    .then(() => true)
+    .catch(() => false);
+}
