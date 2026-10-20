@@ -1,3 +1,4 @@
+import { NOBODY_ID } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { rate, reviewTarget } from './application/rate';
 import { DRIVER, review, setup } from './ratings-test-kit';
@@ -35,6 +36,7 @@ describe('the review screen', () => {
       names: async () => new Map<number, string>(),
       people: { ...deps.people, publicId: async () => undefined },
     };
-    expect(await reviewTarget(gone, 101, 'b1')).toMatchObject({ rateeId: '', rateeName: '' });
+    // An id in the form the apps read: an empty one broke the review screen (G89 M9).
+    expect(await reviewTarget(gone, 101, 'b1')).toMatchObject({ rateeId: NOBODY_ID, rateeName: '' });
   });
 });

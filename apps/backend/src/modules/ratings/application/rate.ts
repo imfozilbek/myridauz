@@ -1,6 +1,7 @@
 import {
   DAY_MS,
   DRIVER_TAGS,
+  NOBODY_ID,
   PASSENGER_TAGS,
   reviewInputSchema,
   type ReviewTarget,
@@ -78,7 +79,8 @@ export async function reviewTarget(deps: RatingsDeps, raterId: number, bookingId
     deps.people.publicId(rateeId),
   ]);
   const target: ReviewTarget = {
-    rateeId: publicId ?? '',
+    // A deleted account is nobody: the ride still takes the stars (G89 M9).
+    rateeId: publicId ?? NOBODY_ID,
     rateeName: names.get(rateeId) ?? '',
     rateeRole: rateeId === ride.driverId ? 'driver' : 'passenger',
     mine: mine ? { stars: mine.stars, tags: [...mine.tags], text: mine.text } : null,

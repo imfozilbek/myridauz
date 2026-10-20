@@ -1,4 +1,4 @@
-import type { Booking } from '@platform/contracts';
+import { isGone, type Booking } from '@platform/contracts';
 import type { ReactNode } from 'react';
 import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
@@ -49,8 +49,8 @@ export function ConfirmedBooking(props: Props) {
   const callsOn = useCallsOn();
   const canComplain = useCanComplain();
   const { driver } = booking.trip;
+  const gone = isGone(driver); // a deleted account: nobody to write, call or ride with (G89 M9)
   const brand = useBrand();
-  const { colors } = brand.theme;
   const steps = useSeatSteps(booking, onTold);
   const meeting = meetingTime(booking, Date.now(), brand.schedule.meetMinutes);
   const button = (icon: IconName, label: string, onClick: () => void) => (
@@ -60,7 +60,7 @@ export function ConfirmedBooking(props: Props) {
     </button>
   );
   return (
-    <div className="booking-page" style={brandVars(colors)}>
+    <div className="booking-page" style={brandVars(brand.theme.colors)}>
       <Screen onBack={onBack} />
       <BookingBanner booking={booking} />
       {meeting ? <MeetingCard booking={booking} onOpen={onOpen} onTold={onTold} /> : null}
@@ -84,7 +84,9 @@ export function ConfirmedBooking(props: Props) {
       {booking.status === 'completed' ? (
         <>
           <DoneTools booking={booking} onOpen={onOpen} />
-          <MainButton text={t('bookings.done.again', { name: driver.firstName })} onClick={onAgain} />
+          {gone ? null : (
+            <MainButton text={t('bookings.done.again', { name: driver.firstName })} onClick={onAgain} />
+          )}
         </>
       ) : (
         <>
@@ -92,8 +94,8 @@ export function ConfirmedBooking(props: Props) {
           {children}
           <ActionFailure error={steps.failure} />
           <div className="booking-buttons">
-            {button('chat', t('chat.open'), () => onOpen('chat'))}
-            {booking.status === 'confirmed' && callsOn
+            {gone ? null : button('chat', t('chat.open'), () => onOpen('chat'))}
+            {booking.status === 'confirmed' && callsOn && !gone
               ? button('phone', t('calls.call'), () => onOpen('call'))
               : null}
             {booking.status === 'confirmed' ? button('share', t('bookings.toClose'), steps.share) : null}

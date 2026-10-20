@@ -1,3 +1,4 @@
+import { bookingsSchema, NOBODY_ID, reviewTargetSchema } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { app } from './app';
@@ -24,8 +25,6 @@ async function deleteDriver() {
   return app.request('/me', { method: 'DELETE', headers }, { ...testEnv, CHATS: chats });
 }
 
-type Seat = { id: string; trip: { driver: { firstName: string } } };
-
 // G89 M9 (owner decision 20.10.2026): a driver deleted the account after a bad ride. The ride stays
 // for the passenger with «Hisob oʻchirilgan» for the name, and the complaint of 7 days still goes
 // (docs/129).
@@ -47,9 +46,14 @@ describe('a ride whose driver deleted the account', () => {
     vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(Date.now() + 20 * HOUR);
     expect((await deleteDriver()).status).toBe(204);
-    const mine = await read<{ bookings: Seat[] }>(call('/passenger/bookings', PASSENGER));
+    // The apps read it through the contract: a deleted driver keeps a valid public id (lesson №363).
+    const mine = bookingsSchema.parse(await read(call('/passenger/bookings', PASSENGER)));
     const ride = mine.bookings.find((booking) => booking.id === seat.id);
     expect(ride?.trip.driver.firstName).toBe(t('account.gone'));
+    // The review screen reads the driver of the ride too: nobody, and the stars still go.
+    const target = reviewTargetSchema.parse(await read(call(`/reviews/${seat.id}`, PASSENGER)));
+    expect(target.rateeId).toBe(NOBODY_ID);
+    expect((await call('/reviews', PASSENGER, json({ bookingId: seat.id, stars: 1 }))).status).toBe(204);
     const filed = await call('/complaints', PASSENGER, json({ bookingId: seat.id, reasons: ['harassment'] }));
     expect(filed.status).toBe(201);
   });

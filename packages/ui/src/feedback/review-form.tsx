@@ -1,5 +1,6 @@
 import {
   DRIVER_TAGS,
+  isGone,
   PASSENGER_TAGS,
   REVIEW_TEXT_MAX,
   type Booking,
@@ -113,7 +114,10 @@ export function ReviewForm({ bookingId, target, booking, onBack, onComplain, onS
           {t('reviews.addText')}
         </button>
       )}
-      {target.rateeRole === 'driver' ? <FavoriteSwitch driverId={target.rateeId} /> : null}
+      {/* A deleted driver is nobody to save (G89 M9). */}
+      {target.rateeRole === 'driver' && !isGone({ id: target.rateeId }) ? (
+        <FavoriteSwitch driverId={target.rateeId} />
+      ) : null}
       {failed ? <p className="review-note review-failed">{t(errorKey(failed))}</p> : null}
       <p className="review-note">{t('reviews.blind')}</p>
       <button type="button" className="review-complain" onClick={onComplain}>

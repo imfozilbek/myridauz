@@ -21,7 +21,7 @@ const asDriver = { method: 'POST', app: 'driver' } as const;
 
 // G89 C7 (owner decision 20.10.2026): the driver marked «Kelmadi» at the point. The passenger is not
 // on the trip (docs/129), so the mother who follows her never reads «Yoʻlda»: the link closes, the
-// follow screen says «Kuzatish tugadi, havola yopildi.» (docs/43).
+// follow screen says «Bu safar endi koʻrinmaydi» (docs/43).
 describe('close people of a passenger marked «Kelmadi»', () => {
   it('lose the link at once', async () => {
     vi.useFakeTimers({ toFake: ['Date'] });

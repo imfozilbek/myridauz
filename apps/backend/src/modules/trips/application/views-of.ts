@@ -1,4 +1,4 @@
-import type { Trip } from '@platform/contracts';
+import { NOBODY_ID, type Trip } from '@platform/contracts';
 import type { Person } from '../../users';
 import type { TripRecord } from '../domain/trip';
 import { regionIn } from '../../../shared/places/place-match';
@@ -8,7 +8,7 @@ import { NO_RIDERS, tripView, type Riders, type TripDriver } from './views';
 // The old rides of a deleted driver stay for the passengers, to rate and to complain: no name, no
 // photo (owner decision 20.10.2026, G89 M9).
 const goneDriver = (name: string): TripDriver => ({
-  publicId: '',
+  publicId: NOBODY_ID,
   firstName: name,
   avatarShown: false,
   gender: null,

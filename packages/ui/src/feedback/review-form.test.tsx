@@ -1,5 +1,5 @@
 import { ApiError, type ComfortClient, type FeedbackClient } from '@platform/api-client';
-import type { ReviewTarget } from '@platform/contracts';
+import { NOBODY_ID, type ReviewTarget } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { confirmed } from '../bookings/booking-test-kit';
@@ -17,12 +17,12 @@ const TARGET: ReviewTarget = {
 };
 const done = { ...confirmed, status: 'completed' as const };
 
-function open(feedback: Partial<FeedbackClient>, comfort: Partial<ComfortClient> = {}) {
+function open(feedback: Partial<FeedbackClient>, comfort: Partial<ComfortClient> = {}, target = TARGET) {
   const onBack = vi.fn();
   renderMarket(
     <ReviewScreen bookingId={done.id} onBack={onBack} onComplain={() => undefined} />,
     testClients({
-      feedback: { target: async () => TARGET, ...feedback },
+      feedback: { target: async () => target, ...feedback },
       chat: {
         about: async () => ({ booking: done, role: 'passenger', request: null, offer: null, driver: null }),
       },
@@ -71,5 +71,12 @@ describe('the review (G60, mockup g60/5): one short screen', () => {
     open({}, { save });
     fireEvent.click(await screen.findByRole('checkbox', { name: 'Sevimli haydovchi' }));
     await vi.waitFor(() => expect(save).toHaveBeenCalledWith(TARGET.rateeId));
+  });
+
+  // G89 M9: a driver who deleted the account is nobody to save.
+  it('offers no «Sevimli haydovchi» for a deleted driver', async () => {
+    open({}, {}, { ...TARGET, rateeId: NOBODY_ID });
+    expect(await screen.findByText('Safar qanday oʻtdi?')).toBeTruthy();
+    expect(screen.queryByText('Sevimli haydovchi')).toBeNull();
   });
 });
