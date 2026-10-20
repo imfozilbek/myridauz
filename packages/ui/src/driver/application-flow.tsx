@@ -42,8 +42,15 @@ export function ApplicationFlow({ initial, onSubmitted, onClose, tapped = false 
   const carAsked = hasProblem(reasons, 'car') || hasProblem(reasons, 'plate');
   const first = fixing && !carAsked ? 'photos' : 'car';
   const { step, car, change, go, dirty, restored, clear } = useCarAnswers(known, first);
+  // A new photo of an approved car sends it to the check again (owner decision 20.10.2026, G90
+  // DRV-3): said before the first photo; after it, leaving without «Yuborish» asks.
+  const approved = initial?.status === 'approved';
+  const [reshot, setReshot] = useState(false);
   // A new application is a draft and is not lost; a sent one being changed asks before leaving.
-  const guard = useUnsavedGuard(known !== undefined && dirty);
+  const guard = useUnsavedGuard(
+    known !== undefined && (dirty || reshot),
+    reshot ? 'drivers.recheck.leave' : 'common.unsaved',
+  );
   const [photos, setPhotos] = useState(initial?.photos ?? NO_PHOTOS);
   const [failure, setFailure] = useState<TranslationKey | null>(null);
   const leave = guard(() => {
@@ -81,7 +88,9 @@ export function ApplicationFlow({ initial, onSubmitted, onClose, tapped = false 
         fixing={fixing}
         shoot={tapped && first === 'photos'}
         failure={failure}
+        {...(approved && !reshot ? { warn: 'drivers.recheck.warn' as const } : {})}
         onPhotos={(next) => {
+          if (approved) setReshot(true);
           const all = CAR_PHOTO_KINDS.every((kind) => next.photos[kind]);
           if (all && !CAR_PHOTO_KINDS.every((kind) => photos[kind]))
             track({ name: 'driver_application_step', screen: 'driver', step: 'photos' });

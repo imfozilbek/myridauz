@@ -1,4 +1,5 @@
 import {
+  type CarPhotoKind,
   CAR_PHOTO_KINDS,
   REASON_PLACE,
   type Car,
@@ -16,6 +17,7 @@ import { useBrand } from '../../context/brand-context';
 import { useI18n } from '../../context/i18n-context';
 import { Screen } from '../../screen/screen';
 import { MainButton } from '../../telegram/bottom-button';
+import { confirm } from '../../telegram/feedback';
 import { useHasCamera } from '../../telegram/in-telegram-context';
 import { brandVars } from '../../theme/brand-vars';
 import { CarHead } from '../car-head';
@@ -35,6 +37,8 @@ type Props = {
   // A fix opened by «Tuzatish» with one photo to retake: its camera opens at once (G79 В16).
   readonly shoot?: boolean;
   readonly failure: TranslationKey | null;
+  // Said before the camera opens: a new photo of an approved car (G90 DRV-3).
+  readonly warn?: TranslationKey;
   readonly onPhotos: (application: DriverApplication) => void;
   readonly onChange: () => void;
   readonly onBack: () => void;
@@ -51,6 +55,7 @@ export function PhotosStep({
   fixing,
   shoot = false,
   failure,
+  warn,
   onPhotos,
   onChange,
   onBack,
@@ -63,6 +68,10 @@ export function PhotosStep({
   const hasCamera = useHasCamera();
   const face = useFaceShot();
   const { camera, take, busy, failed, version } = useCarShots(onPhotos);
+  const takeWarned = async (kind: CarPhotoKind) => {
+    if (warn && !(await confirm(t(warn), t('common.continue')))) return;
+    take(kind);
+  };
   const disabled = !hasCamera || busy !== null || face.busy;
   const faceAsked = hasProblem(reasons, 'avatar');
   useEffect(() => {
@@ -107,7 +116,7 @@ export function PhotosStep({
               reasons={reasons}
               fixing={fixing}
               disabled={disabled}
-              onTake={() => take(item)}
+              onTake={() => void takeWarned(item)}
             />
           ))}
           {faceAsked && profile ? (

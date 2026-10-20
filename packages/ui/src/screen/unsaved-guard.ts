@@ -1,3 +1,4 @@
+import type { TranslationKey } from '@platform/i18n';
 import { useCallback, useEffect, useRef } from 'react';
 import { useI18n } from '../context/i18n-context';
 import { confirm } from '../telegram/feedback';
@@ -5,7 +6,8 @@ import { holdClosing } from './closing';
 
 // A form with typed or chosen data and no draft (docs/94 F3): Telegram asks before closing, and
 // «Назад» out of the form asks «Oʻzgarishlar saqlanmaydi. Chiqasizmi?». Untouched, nothing asks.
-export function useUnsavedGuard(dirty: boolean) {
+// question: the words of the question, when leaving loses more than typed data (G90 DRV-3).
+export function useUnsavedGuard(dirty: boolean, question: TranslationKey = 'common.unsaved') {
   const { t } = useI18n();
   const touched = useRef(dirty);
   touched.current = dirty;
@@ -15,8 +17,8 @@ export function useUnsavedGuard(dirty: boolean) {
   return useCallback(
     (leave: () => void) => () => {
       if (!touched.current) return leave();
-      void confirm(t('common.unsaved'), t('common.back')).then((yes) => yes && leave());
+      void confirm(t(question), t('common.back')).then((yes) => yes && leave());
     },
-    [t],
+    [t, question],
   );
 }

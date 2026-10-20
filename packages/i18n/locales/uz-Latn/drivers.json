@@ -59,5 +59,7 @@
   "fix.send": "Qayta yuborish",
   "become.title": "Haydovchi boʻlish",
   "photo.good": "Yaxshi",
-  "approved.title": "Siz haydovchisiz!"
+  "approved.title": "Siz haydovchisiz!",
+  "recheck.warn": "Yangi rasm mashinani qayta tekshiruvga yuboradi. Tekshiruv tugaguncha yangi safar eʼlon qila olmaysiz.",
+  "recheck.leave": "Arizani yuboring, aks holda tekshiruv boshlanmaydi."
 }
