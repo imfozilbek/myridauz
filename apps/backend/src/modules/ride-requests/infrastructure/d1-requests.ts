@@ -54,7 +54,7 @@ const UPSERT = `INSERT INTO ride_requests (id, passenger_id, from_id, to_id, dat
   calls_off, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   ON CONFLICT (id) DO UPDATE SET status = excluded.status, pickup_lat = excluded.pickup_lat,
   pickup_lng = excluded.pickup_lng, dropoff_lat = excluded.dropoff_lat, dropoff_lng = excluded.dropoff_lng,
-  calls_off = excluded.calls_off, note = excluded.note`;
+  calls_off = excluded.calls_off, note = excluded.note WHERE ride_requests.status = 'open'`;
 // The note goes with the points (G48, docs/69).
 const NO_POINTS = 'pickup_lat = NULL, pickup_lng = NULL, dropoff_lat = NULL, dropoff_lng = NULL, note = NULL';
 
@@ -62,7 +62,7 @@ const NO_POINTS = 'pickup_lat = NULL, pickup_lng = NULL, dropoff_lat = NULL, dro
 // 0079_request_note.sql).
 export const d1Requests = (db: D1Database): RequestRepository => ({
   save: async (request) => {
-    await db
+    const saved = await db
       .prepare(UPSERT)
       .bind(
         request.id,
@@ -87,6 +87,7 @@ export const d1Requests = (db: D1Database): RequestRepository => ({
         request.note,
       )
       .run();
+    return saved.meta.changes > 0;
   },
   find: async (id) => {
     const row = await db.prepare('SELECT * FROM ride_requests WHERE id = ?').bind(id).first<Row>();

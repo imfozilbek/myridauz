@@ -15,7 +15,8 @@ export async function setRequestCalls(
   if (request?.passengerId !== passengerId) return { ok: false, error: 'trips.not_found' };
   if (!isOpen(request, deps.now())) return { ok: false, error: 'trips.wrong_status' };
   const next = { ...request, callsOff: !on };
-  await deps.requests.save(next);
+  // Taken or cancelled in the same moment: the request stays closed (G89).
+  if (!(await deps.requests.save(next))) return { ok: false, error: 'trips.wrong_status' };
   const [view] = await views(deps, [next]);
   return view ? { ok: true, value: view } : { ok: false, error: 'trips.not_found' };
 }
