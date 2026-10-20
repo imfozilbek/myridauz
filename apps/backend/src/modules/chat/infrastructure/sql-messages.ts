@@ -59,6 +59,7 @@ export function sqlMessages(sql: SqlStorage): MessageStore {
         userId,
         at,
       ),
+    seen: (userId) => void sql.exec('DELETE FROM notified WHERE user_id = ?', userId),
     // One call at most per chat (docs/08).
     call: () => {
       const body = sql.exec<{ body: string }>('SELECT body FROM call_state WHERE id = 1').toArray()[0]?.body;

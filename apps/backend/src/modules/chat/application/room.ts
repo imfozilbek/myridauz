@@ -11,8 +11,6 @@ import {
 } from './ports';
 
 const HISTORY = 100;
-// The bot says "Yangi xabar" at most once in this time per person and chat: no flood.
-const NOTIFY_PAUSE_MS = 5 * 60 * 1000;
 // One person sends at most this many messages a minute: a flood never reaches the other side (G42).
 export const MAX_PER_MINUTE = 30;
 // Every third hidden contact from one person reaches the moderators (docs/07, docs/17).
@@ -38,6 +36,7 @@ export async function joined(deps: RoomDeps, socket: ChatSocket): Promise<void> 
   send(socket, { type: 'history', messages, canCall, canWrite });
   const call = callView(deps.store.call(), userId);
   if (call) send(socket, { type: 'call', call });
+  deps.store.seen(userId);
   if (await deps.unread.clear(userId)) await deps.signals.read({ userId, role, from: otherId }, deps.key);
 }
 
@@ -50,6 +49,8 @@ export async function sendText(deps: RoomDeps, from: ChatSocket, raw: string): P
     .filter((message) => message.author === member.userId && deps.now() - message.at < MINUTE_MS);
   if (lastMinute.length >= MAX_PER_MINUTE) return;
   const { text, masked } = maskContacts(raw);
+  // One who writes has read the chat, from the sheet too (G68): the next answer rings again.
+  deps.store.seen(member.userId);
   const message = deps.store.add({ author: member.userId, text, event: null, masked, at: deps.now() });
   broadcast(deps, message);
   if (masked) await hidden(deps, from);
@@ -65,11 +66,11 @@ async function hidden(deps: RoomDeps, from: ChatSocket) {
 async function tellOther(deps: RoomDeps, member: Member, message: StoredMessage) {
   const there = deps.sockets().some((socket) => socket.member.userId === member.otherId);
   if (there) return;
-  // Every message counts for the plate, the bot speaks only once in a while.
+  // Every message counts for the plate; the bot speaks once until the chat is opened (owner decision,
+  // docs/122 rule 5, docs/128 §1 row 3, G89 C4).
   const to = { userId: member.otherId, role: otherRole(member.role), from: member.userId };
   await deps.unread.add(to, { text: message.text, at: message.at });
-  const last = deps.store.lastNotified(member.otherId);
-  if (last !== null && deps.now() - last < NOTIFY_PAUSE_MS) return;
+  if (deps.store.lastNotified(member.otherId) !== null) return;
   deps.store.notified(member.otherId, deps.now());
   await deps.signals.newMessage(to, deps.key);
 }

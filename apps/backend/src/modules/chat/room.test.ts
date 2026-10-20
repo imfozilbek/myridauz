@@ -31,19 +31,23 @@ describe('the chat of a booking (docs/07)', () => {
     expect(signals).toEqual(['attempts 10 3']);
   });
 
-  it('asks the bot to tell the other side only when they are away, and not on every message', async () => {
-    const { connect, say, signals, later } = room();
+  // One «Yangi xabar» until the chat is opened (owner decision, docs/122 rule 5, docs/128 §1 row 3, G89 C4).
+  it('asks the bot to tell the other side once while they are away, again after they opened the chat', async () => {
+    const { connect, say, leave, signals, later } = room();
     const passenger = connect(PASSENGER);
     await say(passenger, 'Salom');
     await say(passenger, 'Javob bering');
     expect(signals).toEqual(['new to driver 1']);
     await later(6 * MINUTE);
     await say(passenger, 'Kutyapman');
-    expect(signals).toEqual(['new to driver 1', 'new to driver 1']);
+    expect(signals).toEqual(['new to driver 1']);
     // Opening the chat reads what was unread: the trip card in the bot drops its count (G68).
     const driver = connect(DRIVER);
     await say(driver, 'Hozir');
-    expect(signals).toEqual(['new to driver 1', 'new to driver 1', 'read driver 1']);
+    expect(signals).toEqual(['new to driver 1', 'read driver 1']);
+    await leave(driver);
+    await say(passenger, 'Rahmat');
+    expect(signals).toEqual(['new to driver 1', 'read driver 1', 'new to driver 1']);
   });
 
   it('counts the messages a person has not seen yet and forgets them when the chat opens (G53)', async () => {

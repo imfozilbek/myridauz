@@ -36,6 +36,8 @@ export type MessageStore = {
   maskedCount(userId: number): number;
   lastNotified(userId: number): number | null;
   notified(userId: number, at: number): void;
+  // The person opened the chat or wrote in it: the next message rings again (G89 C4).
+  seen(userId: number): void;
   // The call of this chat right now, if any (docs/08): kept so it survives the chat's sleep.
   call(): StoredCall | null;
   saveCall(call: StoredCall | null): void;
