@@ -4,9 +4,11 @@
 export default {
   testRunner: 'vitest',
   plugins: ['@stryker-mutator/vitest-runner'],
-  // Every test runs once at the start: «related» of vitest missed most tests in the sandbox of Stryker
-  // (lesson №359), and the coverage of each test says which changes it reaches.
+  // Every test runs once at the start, and the coverage of each test says which changes it reaches.
   vitest: { configFile: 'vitest.stryker.config.ts', related: false },
+  // In place, not in a copy: a copy has no node_modules of apps/backend (pnpm), and every test that
+  // imports hono fell out without a word (lesson №359). Nothing else may change the files meanwhile.
+  inPlace: true,
   mutate: ['apps/backend/src/modules/*/{domain,application}/**/*.ts', '!**/*.test.ts'],
   // Each change runs only the tests that reach it; a value read once at import time is skipped.
   coverageAnalysis: 'perTest',
