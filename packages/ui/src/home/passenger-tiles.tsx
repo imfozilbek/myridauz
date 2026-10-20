@@ -50,7 +50,7 @@ function FavoritesTile({ now, onOpen }: { readonly now: number; readonly onOpen:
   const hint = trip
     ? t('home.favorites.trip', {
         name: trip.driver.firstName,
-        when: when(trip.departAt).toLocaleLowerCase('uz'),
+        when: when(trip.departAt, trip.departUntil).toLocaleLowerCase('uz'),
       })
     : count > 0
       ? t('home.favorites.count', { count: String(count) })

@@ -13,6 +13,12 @@ const WHOLE_HOUR = ':00';
 // its arrival count from it (docs/216).
 export const lastDepart = (trip: Depart) => trip.departUntil ?? trip.departAt;
 
+// The time a moved trip had at first: a range moves whole (docs/104).
+export const firstTimed = (trip: Depart & { readonly firstDepartAt: number }): Depart => ({
+  departAt: trip.firstDepartAt,
+  departUntil: trip.departUntil === null ? null : trip.departUntil - trip.departAt + trip.firstDepartAt,
+});
+
 // Whether a start and an end make a range a driver may choose.
 export function rangeFits(departAt: number, departUntil: number, rules: RangeRules) {
   const hours = (departUntil - departAt) / HOUR_MS;

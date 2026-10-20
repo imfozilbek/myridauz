@@ -14,6 +14,7 @@ import { endNames, type Places } from '../../../shared/places/end-names';
 import { bold, escapeHtml, italic, quote } from '../../../shared/telegram/html';
 import { passengerRequestCard } from '../../../shared/telegram/card-keys';
 import { appButton } from '../../../shared/telegram/open-button';
+import { tripTimeText } from '../../../shared/telegram/trip-time';
 import type { RequestFacts } from '../application/request-facts';
 import { dayOf } from './card-when';
 
@@ -74,7 +75,7 @@ export const firstOfferRing = (
   chatId: request.passengerId,
   text: t('bot.ring.offer', {
     name: escapeHtml(offer.driver.firstName),
-    time: formatTime(new Date(offer.departAt)),
+    time: tripTimeText(offer),
     price: formatMoney(offer.price),
   }),
   markup: {

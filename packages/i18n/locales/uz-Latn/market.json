@@ -92,6 +92,7 @@
   "request.openMine": "Soʻrovni ochish",
   "request.cancelled": "Soʻrov bekor qilindi",
   "trip.arrival": "≈ {time}",
+  "trip.range": "{from} … {to}",
   "trip.recommended": "Tavsiya etilgan narx",
   "trip.recommendedShort": "Tavsiya: {price}",
   "trip.cancelAsk": "Safarni bekor qilasizmi? Barcha yoʻlovchilar xabar oladi.",

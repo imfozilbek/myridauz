@@ -4,6 +4,7 @@ import type { ChannelCoverage } from '../domain/route-channels';
 
 // The message id of each channel post of a trip, to edit it later (docs/15).
 export type ChannelPost = { readonly tripId: string; readonly channel: string; readonly messageId: number };
+// departAt: the last departure, the end of a range (docs/216).
 export type ChannelPostStore = {
   save(post: ChannelPost, departAt: number): Promise<void>;
   byTrip(tripId: string): Promise<ChannelPost[]>;

@@ -3,14 +3,16 @@ import { useI18n } from '../context/i18n-context';
 import { noonOf, useShortDay } from '../market/when';
 import type { PlaceDirectory } from '../places/directory';
 import { usePlaceNames } from '../places/place-names';
+import { useTripTime, type Timed } from '../trip/trip-time';
 import { useNameText } from '../way/way-end';
 
-type Way = { readonly from: string; readonly to: string; readonly departAt: number };
+type Way = Timed & { readonly from: string; readonly to: string };
 
 // The words of a sheet about a trip (mockups g68/7, g68/8): «Ertaga 08:00 · Chilonzor → Samarqand»,
-// where it starts and where it goes, a city by its region alone.
+// where it starts and where it goes, a city by its region alone; a range «Ertaga 08:00 … 10:00» (G90).
 export function useSheetWords(directory: PlaceDirectory) {
-  const { t, formatTime } = useI18n();
+  const { t } = useI18n();
+  const tripTime = useTripTime();
   const shortDay = useShortDay();
   const names = usePlaceNames(directory);
   const nameText = useNameText();
@@ -19,17 +21,16 @@ export function useSheetWords(directory: PlaceDirectory) {
     return found ? names.toward(found) : '';
   };
   const day = (at: number) => shortDay(tashkentDate(at), Date.now());
-  const when = (at: number) => t('home.trip.when', { day: day(at), time: formatTime(new Date(at)) });
+  const when = (trip: Timed) => t('home.trip.when', { day: day(trip.departAt), time: tripTime(trip) });
   return {
     place,
     day,
     when,
-    line: (way: Way) =>
-      t('sheet.trip', { when: when(way.departAt), from: place(way.from), to: place(way.to) }),
+    line: (way: Way) => t('sheet.trip', { when: when(way), from: place(way.from), to: place(way.to) }),
     // The trip of a chat: its booking, its offer, or the day of its request (G64).
     about: ({ booking, offer, request }: ChatAbout) => {
       const way = booking?.trip ?? offer;
-      if (way) return t('sheet.trip', { when: when(way.departAt), from: place(way.from), to: place(way.to) });
+      if (way) return t('sheet.trip', { when: when(way), from: place(way.from), to: place(way.to) });
       if (!request) return null;
       const at = noonOf(request.date).getTime();
       return t('sheet.trip', { when: day(at), from: place(request.from), to: place(request.to) });

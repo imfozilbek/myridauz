@@ -3,6 +3,7 @@ import { Caption, Text } from '@telegram-apps/telegram-ui';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { Icon, type IconName } from '../icons';
+import { useTripTime } from '../trip/trip-time';
 import { usePlaceLabel, type PlaceLabel } from './places-gate';
 import './route-view.css';
 
@@ -13,22 +14,24 @@ type RouteViewProps = {
   readonly to: string;
   // With the departure and the distance the stops show the time: "12:30" and "≈ 17:30".
   readonly departAt?: number;
+  // The end of a range (G90): the start shows «08:00 … 10:00» and the end no arrival.
+  readonly departUntil?: number | null;
   readonly km?: number;
   // The points of a seat in place of the ends of the trip (G78 sheet 3, d-seat).
   readonly ends?: { readonly from: PlaceLabel; readonly to: PlaceLabel };
 };
 
 // Point A (green) and point B (red), each as the place and its region (docs/14, owner decision 29.09.2026).
-export function RouteView({ from, to, departAt, km, ends }: RouteViewProps) {
+export function RouteView({ from, to, departAt, departUntil = null, km, ends }: RouteViewProps) {
   const { t, formatTime } = useI18n();
+  const tripTime = useTripTime();
   const { colors } = useBrand().theme;
   const place = usePlaceLabel();
-  const time = (ms: number) => formatTime(new Date(ms));
-  const departs = departAt === undefined ? undefined : time(departAt);
+  const departs = departAt === undefined ? undefined : tripTime({ departAt, departUntil });
   const arrives =
-    departAt === undefined || km === undefined
+    departAt === undefined || km === undefined || departUntil !== null
       ? undefined
-      : t('market.trip.arrival', { time: time(arrivalAt(departAt, km)) });
+      : t('market.trip.arrival', { time: formatTime(new Date(arrivalAt(departAt, km))) });
   return (
     <div className="route">
       <Stop icon="origin" color={colors.routeFrom} label={ends?.from ?? place(from)} time={departs} />

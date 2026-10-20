@@ -16,6 +16,9 @@ export type TripTiming = {
 
 // The arrival the rules expect: the road from the last departure.
 export const tripArrival = (trip: TripTiming) => arrivalAt(lastDepart(trip), trip.km);
+// The arrival on the road: a range counts from its departure, else from its end (G90).
+export const roadArrival = (trip: TripTiming & { readonly departedAt: number | null }) =>
+  arrivalAt(trip.departUntil === null ? trip.departAt : (trip.departedAt ?? trip.departUntil), trip.km);
 // The end of a trip: the arrival and two hours more; the deadlines after the trip count from it.
 export const tripEndsAt = (trip: TripTiming) => tripArrival(trip) + CLOSES_AFTER_MS;
 // «Yetib keldingizmi?» an hour after the arrival without «Yetib keldim» (docs/43, docs/129): the

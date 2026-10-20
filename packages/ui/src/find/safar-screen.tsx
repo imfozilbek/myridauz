@@ -76,7 +76,13 @@ export function SafarScreen({ trip, onBack, onBook, onOthers }: Props) {
         {t('find.dayLine', { date: formatDate(day), weekday: formatWeekday(day), km: String(trip.km) })}
       </p>
       <DriverCard driver={trip.driver} />
-      <RouteLine from={trip.from} to={trip.to} departAt={trip.departAt} km={trip.km} />
+      <RouteLine
+        from={trip.from}
+        to={trip.to}
+        departAt={trip.departAt}
+        departUntil={trip.departUntil}
+        km={trip.km}
+      />
       <TripFacts trip={trip} />
       {start ? <AreaMap place={start} /> : null}
       {trip.comment ? <p className="safar-card safar-comment">{trip.comment}</p> : null}

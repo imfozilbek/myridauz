@@ -54,10 +54,19 @@ export const returnTrip = (trip: Trip, directory: PlaceDirectory, departAt: numb
 // same answers as the way back takes them.
 export function tomorrowTrip(trip: Trip, directory: PlaceDirectory): ReturnTrip | null {
   const inDay = trip.departAt - tashkentDayStart(tashkentDate(trip.departAt));
-  return tripPlan(trip, directory, tashkentDayStart(tashkentDate(Date.now() + DAY_MS)) + inDay, false);
+  const departAt = tashkentDayStart(tashkentDate(Date.now() + DAY_MS)) + inDay;
+  // A range comes again as a range (G90).
+  const until = trip.departUntil === null ? null : departAt + trip.departUntil - trip.departAt;
+  return tripPlan(trip, directory, departAt, false, until);
 }
 
-function tripPlan(trip: Trip, directory: PlaceDirectory, departAt: number, back: boolean): ReturnTrip | null {
+function tripPlan(
+  trip: Trip,
+  directory: PlaceDirectory,
+  departAt: number,
+  back: boolean,
+  until: number | null = null,
+): ReturnTrip | null {
   const from = directory.find(trip.from);
   const to = directory.find(trip.to);
   if (!from || !to) return null;
@@ -70,6 +79,7 @@ function tripPlan(trip: Trip, directory: PlaceDirectory, departAt: number, back:
     comment: '',
     date: tashkentDate(departAt),
     time: tashkentTime(departAt),
+    until: until === null ? null : tashkentTime(until),
   };
   return { route: back ? { from: to, to: from } : { from, to }, again };
 }

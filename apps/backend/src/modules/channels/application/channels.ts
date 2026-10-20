@@ -1,4 +1,4 @@
-import type { Trip } from '@platform/contracts';
+import { lastDepart, type Trip } from '@platform/contracts';
 import { channelsOf, shownOf } from '../domain/route-channels';
 import type { ChannelPost, ChannelsDeps } from './ports';
 
@@ -59,7 +59,7 @@ export async function refreshPosts(deps: ChannelsDeps, tripId: string): Promise<
 export async function rememberPost(deps: ChannelsDeps, post: ChannelPost, shown: string): Promise<void> {
   const trip = await deps.trip(post.tripId);
   if (!trip) return;
-  await deps.posts.save(post, trip.departAt);
+  await deps.posts.save(post, lastDepart(trip));
   if (shownOf(trip) !== shown) await edit(deps, trip, [post]);
 }
 
@@ -70,15 +70,16 @@ export async function closePosts(deps: ChannelsDeps, tripId: string): Promise<vo
 }
 
 // The Cron job: the posts of trips whose time came; «Yoʻlga chiqdim» closed its posts at once (G63).
-// A trip the driver moved later still waits: its posts close at the new time (G89 T1).
+// A trip the driver moved later still waits: its posts close at the new time (G89 T1). A range
+// closes at its end: the driver still takes people inside it (docs/216).
 export async function closeDeparted(deps: ChannelsDeps): Promise<void> {
   const now = deps.now();
   for (const tripId of await deps.posts.departed(now)) {
     const trip = await deps.trip(tripId);
-    if (trip && waits(trip, now)) await deps.posts.moveTo(tripId, trip.departAt);
+    if (trip && waits(trip, now)) await deps.posts.moveTo(tripId, lastDepart(trip));
     else await closePosts(deps, tripId);
   }
 }
 
 const waits = (trip: Trip, now: number) =>
-  (trip.status === 'active' || trip.status === 'full') && trip.departedAt === null && trip.departAt > now;
+  (trip.status === 'active' || trip.status === 'full') && trip.departedAt === null && lastDepart(trip) > now;

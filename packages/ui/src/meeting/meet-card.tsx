@@ -7,6 +7,7 @@ import { usePlaceLabel } from '../market/places-gate';
 import { openExternal } from '../telegram/feedback';
 import { useBookingEnds } from '../trip/booking-ends';
 import { MeetingMap } from '../trip/meeting-map';
+import { useTripTime } from '../trip/trip-time';
 import { MeetActions } from './meet-actions';
 import './meet-map.css';
 import { useCallsOn } from '../call/calls-on';
@@ -30,7 +31,8 @@ type Props = {
 // One point of the meeting (owner decision 06.10.2026, docs/126): when, the small map, the place by
 // the rule of docs/121, who waits there, the mark of the driver, the chat and the call.
 export function MeetCard({ booking, number, current, onMark, onChat, onCall }: Props) {
-  const { t, formatTime } = useI18n();
+  const { t } = useI18n();
+  const tripTime = useTripTime();
   const callsOn = useCallsOn();
   const { start, startPoint } = useBookingEnds(booking);
   // «Chilonzor, Toshkent shahri» under the place (docs/121): the district of the trip, its region.
@@ -43,7 +45,7 @@ export function MeetCard({ booking, number, current, onMark, onChat, onCall }: P
       <span className="meet-chip">
         {t('driverAfter.meet.point', {
           number: String(number),
-          time: formatTime(new Date(booking.trip.departAt)),
+          time: tripTime(booking.trip),
         })}
       </span>
       {startPoint ? (

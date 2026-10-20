@@ -21,7 +21,7 @@ export function SeatMeetCard({ booking, words, tools }: Props) {
   const onWay = t('home.dock.onWay', { name: driver.firstName });
   return (
     <DockCard
-      chip={words.when(trip.departAt)}
+      chip={words.when(trip.departAt, trip.departUntil)}
       tone="soon"
       timer={{ text: words.minutesTo(trip.departAt), now: false }}
       title={ends.start}

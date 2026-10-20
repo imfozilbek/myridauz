@@ -3,6 +3,7 @@ import { Tappable } from '@telegram-apps/telegram-ui';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 import { useBookingEnds } from '../trip/booking-ends';
+import { useTripTime } from '../trip/trip-time';
 import { daysLeft } from './done-tools';
 import { today, tomorrow } from '../market/when';
 import './past-booking-row.css';
@@ -14,7 +15,8 @@ type Chip = readonly [tone: 'due' | 'done' | 'plain' | 'gone', text: string];
 // One past trip in «Oʻtgan» (owner decision 06.10.2026, docs/129, mockup g60/6): when, where, who,
 // and what may still be done, each with its deadline.
 export function PastBookingRow({ booking, onOpen }: Props) {
-  const { t, formatShortDate, formatTime, formatRating, formatNumber } = useI18n();
+  const { t, formatShortDate, formatRating, formatNumber } = useI18n();
+  const tripTime = useTripTime();
   const { regionName } = useBookingEnds(booking);
   const chips = useChips(booking);
   const { trip } = booking;
@@ -30,7 +32,7 @@ export function PastBookingRow({ booking, onOpen }: Props) {
   return (
     <Tappable Component="div" className="past-row" interactiveAnimation="background" onClick={onOpen}>
       <span className="past-row-text">
-        <b>{t('bookings.confirmed.when', { day: dayText, time: formatTime(new Date(trip.departAt)) })}</b>
+        <b>{t('bookings.confirmed.when', { day: dayText, time: tripTime(trip) })}</b>
         <span>{t('bookings.past.route', { from: regionName(trip.from), to: regionName(trip.to) })}</span>
         <span className="past-row-who">
           {[

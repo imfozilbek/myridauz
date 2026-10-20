@@ -23,7 +23,11 @@ export function useMessageItems(directory: PlaceDirectory): ActionItem[] {
     const side = otherSide(one.about);
     if (!side) return [];
     const way = wayOf(one.about);
-    const when = way ? (way.day ? words.day(way.at) : words.when(way.at)) : null;
+    const when = way
+      ? way.day
+        ? words.day(way.at)
+        : words.when({ departAt: way.at, departUntil: way.until })
+      : null;
     const item: ActionItem = {
       key: itemKey('message', one.key),
       kind: 'message',

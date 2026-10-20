@@ -13,11 +13,12 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { endNames } from '../shared/places/end-names';
 import { bold, escapeHtml, italic, mono, quote } from '../shared/telegram/html';
 import { shortDay } from '../shared/telegram/route-news';
+import { tripTimeText } from '../shared/telegram/trip-time';
 import type { Asker } from './support-asker';
 import { mediaLabel } from './support-talk';
 import type { Media } from '../shared/telegram/telegram-files';
 
-const { t, formatTime, formatNumber } = createI18n(DEFAULT_LOCALE);
+const { t, formatNumber } = createI18n(DEFAULT_LOCALE);
 const MONTH_DAYS = 30;
 export const REPLY_DATA = 'support:reply';
 export const HISTORY_DATA = 'support:history';
@@ -39,7 +40,7 @@ function liveBlock(asker: Asker, now: number): string[] {
   const live = booking?.trip ?? asker.trip;
   if (!live) return [];
   const names = endNames(live.from, live.to, asker.places);
-  const when = `${shortDay(live.departAt, now)} ${formatTime(new Date(live.departAt))}`;
+  const when = `${shortDay(live.departAt, now)} ${tripTimeText(live)}`;
   const head = t(booking ? 'bot.supportCard.booking' : 'bot.supportCard.trip', { ...names, when });
   if (!booking) return [quote([head])];
   const { firstName, car } = booking.trip.driver;

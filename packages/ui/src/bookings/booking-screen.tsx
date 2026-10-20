@@ -50,7 +50,14 @@ export function BookingScreen({ booking, onBack, actions, children }: Props) {
         <SeatPerson booking={booking} />
         <Section>
           <div className="route-summary">
-            <RouteView from={trip.from} to={trip.to} departAt={trip.departAt} km={trip.km} ends={ends} />
+            <RouteView
+              from={trip.from}
+              to={trip.to}
+              departAt={trip.departAt}
+              departUntil={trip.departUntil}
+              km={trip.km}
+              ends={ends}
+            />
           </div>
           {line(t('bookings.review.seats'), String(booking.seats))}
           {line(t('bookings.review.total'), formatMoney(booking.price * booking.seats))}

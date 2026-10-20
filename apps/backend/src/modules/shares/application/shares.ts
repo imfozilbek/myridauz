@@ -27,12 +27,13 @@ export async function stopSharing(deps: SharesDeps, passengerId: number, booking
 
 function bookingShared(deps: SharesDeps, booking: Booking, followers: number): SharedView | null {
   const { trip } = booking;
-  if (deps.now() > openUntil(trip.departAt, trip.km)) return null;
+  if (deps.now() > openUntil(trip)) return null;
   return {
     passengerName: booking.passenger.firstName,
     from: trip.from,
     to: trip.to,
     departAt: trip.departAt,
+    departUntil: trip.departUntil,
     firstDepartAt: trip.firstDepartAt,
     km: trip.km,
     driver: {

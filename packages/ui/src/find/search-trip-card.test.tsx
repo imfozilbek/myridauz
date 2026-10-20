@@ -1,4 +1,4 @@
-import { DAY_MS, MINUTE_MS } from '@platform/contracts';
+import { DAY_MS, HOUR_MS, MINUTE_MS, slotAt, tashkentDate } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { renderMarket, trip } from '../market/market-test-kit';
@@ -25,5 +25,14 @@ describe('a trip in «Safarlar» (G59, G39)', () => {
     );
     expect(screen.getByText(/Butun salon: 285\s000/u)).toBeTruthy();
     expect(screen.queryByText('Tez orada joʻnaydi')).toBeNull();
+  });
+
+  it('shows a range «08:00 … 10:00» and no arrival (G90, docs/216)', () => {
+    const day = tashkentDate(Date.now() + DAY_MS);
+    const departAt = slotAt(day, '08:00');
+    const range = { ...trip, departAt, departUntil: departAt + 2 * HOUR_MS };
+    renderMarket(<SearchTripCard trip={range} onOpen={() => undefined} />, testClients({}));
+    expect(screen.getByText('08:00 … 10:00')).toBeTruthy();
+    expect(screen.queryByText(/≈/u)).toBeNull();
   });
 });

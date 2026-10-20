@@ -7,7 +7,7 @@ import { waitingOffers, waitingRequests } from './home-items';
 // most alive thing first; the time of a seat or a trip is said by the caller with its own words.
 export type TripsHint =
   | { readonly key: TranslationKey; readonly count: number }
-  | { readonly at: number }
+  | { readonly at: number; readonly until: number | null }
   | { readonly key: TranslationKey };
 
 const LIVE_TRIPS: readonly Trip['status'][] = ['active', 'full'];
@@ -20,7 +20,7 @@ export function passengerTripsHint(
   const confirmed = bookings.filter((booking) => booking.status === 'confirmed');
   const [only] = confirmed;
   if (confirmed.length > 1) return { key: 'home.tile.seats', count: confirmed.length };
-  if (only) return { at: only.trip.departAt };
+  if (only) return { at: only.trip.departAt, until: only.trip.departUntil };
   const asked = bookings.filter((booking) => booking.status === 'requested').length;
   if (asked > 0) return { key: 'home.tile.asked', count: asked };
   const offered = waitingOffers(requests, offers).length;
@@ -40,7 +40,7 @@ export function driverTripsHint(
   const waiting = live.reduce((sum, trip) => sum + waitingRequests(trip, bookings), 0);
   if (waiting > 0) return { key: 'home.newRequests', count: waiting };
   const next = nextTrip(trips, now);
-  if (next) return { at: next.departAt };
+  if (next) return { at: next.departAt, until: next.departUntil };
   if (trips.length === 0) return { key: 'home.tile.none' };
   return { key: 'home.driver.week', count: weekTrips(trips, now) };
 }

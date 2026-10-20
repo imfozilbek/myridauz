@@ -73,8 +73,9 @@ const growthDeps = (env: Bindings): Wiring | null => {
       // The car still takes people: open for booking, not on the way, not offered to one passenger
       // only (G64), G88 docs/193.
       const takes = trip.status === 'active' && !trip.departedAt && !trip.private;
-      const { from, to, departAt, price } = trip;
-      return { driverId, tripId: trip.id, from, to, departAt, price, seatsLeft: takes ? trip.seatsLeft : 0 };
+      const { from, to, departAt, departUntil, price } = trip;
+      const seatsLeft = takes ? trip.seatsLeft : 0;
+      return { driverId, tripId: trip.id, from, to, departAt, departUntil, price, seatsLeft };
     },
     loopMessage: async (input) => loopMessage(brand, input, await placesOf(env)),
     links: {

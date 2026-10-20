@@ -4,6 +4,7 @@ import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { PersonReviews } from '../feedback/driver-reviews';
 import { ManageGroup, ManagePage, ManageRow } from '../manage/manage-page';
+import { useTripTime } from '../trip/trip-time';
 import { otherPrice } from './other-price';
 import { usePlaceLabel } from './places-gate';
 import { TripDriver } from './trip-driver';
@@ -25,16 +26,21 @@ export function TripScreen({ trip, onBack, onPerson, children }: TripScreenProps
   useScreenView('market.trip');
   const { track } = useAnalytics();
   const { t, formatMoney, formatDate, formatWeekday, formatTime, formatNumber } = useI18n();
+  const tripTime = useTripTime();
   const way = useWayText();
   const place = usePlaceLabel();
   const day = new Date(trip.departAt);
   useEffect(() => {
     track({ name: 'trip_open', screen: 'market.trip' });
   }, [track]);
-  const times = t('common.route', {
-    from: formatTime(day),
-    to: t('market.trip.arrival', { time: formatTime(new Date(arrivalAt(trip.departAt, trip.km))) }),
-  });
+  // A range «08:00 … 10:00» shows no arrival (G90, docs/216).
+  const times =
+    trip.departUntil === null
+      ? t('common.route', {
+          from: formatTime(day),
+          to: t('market.trip.arrival', { time: formatTime(new Date(arrivalAt(trip.departAt, trip.km))) }),
+        })
+      : tripTime(trip);
   const recommended = otherPrice(trip);
   return (
     <ManagePage

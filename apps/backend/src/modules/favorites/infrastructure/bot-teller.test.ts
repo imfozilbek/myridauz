@@ -11,6 +11,7 @@ const trip = {
   from: '1726',
   to: '1730',
   departAt: Date.parse('2026-10-02T02:30:00Z'),
+  departUntil: null,
   seatsLeft: 2,
   price: 90_000,
   driver: { firstName: 'Jasur' },

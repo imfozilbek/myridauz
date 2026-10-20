@@ -14,6 +14,7 @@ type Seat = {
   readonly from: string;
   readonly to: string;
   readonly departAt: number;
+  readonly departUntil: number | null;
   readonly seatsLeft: number;
 };
 type OwnTrip = {
@@ -22,6 +23,7 @@ type OwnTrip = {
   readonly from: string;
   readonly to: string;
   readonly departAt: number;
+  readonly departUntil: number | null;
   readonly seatsLeft: number;
   readonly price: number;
 };

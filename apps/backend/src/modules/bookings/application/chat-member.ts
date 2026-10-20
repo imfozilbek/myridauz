@@ -1,4 +1,4 @@
-import { DAY_MS, HOUR_MS, arrivalAt, tashkentDayStart, type Booking } from '@platform/contracts';
+import { DAY_MS, HOUR_MS, tashkentDayStart, tripArrival, type Booking } from '@platform/contracts';
 import type { Member } from '../../chat';
 import { statusAt, type BookingRecord } from '../domain/booking';
 import type { BookingsDeps } from './ports';
@@ -47,7 +47,7 @@ async function talkOf(deps: BookingsDeps, bookingId: string): Promise<Talk> {
   const status = statusAt(booking, now, trip.over);
   // The day of writing counts from «Yetib keldik» when the car came, as on the screens (afterTrip).
   const talkMs = deps.limits.chat.afterTripHours * HOUR_MS;
-  const after = now < (trip.arrivedAt ?? arrivalAt(trip.departAt, trip.km)) + talkMs;
+  const after = now < (trip.arrivedAt ?? tripArrival(trip)) + talkMs;
   if (status === 'completed') return { canCall: after, canWrite: after };
   if (status === 'confirmed' || status === 'requested')
     return { canCall: status === 'confirmed', canWrite: true };

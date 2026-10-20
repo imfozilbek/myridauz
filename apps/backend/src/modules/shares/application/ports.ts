@@ -47,7 +47,7 @@ export type ShareTexts = {
   update(booking: Booking, update: ShareUpdate): string;
   cancelled(): string;
   // The driver moved the time (G75): who goes and when now.
-  retimed(name: string, departAt: number): string;
+  retimed(name: string, trip: Pick<Trip, 'departAt' | 'departUntil'>): string;
 };
 
 // The view has the public id only; the owner check needs the Telegram ID (docs/65 A3).

@@ -78,6 +78,7 @@ describe('the way back (mockup g63/4 screen 16)', () => {
       comment: '',
       date: '2026-10-03',
       time: '15:00',
+      until: null,
     });
     expect(returnTrip(trip, buildDirectory([]), departAt)).toBeNull();
   });

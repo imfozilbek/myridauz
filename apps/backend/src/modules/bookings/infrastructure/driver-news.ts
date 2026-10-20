@@ -35,11 +35,12 @@ function soonText(trip: Trip, bookings: readonly Booking[]): string {
   const riders = riding(bookings);
   const first = firstPickup(riders);
   const early = first?.booking.pitak ? AT_PITAK_EARLY_MINUTES * MINUTE_MS : 0;
-  return t('bot.dring.soon', {
-    count: String(riders.reduce((sum, booking) => sum + booking.seats, 0)),
-    time: formatTime(new Date(trip.departAt - early)),
-    place: first?.place ?? '',
-  });
+  const count = String(riders.reduce((sum, booking) => sum + booking.seats, 0));
+  const place = first?.place ?? '';
+  // A range: the first one waits from its start (G90, docs/216).
+  if (trip.departUntil !== null)
+    return t('bot.dring.soonRange', { count, time: formatTime(new Date(trip.departAt)), place });
+  return t('bot.dring.soon', { count, time: formatTime(new Date(trip.departAt - early)), place });
 }
 
 // The words of a ring; none for a new request (its own card) or a request answered meanwhile.

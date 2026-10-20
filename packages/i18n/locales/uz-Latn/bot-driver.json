@@ -35,6 +35,7 @@
   "dring.teamCancelled": "❌ Jamoa safaringizni bekor qildi. Sabab: {reason}",
   "dring.offerAccepted": "✅ {name} taklifingizni qabul qildi",
   "dring.soon": "🚏 Safarga 2 soat qoldi: {count} yoʻlovchi. Birinchisi {time} da kutadi: {place}",
+  "dring.soonRange": "🚏 Safarga 2 soat qoldi: {count} yoʻlovchi. Birinchisi {time} dan kutadi: {place}",
   "dring.came": "📍 {name} uchrashuv joyiga keldi",
   "dapp.title": "🪪 Haydovchi arizangiz",
   "dapp.checking": "✅ Yuborildi · ⏳ Tekshirilmoqda · Javob",

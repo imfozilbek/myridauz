@@ -29,7 +29,7 @@ export type TripDraft = {
 // asked again: who rides with the driver is new each time. The way back of «Qaytish» (G63) also
 // brings its day, its time and «Mashinada ayol bor» of the trip there (docs/40).
 export type TripAgain = Pick<TripDraft, 'pickupMode' | 'seats' | 'price' | 'comment'> &
-  Partial<Pick<TripDraft, 'bookingRule' | 'date' | 'time' | 'womanOnBoard'>>;
+  Partial<Pick<TripDraft, 'bookingRule' | 'date' | 'time' | 'until' | 'womanOnBoard'>>;
 
 type Known = {
   readonly now: number;

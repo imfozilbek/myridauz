@@ -5,13 +5,15 @@ import { Icon } from '../icons';
 import { usePlaces } from '../market/places-gate';
 import { openExternal } from '../telegram/feedback';
 import { DriverRow } from '../trip/driver-row';
+import { useTripTime } from '../trip/trip-time';
 
 // The driver and the two places of a shared trip (mockup g60/3): a place opens in a map. No phone
 // numbers here, ever (docs/07, docs/43).
 const FACE = 44;
 
 export function FollowDriver({ trip }: { readonly trip: SharedTrip }) {
-  const { t, formatTime, formatRating } = useI18n();
+  const { t, formatRating } = useI18n();
+  const tripTime = useTripTime();
   const directory = usePlaces();
   const { driver } = trip;
   const name = (id: string) => directory.find(id)?.name ?? '';
@@ -46,12 +48,7 @@ export function FollowDriver({ trip }: { readonly trip: SharedTrip }) {
         plate={trip.plate}
         photo={FACE}
       />
-      {place(
-        'from',
-        t('share.follow.meeting'),
-        `${name(trip.from)} · ${formatTime(new Date(trip.departAt))}`,
-        trip.meetingPoint,
-      )}
+      {place('from', t('share.follow.meeting'), `${name(trip.from)} · ${tripTime(trip)}`, trip.meetingPoint)}
       {place('to', t('way.book.dropoff'), name(trip.to), trip.dropoffPoint)}
     </div>
   );

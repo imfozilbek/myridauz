@@ -1,7 +1,8 @@
-import { arrivalAt, type Booking, type Point } from '@platform/contracts';
+import type { Booking, Point } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { useBookingEnds } from './booking-ends';
 import { TripPoint, TripRoad } from './trip-point';
+import { useArrivalTime, useTripTime } from './trip-time';
 import './trip-card.css';
 
 type Props = {
@@ -15,13 +16,23 @@ type Props = {
 // The one card of a booked trip (owner decision 06.10.2026, docs/118 path 3): the two points with
 // their times, then the seats and the sum. The booking, the call and the review show this card.
 export function TripCard({ booking, sum = true, onPoint }: Props) {
-  const { t, formatTime, formatMoney } = useI18n();
+  const { t, formatMoney } = useI18n();
+  const tripTime = useTripTime();
+  const arrival = useArrivalTime();
   const { start, end, startPoint, endPoint, regionName } = useBookingEnds(booking);
   const { trip } = booking;
   // After the trip the exact places are gone: each end with its region, the road between (g60/7).
   const past = booking.status === 'completed';
-  const departs = formatTime(new Date(trip.departAt));
-  const arrives = formatTime(new Date(arrivalAt(trip.departAt, trip.km)));
+  const departs = tripTime(trip);
+  // A range has no arrival: the end without a time (G90, docs/216).
+  const arrives = arrival(trip);
+  const toNote = past
+    ? arrives === null
+      ? regionName(trip.to)
+      : t('bookings.card.region', { region: regionName(trip.to), time: arrives })
+    : arrives === null
+      ? t('driverTrip.request.dropoff')
+      : t('bookings.card.dropoff', { time: arrives });
   const point = (kind: 'from' | 'to', name: string, note: string) => (
     <TripPoint
       kind={kind}
@@ -38,9 +49,7 @@ export function TripCard({ booking, sum = true, onPoint }: Props) {
           ? point('from', start, t('bookings.card.region', { region: regionName(trip.from), time: departs }))
           : point('from', start, t('bookings.card.pickup', { time: departs }))}
         {past ? <TripRoad km={trip.km} /> : null}
-        {past
-          ? point('to', end, t('bookings.card.region', { region: regionName(trip.to), time: arrives }))
-          : point('to', end, t('bookings.card.dropoff', { time: arrives }))}
+        {point('to', end, toNote)}
       </div>
       {sum ? (
         <div className="trip-card-sum">

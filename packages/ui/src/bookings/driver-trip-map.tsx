@@ -19,6 +19,7 @@ import { NavigatorSheet } from './navigator-sheet';
 import { StopCard } from './stop-card';
 import { useNavigator } from './use-navigator';
 import './driver-trip-map.css';
+import { useTripTime } from '../trip/trip-time';
 
 // The pin of a point, as big as on the mockup g63/4 screen 12.
 const PIN = 47;
@@ -39,7 +40,8 @@ type Props = {
 export function DriverTripMap({ trip, bookings, now, onPoint, onBack }: Props) {
   useScreenView('bookings.trip_map');
   useScreenBackground();
-  const { t, formatTime } = useI18n();
+  const { t } = useI18n();
+  const tripTime = useTripTime();
   const shortDay = useShortDay();
   const { map } = useApiClients();
   const { bg, brandStrong } = useBrand().theme.colors;
@@ -65,7 +67,7 @@ export function DriverTripMap({ trip, bookings, now, onPoint, onBack }: Props) {
     .reduce((sum, booking) => sum + booking.seats, 0);
   const title = t('way.map.title', {
     day: shortDay(tashkentDate(trip.departAt), now),
-    time: formatTime(new Date(trip.departAt)),
+    time: tripTime(trip),
     count: String(passengers),
   });
   const open = kind === 'pickups' ? onPoint : null;

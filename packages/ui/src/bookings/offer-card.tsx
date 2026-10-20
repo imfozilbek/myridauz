@@ -4,6 +4,7 @@ import { PersonBadge } from '../find/person-badge';
 import { useOneAtATime } from '../telegram/one-at-a-time';
 import { UzPlate } from '../plate/uz-plate';
 import './offer-card.css';
+import { useTripTime } from '../trip/trip-time';
 
 const PHOTO = 44;
 
@@ -18,7 +19,8 @@ type Props = {
 // One offer of a driver (G61, mockup 3-offers A): the face, the rating, the car with its plate, the
 // time and the share of a seat; «Rad etish» and «Qabul qilish» right in the card.
 export function OfferCard({ offer, onAnswer, onOpen }: Props) {
-  const { t, formatNumber, formatRating, formatTime } = useI18n();
+  const { t, formatNumber, formatRating } = useI18n();
+  const tripTime = useTripTime();
   const { driver } = offer;
   const accept = useOneAtATime(() => onAnswer('accept'));
   const decline = useOneAtATime(() => onAnswer('decline'));
@@ -53,7 +55,7 @@ export function OfferCard({ offer, onAnswer, onOpen }: Props) {
           </span>
         </span>
         <span className="offer-card-when">
-          <span className="offer-card-time">{formatTime(new Date(offer.departAt))}</span>
+          <span className="offer-card-time">{tripTime(offer)}</span>
           <span className="offer-card-price">{formatNumber(offer.price)}</span>
         </span>
       </button>

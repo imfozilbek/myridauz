@@ -1,7 +1,8 @@
-import { arrivalAt, type SharedTrip } from '@platform/contracts';
+import { firstTimed, tripArrival, type SharedTrip } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { usePlaces } from '../market/places-gate';
 import { usePlaceNames } from '../places/place-names';
+import { useTripTime } from '../trip/trip-time';
 
 const STEPS = ['boarded', 'on_the_way', 'arrived'] as const;
 // How far the trip went: no step before the car, all three once arrived.
@@ -11,6 +12,7 @@ const DONE = { waiting: 0, boarded: 1, on_the_way: 2, arrived: 3, completed: 3, 
 // the person is and when they arrive, then three steps of the way.
 export function FollowState({ trip }: { readonly trip: SharedTrip }) {
   const { t, formatDate, formatTime } = useI18n();
+  const tripTime = useTripTime();
   const directory = usePlaces();
   const { toward } = usePlaceNames(directory);
   const end = directory.find(trip.to);
@@ -31,8 +33,8 @@ export function FollowState({ trip }: { readonly trip: SharedTrip }) {
           {moved ? (
             <span className="follow-state-eta">
               {t('share.follow.moved', {
-                from: formatTime(new Date(trip.firstDepartAt)),
-                to: formatTime(new Date(trip.departAt)),
+                from: tripTime(firstTimed(trip)),
+                to: tripTime(trip),
               })}
             </span>
           ) : null}
@@ -40,14 +42,14 @@ export function FollowState({ trip }: { readonly trip: SharedTrip }) {
             <span className="follow-state-eta">
               {t('share.follow.eta', {
                 place: end ? toward(end) : '',
-                time: formatTime(new Date(arrivalAt(trip.departAt, trip.km))),
+                time: formatTime(new Date(tripArrival(trip))),
               })}
             </span>
           ) : (
             <span className="follow-state-eta">
               {t('share.follow.arrivedAt', {
                 place: directory.find(trip.to)?.name ?? '',
-                time: formatTime(new Date(arrivalAt(trip.departAt, trip.km))),
+                time: formatTime(new Date(tripArrival(trip))),
               })}
             </span>
           )}

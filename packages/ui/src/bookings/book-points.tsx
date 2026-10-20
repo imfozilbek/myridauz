@@ -12,6 +12,7 @@ import { useNameText } from '../way/way-end';
 import type { useBooking } from './book-state';
 import { NoteRow } from './note-row';
 import { PointsScreen, usePassengerWords } from './points-screen';
+import { useTripTime } from '../trip/trip-time';
 
 type Props = {
   readonly trip: Trip;
@@ -36,7 +37,8 @@ const GONE: readonly TranslationKey[] = [
 // two maps and the check. A row opens its map; «Soʻrov yuborish» works when both are chosen.
 export function BookPoints({ trip, choice, flow, route, onBack, onOthers, onSent }: Props) {
   useScreenView('bookings.points');
-  const { t, formatMoney, formatNumber, formatDate, formatTime } = useI18n();
+  const { t, formatMoney, formatNumber, formatDate } = useI18n();
+  const tripTime = useTripTime();
   const words = usePassengerWords();
   const { track } = useAnalytics();
   const { bookings } = useApiClients();
@@ -69,7 +71,7 @@ export function BookPoints({ trip, choice, flow, route, onBack, onOthers, onSent
       sub={t('bookings.points.sub', {
         route,
         date: formatDate(day),
-        time: formatTime(day),
+        time: tripTime(trip),
         seats: String(choice.seats),
       })}
       start={start}

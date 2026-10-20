@@ -20,7 +20,7 @@ export function ListGroup({ onAds }: { readonly onAds: () => void }) {
   const value = state.value;
   if (!value) return null;
   const waiting = (overview.value?.passengers ?? 0) + (overview.value?.drivers ?? 0);
-  const since = value.at === null ? '' : when(value.at);
+  const since = value.at === null ? '' : when(value.at, null);
   const change = async () => {
     await waitlist.setSwitch(!value.open);
     setAsking(false);

@@ -2,13 +2,14 @@ import { arrivalAt, DAY_MS, tashkentDate, type Trip } from '@platform/contracts'
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Places } from '../../../shared/places/end-names';
 import { escapeHtml } from '../../../shared/telegram/html';
+import { tripTimeShort } from '../../../shared/telegram/trip-time';
 
 const { t, formatDate, formatTime } = createI18n(DEFAULT_LOCALE);
 
 // The pieces of the channel posts (G68, docs/122, mockup g68/5).
 
 // «Bugun», «Ertaga, 8-oktabr», later «10-oktabr».
-export function dayLabel(at: number, now: number): string {
+function dayLabel(at: number, now: number): string {
   const day = tashkentDate(at);
   if (day === tashkentDate(now)) return t('market.day.today');
   const date = formatDate(new Date(at));
@@ -17,13 +18,19 @@ export function dayLabel(at: number, now: number): string {
 }
 
 export const timeOf = (at: number) => formatTime(new Date(at));
-// «Ertaga, 8-oktabr · 08:00 → ≈ 13:10»: when it leaves and about when it comes.
+// «Ertaga, 8-oktabr · 11:00»: the day and the time it leaves, a range «08:00 … 10:00» (docs/216).
+export const atLine = (trip: Trip, now: number) =>
+  t('bot.channel.at', { day: dayLabel(trip.departAt, now), time: tripTimeShort(trip) });
+// «Ertaga, 8-oktabr · 08:00 → ≈ 13:10»: when it leaves and about when it comes; a range has no
+// arrival (G90).
 export const whenLine = (trip: Trip, now: number) =>
-  t('bot.channel.when', {
-    day: dayLabel(trip.departAt, now),
-    depart: timeOf(trip.departAt),
-    arrive: timeOf(arrivalAt(trip.departAt, trip.km)),
-  });
+  trip.departUntil === null
+    ? t('bot.channel.when', {
+        day: dayLabel(trip.departAt, now),
+        depart: timeOf(trip.departAt),
+        arrive: timeOf(arrivalAt(trip.departAt, trip.km)),
+      })
+    : atLine(trip, now);
 
 const nameOf = (id: string, places: Places) => escapeHtml(places.get(id)?.name ?? id);
 // «Chilonzor → Urgut»: the places only, for the short posts and the board of the day.
