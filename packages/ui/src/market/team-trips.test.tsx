@@ -66,7 +66,7 @@ describe('the trips of the team day by day (docs/90 F-A6)', () => {
     await waitFor(() => expect(screen.queryByText('Safarni bekor qilish')).toBeNull());
   });
 
-  // G90 ADM-4: after «Keldi» or «Kelmadi» at the point the ride has begun and the server refuses the
+  // G91 ADM-4: after «Keldi» or «Kelmadi» at the point the ride has begun and the server refuses the
   // cancel of the team (G63): the trip has no button.
   it('has no cancel once the meeting at the point began', async () => {
     const id = '2f6c2b9e-1d2a-4c3b-9e8f-7a6b5c4d3e2f';
@@ -84,7 +84,7 @@ describe('the trips of the team day by day (docs/90 F-A6)', () => {
     expect(screen.queryByText('Safarni bekor qilish')).toBeNull();
   });
 
-  // G90 ADM-2: the card of a person is the owner's (ownerOnly): for a moderator the rows of the trip
+  // G91 ADM-2: the card of a person is the owner's (ownerOnly): for a moderator the rows of the trip
   // only read, never a tap that ends on «Xatolik».
   it('a moderator reads the driver and the passengers, the owner opens them', async () => {
     const id = '3f6c2b9e-1d2a-4c3b-9e8f-7a6b5c4d3e2f';

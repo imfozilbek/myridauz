@@ -25,7 +25,7 @@ export const waitingCases = async (env: Bindings) => teamWork(await casesOf(env)
 
 // What rings under «Navbat» (docs/122): a case after an empty queue, a case its member left too long
 // (in team hours), an urgent complaint (day and night).
-// sides: the people of a complaint; a moderator among them does not hear of it (G90 ADM-3).
+// sides: the people of a complaint; a moderator among them does not hear of it (G91 ADM-3).
 export type QueueNews =
   | { readonly kind: 'new'; readonly sides?: readonly number[] }
   | { readonly kind: 'late'; readonly memberIds: readonly number[]; readonly text: string }
@@ -46,7 +46,7 @@ function ringsOf(news: QueueNews | undefined, members: Member[], teamTime: boole
   const sides = news?.sides;
   const heard = members.filter((member) => hears(member, sides));
   if (news?.kind === 'urgent') return heard.map(({ id }) => navbatRing(id, news.text, false, news.markup));
-  // A case after an empty own queue (G90: a complaint about a member is not in his).
+  // A case after an empty own queue (G91: a complaint about a member is not in his).
   if (news?.kind === 'new')
     return heard.filter(({ total }) => total === 1).map(({ id }) => newCaseRing(id, !teamTime));
   return [];
@@ -60,7 +60,7 @@ export async function showQueue(env: Bindings, news?: QueueNews): Promise<void> 
     const now = Date.now();
     const [cases, members] = await Promise.all([casesOf(env), teamMembers(env)]);
     const { hours } = brand.moderation;
-    // Each card counts the work of its member, as «Navbat» of the app does (G90 ADM-3, ADM-9).
+    // Each card counts the work of its member, as «Navbat» of the app does (G91 ADM-3, ADM-9).
     const queues = members.map((member) => ({
       member,
       queue: queueOf(workOf(cases, member.id, member.role === 'owner'), now, hours),

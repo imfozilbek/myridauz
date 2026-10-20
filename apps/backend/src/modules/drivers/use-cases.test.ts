@@ -65,7 +65,7 @@ describe('driver application (docs/04)', () => {
     expect(await myApplication(deps, 1)).toMatchObject({ status: 'rejected', reasons: ['fake_profile'] });
   });
 
-  // Decision 1 of the owner (20.10.2026, G90 DRV-1): a new face of an approved driver goes to the
+  // Decision 1 of the owner (20.10.2026, G91 DRV-1): a new face of an approved driver goes to the
   // check of photos like any face; the driver stays a driver. A new car photo goes back to the check.
   it('keeps an approved driver after a new face, sends him back to the check after a new car photo', async () => {
     const { deps, drivers, photos } = setup();
@@ -80,7 +80,7 @@ describe('driver application (docs/04)', () => {
     expect(drivers.has(1)).toBe(false);
   });
 
-  // Decision 2 of the owner (20.10.2026, G90 DRV-2): «Rad etish» is the last word for a new
+  // Decision 2 of the owner (20.10.2026, G91 DRV-2): «Rad etish» is the last word for a new
   // application only; a new car of an approved driver gets «Tuzatish» or a block.
   it('never rejects for good the new car of an approved driver', async () => {
     const { deps, photos } = setup();

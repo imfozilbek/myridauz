@@ -43,7 +43,7 @@ function Favorites({ onBack }: { readonly onBack: () => void }) {
   const { comfort } = useApiClients();
   const { value, failed, reload, refresh } = useLoad(() => comfort.favorites(), 'favorites');
   const [opened, setOpened] = useState<string | null>(null);
-  // The saved driver whose sheet is open (G90 PAS-4).
+  // The saved driver whose sheet is open (G91 PAS-4).
   const [picked, setPicked] = useState<FavoriteDriver | null>(null);
   if (opened) return <TripById id={opened} onClose={() => setOpened(null)} />;
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;

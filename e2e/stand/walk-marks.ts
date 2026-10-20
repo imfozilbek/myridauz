@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 
-// What the walk of the screens (G90) reads besides the words: the marks of the controls, the sounds,
+// What the walk of the screens (G91) reads besides the words: the marks of the controls, the sounds,
 // and the screens the app reports.
 // A sound is a change too (the sounds of «Ovozlar», G54): every start of one is counted.
 export const countSounds = (page: Page) =>

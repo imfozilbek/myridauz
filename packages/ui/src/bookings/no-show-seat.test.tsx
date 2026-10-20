@@ -20,7 +20,7 @@ const open = (booking: Booking = missed) =>
     }),
   );
 
-// G90 PAS-1: after the driver's «Kelmadi» the page of the seat says what the main screen says:
+// G91 PAS-1: after the driver's «Kelmadi» the page of the seat says what the main screen says:
 // marked as not come, write to support if it is a mistake. Nothing of a live seat is left on it.
 describe('the page of a seat the driver marked «Kelmadi»', () => {
   it('says so, offers support, and has no meeting, sharing or cancel', async () => {
@@ -48,7 +48,7 @@ describe('the page of a seat the driver marked «Kelmadi»', () => {
   });
 });
 
-// G90 PAS-7: «Yetib keldim» of hers or «Yetib keldik» of the driver ends the ride at once (docs/129):
+// G91 PAS-7: «Yetib keldim» of hers or «Yetib keldik» of the driver ends the ride at once (docs/129):
 // the page is the page after the trip with the stars, though the server keeps the seat confirmed.
 describe('the page of a seat right after the arrival', () => {
   it('is the page after the trip, with the stars', async () => {

@@ -40,7 +40,7 @@ function SoundSets({ loaded, onBack }: { readonly loaded: SoundsState; readonly 
     try {
       setState(await sounds.pick(set));
     } catch (caught) {
-      // The pick did not go through: the reason, never a silent tap (G90 ADM-10).
+      // The pick did not go through: the reason, never a silent tap (G91 ADM-10).
       fail(caught);
     } finally {
       setBusy(false);

@@ -71,7 +71,7 @@ describe('a block during a trip on the way', () => {
     expect(await read(call('/me', DRIVER, { app: 'driver' }))).toMatchObject({ state: 'blocked' });
   });
 
-  // G90 PAS-8: the close people follow the trip on the way: a passenger blocked on the road still
+  // G91 PAS-8: the close people follow the trip on the way: a passenger blocked on the road still
   // shares it and stops sharing, as the steps of the trip.
   it('lets a passenger blocked on the road share the trip and stop sharing', async () => {
     vi.useRealTimers();

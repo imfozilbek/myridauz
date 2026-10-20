@@ -7,7 +7,7 @@ import { workOf as ownCases, type Case } from '../domain/queue';
 import { brandOf } from '../../../shared/brand/brand-of';
 
 // «Bugun qildingiz · kutmoqda · oʻrtacha · 30 daqiqadan oshgan» of a member (mockup g67/1, G75): the
-// own decisions of today from the journal, the cases waiting in the own «Navbat» (G90 ADM-9).
+// own decisions of today from the journal, the cases waiting in the own «Navbat» (G91 ADM-9).
 export const workRoutes = (cases: (env: Bindings) => Promise<Case[]>) =>
   new Hono<AppEnv>().get(ADMIN_WORK_PATH, teamOnly, async (context) => {
     const { env } = context;

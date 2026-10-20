@@ -48,7 +48,7 @@ export function TalkAction({ request, onSent, onTrip, className = 'talk-action' 
     offering.short(need, request);
   };
   // A live trip that the request does not fit: as on the board, a new offer waits until the trip is
-  // over; the server refuses it (one at a time, docs/172, G90 DRV-4).
+  // over; the server refuses it (one at a time, docs/172, G91 DRV-4).
   if (board?.busy && !trip) return <p className="board-busy">{t('requests.board.busy')}</p>;
   return (
     <>

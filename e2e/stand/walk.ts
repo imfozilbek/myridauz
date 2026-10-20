@@ -7,7 +7,7 @@ import { order, press, standsFor } from './walk-moves';
 import { readScreen, shape, type ScreenState, type Target } from './walk-screen';
 import type { Finding, FindingKind, WalkReport } from './walk-types';
 
-// The walk of the screens (G90): from the main screen the robot taps every target of every screen it
+// The walk of the screens (G91): from the main screen the robot taps every target of every screen it
 // reaches, as a person may, and writes down where a person gets stuck (the kinds: walk-types.ts).
 const { t } = createI18n(DEFAULT_LOCALE);
 // A walk of one person stops after this: the stand runs several people in one file.

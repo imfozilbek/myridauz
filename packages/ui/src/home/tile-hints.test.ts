@@ -16,7 +16,7 @@ describe('the words under «Mening safarlarim» of a passenger (G76, mockup g76/
     });
   });
 
-  // G90 PAS-1: a seat the driver marked «Kelmadi» is not ridden: no time of it under the tile.
+  // G91 PAS-1: a seat the driver marked «Kelmadi» is not ridden: no time of it under the tile.
   it('does not count a seat marked «Kelmadi»', () => {
     expect(passengerTripsHint([{ ...seat, noShowAt: trip.departAt }], [], [])).toEqual({
       key: 'home.tile.none',

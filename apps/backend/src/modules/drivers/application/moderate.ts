@@ -86,7 +86,7 @@ export async function decideApplication(
   const application = await deps.applications.find(userId);
   if (!application) return { ok: false, error: 'drivers.not_found' };
   // «Rad etish» is the last word for a new application only: a driver approved once gets «Tuzatish»
-  // or a block (owner decision 20.10.2026, G90 DRV-2).
+  // or a block (owner decision 20.10.2026, G91 DRV-2).
   if (decision.action === 'reject' && (await approvedOnce(deps, userId)))
     return { ok: false, error: 'drivers.wrong_status' };
   const next = decide(application, decision, moderatorId, deps.now());
@@ -106,7 +106,7 @@ export async function decideApplication(
 }
 
 // A face the team asked to retake is fixed; a new face of an approved driver is the check of faces,
-// not of the application (G90 DRV-1).
+// not of the application (G91 DRV-1).
 export async function avatarChanged(deps: DriversDeps, userId: number): Promise<void> {
   const application = await deps.applications.find(userId);
   const next = application ? afterAvatarChange(application, deps.now()) : null;

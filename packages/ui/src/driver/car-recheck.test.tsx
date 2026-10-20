@@ -47,7 +47,7 @@ function openApproved() {
   return { container, uploadPhoto, onClose };
 }
 
-// Decision 3 of the owner (20.10.2026, G90 DRV-3): a new photo of an approved car sends it to the
+// Decision 3 of the owner (20.10.2026, G91 DRV-3): a new photo of an approved car sends it to the
 // check again. It is said before the first photo; after it, leaving without «Yuborish» asks.
 describe('a new photo of an approved car', { timeout: 20_000 }, () => {
   it('is warned about before the camera, and leaving after it asks', async () => {

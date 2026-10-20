@@ -40,7 +40,7 @@ function TeamTrips({ onBack }: { readonly onBack: () => void }) {
   const [open, setOpen] = useState<Trip | null>(null);
   // The card of the driver or of a passenger; back returns to the same trip (G78 sheet 4).
   const [person, setPerson] = useState<PersonId | null>(null);
-  // The card of a person is the owner's: a moderator reads the rows (G90 ADM-2).
+  // The card of a person is the owner's: a moderator reads the rows (G91 ADM-2).
   const onPerson = useTeamOwner() ? setPerson : undefined;
   // «Bronni ochish» under a support question: ?open=trips&trip=<id> (G68, mockup g68/4).
   const [linked, setLinked] = useState(() => launchParam(TRIP_LINK, LINK_ID));

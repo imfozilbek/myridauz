@@ -48,9 +48,9 @@ export function ConfirmedBooking(props: Props) {
   const brand = useBrand();
   const steps = useSeatSteps(booking, onTold);
   const support = useOpenSupport();
-  // The driver marked «Kelmadi»: the seat is not ridden, nothing of a live seat is left (G90 PAS-1).
+  // The driver marked «Kelmadi»: the seat is not ridden, nothing of a live seat is left (G91 PAS-1).
   const missed = booking.noShowAt !== null;
-  // After the arrival the ride is over at once: the page after the trip (G90 PAS-7).
+  // After the arrival the ride is over at once: the page after the trip (G91 PAS-7).
   const status = shownStatus(booking);
   const meeting = !missed && meetingTime(booking, Date.now(), brand.schedule.meetMinutes);
   return (

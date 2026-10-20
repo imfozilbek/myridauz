@@ -23,7 +23,7 @@ const G27_CODES = [
   'reviews.published',
   'bookings.has_seat',
   'bookings.offer_unavailable',
-  // G90 (texts 1, 2, 3, 9 on the owner's approval, 20.10.2026): a thing that is gone for good.
+  // G91 (texts 1, 2, 3, 9 on the owner's approval, 20.10.2026): a thing that is gone for good.
   'trips.not_found',
   'users.not_found',
   'reviews.not_found',

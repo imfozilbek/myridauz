@@ -17,7 +17,7 @@ type Props = {
   readonly onOpen: (screen: 'chat' | 'call' | 'complaint' | 'review') => void;
   readonly onCancel: (() => void) | null;
   readonly onOthers: () => void;
-  // The driver marked «Kelmadi»: the chat and support are left, as on the main screen (G90 PAS-1).
+  // The driver marked «Kelmadi»: the chat and support are left, as on the main screen (G91 PAS-1).
   readonly missed: boolean;
   readonly children?: ReactNode;
 };
@@ -88,7 +88,7 @@ const freeSeats = ({ status, boardedAt, trip }: Booking) =>
   trip.seatsLeft > 0;
 
 // What the last step told the close people, with «stop» while they follow (docs/43); it stays on the
-// page after the arrival too (G90 PAS-7).
+// page after the arrival too (G91 PAS-7).
 export function SeatNote({ steps }: { readonly steps: ReturnType<typeof useSeatSteps> }) {
   const { t } = useI18n();
   if (!steps.note) return null;

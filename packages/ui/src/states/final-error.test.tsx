@@ -9,7 +9,7 @@ import { testClients } from '../test-shell';
 
 afterEach(cleanup);
 
-// G90 ERR-1: an answer that never changes (the rating time is over, the screen is the owner's) says
+// G91 ERR-1: an answer that never changes (the rating time is over, the screen is the owner's) says
 // its reason and leads back; «Qayta urinish» there would fail forever.
 describe('a screen that cannot load for good', () => {
   it('an old link of the rating says the time is over and goes back', async () => {
@@ -61,7 +61,7 @@ describe('a screen that cannot load for good', () => {
     expect(await screen.findByText('Qayta urinish')).toBeTruthy();
   });
 
-  // G90 texts 1, 3 (owner, 20.10.2026): a trip that is gone, a rating of a ride that was not hers.
+  // G91 texts 1, 3 (owner, 20.10.2026): a trip that is gone, a rating of a ride that was not hers.
   it('a rating that cannot be given says so', async () => {
     renderMarket(
       <ReviewScreen bookingId={confirmed.id} onBack={() => undefined} onComplain={() => undefined} />,

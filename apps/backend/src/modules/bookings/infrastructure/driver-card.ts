@@ -23,7 +23,7 @@ const { t, formatMoney, formatTime } = createI18n(DEFAULT_LOCALE);
 type Stage = 'published' | 'onWay' | 'arrived' | 'cancelled';
 
 // On the road once the driver tapped «Yoʻlga chiqdim»: the time alone does not, as in the app
-// (G90 DRV-12).
+// (G91 DRV-12).
 function stageOf(trip: Trip): Stage {
   if (trip.status === 'cancelled') return 'cancelled';
   if (trip.status === 'completed' || trip.arrivedAt !== null) return 'arrived';
@@ -104,7 +104,7 @@ type Facts = {
 export function driverCard({ brand, chatId, trip, bookings, places, now, via }: Facts): Card {
   const stage = stageOf(trip);
   const onWay = stage === 'onWay';
-  // Its time came: the order of the road, after midnight too (G90).
+  // Its time came: the order of the road, after midnight too (G91).
   const tripDay = onWay || onTheWay(trip, now) || tashkentDate(trip.departAt) === tashkentDate(now);
   const people = tripDay ? roadLines(bookings.filter(riding)) : passengerLines(bookings);
   const text = [

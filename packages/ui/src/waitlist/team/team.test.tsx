@@ -88,7 +88,7 @@ describe('«Kutayotganlar» and the «gold» of «Statistika» (docs/181, docs/1
     await waitFor(() => expect(openDirection).toHaveBeenCalledWith('1718'));
   });
 
-  // G90 ADM-1: opening a direction is the owner's (ownerOnly): a moderator reads it, no button.
+  // G91 ADM-1: opening a direction is the owner's (ownerOnly): a moderator reads it, no button.
   it('a moderator reads a direction and cannot open it', async () => {
     const clients = testClients({
       moderation: { me: async () => ({ id: null, firstName: 'Nodir', hasAvatar: false, role: 'moderator' }) },

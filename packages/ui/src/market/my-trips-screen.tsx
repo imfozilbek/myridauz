@@ -54,7 +54,7 @@ function MyTrips({ onBack, link, tripScreen }: ScreenProps) {
   const booking = opened?.bookingId ? value?.[1].find((item) => item.id === opened.bookingId) : undefined;
   // A bot button or the block opens its trip or the booking of an accepted offer (docs/65 B5); the
   // row of the passenger in the details of «Hamyon» opens that booking (G65); an offer that ended
-  // without a seat is on «Oʻtgan» (G90 DRV-10).
+  // without a seat is on «Oʻtgan» (G91 DRV-10).
   useLinkOpen(link, fresh ? value : null, (open, [, booked, offers]) => {
     const linked = offers.find((item) => open.name === OFFER_LINK && item.id === open.id);
     const bookingId = open.name === BOOKING_LINK ? open.id : linked?.bookingId;

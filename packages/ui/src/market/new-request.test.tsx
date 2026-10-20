@@ -47,7 +47,7 @@ describe('«Soʻrov qoldirish» on one screen (G61, docs/118 path 4)', { timeout
     );
   });
 
-  // G90 WALK-1: the button never does nothing in silence (many phones give no vibration): it opens
+  // G91 WALK-1: the button never does nothing in silence (many phones give no vibration): it opens
   // the point still missing, then sends.
   it('opens the point still missing instead of sending, then the other one', async () => {
     const publishRequest = openRequest();

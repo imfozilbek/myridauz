@@ -49,7 +49,7 @@ describe('the reminders of a support question', () => {
   });
 });
 
-// G90 ADM-3: a complaint about a moderator is not theirs to decide: the reminder skips them.
+// G91 ADM-3: a complaint about a moderator is not theirs to decide: the reminder skips them.
 describe('the reminders of a complaint about a member of the team', () => {
   it('ring the rest of the team', async () => {
     const complaint: WaitingCase = {

@@ -8,7 +8,7 @@ export type WaitingCase = {
   readonly id: string;
   readonly name: string;
   readonly since: number;
-  // The people of a complaint: a moderator among them leaves it to the others (G90 ADM-3).
+  // The people of a complaint: a moderator among them leaves it to the others (G91 ADM-3).
   readonly sides?: readonly number[];
 };
 

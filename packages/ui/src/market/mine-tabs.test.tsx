@@ -6,7 +6,7 @@ import { MyRequestsScreen } from './my-requests-screen';
 
 afterEach(cleanup);
 
-// G90 WALK-2: the open tab says so to TalkBack and VoiceOver, not only by a bold word.
+// G91 WALK-2: the open tab says so to TalkBack and VoiceOver, not only by a bold word.
 describe('the tabs of «Mening safarlarim»', () => {
   it('mark the open tab as selected', async () => {
     renderMarket(

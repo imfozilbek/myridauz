@@ -37,7 +37,7 @@ type Props = {
   // A fix opened by «Tuzatish» with one photo to retake: its camera opens at once (G79 В16).
   readonly shoot?: boolean;
   readonly failure: TranslationKey | null;
-  // Said before the camera opens: a new photo of an approved car (G90 DRV-3).
+  // Said before the camera opens: a new photo of an approved car (G91 DRV-3).
   readonly warn?: TranslationKey;
   readonly onPhotos: (application: DriverApplication) => void;
   readonly onChange: () => void;

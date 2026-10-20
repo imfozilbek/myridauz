@@ -40,7 +40,7 @@ describe('calls that are not set up', () => {
     expect(screen.queryByText('Qoʻngʻiroq')).toBeNull();
   });
 
-  // G90 PAS-12: the button under the cards of the main screen follows the same rule.
+  // G91 PAS-12: the button under the cards of the main screen follows the same rule.
   it('shows no «Qoʻngʻiroq» under a card of the main screen', () => {
     renderInShell(
       <CallsOnContext.Provider value={false}>

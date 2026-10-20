@@ -9,7 +9,7 @@ import { useCallsOn } from '../call/calls-on';
 type Props = {
   readonly booking: Booking;
   readonly onOpen: (screen: 'chat' | 'call' | 'complaint' | 'review') => void;
-  // The driver marked «Kelmadi»: the ride was not hers, no stars (G90 PAS-1).
+  // The driver marked «Kelmadi»: the ride was not hers, no stars (G91 PAS-1).
   readonly missed?: boolean;
 };
 

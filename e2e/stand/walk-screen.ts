@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test';
 import { telegramEvents } from '../telegram-mock';
 
-// What the walk of the screens (G90) reads from a screen: the way out, the buttons, the words.
+// What the walk of the screens (G91) reads from a screen: the way out, the buttons, the words.
 // A tap target is any element a person can press: buttons, links, rows with role=button, switches.
 export type Target = { readonly label: string; readonly nth: number };
 export type ScreenState = {

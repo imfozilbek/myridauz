@@ -34,7 +34,7 @@ export const markOnceSql = (step: DriverMeetStep) =>
   WHERE id = ?2 AND status = 'confirmed' AND ${MARK[step].guard}`;
 
 // «Men keldim» and «Yetib keldim» of the passenger, once each, only on a seat still confirmed and
-// not marked «Kelmadi»: a copy read before the driver's cancel or mark changes nothing (G89 B9, G90).
+// not marked «Kelmadi»: a copy read before the driver's cancel or mark changes nothing (G89 B9, G91).
 const STEP = {
   came: { set: 'came_at = ?1', guard: 'came_at IS NULL' },
   arrived: { set: 'arrived_at = ?1, boarded_at = COALESCE(boarded_at, ?1)', guard: 'arrived_at IS NULL' },

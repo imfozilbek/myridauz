@@ -18,7 +18,7 @@ const back = () => undefined;
 const RETRY = 'Qayta urinish';
 const SAID = 'Birozdan keyin qayta urinib koʻring.';
 
-// G90 ADM-10: a failure of the team screens is said with «Qayta urinish», never an endless skeleton,
+// G91 ADM-10: a failure of the team screens is said with «Qayta urinish», never an endless skeleton,
 // an empty list or a tap that does nothing.
 describe('a failure on a screen of the team', { timeout: 20_000 }, () => {
   it('of a screen that loads: the error with «Qayta urinish»', async () => {

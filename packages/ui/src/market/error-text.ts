@@ -74,12 +74,12 @@ const EXPLAINED: readonly string[] = [
   'bookings.has_seat',
   // G89 B5, U8: the driver of the offer is short of money for the commission.
   'bookings.offer_unavailable',
-  // G90 texts 1, 2, 3, 9 (owner, 20.10.2026): a trip, a person, a rating, an application gone for good.
+  // G91 texts 1, 2, 3, 9 (owner, 20.10.2026): a trip, a person, a rating, an application gone for good.
   'trips.not_found',
   'users.not_found',
   'reviews.not_found',
   'drivers.not_found',
-  // G90 text 4: a second request of a passenger (PAS-2).
+  // G91 text 4: a second request of a passenger (PAS-2).
   'trips.request_open',
 ];
 
@@ -109,7 +109,7 @@ export function errorKey(
   return (answered && codeKey(answered)) || fallback;
 }
 
-// An answer a retry never changes: the API said no to this person or about this thing (G90 ERR-1).
+// An answer a retry never changes: the API said no to this person or about this thing (G91 ERR-1).
 // No answer, a lost launch (the gate signs again), too many taps or a busy server pass on a retry.
 const RETRIED = new Set([0, 401, 408, 429]);
 const SERVER = 500;

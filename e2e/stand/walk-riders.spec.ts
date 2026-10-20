@@ -1,7 +1,7 @@
 import { ASKER, DONE, PAST_DRIVER, requestWithOffer, rideOfToday } from './walk-cast';
 import { walkEach } from './walk-report';
 
-// The walk of the screens (G90): a passenger with a request and an offer on it, and the two sides of
+// The walk of the screens (G91): a passenger with a request and an offer on it, and the two sides of
 // a ride that ended an hour ago. Findings: screenshots/stand/walk/<name>.md.
 walkEach(
   [

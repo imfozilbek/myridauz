@@ -53,7 +53,7 @@ export function RequestPoints({ answer, recommendation, pitak, onAnswer, onEnd, 
   if (mine) return <ExistingRequest from={route.from.id} to={route.to.id} date={date} onClose={closeMine} />;
   const publish = async () => {
     setError(null);
-    // A point still missing opens, never a tap that does nothing in silence (G90 WALK-1).
+    // A point still missing opens, never a tap that does nothing in silence (G91 WALK-1).
     if (!mode || (mode === 'door' && !pickup?.point)) return onEnd('pickup');
     if (!dropoff?.point) return onEnd('dropoff');
     try {

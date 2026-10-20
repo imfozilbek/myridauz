@@ -84,7 +84,7 @@ function tripStates(trip: Trip, lists: Lists, now: number, meet: number): Driver
   const people = own(trip, lists.bookings);
   if (tripPast(trip)) {
     const fresh = now < tripEndsAt(trip.departAt, trip.km) + lists.rateDays * DAY_MS;
-    // «Yetib keldik» ends the ride at once: a seat still confirmed until the end time rode (G90 DRV-7).
+    // «Yetib keldik» ends the ride at once: a seat still confirmed until the end time rode (G91 DRV-7).
     const rode = (one: Booking) => one.status === 'completed' || one.status === 'confirmed';
     const unrated = people.some((one) => rode(one) && one.rated !== true && one.noShowAt === null);
     return fresh && unrated ? [{ kind: 'ended', trip }] : [];

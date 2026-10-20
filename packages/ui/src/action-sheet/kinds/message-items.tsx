@@ -22,7 +22,7 @@ export function useMessageItems(directory: PlaceDirectory): ActionItem[] {
   const openChat = useOpenChat();
   const words = useSheetWords(directory);
   const { value, refresh } = useUnreadLoad();
-  // «Chatni ochish» of a message read since then: no sheet, its chat (G90 BOT-2).
+  // «Chatni ochish» of a message read since then: no sheet, its chat (G91 BOT-2).
   useEffect(() => {
     const named = namedSheet();
     if (!value || named === null || !CHAT_KEY.test(named) || value.some(({ key }) => key === named)) return;

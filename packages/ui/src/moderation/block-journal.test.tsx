@@ -36,7 +36,7 @@ describe('the block journal of a person', () => {
     expect(await screen.findByText('Hozir bloklanmagan')).toBeTruthy();
   });
 
-  // G90 ADM-11: lifting a block is the owner's (ownerOnly): a moderator reads the journal only.
+  // G91 ADM-11: lifting a block is the owner's (ownerOnly): a moderator reads the journal only.
   it('has no «Blokdan chiqarish» for a moderator', async () => {
     const clients = testClients({
       moderation: {

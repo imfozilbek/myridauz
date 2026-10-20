@@ -7,7 +7,7 @@ import { openAs, type Person } from './stand-kit';
 import { walk } from './walk';
 import type { Finding, WalkReport } from './walk-types';
 
-// pnpm stand:walk (G90, docs/75): the walk changes the data of the stand as a person does (books,
+// pnpm stand:walk (G91, docs/75): the walk changes the data of the stand as a person does (books,
 // cancels, sends), so it runs on its own fresh stand, never inside the other scenarios.
 const WALKING = process.env['STAND_WALK'] === '1';
 const DIR = 'screenshots/stand/walk';

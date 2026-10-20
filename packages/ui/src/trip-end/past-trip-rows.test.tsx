@@ -64,7 +64,7 @@ describe('«Safardan keyin» of the driver: who a row is about (docs/129, mockup
     expect(await screen.findByText('chat Madina')).toBeTruthy();
   });
 
-  // G90 DRV-11: nobody rode: no rows that open nothing, only what the trip cost.
+  // G91 DRV-11: nobody rode: no rows that open nothing, only what the trip cost.
   it('a trip nobody rode has only the row of the commission', async () => {
     openPast([]);
     expect(await screen.findByText('Safardan keyin')).toBeTruthy();

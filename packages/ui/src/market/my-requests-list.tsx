@@ -21,7 +21,7 @@ import { shownStatus } from '../bookings/booking-status';
 
 // The memory of the passenger's «Mening safarlarim»: data, pages and place (docs/94 F2).
 export const MY_REQUESTS = 'market.mine.requests';
-// A seat the driver marked «Kelmadi», and a ride after the arrival, go to the past ones (G90 PAS-1, PAS-7).
+// A seat the driver marked «Kelmadi», and a ride after the arrival, go to the past ones (G91 PAS-1, PAS-7).
 const isLive = (booking: Booking) =>
   (booking.status === 'requested' || shownStatus(booking) === 'confirmed') && booking.noShowAt === null;
 // An open request waits for offers; one whose day is over stays with «Qayta yuborish» (mockup g75/2 A).

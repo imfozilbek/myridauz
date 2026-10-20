@@ -70,7 +70,7 @@ describe('the trip card of the driver bot (G68, docs/122, mockup g68/3)', () => 
     expect(buttons(shown)).toContain('Yetib keldik');
   });
 
-  // G90 DRV-12: the time alone does not put the car on the road, as in the app: no «Yoʻldasiz» and no
+  // G91 DRV-12: the time alone does not put the car on the road, as in the app: no «Yoʻldasiz» and no
   // «Yetib keldik» before «Yoʻlga chiqdim»; no more sharing either, the trip takes nobody now.
   it('past its time but not departed: still before the road, without sharing', async () => {
     const [madina, sardor] = await two();
@@ -80,7 +80,7 @@ describe('the trip card of the driver bot (G68, docs/122, mockup g68/3)', () => 
     expect(buttons(shown)).not.toContain('Yetib keldik');
     expect(buttons(shown)).toContain(`?mytrip=${madina.trip.id}`);
     expect(buttons(shown)).not.toContain('t.me/share');
-    // 23:55 in Tashkent, the card edited after midnight: still the order of the road (G90 review).
+    // 23:55 in Tashkent, the card edited after midnight: still the order of the road (G91 review).
     const late = Date.parse('2026-10-20T18:55:00Z');
     const night = (seat: Booking) => ({
       ...seat,

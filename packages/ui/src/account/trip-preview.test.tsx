@@ -53,7 +53,7 @@ describe('a trip of a link before the registration', { timeout: 20_000 }, () => 
     expect(screen.queryByText('inside')).toBeNull();
   });
 
-  // G90 PAS-6: «Qayta urinish» of a trip that did not open tries it again; it never starts the
+  // G91 PAS-6: «Qayta urinish» of a trip that did not open tries it again; it never starts the
   // registration in its place.
   it('tries the trip again on «Qayta urinish»', async () => {
     const onDone = vi.fn();

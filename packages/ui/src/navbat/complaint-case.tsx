@@ -52,7 +52,7 @@ function Review({ complaint, progress, onBack, onDone, onGone }: ReviewProps) {
   const [refund, setRefund] = useState(false);
   const { failure, fail, clear, gone } = useCaseFailure();
   const open = complaint.status !== 'resolved' && !gone;
-  // Decided already, unless its refund waits for the owner: that answer is still to give (G90 ADM-7).
+  // Decided already, unless its refund waits for the owner: that answer is still to give (G91 ADM-7).
   const resolved = complaint.status === 'resolved' && complaint.refund?.state !== 'proposed';
   const decide = async (decision: ComplaintDecision) => {
     clear();
@@ -85,7 +85,7 @@ function Review({ complaint, progress, onBack, onDone, onGone }: ReviewProps) {
           <span className="case-muted">{t('navbat.complaint.reason')}</span>
           <b>{complaint.reasons.map((reason) => t(`complaints.reason.${reason}`)).join(', ')}</b>
         </div>
-        {/* A bot link opens a complaint decided already: it says so (G90 ADM-7). */}
+        {/* A bot link opens a complaint decided already: it says so (G91 ADM-7). */}
         {resolved ? (
           <div className="case-row">
             <span className="case-muted">{t('market.review.status')}</span>

@@ -21,7 +21,7 @@ export function ListGroup({ onAds }: { readonly onAds: () => void }) {
   const [asking, setAsking] = useState(false);
   const { failure, fail, clear } = useFailure();
   const value = state.value;
-  // The group that did not load says so, never vanishes (G90 ADM-10).
+  // The group that did not load says so, never vanishes (G91 ADM-10).
   if (!value) return state.failed ? <ActionFailure error="errors.generic.description" /> : null;
   const waiting = (overview.value?.passengers ?? 0) + (overview.value?.drivers ?? 0);
   const since = value.at === null ? '' : when(value.at);

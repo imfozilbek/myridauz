@@ -59,7 +59,7 @@ describe('one at a time (docs/172)', () => {
     );
     expect(mine.requests.find((item) => item.id === asked.id)?.status).toBe('cancelled');
     const again = await call('/passenger/requests', PASSENGER, json(request()));
-    // The passenger hears her own reason: the seat (G90 PAS-2).
+    // The passenger hears her own reason: the seat (G91 PAS-2).
     expect([again.status, await again.json()]).toEqual([409, { error: 'bookings.has_seat' }]);
   });
 });

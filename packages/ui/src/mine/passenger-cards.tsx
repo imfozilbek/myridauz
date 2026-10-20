@@ -14,7 +14,7 @@ export function BookingMineCard({ booking, onOpen }: BookingProps) {
   const way = useWay();
   const { trip } = booking;
   const { car } = trip.driver;
-  // The driver marked «Kelmadi»: the mark of the main screen, not «Joy tasdiqlandi» (G90 PAS-1).
+  // The driver marked «Kelmadi»: the mark of the main screen, not «Joy tasdiqlandi» (G91 PAS-1).
   const missed = booking.noShowAt !== null;
   const status = shownStatus(booking);
   const confirmed = status === 'confirmed' && !missed;

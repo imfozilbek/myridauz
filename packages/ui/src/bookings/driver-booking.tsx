@@ -82,7 +82,7 @@ export function DriverBooking({ booking, onClose, onStale }: Props) {
       ? { label: t('wallet.topUp'), onClick: () => topUp(booking.passenger.firstName, missing), main: true }
       : { label: t('bookings.confirm'), onClick: () => answer('confirm'), main: true };
   // A seat that rode or was missed, and every seat once the car left, stays: the server refuses a
-  // cancel (docs/35, G90 DRV-6).
+  // cancel (docs/35, G91 DRV-6).
   const kept = booking.metAt !== null || booking.noShowAt !== null || onTheWay(booking.trip, Date.now());
   const actions: BookingAction[] =
     booking.status === 'requested'

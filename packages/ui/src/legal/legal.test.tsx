@@ -62,7 +62,7 @@ describe('legal documents (docs/30)', () => {
     expect(window.location.search).toBe('');
   });
 
-  // G90 BOT-1: «/hujjatlar» of the main bot opens the document, not the questionnaire.
+  // G91 BOT-1: «/hujjatlar» of the main bot opens the document, not the questionnaire.
   it('opens a document of the main bot before its questionnaire', () => {
     window.history.replaceState(null, '', '/?doc=offer');
     const users = fakeClient({ state: 'unregistered', suggestedName: '' });

@@ -45,7 +45,7 @@ describe('«Boshqaruv»', () => {
     await sheetClosed();
   });
 
-  // G90 ADM-6: the block changes the whole card: «Bloklar tarixi» under it too.
+  // G91 ADM-6: the block changes the whole card: «Bloklar tarixi» under it too.
   it('a block shows in «Bloklar tarixi» at once', { timeout: 20_000 }, async () => {
     const WEEK = Date.parse('2026-10-27T05:00:00Z');
     const blocks = vi

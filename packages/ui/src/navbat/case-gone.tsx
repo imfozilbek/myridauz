@@ -5,7 +5,7 @@ import { isStale } from '../market/error-text';
 import { useFailure } from '../states/use-failure';
 import { MainButton } from '../telegram/bottom-button';
 
-// Another member decided the case meanwhile (G90 ADM-8): every decision of it fails for good.
+// Another member decided the case meanwhile (G91 ADM-8): every decision of it fails for good.
 const decidedElsewhere = (caught: unknown) =>
   isStale(caught) || (caught instanceof ApiError && caught.code === 'users.face_decided');
 
@@ -24,7 +24,7 @@ export function useCaseFailure() {
   return { failure, fail: failCase, clear, gone };
 }
 
-// «Davom etish» instead of the decisions of a case decided already: the next case (G90 ADM-7, ADM-8).
+// «Davom etish» instead of the decisions of a case decided already: the next case (G91 ADM-7, ADM-8).
 export function NextCaseButton({ onClick }: { readonly onClick: () => void }) {
   const { t } = useI18n();
   return <MainButton text={t('common.continue')} onClick={onClick} />;

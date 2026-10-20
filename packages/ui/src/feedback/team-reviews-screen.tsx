@@ -31,7 +31,7 @@ export function TeamReviewsScreen({ onBack }: { readonly onBack: () => void }) {
     const last = reviews.at(-1);
     if (!last) return;
     clear();
-    // «Yana» that failed says so (G90 ADM-10).
+    // «Yana» that failed says so (G91 ADM-10).
     const next = await feedback.teamReviews(last.at).catch(fail);
     if (!next) return;
     setOlder((list) => [...list, ...next.reviews]);

@@ -42,7 +42,7 @@ describe('«Safar» that cannot be booked', () => {
     expect(screen.queryByText(BOOK)).toBeNull();
   });
 
-  // G90 PAS-9: the seat of this trip opens from it.
+  // G91 PAS-9: the seat of this trip opens from it.
   it('says the seat is asked already, «Joyimni ochish» opens it', async () => {
     const openLink = vi.fn();
     open(trip, theirs([{ ...booking, trip: { ...booking.trip, id: trip.id } }]), openLink);
@@ -80,7 +80,7 @@ describe('«Safar» that cannot be booked', () => {
     expect(openLink).toHaveBeenCalledWith({ name: 'booking', id: 'held' });
   });
 
-  // G90 PAS-10: a seat that waits for its driver ends with a cancel too, not only with its trip.
+  // G91 PAS-10: a seat that waits for its driver ends with a cancel too, not only with its trip.
   it('says a seat asked on another trip is cancelled first', async () => {
     const asked = { ...booking, id: 'asked', trip: { ...booking.trip, id: 'other' } };
     open(trip, theirs([asked]));

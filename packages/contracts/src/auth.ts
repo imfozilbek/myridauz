@@ -46,7 +46,7 @@ export const API_ERRORS = [
   'trips.not_driver',
   'trips.too_many',
   'trips.request_exists',
-  // A passenger with an open request leaves no second one (G90 PAS-2).
+  // A passenger with an open request leaves no second one (G91 PAS-2).
   'trips.request_open',
   'trips.too_many_seats',
   'trips.price_out_of_bounds',

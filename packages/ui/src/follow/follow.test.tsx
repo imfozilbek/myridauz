@@ -106,7 +106,7 @@ describe('the passenger shares the trip; in the car by the driver «Keldi» (doc
     expect(await screen.findByText('Ulashish toʻxtatildi')).toBeTruthy();
     expect(stopSharing).toHaveBeenCalledWith(confirmed.id);
     expect(screen.queryByText('Ulashishni toʻxtatish')).toBeNull();
-    // After the arrival the ride is over: the page after the trip, nothing to share again (G90 PAS-7).
+    // After the arrival the ride is over: the page after the trip, nothing to share again (G91 PAS-7).
     expect(screen.getByText('Safar tugadi')).toBeTruthy();
     expect(screen.queryByText('Yaqinlarimga')).toBeNull();
   });

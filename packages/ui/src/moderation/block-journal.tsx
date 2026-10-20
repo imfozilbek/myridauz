@@ -14,7 +14,7 @@ import { confirm, haptic } from '../telegram/feedback';
 // card of «Boshqaruv» (G78 sheet 6). The owner lifts a block here; a moderator sees why it is not allowed.
 type Props = {
   readonly userId: PersonId;
-  // The card above shows the block too: a lift reloads it (G90 ADM-6).
+  // The card above shows the block too: a lift reloads it (G91 ADM-6).
   readonly onChanged?: () => void;
 };
 
@@ -67,7 +67,7 @@ export function BlockJournal({ userId, onChanged }: Props) {
             />
           );
         })}
-        {/* Lifting a block is the owner's (ownerOnly): a moderator reads the journal (G90 ADM-11). */}
+        {/* Lifting a block is the owner's (ownerOnly): a moderator reads the journal (G91 ADM-11). */}
         {active && owner ? (
           <ManageRow icon="blocked" title={t('moderation.unblock')} onClick={() => void unblock()} />
         ) : null}

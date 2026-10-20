@@ -13,7 +13,7 @@ type TripScreenProps = {
   readonly trip: Trip;
   readonly onBack: () => void;
   // The card of the driver or of a passenger (G78 sheet 4).
-  // Null for a moderator: the card of a person is the owner's (G90 ADM-2).
+  // Null for a moderator: the card of a person is the owner's (G91 ADM-2).
   readonly onPerson: ((id: PersonId) => void) | undefined;
   // The bookings of the trip for the team (G08).
   readonly children?: ReactNode;

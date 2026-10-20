@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test';
 import { readScreen, shape, tap, type ScreenState, type Target } from './walk-screen';
 
-// The moves of the walk (G90): the two buttons of Telegram are targets too, and the order of taps
+// The moves of the walk (G91): the two buttons of Telegram are targets too, and the order of taps
 // on a screen puts the ones that change much last.
 const MAIN: Target = { label: '⟨main⟩', nth: 0 };
 const SECOND: Target = { label: '⟨second⟩', nth: 0 };

@@ -100,7 +100,7 @@ function Application({ detail, progress, onBack, onDone, onGone }: ApplicationPr
           <CaseButtons
             actions={[
               { labelKey: 'moderation.requestChanges', onClick: () => setMode('request_changes') },
-              // A driver approved once: «Tuzatish» or a block, never «Rad etish» (G90 DRV-2).
+              // A driver approved once: «Tuzatish» or a block, never «Rad etish» (G91 DRV-2).
               ...(approvedOnce
                 ? []
                 : [

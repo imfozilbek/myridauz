@@ -7,7 +7,7 @@ import { apply, approvedDriver, register } from './seed';
 import { signedAs, type Person } from './stand-kit';
 import { runCron, standRows } from './stand-tools';
 
-// The people of the walk of the screens (G90), each in one state of the way: the robot opens the app
+// The people of the walk of the screens (G91), each in one state of the way: the robot opens the app
 // as each of them. Every file of the walk runs on its own stand and makes its people there.
 export const NEW: Person = { id: 900921, name: 'Yulduz', phone: '998901110921' };
 export const FRESH: Person = { id: 900922, name: 'Shirin', phone: '998901110922' };

@@ -14,7 +14,7 @@ type TripFacts = Pick<Trip, 'from' | 'to' | 'seats' | 'seatsLeft' | 'bookingRule
 // Does a request fit the trip of the driver (G64, «Safaringizga mos»)? The same regions both ways,
 // the seats as a booking takes them (the whole car only on an empty trip that allows it), a common
 // way of picking up (docs/70), at most FAR_EXTRA_KM of extra way. The points of the request lie at
-// the places of the trip, as the offer into it checks (bookings.outside_area, G90 DRV-5). The extra km
+// the places of the trip, as the offer into it checks (bookings.outside_area, G91 DRV-5). The extra km
 // when it fits, else null.
 type Places = {
   readonly regionOf: (placeId: string) => string;

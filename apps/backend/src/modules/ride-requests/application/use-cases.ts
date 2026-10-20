@@ -56,7 +56,7 @@ export async function publishRequest(
   );
   if (same) return { ok: false, error: 'trips.request_exists' };
   // One at a time (owner decision 12.10.2026, docs/172): an open request or a seat, never both; each
-  // says its own reason to the passenger (G90 PAS-2).
+  // says its own reason to the passenger (G91 PAS-2).
   if (open.length > 0) return { ok: false, error: 'trips.request_open' };
   if (await deps.seatHeld(passengerId)) return { ok: false, error: 'bookings.has_seat' };
   const pointsError = await wayError(deps, input);

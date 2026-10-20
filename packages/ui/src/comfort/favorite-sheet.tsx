@@ -13,7 +13,7 @@ type Props = {
   readonly onRemoved: () => void;
 };
 
-// A saved driver in a sheet over «Sevimli haydovchilar» (owner decision 20.10.2026, G90 PAS-4): who
+// A saved driver in a sheet over «Sevimli haydovchilar» (owner decision 20.10.2026, G91 PAS-4): who
 // and which car; «Sevimlilardan olib tashlash» takes him out, his trips stop coming.
 export function FavoriteSheet({ driver, onClose, onRemoved }: Props) {
   const { t } = useI18n();

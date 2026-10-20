@@ -46,7 +46,7 @@ export function AfterRows({ trip, bookings, now, onRow }: Props) {
   // nothing (G78 В17).
   const riders = ridersOf(bookings);
   const rated = riders.length > 0 && riders.every((booking) => booking.rated === true);
-  // Nobody rode: nobody to rate, write or complain about, only what the trip cost (G90 DRV-11).
+  // Nobody rode: nobody to rate, write or complain about, only what the trip cost (G91 DRV-11).
   const people = bookings.some(taken);
   const commissionRow: Row = ['commission', t('wallet.kind.commission'), commission];
   const rows: readonly Row[] = people

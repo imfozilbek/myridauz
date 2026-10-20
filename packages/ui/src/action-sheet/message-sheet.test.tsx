@@ -70,7 +70,7 @@ describe('the sheet of a new message (G68)', { timeout: 20_000 }, () => {
     await sheetClosed();
   });
 
-  // G90 BOT-2: «Chatni ochish» of a message read since then has no sheet to open: it opens the chat,
+  // G91 BOT-2: «Chatni ochish» of a message read since then has no sheet to open: it opens the chat,
   // not an empty main screen.
   it('the ring of a message read since then opens its chat', async () => {
     const read = 'b00000000-0000-4000-8000-000000000a04';

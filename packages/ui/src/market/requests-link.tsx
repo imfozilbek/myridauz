@@ -19,7 +19,7 @@ function linkedRequests(): Linked | null {
     ? start.slice(START.length)
     : launchParam(REQUESTS_LINK, REQUESTS_LINK_VALUE);
   const [, from, to, date] = REQUESTS_LINK_VALUE.exec(value ?? '') ?? [];
-  // A day that is over has no requests: today instead (G90 PAS-3).
+  // A day that is over has no requests: today instead (G91 PAS-3).
   const today = tashkentDate(Date.now());
   return from && to && date ? { from, to, date: date < today ? today : date } : null;
 }

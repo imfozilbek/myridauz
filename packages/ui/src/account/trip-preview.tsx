@@ -24,7 +24,7 @@ function PreviewTrip({ id, onDone }: Props) {
   const { market } = useApiClients();
   const { value, failed, error, reload } = useLoad(() => market.trip(id));
   // «Qayta urinish» tries the trip again; back, or a trip that is gone for good, goes on to the
-  // registration (G90 PAS-6).
+  // registration (G91 PAS-6).
   if (failed) return <ErrorScreen onRetry={reload} onBack={onDone} error={error} />;
   if (!value) return <ScreenSkeleton onBack={onDone} />;
   const book = (choice: SeatChoice) => {

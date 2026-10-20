@@ -16,7 +16,7 @@ type Props = {
   readonly route: string;
   // The record of the other role when there is one: the row opens it instead of a new questionnaire.
   readonly other: { readonly role: WaitlistRole; readonly route: string } | null;
-  // The list takes new records: closed by the owner, no record of the other role (G90 DRV-9).
+  // The list takes new records: closed by the owner, no record of the other role (G91 DRV-9).
   readonly listOpen: boolean;
   readonly onPick: (choice: EditChoice) => void;
   readonly onClose: () => void;

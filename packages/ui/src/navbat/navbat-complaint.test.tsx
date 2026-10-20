@@ -71,7 +71,7 @@ describe('a complaint in «Navbat»', () => {
     expect(screen.getByText('Ogohlantirish')).toBeTruthy();
   });
 
-  // G90 ADM-8: another member decided it meanwhile: the reason stays, its decisions go (they would fail
+  // G91 ADM-8: another member decided it meanwhile: the reason stays, its decisions go (they would fail
   // for good), «Davom etish» opens the next case.
   it('decided by another member: says so and leads on', async () => {
     const decide = vi.fn(async () => Promise.reject(new ApiError(409, 'complaints.wrong_status')));
@@ -83,7 +83,7 @@ describe('a complaint in «Navbat»', () => {
     expect(await screen.findByText('Hammasi koʻrildi')).toBeTruthy();
   });
 
-  // G90 ADM-7: an urgent complaint of a bot link decided already says so.
+  // G91 ADM-7: an urgent complaint of a bot link decided already says so.
   it('a complaint decided already says so and leads on', async () => {
     const resolved = { ...COMPLAINT_DETAIL, status: 'resolved' as const };
     renderNavbat(open, [], { feedback: { complaint: async () => resolved } });
@@ -92,7 +92,7 @@ describe('a complaint in «Navbat»', () => {
     expect(screen.getByText('Davom etish')).toBeTruthy();
   });
 
-  // G90 (review of ADM-7): a refund waits for the owner: its answer is the decision, not «Davom etish».
+  // G91 (review of ADM-7): a refund waits for the owner: its answer is the decision, not «Davom etish».
   it('a refund that waits for the owner has no «Davom etish»', async () => {
     const waiting = {
       ...COMPLAINT_DETAIL,

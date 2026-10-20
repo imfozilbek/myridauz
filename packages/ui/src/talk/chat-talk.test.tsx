@@ -57,7 +57,7 @@ describe('the chat before a booking (G64, mockups g64/4, g64/5)', { timeout: 20_
     expect(screen.queryByText('Safarimga taklif qilish')).toBeNull();
   });
 
-  // G90 DRV-4: a live trip that the request does not fit: as on the board, a new offer waits until the
+  // G91 DRV-4: a live trip that the request does not fit: as on the board, a new offer waits until the
   // trip is over; no button the server refuses with «Eskisini bekor qiling».
   it('offers nothing while the driver has a live trip that the request does not fit', async () => {
     await openTalk({

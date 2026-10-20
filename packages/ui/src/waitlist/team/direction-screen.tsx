@@ -94,7 +94,7 @@ export function DirectionScreen({ region, onBack }: Props) {
           {t('waitlistTeam.sent', { n: opened.sent })}
         </p>
       ) : owner ? (
-        // Opening a direction is the owner's (ownerOnly): a moderator reads it (G90 ADM-1).
+        // Opening a direction is the owner's (ownerOnly): a moderator reads it (G91 ADM-1).
         <MainButton text={t('waitlistTeam.open')} onClick={() => setAsking(true)} />
       ) : null}
       <FormSheet

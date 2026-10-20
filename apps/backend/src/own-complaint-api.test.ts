@@ -21,7 +21,7 @@ const RING_NEW = '📋 Yangi ish keldi';
 const navbat = async (id: number) =>
   navbatSchema.parse(await (await call(ADMIN_NAVBAT_PATH, id, { app: 'admin' })).json());
 
-// G90 ADM-3 (G89): a moderator who is a side of a complaint leaves it to the owner, so it is not in
+// G91 ADM-3 (G89): a moderator who is a side of a complaint leaves it to the owner, so it is not in
 // the «Navbat» of that moderator: no case there whose every decision the server refuses.
 describe('a complaint about a member of the team', () => {
   it('waits in the «Navbat» of the owner, not of the moderator it is about', async () => {
@@ -47,10 +47,10 @@ describe('a complaint about a member of the team', () => {
     );
     expect((await navbat(OWNER)).items.map((item) => item.id)).toContain(filed.id);
     expect((await navbat(DRIVER)).items.map((item) => item.id)).not.toContain(filed.id);
-    // «kutmoqda» of the moderator counts the same cases as his «Navbat» (G90 review of ADM-9).
+    // «kutmoqda» of the moderator counts the same cases as his «Navbat» (G91 review of ADM-9).
     const work = workSchema.parse(await (await call(ADMIN_WORK_PATH, DRIVER, { app: 'admin' })).json());
     expect(work.waiting).toBe((await navbat(DRIVER)).items.length);
-    // The card of the bot counts the same as the app, for each member (G90 ADM-9).
+    // The card of the bot counts the same as the app, for each member (G91 ADM-9).
     await showQueue(testEnv);
     const texts = (chat: number) =>
       telegram.calls
@@ -66,7 +66,7 @@ describe('a complaint about a member of the team', () => {
     const rang = (chat: number) => texts(chat).some((text) => text.startsWith('⚠️ Muhim shikoyat'));
     expect(rang(OWNER)).toBe(true);
     expect(rang(DRIVER)).toBe(false);
-    // «A case came» rings a member whose own «Navbat» was empty, by his own count (G90 review).
+    // «A case came» rings a member whose own «Navbat» was empty, by his own count (G91 review).
     const before = texts(DRIVER).length;
     await showQueue(testEnv, { kind: 'new' });
     expect(

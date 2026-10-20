@@ -9,7 +9,7 @@ type Props = {
   readonly onRetry: () => void;
   readonly title?: string;
   readonly onBack?: () => void;
-  // Why the screen failed: a reason a retry never changes is said, and the way is back (G90 ERR-1).
+  // Why the screen failed: a reason a retry never changes is said, and the way is back (G91 ERR-1).
   readonly error?: unknown;
 };
 

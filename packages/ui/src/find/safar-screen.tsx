@@ -58,7 +58,7 @@ export function SafarScreen({ trip, onBack, onBook, onOthers }: Props) {
   const mine = useAccount()?.profile.id === trip.driver.id;
   const asked = useAskedSeat(trip.id, !mine);
   // One at a time (owner decision 12.10.2026, docs/172): a seat held on another trip opens instead,
-  // the seat of this trip too (G90 PAS-9).
+  // the seat of this trip too (G91 PAS-9).
   const openLink = useContext(AppLinkContext);
   const held = asked && asked.kind !== 'request' ? asked.bookingId : null;
   const openSeat =
@@ -117,7 +117,7 @@ export function SafarScreen({ trip, onBack, onBook, onOthers }: Props) {
 }
 
 // The line above the button: a seat on another trip that ends with its trip, or that waits for its
-// driver and ends with a cancel (G90 PAS-10, the text of B19 in G89); an open request it closes.
+// driver and ends with a cancel (G91 PAS-10, the text of B19 in G89); an open request it closes.
 const blockKey = (asked: NonNullable<SeatBlock>) =>
   asked.kind === 'request'
     ? 'market.trip.closesRequest'

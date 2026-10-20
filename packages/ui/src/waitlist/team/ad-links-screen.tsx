@@ -63,7 +63,7 @@ export function AdLinksScreen({ onBack }: { readonly onBack: () => void }) {
   if (view.kind === 'new') return <AdForm onMade={(ad) => setView({ kind: 'ready', ad })} onBack={list} />;
   if (view.kind === 'ready') return <AdReady ad={view.ad} onBack={list} />;
   if (view.kind === 'one') return <AdDetail code={view.code} onBack={list} />;
-  // A failed list is never an empty one (G90 ADM-10).
+  // A failed list is never an empty one (G91 ADM-10).
   if (failed && !value) return <ErrorScreen onRetry={reload} onBack={onBack} error={error} />;
   return (
     <ManagePage title={t('ads.title')} hint={t('ads.hint')} onBack={onBack}>

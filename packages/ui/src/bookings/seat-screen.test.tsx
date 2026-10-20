@@ -55,7 +55,7 @@ describe('the seat of a passenger', () => {
   });
 });
 
-// G90 DRV-6: the server keeps a seat that rode or was missed, and every seat once the car left
+// G91 DRV-6: the server keeps a seat that rode or was missed, and every seat once the car left
 // (docs/35); the page offers no «Bekor qilish» it would refuse.
 describe('a seat the driver cannot cancel any more', () => {
   it('has no «Joyni bekor qilish» after «Keldi», «Kelmadi» or the departure', async () => {

@@ -6,7 +6,7 @@ import { holdClosing } from './closing';
 
 // A form with typed or chosen data and no draft (docs/94 F3): Telegram asks before closing, and
 // «Назад» out of the form asks «Oʻzgarishlar saqlanmaydi. Chiqasizmi?». Untouched, nothing asks.
-// question: the words of the question, when leaving loses more than typed data (G90 DRV-3).
+// question: the words of the question, when leaving loses more than typed data (G91 DRV-3).
 export function useUnsavedGuard(dirty: boolean, question: TranslationKey = 'common.unsaved') {
   const { t } = useI18n();
   const touched = useRef(dirty);

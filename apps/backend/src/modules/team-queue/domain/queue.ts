@@ -25,7 +25,7 @@ const ownersOnly = (item: Case) => item.kind === 'complaint' && item.refund;
 export const teamWork = (cases: readonly Case[]): Case[] => cases.filter((item) => !ownersOnly(item));
 
 // The work of one member: the owner all of it; a moderator the work of the team without a complaint
-// about themselves, which only the owner decides (G89, G90 ADM-3).
+// about themselves, which only the owner decides (G89, G91 ADM-3).
 export const workOf = (cases: readonly Case[], memberId: number, owner: boolean): Case[] =>
   owner ? [...cases] : teamWork(cases).filter((item) => !item.sides?.includes(memberId));
 

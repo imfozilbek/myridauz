@@ -56,7 +56,7 @@ describe('close people of a passenger marked «Kelmadi»', () => {
     expect([shared.status, await shared.json()]).toEqual([404, { error: 'shares.not_found' }]);
   });
 
-  // G90 PAS-1: the passenger is not in the car, so no new link tells the family «Yoʻlda», and her
+  // G91 PAS-1: the passenger is not in the car, so no new link tells the family «Yoʻlda», and her
   // «Men keldim» after «Kelmadi» does not wake the driver again.
   it('get no new link, and «Men keldim» comes too late', async () => {
     vi.setSystemTime(MORNING);

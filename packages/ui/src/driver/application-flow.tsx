@@ -42,7 +42,7 @@ export function ApplicationFlow({ initial, onSubmitted, onClose, tapped = false 
   const carAsked = hasProblem(reasons, 'car') || hasProblem(reasons, 'plate');
   const first = fixing && !carAsked ? 'photos' : 'car';
   const { step, car, change, go, dirty, restored, clear } = useCarAnswers(known, first);
-  // A new photo of an approved car sends it to the check again (owner decision 20.10.2026, G90
+  // A new photo of an approved car sends it to the check again (owner decision 20.10.2026, G91
   // DRV-3): said before the first photo; after it, leaving without «Yuborish» asks.
   const approved = initial?.status === 'approved';
   const [reshot, setReshot] = useState(false);

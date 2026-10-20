@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test';
 import { STAND_API_PORT } from '../../scripts/stand/paths.ts';
 
-// What a tap caused (G90): the calls to the API with their answers, the requests to Telegram
+// What a tap caused (G91): the calls to the API with their answers, the requests to Telegram
 // (a link, a popup, the phone), and the screens the app reported as opened.
 type Call = {
   readonly method: string;

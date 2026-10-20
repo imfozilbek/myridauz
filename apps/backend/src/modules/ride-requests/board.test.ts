@@ -75,7 +75,7 @@ describe('the board of requests of a driver (G64)', () => {
     expect(board.value.busy).toBe(true);
   });
 
-  // G90 DRV-5: a point outside the district of the trip, the server refuses the offer into it
+  // G91 DRV-5: a point outside the district of the trip, the server refuses the offer into it
   // (bookings.outside_area): such a request is not «Safaringizga mos».
   it('puts a request with a point outside the places of the trip below, as the server would refuse it', async () => {
     const { deps, request, directions, boardTrip } = setup();

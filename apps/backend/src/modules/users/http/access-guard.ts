@@ -7,7 +7,7 @@ const FORBIDDEN = 403;
 
 // What a person blocked on the road still writes to finish the trip on the way (owner decision
 // 10.10.2026, docs/158 Ж): the steps of the trip and of the meeting, the chat, the call, the feed,
-// and the link of the close people who follow it (G90 PAS-8).
+// and the link of the close people who follow it (G91 PAS-8).
 const FINISH_TRIP = [
   /^\/driver\/trips\/[^/]+\/(depart|arrive|share|share\/stop)$/u,
   /^\/driver\/bookings\/[^/]+\/(came|met|no_show)$/u,

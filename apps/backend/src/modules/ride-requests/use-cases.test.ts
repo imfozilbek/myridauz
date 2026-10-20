@@ -18,7 +18,7 @@ describe('ride requests (docs/09, docs/35)', () => {
       error: 'trips.price_out_of_bounds',
     });
     expect((await publishRequest(deps, 1, request)).ok).toBe(true);
-    // The passenger hears her own reason, not the driver's limit of trips (G90 PAS-2).
+    // The passenger hears her own reason, not the driver's limit of trips (G91 PAS-2).
     expect(await publishRequest(deps, 1, { ...request, date: '2026-10-02' })).toEqual({
       ok: false,
       error: 'trips.request_open',

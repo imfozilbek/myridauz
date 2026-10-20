@@ -31,7 +31,7 @@ test('P11, A13. a request inside one city is refused; one open request (docs/172
   const days = [1, 2].map((day) => tashkentDate(Date.now() + day * 24 * HOUR));
   const answers = [];
   for (const date of days) answers.push(await outcome(askRide(NARGIZA, date)));
-  // The second one hears the passenger's own reason (G90 PAS-2).
+  // The second one hears the passenger's own reason (G91 PAS-2).
   expect(answers).toEqual(['ok', 'trips.request_open']);
 });
 

@@ -11,7 +11,7 @@ const PASSENGER = 72;
 const jpeg = { body: new Uint8Array(20), headers: { 'content-type': 'image/jpeg' } };
 type Booking = { id: string; status: string; plate: string | null; trip: { id: string } };
 
-// Decision 1 of the owner (20.10.2026, G90 DRV-1): a new face goes to the check of photos; the driver
+// Decision 1 of the owner (20.10.2026, G91 DRV-1): a new face goes to the check of photos; the driver
 // stays a driver, his trips live on.
 describe('a new face of an approved driver (docs/05, docs/65 A1)', () => {
   it('keeps the confirmed booking of the passenger, the trip in search, and the driver', async () => {

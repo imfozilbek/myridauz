@@ -1,4 +1,4 @@
-// What the walk of the screens (G90) writes down where a person gets stuck or a tap makes no sense.
+// What the walk of the screens (G91) writes down where a person gets stuck or a tap makes no sense.
 //  dead_end: not the main screen, no «Назад», no button of Telegram, nothing to tap;
 //  no_back: not the main screen and no «Назад»: Android «Назад» closes the whole app there;
 //  dead_tap: a tap that changes nothing, calls nothing, opens nothing;

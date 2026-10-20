@@ -117,7 +117,7 @@ describe('«Siz roʻyxatdasiz» of the waitlist (docs/181)', () => {
     expect(await screen.findByText('Haydovchi boʻlish')).toBeTruthy();
   });
 
-  // G90 DRV-9: the owner closed the list: a new record of the other role is refused (waitlist.closed),
+  // G91 DRV-9: the owner closed the list: a new record of the other role is refused (waitlist.closed),
   // so «Oʻzgartirish» does not offer it; the record already there stays.
   it('offers no record of the other role while the list is closed', async () => {
     const { clients } = waitlistClients({ entries: [entryOf(ANSWERS)], open: false });

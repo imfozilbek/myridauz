@@ -46,7 +46,7 @@ export function JournalScreen({ onBack }: { readonly onBack: () => void }) {
     const last = entries.at(-1);
     if (!last) return;
     clear();
-    // «Yana» that failed says so (G90 ADM-10).
+    // «Yana» that failed says so (G91 ADM-10).
     const next = await team.journal(last.at).catch(fail);
     if (!next) return;
     setOlder((list) => [...list, ...next.entries]);

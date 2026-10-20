@@ -83,7 +83,7 @@ describe('the block of a driver: one state by its level (G76, docs/165)', () => 
     expect(kinds({ trips: [done], bookings: [rider], rateDays: 3 }, end + 3 * DAY_MS)).toEqual(['idle']);
   });
 
-  // G90 DRV-7: «Yetib keldik» ends the ride at once (docs/129): the stars come right after it, though
+  // G91 DRV-7: «Yetib keldik» ends the ride at once (docs/129): the stars come right after it, though
   // the server keeps the seats confirmed until the end time of the trip.
   it('asks for the stars right after «Yetib keldik», before the server closes the trip', () => {
     const arrived = { ...trip, departedAt: at(0), arrivedAt: at(3 * HOUR_MS) };

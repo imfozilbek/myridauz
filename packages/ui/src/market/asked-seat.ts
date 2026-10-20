@@ -6,7 +6,7 @@ import { useFreshLists } from '../home/fresh-lists';
 import { useSharedPassengerData } from '../home/passenger-data';
 
 // What «Joy band qilish» meets (G52, docs/112; one at a time, owner decision 12.10.2026, docs/172):
-// a seat of this trip is asked already; a seat held on another trip; the button opens either (G90
+// a seat of this trip is asked already; a seat held on another trip; the button opens either (G91
 // PAS-9); waiting: the seat waits for its driver, a cancel ends it (PAS-10). An open request, which
 // the seat closes, is said above the button. While loading or on a failure the button stays: the
 // server checks again.

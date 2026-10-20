@@ -33,7 +33,7 @@ export function TeamHome({ go }: GoProps) {
   const queue = useLoad(() => team.navbat(), 'team.navbat');
   const navbat = queue.value;
   // Who the person is or «Navbat» did not come: the error with «Qayta urinish», never an empty
-  // screen (G77, G90 ADM-10).
+  // screen (G77, G91 ADM-10).
   if (failed || (queue.failed && !navbat)) return <ErrorScreen onRetry={() => (reload(), queue.reload())} />;
   if (!me) return null;
   const owner = me.role === 'owner';
@@ -54,7 +54,7 @@ function OwnerDiqqat({ go }: GoProps) {
   const { team } = useApiClients();
   const { value: attention, failed } = useLoad(() => team.attention(), 'team.attention');
   if (attention) return <DiqqatSection attention={attention} go={go} />;
-  // «Diqqat» that did not load says so, never vanishes (G90 ADM-10).
+  // «Diqqat» that did not load says so, never vanishes (G91 ADM-10).
   return failed ? <ActionFailure error="errors.generic.description" /> : null;
 }
 

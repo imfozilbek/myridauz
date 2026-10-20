@@ -45,7 +45,7 @@ describe('a route from the landing (docs/59)', () => {
     expect(searchTrips.mock.calls[0]?.[0]).toMatchObject({ from: '1726', to: '1730', date: '2026-10-03' });
   });
 
-  // G90 PAS-3: «Boshqa safar topish» tapped days later; a past day is always empty: today instead.
+  // G91 PAS-3: «Boshqa safar topish» tapped days later; a past day is always empty: today instead.
   it('opens today when the day of the button is over', async () => {
     vi.setSystemTime(Date.parse('2026-10-05T06:00:00Z'));
     window.history.replaceState(null, '', '/?find=1726_1730_2026-10-03');

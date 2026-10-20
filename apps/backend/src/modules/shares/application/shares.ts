@@ -7,7 +7,7 @@ import type { Result, SharesDeps, ShareUpdate } from './ports';
 type ShareError = 'shares.not_found' | 'shares.wrong_status';
 
 // "Yaqinlarimga yuborish" (docs/43): only the passenger of a confirmed booking shares it, and not
-// after the driver's «Kelmadi»: she is not in the car, the family must not read «Yoʻlda» (G90 PAS-1).
+// after the driver's «Kelmadi»: she is not in the car, the family must not read «Yoʻlda» (G91 PAS-1).
 export async function createShare(
   deps: SharesDeps,
   passengerId: number,

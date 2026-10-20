@@ -34,7 +34,7 @@ export function FindLink({ enabled, children }: { readonly enabled: boolean; rea
 }
 
 // Unknown places start the search from the route, never with a wrong one. A day that is over (a bot
-// button tapped days later, «Oʻxshash safarlar» of an old seat) has no trips: today instead (G90 PAS-3).
+// button tapped days later, «Oʻxshash safarlar» of an old seat) has no trips: today instead (G91 PAS-3).
 export function LinkedSearch({ ids, onClose }: { readonly ids: RouteIds; readonly onClose: () => void }) {
   const [state, retry] = useDirectory();
   const today = tashkentDate(Date.now());

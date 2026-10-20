@@ -23,7 +23,7 @@ export function AdDetail({ code, onBack }: { readonly code: string; readonly onB
   const { waitlist } = useApiClients();
   const words = useAdWords();
   const { value, failed, error, reload } = useLoad(() => waitlist.adLink(code));
-  // A failure says so with «Qayta urinish», never an endless skeleton (G90 ADM-10).
+  // A failure says so with «Qayta urinish», never an endless skeleton (G91 ADM-10).
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} error={error} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   const ad: AdLink = value;

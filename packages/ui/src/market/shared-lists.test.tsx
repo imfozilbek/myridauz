@@ -116,7 +116,7 @@ function Later({ children }: { readonly children: ReactNode }) {
   return shown ? children : <button onClick={() => setShown(true)}>open</button>;
 }
 
-// G90 DRV-10: «Ochish» under a declined or an expired offer opens «Oʻtgan», where its row is.
+// G91 DRV-10: «Ochish» under a declined or an expired offer opens «Oʻtgan», where its row is.
 describe('the link of an offer that ended', () => {
   it('opens «Oʻtgan» with the offer', async () => {
     renderMarket(

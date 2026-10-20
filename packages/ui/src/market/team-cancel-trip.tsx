@@ -22,7 +22,7 @@ export function TeamCancelTrip({ trip, onCancelled }: Props) {
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState('');
   const { failure, fail, clear } = useFailure();
-  // After «Keldi» or «Kelmadi» at the point the ride has begun: the server refuses it (G63, G90 ADM-4).
+  // After «Keldi» or «Kelmadi» at the point the ride has begun: the server refuses it (G63, G91 ADM-4).
   const seats = useLoad(() => bookings.tripBookings(trip.id)).value;
   const begun = seats?.some((seat) => seat.metAt !== null || seat.noShowAt !== null) ?? true;
   const live = (trip.status === 'active' || trip.status === 'full') && trip.departedAt === null && !begun;

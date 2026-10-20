@@ -116,7 +116,7 @@ describe('an application in «Navbat»', () => {
     expect(await screen.findByText('Jasur · ariza')).toBeTruthy();
   });
 
-  // Decision 2 of the owner (20.10.2026, G90 DRV-2): the new car of a driver approved once gets
+  // Decision 2 of the owner (20.10.2026, G91 DRV-2): the new car of a driver approved once gets
   // «Tuzatish» or a block, never «Rad etish».
   it('has no «Rad etish» for the new car of an approved driver', async () => {
     const get = async () => ({

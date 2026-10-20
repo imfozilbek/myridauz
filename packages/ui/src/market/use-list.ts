@@ -6,7 +6,7 @@ import { keepValue, keptValue } from '../screen/list-memory';
 type LoadState<T> = {
   readonly value: T | null;
   readonly failed: boolean;
-  // Why it failed: the error screen says a reason that a retry never changes (G90 ERR-1).
+  // Why it failed: the error screen says a reason that a retry never changes (G91 ERR-1).
   readonly error: unknown;
   readonly reload: () => void;
   readonly refresh: () => Promise<void>;

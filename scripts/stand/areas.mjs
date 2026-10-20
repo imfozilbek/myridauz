@@ -50,7 +50,7 @@ export const AREAS = {
   team: ['team', 'team-moderation', 'screens-team', 'all-admin', 'g45-team', 'g45-screens'],
   bots: ['bots', 'bots-team', 'complaints-time', 'g68-bots', 'g83'],
   channels: ['system-channels', 'system-cron', 'system-cron-team', 'system-people'],
-  // The walk of the screens (G90): only on its own fresh stand, pnpm stand:walk.
+  // The walk of the screens (G91): only on its own fresh stand, pnpm stand:walk.
   walk: ['walk-passenger', 'walk-riders', 'walk-driver', 'walk-team'],
 };
 const NAMES = Object.keys(AREAS);

@@ -16,7 +16,7 @@ export async function markProgress(
 ): Promise<Result<Booking, 'bookings.not_found' | 'bookings.wrong_status'>> {
   const record = await deps.bookings.find(id);
   if (record?.passengerId !== passengerId) return { ok: false, error: 'bookings.not_found' };
-  // After the driver's «Kelmadi» the seat is not ridden: no step of hers wakes him again (G90 PAS-1).
+  // After the driver's «Kelmadi» the seat is not ridden: no step of hers wakes him again (G91 PAS-1).
   if (record.status !== 'confirmed' || record.noShowAt !== null)
     return { ok: false, error: 'bookings.wrong_status' };
   const now = deps.now();

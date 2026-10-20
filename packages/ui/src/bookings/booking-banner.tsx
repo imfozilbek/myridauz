@@ -17,7 +17,7 @@ export function BookingBanner({ booking }: { readonly booking: Booking }) {
   const { end } = useBookingEnds(booking);
   const done = useDoneLine(booking.trip, end);
   const why = useWhy(booking);
-  // The driver marked «Kelmadi»: the words of the main screen, grey (G90 PAS-1).
+  // The driver marked «Kelmadi»: the words of the main screen, grey (G91 PAS-1).
   if (booking.noShowAt !== null) {
     const day = t('bookings.confirmed.when', {
       day: dayLabel(tashkentDate(departAt), Date.now()),
