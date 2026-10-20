@@ -1,10 +1,10 @@
 import { arrivedAskAt, MINUTE_MS } from '@platform/contracts';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { app } from './app';
-import { approvedDriver, json, read } from './bookings-test-api';
+import { approvedDriver, json, OWNER, read } from './bookings-test-api';
 import { botSender, fakeTelegram } from './bots/test-bot';
 import { askArrived } from './modules/reminders';
-import { call, doorBooking, registerUser, testEnv } from './test-api';
+import { call, doorBooking, pid, registerUser, testEnv } from './test-api';
 
 const telegram = fakeTelegram();
 vi.stubGlobal('fetch', telegram.fetch);
@@ -99,5 +99,17 @@ describe('the bot asks a passenger who did not say she arrived', () => {
     await answer(PASSENGER, seat.id, 'no');
     expect((await seatOf(PASSENGER, seat.id))?.arrivedAt).toBeNull();
     expect((await app.request(`/shared/${seat.token}`, {}, testEnv)).status).toBe(200);
+  });
+
+  // A person blocked on the road finishes the trip (docs/158 Ж): «Ha» in the bot counts, as in the app.
+  it('«Ha» of a passenger blocked on the road marks the arrival', async () => {
+    const PASSENGER = 306;
+    const seat = await rideOn(305, PASSENGER);
+    const { trip } = (await seatOf(PASSENGER, seat.id)) ?? { trip: { departAt: 0, km: 0 } };
+    vi.setSystemTime(arrivedAskAt(trip.departAt, trip.km) + MINUTE_MS);
+    const block = { app: 'admin', ...json({ days: 7 }) };
+    expect((await call(`/admin/users/${await pid(PASSENGER)}/block`, OWNER, block)).status).toBe(204);
+    await answer(PASSENGER, seat.id, 'yes');
+    expect((await seatOf(PASSENGER, seat.id))?.arrivedAt).toEqual(expect.any(Number));
   });
 });
