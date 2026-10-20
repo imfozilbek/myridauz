@@ -64,9 +64,11 @@ describe('a driver offers on a request (docs/35)', () => {
     const requestId = addRequest();
     const sent = await sendOffer(deps, DRIVER, requestId, offer);
     const [shown] = await passengerOffers(deps, DILNOZA);
-    expect(shown).toMatchObject({ status: 'sent', seats: 2, price: 95_000, commission: 19_000 });
+    // The commission is the driver's: the passenger never sees it (docs/52, G89 B6).
+    expect(shown).toMatchObject({ status: 'sent', seats: 2, price: 95_000, commission: 0 });
+    expect(sent.ok && sent.value.commission).toBe(19_000);
     const accepted = await acceptOffer(deps, DILNOZA, sent.ok ? sent.value.id : '');
-    expect(accepted).toMatchObject({ ok: true, value: { status: 'accepted' } });
+    expect(accepted).toMatchObject({ ok: true, value: { status: 'accepted', commission: 0 } });
     const [booking] = await passengerBookings(deps, DILNOZA);
     // The car has 4 seats: 2 are booked, the other 2 are open to other passengers.
     expect(booking).toMatchObject({

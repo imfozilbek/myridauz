@@ -64,6 +64,7 @@ export async function passengerOffers(deps: BookingsDeps, passengerId: number): 
     deps,
     [...offers].sort((a, b) => b.createdAt - a.createdAt),
     requests,
+    'passenger',
   );
 }
 

@@ -20,7 +20,7 @@ export async function offerView(
   offer: OfferRecord,
   request: RequestFacts,
 ): Promise<Result<Offer, AcceptError>> {
-  const [shown] = await offerViews(deps, [offer], [request]);
+  const [shown] = await offerViews(deps, [offer], [request], 'passenger');
   return shown ? { ok: true, value: shown } : { ok: false, error: 'bookings.not_found' };
 }
 

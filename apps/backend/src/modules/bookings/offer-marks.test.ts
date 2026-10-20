@@ -27,8 +27,9 @@ async function accepted(marks: { wholeCar?: boolean; withWoman?: boolean }) {
 describe('an offer on a request with marks (G61)', () => {
   it('«Boʻsh salon kerak»: the offer and the booking take every seat of the car, nobody else books', async () => {
     const { shown, booking, trip } = await accepted({ wholeCar: true });
-    // The car has 4 seats: the whole car is 4 × the price of a seat (docs/09).
-    expect(shown).toMatchObject({ seats: 4, wholeCar: true, commission: 36_000 });
+    // The car has 4 seats: the whole car is 4 × the price of a seat (docs/09); the commission is the
+    // driver's and never shown to the passenger (docs/52, G89 B6).
+    expect(shown).toMatchObject({ seats: 4, wholeCar: true, commission: 0 });
     expect(trip?.bookingRule).toBe('car_only');
     expect(booking).toMatchObject({ seats: 4, wholeCar: true, trip: { seatsLeft: 0 } });
   });
