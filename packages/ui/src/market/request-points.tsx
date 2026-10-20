@@ -53,7 +53,9 @@ export function RequestPoints({ answer, recommendation, pitak, onAnswer, onEnd, 
   if (mine) return <ExistingRequest from={route.from.id} to={route.to.id} date={date} onClose={closeMine} />;
   const publish = async () => {
     setError(null);
-    if (!mode || (mode === 'door' && !pickup?.point) || !dropoff?.point) return haptic.error();
+    // A point still missing opens, never a tap that does nothing in silence (G90 WALK-1).
+    if (!mode || (mode === 'door' && !pickup?.point)) return onEnd('pickup');
+    if (!dropoff?.point) return onEnd('dropoff');
     try {
       const where = { pickupMode: mode, pickup: mode === 'door' ? (pickup?.point ?? null) : null };
       await market.publishRequest({

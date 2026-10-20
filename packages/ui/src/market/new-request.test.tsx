@@ -47,13 +47,16 @@ describe('«Soʻrov qoldirish» on one screen (G61, docs/118 path 4)', { timeout
     );
   });
 
-  it('sends nothing until both points are chosen', async () => {
+  // G90 WALK-1: the button never does nothing in silence (many phones give no vibration): it opens
+  // the point still missing, then sends.
+  it('opens the point still missing instead of sending, then the other one', async () => {
     const publishRequest = openRequest();
     await quickRoute();
     await pickDay(1);
     await tap('Soʻrov qoldirish');
     expect(publishRequest).not.toHaveBeenCalled();
-    expect(screen.getByText('Qayerdan, qayerga?')).toBeTruthy();
+    await takePoint('Chorsu bozori yaqinida');
+    expect(await screen.findByText('Qayerda tushasiz?')).toBeTruthy();
   });
 
   it('«Men bilan ayol bor» for a man with 2 people; «Boʻsh salon kerak» for anyone (docs/06, docs/09)', async () => {
