@@ -7,7 +7,7 @@ import { requestsInOrder, takenFirst } from './trip-bookings-order';
 
 type Props = {
   readonly bookings: readonly Booking[];
-  readonly onPerson: (id: PersonId) => void;
+  readonly onPerson: ((id: PersonId) => void) | undefined;
 };
 
 // The bookings of one trip for the team: who, the status, how many seats; a tap opens the card of
@@ -32,7 +32,7 @@ export function TripBookings({ bookings, onPerson }: Props) {
           when: status,
           more: extra ? t('home.meta', { when: seats, more: extra }) : seats,
         })}
-        onClick={() => onPerson(booking.passenger.id)}
+        onClick={onPerson ? () => onPerson(booking.passenger.id) : undefined}
       />
     );
   };

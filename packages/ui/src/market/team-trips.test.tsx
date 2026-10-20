@@ -83,4 +83,26 @@ describe('the trips of the team day by day (docs/90 F-A6)', () => {
     expect(await screen.findByText('Jasur')).toBeTruthy();
     expect(screen.queryByText('Safarni bekor qilish')).toBeNull();
   });
+
+  // G90 ADM-2: the card of a person is the owner's (ownerOnly): for a moderator the rows of the trip
+  // only read, never a tap that ends on «Xatolik».
+  it('a moderator reads the driver and the passengers, the owner opens them', async () => {
+    const id = '3f6c2b9e-1d2a-4c3b-9e8f-7a6b5c4d3e2f';
+    for (const role of ['moderator', 'owner'] as const) {
+      window.history.replaceState(null, '', `/?open=trips&trip=${id}`);
+      renderMarket(
+        <TeamTripsScreen onBack={() => undefined} />,
+        testClients({
+          market: { trip: async () => ({ ...trip, id }), teamTrips: async () => [] },
+          bookings: { tripBookings: async () => [] },
+          moderation: { me: async () => ({ id: null, firstName: 'Ali', hasAvatar: false, role }) },
+        }),
+      );
+      expect(await screen.findByText('Jasur')).toBeTruthy();
+      await waitFor(() =>
+        expect(screen.queryByRole('button', { name: /^Jasur/u }) !== null).toBe(role === 'owner'),
+      );
+      cleanup();
+    }
+  });
 });

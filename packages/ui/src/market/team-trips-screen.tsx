@@ -15,6 +15,7 @@ import { TeamCancelTrip } from './team-cancel-trip';
 import { TeamTripRow } from './team-trip-row';
 import { TripScreen } from './trip-screen';
 import { useTeamDays } from './team-days';
+import { useTeamOwner } from '../team/use-owner';
 import { useLoad } from './use-list';
 import { useDayLabel } from './when';
 
@@ -38,11 +39,13 @@ function TeamTrips({ onBack }: { readonly onBack: () => void }) {
   const { now, days, failed, reload, refresh, more } = useTeamDays();
   const [open, setOpen] = useState<Trip | null>(null);
   // The card of the driver or of a passenger; back returns to the same trip (G78 sheet 4).
-  const [person, onPerson] = useState<PersonId | null>(null);
+  const [person, setPerson] = useState<PersonId | null>(null);
+  // The card of a person is the owner's: a moderator reads the rows (G90 ADM-2).
+  const onPerson = useTeamOwner() ? setPerson : undefined;
   // «Bronni ochish» under a support question: ?open=trips&trip=<id> (G68, mockup g68/4).
   const [linked, setLinked] = useState(() => launchParam(TRIP_LINK, LINK_ID));
   useLinkOpened(linked !== null, LINK);
-  if (person) return <PeopleScreen person={person} onBack={() => onPerson(null)} />;
+  if (person) return <PeopleScreen person={person} onBack={() => setPerson(null)} />;
   if (linked) return <LinkedTrip id={linked} onBack={() => setLinked(null)} onPerson={onPerson} />;
   if (open) {
     return (
@@ -82,7 +85,7 @@ function TeamTrips({ onBack }: { readonly onBack: () => void }) {
 type LinkedProps = {
   readonly id: string;
   readonly onBack: () => void;
-  readonly onPerson: (id: PersonId) => void;
+  readonly onPerson: ((id: PersonId) => void) | undefined;
 };
 
 // One trip by its id with its bookings; back goes to the trips of the days.

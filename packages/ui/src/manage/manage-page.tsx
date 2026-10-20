@@ -65,7 +65,7 @@ type RowProps = {
   readonly alarm?: boolean;
   // The number or the money on the right, bold (G78 sheet 4).
   readonly value?: ReactNode;
-  readonly onClick?: () => void;
+  readonly onClick?: (() => void) | undefined;
   // A row that does its act in place has no arrow: «Qoʻngʻiroq» plays, a set is picked (G78 sheet 5).
   readonly arrow?: boolean;
 };
