@@ -16,6 +16,16 @@ export function BookingBanner({ booking }: { readonly booking: Booking }) {
   const { end } = useBookingEnds(booking);
   const done = useDoneLine(booking.trip, end);
   const why = useWhy(booking);
+  // The driver marked «Kelmadi»: the words of the main screen, grey (G90 PAS-1).
+  if (booking.noShowAt !== null) {
+    const day = t('bookings.confirmed.when', {
+      day: dayLabel(tashkentDate(departAt), Date.now()),
+      time: formatTime(new Date(departAt)),
+    });
+    return (
+      <OutcomePlate tick={false} off title={t('home.dock.noShow')} lines={[day, t('home.dock.noShowHint')]} />
+    );
+  }
   // A month after the trip the plate is grey: only the district and the reading are left (g60/6).
   const old = status === 'completed' && done.old;
   const good = (status === 'confirmed' || status === 'completed') && !old;

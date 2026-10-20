@@ -20,7 +20,9 @@ import '../mine/mine-page.css';
 
 // The memory of the passenger's «Mening safarlarim»: data, pages and place (docs/94 F2).
 export const MY_REQUESTS = 'market.mine.requests';
-const isLive = (booking: Booking) => booking.status === 'requested' || booking.status === 'confirmed';
+// A seat the driver marked «Kelmadi» is not ridden: it goes to the past ones (G90 PAS-1).
+const isLive = (booking: Booking) =>
+  (booking.status === 'requested' || booking.status === 'confirmed') && booking.noShowAt === null;
 // An open request waits for offers; one whose day is over stays with «Qayta yuborish» (mockup g75/2 A).
 const shownRequest = (request: RideRequest) => request.status === 'open' || request.status === 'expired';
 
