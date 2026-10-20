@@ -36,7 +36,8 @@ test('S20, S29, P48, P50. a ride that ended: completed, both asked for stars, re
 
 test('S27. 2 hours before: the passenger and the driver are reminded once', async () => {
   const { trip } = await confirmedSeat(BOBUR, MALIKA);
-  moveTrip(trip.id, Date.now() + 90 * MINUTE, Date.now() + 10 * HOUR);
+  // 100 minutes before: the Cron is 20 minutes late for «2 soat qoldi», still told (G89 C10).
+  moveTrip(trip.id, Date.now() + 100 * MINUTE, Date.now() + 10 * HOUR);
   await clearBotMessages();
   await runCron();
   await toldBy('passenger', MALIKA, wordsOf('bot.ring.soonDoor'));

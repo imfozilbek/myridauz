@@ -42,21 +42,22 @@ test('D22 … D25. a trip in the past, too far, with too many seats or a price o
   expect(await publish({ price: maxPrice + 1000 })).toBe('trips.price_out_of_bounds');
 });
 
-test('V07, C03, D42, D62, V06, C02, D72. 1 sum short of the commission, then exactly on it', async () => {
+test('V07, C03, D42, D62, V06, C02, D72. no bonus left, then 1 sum short of the commission', async () => {
   const trip = await publishTrip(BOBUR, CHILONZOR, SAMARQAND, 'door');
   const seat = await book(AZIZA, trip, door);
   const commission = await commissionOf(BOBUR, seat.id);
-  await setBonus(BOBUR, commission - 1);
+  await setBonus(BOBUR, 0);
   expect(await outcome(answer(BOBUR, seat.id, 'confirm'))).toBe('wallet.not_enough');
   expect((await bookingOf(AZIZA, seat.id))?.status).toBe('requested');
   // A driver with a live trip offers only into it (docs/172).
   const request = await askRide(SEVARA);
   expect(await outcome(offerInto(BOBUR, request.id, trip))).toBe('wallet.not_enough');
-  // Exactly the commission: the seat is confirmed, the spent bonus brings the next one (docs/12).
-  await setBonus(BOBUR, commission);
+  // 1 sum short: the next bonus of the promo comes at once and pays the seat with the rest (G89 M1).
+  await setBonus(BOBUR, commission - 1);
   await answer(BOBUR, seat.id, 'confirm');
+  expect((await bookingOf(AZIZA, seat.id))?.status).toBe('confirmed');
   const wallet = await walletOf(BOBUR);
-  expect(wallet.bonus).toBe(WELCOME_BONUS);
+  expect(wallet.bonus).toBe(WELCOME_BONUS - 1);
   expect(wallet.operations.filter((op) => op.kind === 'bonus_grant')).toHaveLength(2);
 });
 

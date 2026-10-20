@@ -19,9 +19,10 @@ test('P24, P25, C12. the last seat goes to one; the next hears there are no seat
   const waiting = await book(MALIKA, trip, door(1));
   await answer(ULUGBEK, last.id, 'confirm');
   expect((await bookingOf(FERUZA, last.id))?.status).toBe('confirmed');
-  // The trip is full: a new request and the waiting one find no seat.
+  // The trip is full: a new request finds no seat; the waiting one hears «no» at once (G89 B3).
   expect(await outcome(book(SEVARA, trip, door(1)))).toBe('bookings.no_seats');
-  expect(await outcome(answer(ULUGBEK, waiting.id, 'confirm'))).toBe('bookings.no_seats');
+  expect((await bookingOf(MALIKA, waiting.id))?.status).toBe('declined');
+  expect(await outcome(answer(ULUGBEK, waiting.id, 'confirm'))).toBe('bookings.wrong_status');
 });
 
 // One seat at a time (owner decision 12.10.2026, docs/172): not twice on a trip, none on another.
