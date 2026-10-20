@@ -90,5 +90,14 @@ describe('the chat of a seat in the bots (G68, docs/122 rule 5)', () => {
     // A call takes the call at once (G79).
     await botSignals(testEnv).incomingCall(passenger, 'tnone');
     expect(JSON.stringify(lastTo(PASSENGER)?.body.reply_markup)).toContain('answer=tnone');
+    // G89 C5: at 23:00 a message and a missed call wait quietly; a call rings (docs/122 rule 3).
+    vi.setSystemTime(START + 13 * HOUR);
+    await botSignals(testEnv).newMessage(passenger, 'tnone');
+    expect(lastTo(PASSENGER)?.body).toMatchObject({ disable_notification: true });
+    await botSignals(testEnv).missedCall(passenger, 'tnone');
+    expect(lastTo(PASSENGER)?.body).toMatchObject({ disable_notification: true });
+    await botSignals(testEnv).incomingCall(passenger, 'tnone');
+    expect(lastTo(PASSENGER)?.body).not.toHaveProperty('disable_notification');
+    vi.setSystemTime(START);
   });
 });
