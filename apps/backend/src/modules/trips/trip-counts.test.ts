@@ -37,6 +37,13 @@ describe('the trips of each direction (G59, docs/118)', () => {
     expect((await directionCards(deps, '1726273'))[0]).toMatchObject({ today: 0, tomorrow: 1 });
   });
 
+  // G89 T11: a driver hidden by complaints is not counted, as in the search (docs/17).
+  it('does not count a driver hidden by complaints', async () => {
+    const { deps } = await market();
+    const hiding = { ...deps, hidden: async () => new Set([2]) };
+    expect((await directionCards(hiding, '1726273'))[0]).toMatchObject({ today: 1, tomorrow: 0 });
+  });
+
   it('«Safarlar»: the trips of each day of a week and the km', async () => {
     const { deps } = await market();
     const days = await tripDays(deps, '1726', '1718');
