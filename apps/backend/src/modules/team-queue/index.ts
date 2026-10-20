@@ -11,7 +11,7 @@ import { navbatRoutes } from './http/navbat-routes';
 import { workRoutes } from './http/work-routes';
 import { diqqatNews, type Signal } from './infrastructure/diqqat-card';
 import { attentionRoutes } from './http/attention-routes';
-import { queueOf, teamWork, type Case } from './domain/queue';
+import { queueOf, teamWork, workOf, type Case } from './domain/queue';
 import { navbatCard, navbatRing, newCaseRing } from './infrastructure/navbat-card';
 import { brandOf } from '../../shared/brand/brand-of';
 
@@ -25,15 +25,27 @@ export const waitingCases = async (env: Bindings) => teamWork(await casesOf(env)
 
 // What rings under «Navbat» (docs/122): a case after an empty queue, a case its member left too long
 // (in team hours), an urgent complaint (day and night).
+// sides: the people of a complaint; a moderator among them does not hear of it (G90 ADM-3).
 export type QueueNews =
-  | { readonly kind: 'new' }
+  | { readonly kind: 'new'; readonly sides?: readonly number[] }
   | { readonly kind: 'late'; readonly memberIds: readonly number[]; readonly text: string }
-  | { readonly kind: 'urgent'; readonly text: string; readonly markup?: object };
+  | {
+      readonly kind: 'urgent';
+      readonly text: string;
+      readonly markup?: object;
+      readonly sides?: readonly number[];
+    };
 
-function ringsOf(news: QueueNews | undefined, total: number, members: number[], teamTime: boolean): Ring[] {
-  if (news?.kind === 'urgent') return members.map((id) => navbatRing(id, news.text, false, news.markup));
+type Member = { readonly id: number; readonly role: string };
+const hears = (member: Member, sides: readonly number[] = []) =>
+  member.role === 'owner' || !sides.includes(member.id);
+
+function ringsOf(news: QueueNews | undefined, total: number, members: Member[], teamTime: boolean): Ring[] {
   if (news?.kind === 'late') return news.memberIds.map((id) => navbatRing(id, news.text, !teamTime));
-  if (news?.kind === 'new' && total === 1) return members.map((id) => newCaseRing(id, !teamTime));
+  const sides = news?.sides;
+  const ids = members.filter((member) => hears(member, sides)).map(({ id }) => id);
+  if (news?.kind === 'urgent') return ids.map((id) => navbatRing(id, news.text, false, news.markup));
+  if (news?.kind === 'new' && total === 1) return ids.map((id) => newCaseRing(id, !teamTime));
   return [];
 }
 
@@ -44,12 +56,15 @@ export async function showQueue(env: Bindings, news?: QueueNews): Promise<void> 
     const brand = brandOf(env);
     const now = Date.now();
     const [cases, members] = await Promise.all([casesOf(env), teamMembers(env)]);
-    const queue = queueOf(teamWork(cases), now, brand.moderation.hours);
-    const ids = members.map((member) => member.id);
-    const rings = ringsOf(news, queue.total, ids, isTeamTime(now, brand.moderation.hours));
+    const { hours } = brand.moderation;
+    const queue = queueOf(teamWork(cases), now, hours);
+    const rings = ringsOf(news, queue.total, members, isTeamTime(now, hours));
+    // Each card counts the work of its member, as «Navbat» of the app does (G90 ADM-3, ADM-9).
+    const own = (member: (typeof members)[number]) =>
+      queueOf(workOf(cases, member.id, member.role === 'owner'), now, hours);
     await showCards(
       env,
-      ids.map((id) => navbatCard(brand, id, queue, now)),
+      members.map((member) => navbatCard(brand, member.id, own(member), now)),
       rings,
     );
   } catch (error) {

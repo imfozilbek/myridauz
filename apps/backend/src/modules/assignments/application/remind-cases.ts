@@ -8,6 +8,8 @@ export type WaitingCase = {
   readonly id: string;
   readonly name: string;
   readonly since: number;
+  // The people of a complaint: a moderator among them leaves it to the others (G90 ADM-3).
+  readonly sides?: readonly number[];
 };
 
 export type CaseReminderDeps = {
@@ -34,10 +36,11 @@ export async function remindCases(deps: CaseReminderDeps): Promise<void> {
     if (steps.length === 0) continue;
     const assignee = await deps.assigneeOf(item);
     const own = assignee !== undefined && team.includes(assignee);
+    const others = team.filter((id) => !item.sides?.includes(id));
     for (const step of steps) {
       if (!(await deps.mark(item, step, now))) continue;
       if (step === 'owner') await deps.toOwners(item, own ? assignee : undefined);
-      else await deps.toMembers(own ? [assignee] : team, item);
+      else await deps.toMembers(own ? [assignee] : others, item);
     }
   }
 }

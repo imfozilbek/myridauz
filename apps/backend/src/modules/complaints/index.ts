@@ -79,6 +79,8 @@ export async function waitingComplaints(env: Bindings) {
       reasons: [...complaint.reasons],
       refund,
       since,
+      // Who the complaint is about: a moderator who is a side of it does not get it (G90 ADM-3).
+      sides: [complaint.authorId, complaint.againstId],
     })),
   );
 }

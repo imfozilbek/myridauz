@@ -9,7 +9,7 @@ import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import { teamOnly } from '../../../shared/auth/team-only';
 import type { TakeStore } from '../application/takes';
-import { queueOf, teamWork, waitedMinutes, type Case } from '../domain/queue';
+import { queueOf, workOf, shownCase, waitedMinutes, type Case } from '../domain/queue';
 import { brandOf } from '../../../shared/brand/brand-of';
 
 type NavbatDeps = {
@@ -35,7 +35,7 @@ export const navbatRoutes = ({ cases, takes, name }: NavbatDeps) =>
         cases(env),
         takes(env).fresh(now - TAKE_MINUTES * MINUTE_MS),
       ]);
-      const all = context.get('session').teamRole === 'owner' ? every : teamWork(every);
+      const all = workOf(every, viewer, context.get('session').teamRole === 'owner');
       const others = opened.filter((take) => take.memberId !== viewer);
       const names = new Map(
         await Promise.all(
@@ -47,7 +47,7 @@ export const navbatRoutes = ({ cases, takes, name }: NavbatDeps) =>
         .map((item) => {
           const minutes = waitedMinutes(item, now, hours);
           const takenBy = names.get(`${item.kind}:${item.id}`) ?? null;
-          return { ...item, minutes, late: minutes >= ownerMinutes, takenBy };
+          return { ...shownCase(item), minutes, late: minutes >= ownerMinutes, takenBy };
         });
       return context.json({ items, counts: queueOf(all, now, hours).counts });
     })
