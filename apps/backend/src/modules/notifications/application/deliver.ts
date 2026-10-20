@@ -58,6 +58,11 @@ export async function deliver(fetch: Fetch, tokens: Tokens, job: NotificationJob
   }
   if (response.status >= SERVER_ERROR) return { outcome: 'retry', afterSeconds: DEFAULT_RETRY_SECONDS };
   console.warn(JSON.stringify({ event: 'notification_dropped', bot: job.bot, status: response.status }));
+  // Only a person who blocked the bot (or left Telegram) is marked; one who never opened it is not:
+  // the bot writes once the person allows it (G89 C8).
+  const gone = /blocked by the user|user is deactivated/u.test(body.description ?? '');
   const person = typeof job.chatId === 'number';
-  return person && response.status === FORBIDDEN ? { outcome: 'drop', blocked: true } : { outcome: 'drop' };
+  return person && response.status === FORBIDDEN && gone
+    ? { outcome: 'drop', blocked: true }
+    : { outcome: 'drop' };
 }
