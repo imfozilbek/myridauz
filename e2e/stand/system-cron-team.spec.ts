@@ -1,5 +1,6 @@
 import { createTeamClient } from '@platform/api-client';
-import { tashkentDate, tashkentTime } from '@platform/contracts';
+import { loadBrand } from '@platform/brands';
+import { isTeamTime, tashkentDate, tashkentTime } from '@platform/contracts';
 import { expect, test } from '../crash-guard';
 import { say } from './bot-kit';
 import { MINUTE, tailOf, wordsOf } from './g27-kit';
@@ -41,6 +42,12 @@ test('S76. an application waits: its moderator at 25 minutes, the owners at 30, 
   await clearBotMessages();
   waitedFor(NAVRUZ, 26);
   await runCron();
+  // Outside team hours nobody is woken up: the night waits for the morning (G34). The stand runs at
+  // the hour of the clock; pnpm stand:check --at 12:00 sees the day.
+  if (!isTeamTime(Date.now(), loadBrand().moderation.hours)) {
+    expect(await rings(late)).toHaveLength(0);
+    return;
+  }
   await expect.poll(async () => (await rings(late)).length).toBe(1);
   expect(await rings(owners)).toHaveLength(0);
   waitedFor(NAVRUZ, 31);
