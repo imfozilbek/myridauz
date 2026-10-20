@@ -80,6 +80,14 @@ describe('the trip card of the driver bot (G68, docs/122, mockup g68/3)', () => 
     expect(buttons(shown)).not.toContain('Yetib keldik');
     expect(buttons(shown)).toContain(`?mytrip=${madina.trip.id}`);
     expect(buttons(shown)).not.toContain('t.me/share');
+    // 23:55 in Tashkent, the card edited after midnight: still the order of the road (G90 review).
+    const late = Date.parse('2026-10-20T18:55:00Z');
+    const night = (seat: Booking) => ({
+      ...seat,
+      trip: { ...seat.trip, departAt: late, firstDepartAt: late },
+    });
+    const after = card([night(madina), night(sardor)], late + 10 * 60_000);
+    expect(after.text).not.toContain('👥 Yoʻlovchilar');
   });
 
   it('a cancelled or ended trip leaves the top of the chat', async () => {

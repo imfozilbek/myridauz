@@ -36,16 +36,19 @@ export type QueueNews =
       readonly sides?: readonly number[];
     };
 
-type Member = { readonly id: number; readonly role: string };
+// total: the cases of the member's own «Navbat» (workOf), as the card counts them.
+type Member = { readonly id: number; readonly role: string; readonly total: number };
 const hears = (member: Member, sides: readonly number[] = []) =>
   member.role === 'owner' || !sides.includes(member.id);
 
-function ringsOf(news: QueueNews | undefined, total: number, members: Member[], teamTime: boolean): Ring[] {
+function ringsOf(news: QueueNews | undefined, members: Member[], teamTime: boolean): Ring[] {
   if (news?.kind === 'late') return news.memberIds.map((id) => navbatRing(id, news.text, !teamTime));
   const sides = news?.sides;
-  const ids = members.filter((member) => hears(member, sides)).map(({ id }) => id);
-  if (news?.kind === 'urgent') return ids.map((id) => navbatRing(id, news.text, false, news.markup));
-  if (news?.kind === 'new' && total === 1) return ids.map((id) => newCaseRing(id, !teamTime));
+  const heard = members.filter((member) => hears(member, sides));
+  if (news?.kind === 'urgent') return heard.map(({ id }) => navbatRing(id, news.text, false, news.markup));
+  // A case after an empty own queue (G90: a complaint about a member is not in his).
+  if (news?.kind === 'new')
+    return heard.filter(({ total }) => total === 1).map(({ id }) => newCaseRing(id, !teamTime));
   return [];
 }
 
@@ -57,15 +60,16 @@ export async function showQueue(env: Bindings, news?: QueueNews): Promise<void> 
     const now = Date.now();
     const [cases, members] = await Promise.all([casesOf(env), teamMembers(env)]);
     const { hours } = brand.moderation;
-    const queue = queueOf(teamWork(cases), now, hours);
-    const rings = ringsOf(news, queue.total, members, isTeamTime(now, hours));
     // Each card counts the work of its member, as «Navbat» of the app does (G90 ADM-3, ADM-9).
-    const own = (member: (typeof members)[number]) =>
-      queueOf(workOf(cases, member.id, member.role === 'owner'), now, hours);
+    const queues = members.map((member) => ({
+      member,
+      queue: queueOf(workOf(cases, member.id, member.role === 'owner'), now, hours),
+    }));
+    const counted = queues.map(({ member, queue }) => ({ ...member, total: queue.total }));
     await showCards(
       env,
-      members.map((member) => navbatCard(brand, member.id, own(member), now)),
-      rings,
+      queues.map(({ member, queue }) => navbatCard(brand, member.id, queue, now)),
+      ringsOf(news, counted, isTeamTime(now, hours)),
     );
   } catch (error) {
     console.warn(JSON.stringify({ event: 'team_queue_failed', message: String(error) }));
@@ -80,7 +84,7 @@ const memoryTakes = createMemoryTakes();
 export const attentionModule = attentionRoutes(signsOf)
   .route(
     '/',
-    workRoutes(async (env) => teamWork(await casesOf(env))),
+    workRoutes((env) => casesOf(env)),
   )
   .route(
     '/',

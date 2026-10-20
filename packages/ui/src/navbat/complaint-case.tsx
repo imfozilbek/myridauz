@@ -51,8 +51,9 @@ function Review({ complaint, progress, onBack, onDone, onGone }: ReviewProps) {
   const [mode, setMode] = useState<'view' | 'block' | 'chat'>('view');
   const [refund, setRefund] = useState(false);
   const { failure, fail, clear, gone } = useCaseFailure();
-  const resolved = complaint.status === 'resolved';
-  const open = !resolved && !gone;
+  const open = complaint.status !== 'resolved' && !gone;
+  // Decided already, unless its refund waits for the owner: that answer is still to give (G90 ADM-7).
+  const resolved = complaint.status === 'resolved' && complaint.refund?.state !== 'proposed';
   const decide = async (decision: ComplaintDecision) => {
     clear();
     try {
@@ -120,9 +121,9 @@ function Review({ complaint, progress, onBack, onDone, onGone }: ReviewProps) {
           />
           <MainButton text={t('complaints.warning')} onClick={() => decide({ action: 'warning' })} />
         </>
-      ) : (
+      ) : resolved || gone ? (
         <NextCaseButton onClick={onGone} />
-      )}
+      ) : null}
       <BlockSheet
         open={mode === 'block'}
         onClose={back}

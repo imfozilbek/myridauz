@@ -1,4 +1,4 @@
-import { ADMIN_NAVBAT_PATH, navbatSchema } from '@platform/contracts';
+import { ADMIN_NAVBAT_PATH, ADMIN_WORK_PATH, navbatSchema, workSchema } from '@platform/contracts';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { fakeTelegram } from './bots/test-bot';
 import { approvedDriver, json, read } from './bookings-test-api';
@@ -17,6 +17,7 @@ const OWNER = 900;
 const DRIVER = 952;
 const PASSENGER = 953;
 const HOUR = 3_600_000;
+const RING_NEW = '📋 Yangi ish keldi';
 const navbat = async (id: number) =>
   navbatSchema.parse(await (await call(ADMIN_NAVBAT_PATH, id, { app: 'admin' })).json());
 
@@ -46,6 +47,9 @@ describe('a complaint about a member of the team', () => {
     );
     expect((await navbat(OWNER)).items.map((item) => item.id)).toContain(filed.id);
     expect((await navbat(DRIVER)).items.map((item) => item.id)).not.toContain(filed.id);
+    // «kutmoqda» of the moderator counts the same cases as his «Navbat» (G90 review of ADM-9).
+    const work = workSchema.parse(await (await call(ADMIN_WORK_PATH, DRIVER, { app: 'admin' })).json());
+    expect(work.waiting).toBe((await navbat(DRIVER)).items.length);
     // The card of the bot counts the same as the app, for each member (G90 ADM-9).
     await showQueue(testEnv);
     const texts = (chat: number) =>
@@ -62,5 +66,14 @@ describe('a complaint about a member of the team', () => {
     const rang = (chat: number) => texts(chat).some((text) => text.startsWith('⚠️ Muhim shikoyat'));
     expect(rang(OWNER)).toBe(true);
     expect(rang(DRIVER)).toBe(false);
+    // «A case came» rings a member whose own «Navbat» was empty, by his own count (G90 review).
+    const before = texts(DRIVER).length;
+    await showQueue(testEnv, { kind: 'new' });
+    expect(
+      texts(DRIVER)
+        .slice(before)
+        .some((text) => text.startsWith(RING_NEW)),
+    ).toBe(false);
+    expect(texts(OWNER).some((text) => text.startsWith(RING_NEW))).toBe(true);
   });
 });

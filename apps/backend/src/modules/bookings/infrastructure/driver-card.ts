@@ -104,7 +104,8 @@ type Facts = {
 export function driverCard({ brand, chatId, trip, bookings, places, now, via }: Facts): Card {
   const stage = stageOf(trip);
   const onWay = stage === 'onWay';
-  const tripDay = onWay || tashkentDate(trip.departAt) === tashkentDate(now);
+  // Its time came: the order of the road, after midnight too (G90).
+  const tripDay = onWay || onTheWay(trip, now) || tashkentDate(trip.departAt) === tashkentDate(now);
   const people = tripDay ? roadLines(bookings.filter(riding)) : passengerLines(bookings);
   const text = [
     header(trip, stage, bookings),

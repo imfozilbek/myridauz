@@ -91,4 +91,22 @@ describe('a complaint in «Navbat»', () => {
     expect(screen.queryByText('Ogohlantirish')).toBeNull();
     expect(screen.getByText('Davom etish')).toBeTruthy();
   });
+
+  // G90 (review of ADM-7): a refund waits for the owner: its answer is the decision, not «Davom etish».
+  it('a refund that waits for the owner has no «Davom etish»', async () => {
+    const waiting = {
+      ...COMPLAINT_DETAIL,
+      status: 'resolved' as const,
+      refund: { state: 'proposed' as const, amount: 19_000 },
+    };
+    renderNavbat(open, [COMPLAINT], {
+      feedback: { complaint: async () => waiting },
+      moderation: {
+        me: async () => ({ id: null, firstName: 'Fozil', hasAvatar: false, role: 'owner' as const }),
+      },
+    });
+    expect(await screen.findByText('Qaytarishni tasdiqlash')).toBeTruthy();
+    expect(screen.queryByText('Davom etish')).toBeNull();
+    expect(screen.queryByText('Hal qilindi')).toBeNull();
+  });
 });
