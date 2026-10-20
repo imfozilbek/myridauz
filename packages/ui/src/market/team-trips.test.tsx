@@ -1,6 +1,7 @@
 import { DAY_MS, tashkentDate } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { confirmed } from '../bookings/booking-test-kit';
 import { testClients } from '../test-shell';
 import { renderMarket, trip } from './market-test-kit';
 import { TeamTripsScreen } from './team-trips-screen';
@@ -63,5 +64,23 @@ describe('the trips of the team day by day (docs/90 F-A6)', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Bekor qilish' }));
     await waitFor(() => expect(cancelTrip).toHaveBeenCalledWith(id, { reason: 'Xavfli haydovchi' }));
     await waitFor(() => expect(screen.queryByText('Safarni bekor qilish')).toBeNull());
+  });
+
+  // G90 ADM-4: after «Keldi» or «Kelmadi» at the point the ride has begun and the server refuses the
+  // cancel of the team (G63): the trip has no button.
+  it('has no cancel once the meeting at the point began', async () => {
+    const id = '2f6c2b9e-1d2a-4c3b-9e8f-7a6b5c4d3e2f';
+    window.history.replaceState(null, '', `/?open=trips&trip=${id}`);
+    const tripBookings = vi.fn(async () => [{ ...confirmed, metAt: trip.departAt - 60_000 }]);
+    renderMarket(
+      <TeamTripsScreen onBack={() => undefined} />,
+      testClients({
+        market: { trip: async () => ({ ...trip, id }), teamTrips: async () => [] },
+        bookings: { tripBookings },
+      }),
+    );
+    await waitFor(() => expect(tripBookings).toHaveBeenCalled());
+    expect(await screen.findByText('Jasur')).toBeTruthy();
+    expect(screen.queryByText('Safarni bekor qilish')).toBeNull();
   });
 });
