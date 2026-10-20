@@ -5,6 +5,9 @@
       "entry": ["scripts/*.mjs", "scripts/stand/shifted-worker.mjs"],
       "playwright": {
         "config": ["playwright.config.ts", "playwright.stand.config.ts"]
+      },
+      "vitest": {
+        "config": ["vitest.config.ts", "vitest.stryker.config.ts"]
       }
     },
     "apps/backend": {

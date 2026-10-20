@@ -4,7 +4,7 @@
 export default {
   testRunner: 'vitest',
   plugins: ['@stryker-mutator/vitest-runner'],
-  vitest: { configFile: 'vitest.config.ts', dir: 'apps/backend' },
+  vitest: { configFile: 'vitest.stryker.config.ts', dir: 'apps/backend' },
   mutate: ['apps/backend/src/modules/*/{domain,application}/**/*.ts', '!**/*.test.ts'],
   // Each change runs only the tests that reach it; a value read once at import time is skipped.
   coverageAnalysis: 'perTest',
