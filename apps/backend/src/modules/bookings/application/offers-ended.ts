@@ -14,7 +14,7 @@ async function endOffer(deps: BookingsDeps, offer: OfferRecord, told: Told): Pro
   const ended = { id: offer.id, chatKey: offerChatKey(offer), requestId: offer.requestId };
   if (told.driver) await deps.notify.offerExpired(offer.driverId, ended);
   // The passenger's card counts the offers left, the open Mini App follows (G89 T6).
-  if (told.card) await deps.notify.offerEnded(offer.requestId);
+  if (told.card) await deps.notify.requestChanged(offer.requestId);
 }
 
 // A request closed while drivers wait for the answer: another offer taken, the request cancelled or

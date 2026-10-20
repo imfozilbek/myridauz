@@ -56,7 +56,7 @@ describe('the offers left on a closed request', () => {
 // G89 T6, B21: an offer the driver's trip ended is over for the passenger too: the card of the request
 // counts the offers left and the open Mini App follows.
 describe('the offers ended by the trip of their driver', () => {
-  const told = (notes: readonly string[]) => notes.filter((note) => note.startsWith('offer ended'));
+  const told = (notes: readonly string[]) => notes.filter((note) => note.startsWith('request card'));
 
   it('reach the passenger when the team cancels the trip of the offer', async () => {
     const { deps, addTrip, addRequest, bonus, notes } = setup();
@@ -66,7 +66,7 @@ describe('the offers ended by the trip of their driver', () => {
     const sent = await sendOffer(deps, DRIVER, requestId, { departAt: 0, price: 1, tripId });
     await cancelTripByTeam(deps, tripId, 'Yoʻl yopiq');
     expect((await deps.offers.find(sent.ok ? sent.value.id : ''))?.status).toBe('expired');
-    expect(told(notes)).toEqual([`offer ended: ${requestId}`]);
+    expect(told(notes)).toEqual([`request card: ${requestId}`]);
     expect(ended(notes)).toEqual([]);
   });
 
@@ -76,7 +76,7 @@ describe('the offers ended by the trip of their driver', () => {
     const requestId = addRequest();
     await sendOffer(deps, DRIVER, requestId, offer);
     await cancelEverything(deps, DRIVER);
-    expect(told(notes)).toEqual([`offer ended: ${requestId}`]);
+    expect(told(notes)).toEqual([`request card: ${requestId}`]);
   });
 
   it('reach the passenger and the driver when the driver opened another trip', async () => {
@@ -85,7 +85,7 @@ describe('the offers ended by the trip of their driver', () => {
     const requestId = addRequest();
     await sendOffer(deps, DRIVER, requestId, offer);
     await offerSalonTrip(deps, DRIVER, addRequest({ wholeCar: true }), ON_THE_DAY);
-    expect(told(notes)).toEqual([`offer ended: ${requestId}`]);
+    expect(told(notes)).toEqual([`request card: ${requestId}`]);
     expect(ended(notes)).toEqual([`offer expired: ${DRIVER}`]);
   });
 });

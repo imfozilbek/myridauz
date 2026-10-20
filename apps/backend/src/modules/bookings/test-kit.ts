@@ -100,6 +100,11 @@ export function setup() {
       const facts = trips.get(tripId);
       if (facts) trips.set(tripId, { ...facts, departedAt: now });
     },
+    // The driver moved the time (G39): the trip leaves later.
+    retime: (tripId: string, departAt: number) => {
+      const facts = trips.get(tripId);
+      if (facts) trips.set(tripId, { ...facts, departAt, endsAt: facts.endsAt + departAt - facts.departAt });
+    },
     // «Yetib keldik» of the driver: the trip is not closed yet (G63).
     arrive: (tripId: string) => {
       const facts = trips.get(tripId);
