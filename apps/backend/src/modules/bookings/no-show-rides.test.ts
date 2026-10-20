@@ -21,6 +21,7 @@ async function tripWithNoShow() {
   }
   const [missed = '', rode = ''] = ids;
   kit.setNow(MEETING);
+  await markMeeting(kit.deps, DRIVER, missed, 'came');
   await markMeeting(kit.deps, DRIVER, missed, 'no_show');
   kit.setNow(ENDS + HOUR);
   return { ...kit, tripId, missed, rode };

@@ -24,7 +24,10 @@ const OPEN = 'met_at IS NULL AND no_show_at IS NULL';
 const MARK = {
   came: { set: 'driver_came_at = ?1', guard: `driver_came_at IS NULL AND ${OPEN}` },
   met: { set: 'met_at = ?1, boarded_at = COALESCE(boarded_at, ?1)', guard: OPEN },
-  no_show: { set: 'no_show_at = ?1', guard: `${OPEN} AND boarded_at IS NULL AND arrived_at IS NULL` },
+  no_show: {
+    set: 'no_show_at = ?1',
+    guard: `${OPEN} AND driver_came_at IS NOT NULL AND boarded_at IS NULL AND arrived_at IS NULL`,
+  },
 } as const;
 export const markOnceSql = (step: DriverMeetStep) =>
   `UPDATE bookings SET ${MARK[step].set}, updated_at = ?1

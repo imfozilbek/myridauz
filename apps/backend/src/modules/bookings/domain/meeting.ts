@@ -24,7 +24,11 @@ export function mark(
   if (step === 'came')
     return booking.driverCameAt === null && booking.metAt === null ? stamp(booking, step, now) : null;
   if (booking.metAt !== null) return 'bookings.already_met';
-  if (step === 'no_show' && (booking.boardedAt !== null || booking.arrivedAt !== null))
+  // «Kelmadi» only after «Men keldim»: the driver was at the point (docs/129, G89 B16).
+  if (
+    step === 'no_show' &&
+    (booking.driverCameAt === null || booking.boardedAt !== null || booking.arrivedAt !== null)
+  )
     return 'bookings.wrong_status';
   return stamp(booking, step, now);
 }

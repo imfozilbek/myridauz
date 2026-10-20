@@ -14,6 +14,7 @@ describe('the marks of the meeting hold (docs/35, docs/65 A4, G63)', () => {
     for (const step of ['met', 'no_show'] as const) {
       const { deps, id, setNow, wallet } = await booked();
       setNow(MEETING);
+      await markMeeting(deps, DRIVER, id, 'came');
       await markMeeting(deps, DRIVER, id, step);
       expect(await cancelByPassenger(deps, DILNOZA, id)).toEqual(REFUSED);
       expect(await answer(deps, DRIVER, id, 'driver_cancel')).toEqual(REFUSED);
@@ -22,11 +23,20 @@ describe('the marks of the meeting hold (docs/35, docs/65 A4, G63)', () => {
     }
   });
 
+  // G89 B16: «Kelmadi» only after «Men keldim»: the driver was at the point (docs/129).
+  it('refuses «Kelmadi» before «Men keldim»', async () => {
+    const { deps, id, notes, setNow } = await booked();
+    setNow(MEETING);
+    expect(await markMeeting(deps, DRIVER, id, 'no_show')).toEqual(REFUSED);
+    expect(notes.some((note) => note.startsWith('complaint'))).toBe(false);
+  });
+
   it('«Kelmadi» is refused once the passenger said «Yetib keldim»; the ride stays to rate', async () => {
     const { deps, id, notes, setNow } = await booked();
     // «Yetib keldim» comes once the passenger is in the car: here the time of the meeting passed (G89 B1).
     setNow(DEPART + HOUR);
     await markProgress(deps, DILNOZA, id, 'arrived');
+    await markMeeting(deps, DRIVER, id, 'came');
     expect(await markMeeting(deps, DRIVER, id, 'no_show')).toEqual(REFUSED);
     expect(notes.some((note) => note.startsWith('complaint'))).toBe(false);
     expect((await ratableRideOf(deps, id))?.bookingId).toBe(id);
@@ -35,6 +45,7 @@ describe('the marks of the meeting hold (docs/35, docs/65 A4, G63)', () => {
   it('«Keldi» and «Kelmadi» at the same moment: one wins, at most one complaint', async () => {
     const { deps, id, notes, setNow } = await booked();
     setNow(MEETING);
+    await markMeeting(deps, DRIVER, id, 'came');
     const taps = await Promise.all([
       markMeeting(deps, DRIVER, id, 'met'),
       markMeeting(deps, DRIVER, id, 'no_show'),
