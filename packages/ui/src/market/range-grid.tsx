@@ -1,8 +1,8 @@
-import { HOUR_MS, rangeEnds, slotAt, tashkentTime } from '@platform/contracts';
+import { rangeEnds } from '@platform/contracts';
 import { useBrand } from '../context/brand-context';
 import { TimeCell } from './time-grid';
 
-export type Range = { readonly from: string; readonly to: string };
+type Range = { readonly from: string; readonly to: string };
 
 type Props = {
   readonly date: string;
@@ -14,13 +14,6 @@ type Props = {
   readonly chosen: Range | null;
   readonly onFrom: (from: string | null) => void;
   readonly onTo: (to: string) => void;
-};
-
-// Every whole hour of a range, its ends too: "08:00", "09:00", "10:00".
-const hoursOf = (date: string, { from, to }: Range) => {
-  const start = slotAt(date, from);
-  const count = (slotAt(date, to) - start) / HOUR_MS + 1;
-  return Array.from({ length: count }, (_, index) => tashkentTime(start + index * HOUR_MS));
 };
 
 // «Oraliqda» (owner decision 20.10.2026, docs/216): step 1 the start, step 2 the start and only its
@@ -43,8 +36,8 @@ export function RangeGrid({ date, starts, from, chosen, onFrom, onTo }: Props) {
       </div>
     );
   }
-  const seen = chosen ? hoursOf(date, chosen) : [];
-  const tiles = [...new Set([...starts, ...seen])].sort();
+  // A chosen range shows its start and the ends of that start, as at step 2 (mockup g90 phone 3).
+  const tiles = chosen ? [chosen.from, ...rangeEnds(date, chosen.from, rules)] : starts;
   const edge = (slot: string) => slot === chosen?.from || slot === chosen?.to;
   return (
     <div className="time-grid">
@@ -53,8 +46,8 @@ export function RangeGrid({ date, starts, from, chosen, onFrom, onTo }: Props) {
           key={slot}
           slot={slot}
           pressed={edge(slot)}
-          inside={seen.includes(slot) && !edge(slot)}
-          // The end of a range late in the day may be no start: its tap only clears the choice.
+          inside={chosen !== null && slot > chosen.from && slot < chosen.to}
+          // An end late in the day may be no start: its tap only clears the choice.
           onTap={(tapped) => onFrom(starts.includes(tapped) ? tapped : null)}
         />
       ))}

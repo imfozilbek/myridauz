@@ -75,21 +75,22 @@ describe('a range of whole hours in «Qachon joʻnaysiz?»', () => {
     expect(times()).toEqual(hours(21, 23));
   });
 
-  it('opens again on the range: its ends in the main color, the hours inside lighter', async () => {
-    open({ date: DAY, time: '08:00', until: '11:00' });
+  it('opens again on the range: its start and ends, the edges in the main color, inside lighter', async () => {
+    open({ date: DAY, time: '08:00', until: '10:00' });
     expect(hint()).toBe('Qaysi soatdan? Toshkent vaqti bilan');
-    expect(times()).toEqual(hours(0, 22));
-    expect(pressed()).toEqual(['08:00', '11:00']);
-    expect(inside()).toEqual(['09:00', '10:00']);
-    // Any tap starts a new choice.
-    await tap('14:00');
-    expect(times()).toEqual(hours(14, 17));
+    expect(times()).toEqual(hours(8, 11));
+    expect(pressed()).toEqual(['08:00', '10:00']);
+    expect(inside()).toEqual(['09:00']);
+    // Any tap starts a new choice: 11:00 is a start of its own.
+    await tap('11:00');
+    expect(times()).toEqual(hours(11, 14));
+    expect(pressed()).toEqual(['11:00']);
     expect(inside()).toEqual([]);
   });
 
-  it('shows the end 23:00 of a chosen range; its tap only clears the choice', async () => {
+  it('the end 23:00 of a chosen range is no start: its tap only clears the choice', async () => {
     open({ date: DAY, time: '21:00', until: '23:00' });
-    expect(times()).toEqual(hours(0, 23));
+    expect(times()).toEqual(hours(21, 23));
     await tap('23:00');
     expect(times()).toEqual(hours(0, 22));
     expect(pressed()).toEqual([]);
