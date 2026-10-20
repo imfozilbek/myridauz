@@ -81,7 +81,8 @@ export async function declineOffer(
   const found = await sentToMe(deps, passengerId, id);
   if (typeof found === 'string') return { ok: false, error: found };
   const declined: OfferRecord = { ...found.offer, status: 'declined' };
-  await deps.offers.save(declined);
+  // One answer: an accept that came first wins (docs/65 A4, G89 U9).
+  if (!(await deps.offers.replace(declined, 'sent'))) return { ok: false, error: 'bookings.wrong_status' };
   await deps.notify.offerAnswered(found.offer.driverId, false, {
     id: declined.id,
     chatKey: offerChatKey(declined),

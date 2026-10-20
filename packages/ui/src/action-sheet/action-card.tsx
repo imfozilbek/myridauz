@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { Button } from '../components';
 import { useBrand } from '../context/brand-context';
 import { SheetFace } from '../home/sheet-face';
@@ -28,7 +29,11 @@ type Props = {
 export function ActionCard({ item, counter, laterLabel, onDone, onLater }: Props) {
   const { colors } = useBrand().theme;
   const { failure, fail, clear } = useFailure();
+  // One answer of a card at a time: «Qabul qilish» and «Rad etish» never both run (G89 U9).
+  const running = useRef(false);
   const act = (action: SheetAction) => async () => {
+    if (running.current) return;
+    running.current = true;
     clear();
     try {
       const words = await action.run();
@@ -36,6 +41,8 @@ export function ActionCard({ item, counter, laterLabel, onDone, onLater }: Props
       else onDone(words);
     } catch (caught) {
       fail(caught);
+    } finally {
+      running.current = false;
     }
   };
   const later = item.later === undefined ? laterLabel : item.later;
