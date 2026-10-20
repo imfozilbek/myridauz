@@ -99,8 +99,10 @@ export const faceQueueSchema = z.object({
   faces: z.array(z.object({ userId: personIdSchema, firstName: z.string(), uploadedAt: z.number().int() })),
 });
 export type FaceSummary = z.infer<typeof faceQueueSchema>['faces'][number];
+// at: when the photo the moderator saw came; a newer photo is never decided by it (G89 M8).
+const seen = { at: z.number().int().optional() };
 export const faceDecisionSchema = z.discriminatedUnion('action', [
-  z.object({ action: z.literal('approve') }),
-  z.object({ action: z.literal('reject'), reason: z.enum(FACE_REASONS) }),
+  z.object({ action: z.literal('approve'), ...seen }),
+  z.object({ action: z.literal('reject'), reason: z.enum(FACE_REASONS), ...seen }),
 ]);
 export type FaceDecision = z.infer<typeof faceDecisionSchema>;

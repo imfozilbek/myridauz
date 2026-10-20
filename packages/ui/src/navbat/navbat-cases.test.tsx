@@ -24,7 +24,12 @@ describe('the cases of «Navbat»', () => {
     const one = screen.getByRole('group', { name: 'Bitta odam' });
     fireEvent.click(within(one).getByText('Mos emas'));
     expect(await screen.findByText('Hammasi koʻrildi')).toBeTruthy();
-    expect(decideFace).toHaveBeenCalledWith(MADINA.id, { action: 'reject', reason: 'not_one_person' });
+    // The photo of the case is the one decided (G89 M8).
+    expect(decideFace).toHaveBeenCalledWith(MADINA.id, {
+      action: 'reject',
+      reason: 'not_one_person',
+      at: MADINA.since,
+    });
   });
 
   // Owner, 17.10.2026: the team sees who the person is in Telegram; the public name opens the profile.

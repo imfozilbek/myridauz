@@ -2,6 +2,7 @@ import type { Arrival, AvatarStatus, FaceReason } from '@platform/contracts';
 import type { ImageStore } from '../../../shared/storage/image-store';
 import type { PersonBot } from '../../../shared/telegram/profile-link';
 import type { TripRelation } from '../domain/avatar-visibility';
+import type { FaceCheck } from '../domain/face';
 import type { Block, BlockEntry, User } from '../domain/user';
 
 // Ports of the users module: D1 and R2 in production, memory in tests and local runs.
@@ -10,6 +11,8 @@ export type UserRepository = {
   find(id: number): Promise<User | undefined>;
   byPublicId(publicId: string): Promise<User | undefined>;
   save(user: User): Promise<void>;
+  // The team's decision on the waiting photo that came at `at`, one guarded write (G89 A8, M8).
+  decideFace(id: number, face: FaceCheck, at: number): Promise<boolean>;
   // "Maʼlumotlarimni oʻchirish": the name, the phone and the photo go, the row stays (docs/30).
   erase(id: number, at: number): Promise<void>;
   // Where the person came from and on what, once at the registration (G55, docs/116).

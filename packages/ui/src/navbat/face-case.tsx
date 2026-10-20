@@ -29,7 +29,8 @@ export function FaceCase({ id, item, progress, onBack, onDone }: CaseProps) {
   const decide = async (decision: FaceDecision) => {
     clear();
     try {
-      await moderation.decideFace(id, decision);
+      // The photo of this case is the one decided: a newer one waits for its own look (G89 M8).
+      await moderation.decideFace(id, item ? { ...decision, at: item.since } : decision);
       haptic.success();
       onDone('decided');
     } catch (caught) {

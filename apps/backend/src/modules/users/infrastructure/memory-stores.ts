@@ -18,6 +18,12 @@ export function createMemoryUsers(): UserRepository {
       if (user.block) idBlocks.set(user.id, user.block);
       else idBlocks.delete(user.id);
     },
+    decideFace: async (id, face, at) => {
+      const user = users.get(id);
+      if (user?.face?.status !== 'pending' || user.face.at !== at) return false;
+      users.set(id, { ...user, face });
+      return true;
+    },
     erase: async (id) => void users.delete(id),
     // Local runs show no sources: «Statistika» reads them from D1 only (G55).
     arrived: async () => undefined,

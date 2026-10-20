@@ -41,6 +41,18 @@ describe('face photos and the zone invite in D1', () => {
     expect(fullScans(db)).toEqual([]);
   });
 
+  // G89 A8, M8: one guarded write, only on the waiting photo that came at that moment.
+  it('decides a waiting photo once, never a newer one', async () => {
+    const db = testD1();
+    const users = d1Users(db);
+    await users.save(person(1, { status: 'pending', reason: null, at: 30 }));
+    const no = { status: 'rejected' as const, reason: 'not_one_person' as const, at: 30 };
+    expect(await users.decideFace(1, no, 20)).toBe(false);
+    expect(await users.decideFace(1, no, 30)).toBe(true);
+    expect(await users.decideFace(1, { ...no, status: 'approved', reason: null }, 30)).toBe(false);
+    expect((await users.find(1))?.face).toEqual(no);
+  });
+
   it('erases the photo and its check with the account (docs/30)', async () => {
     const db = testD1();
     const users = d1Users(db);

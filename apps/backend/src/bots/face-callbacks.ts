@@ -8,6 +8,7 @@ import {
   faceReasonMenu,
   parseFaceAction,
 } from '../modules/users';
+import { recordAction } from '../modules/journal';
 import { callTelegram } from '../shared/telegram/telegram-api';
 import { answerQuery as answer, type BotContext } from './bot-context';
 import type { BotCallback } from './telegram-update';
@@ -31,7 +32,14 @@ export async function onFaceButton(context: BotContext, query: BotCallback, toke
     await edit('editMessageReplyMarkup', { reply_markup: { inline_keyboard: [] } });
     return answer(query, t('bot.face.changed'));
   }
-  const result = await decideFaceOf(context.env, query.from.id, action.userId, action.decision);
+  // The photo of the card is the one decided (G89 M8); the journal keeps it like a decision in the app (M14).
+  const decision = action.at === null ? action.decision : { ...action.decision, at: action.at };
+  const result = await decideFaceOf(context.env, query.from.id, action.userId, decision);
+  if (result.ok) {
+    const subject = result.user.publicId;
+    const done = { memberId: query.from.id, kind: 'face' as const, subject, action: action.decision.action };
+    await recordAction(context.env, { ...done, since: result.user.face?.at ?? null });
+  }
   if (!result.ok) {
     await edit('editMessageReplyMarkup', { reply_markup: { inline_keyboard: [] } });
     return answer(query, t('bot.face.alreadyDecided'));

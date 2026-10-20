@@ -1,8 +1,9 @@
-import { AVATAR_STATUSES, FACE_REASONS, loopOf } from '@platform/contracts';
+import { AVATAR_STATUSES, FACE_REASONS } from '@platform/contracts';
 import type { UserRepository } from '../application/ports';
 import type { FaceCheck } from '../domain/face';
 import type { Block, User } from '../domain/user';
 import { d1Blocks } from './d1-blocks';
+import { d1UserMarks } from './d1-user-marks';
 import { oneOf } from '../../../shared/storage/one-of';
 
 type UserRow = {
@@ -117,17 +118,6 @@ export const d1Users = (db: D1Database): UserRepository => ({
       db.prepare('DELETE FROM share_moments WHERE user_id = ?').bind(id),
     ]);
   },
-  // A link a person shared names its author by a short code (G69, docs/123): who brought whom.
-  arrived: async (id, { source, via, client }, at) => {
-    const code = via ? (loopOf(via)?.code ?? null) : null;
-    await db
-      .prepare(
-        `INSERT OR REPLACE INTO user_arrivals (user_id, source, via, client, arrived_at, inviter_id)
-         VALUES (?, ?, ?, ?, ?, (SELECT user_id FROM user_codes WHERE code = ? AND user_id != ?))`,
-      )
-      .bind(id, source ?? null, via ?? null, client ?? null, at, code, id)
-      .run();
-  },
   // By the index of the status: never every person (G56, docs/117).
   pendingFaces: async () =>
     (
@@ -136,14 +126,6 @@ export const d1Users = (db: D1Database): UserRepository => ({
         .bind('pending')
         .all<UserRow>()
     ).results.map(toUser),
-  claimZoneInvite: async (id, at) => {
-    const { meta } = await db
-      .prepare(
-        'UPDATE users SET zone_invite_at = ? WHERE id = ? AND zone_invite_at IS NULL AND deleted_at IS NULL',
-      )
-      .bind(at, id)
-      .run();
-    return meta.changes > 0;
-  },
+  ...d1UserMarks(db),
   ...d1Blocks(db),
 });
