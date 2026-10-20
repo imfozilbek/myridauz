@@ -18,6 +18,7 @@
 | `pnpm stand:check --area <тема>` | Кусок по теме на одном стенде: `registration`, `search`, `map`, `booking`, `requests`, `driver`, `team`, `bots`, `channels` (`75`, G71) |
 | `pnpm stand:check --changed` | Куски, которые задела ветка: сам выбирает темы по изменённым файлам (`75`, G71) |
 | `pnpm stand:check <файл>` | Сценарии одного файла на одном стенде (`75`) |
+| `pnpm mutation` | Мутационный замер Stryker: `domain` и `application` backend, все тесты backend, на месте (`stryker.config.mjs`, урок №359); около 1,5 часа; отчёт `reports/mutation/mutation.json`. Дописать к прошлому замеру: `--incremental` (G89, `216`) |
 | `pnpm --filter @platform/brand-kit-rida build` | Бренд-пакет в `brands/rida/brand-kit/kit/` (нужны `FFMPEG`, Chromium, `38`) |
 | `pnpm --filter @platform/miniapp-passenger dev` | Mini App попутчика локально |
 | `pnpm --filter @platform/landing build` | Лендинг в `apps/landing/dist` (`59`) |
@@ -68,6 +69,7 @@
 | `secrets`, `brand-kit` | gitleaks; бренд-пакет собирается, только если менялись `brands/` или lock |
 | `screenshots (1/2)`, `(2/2)` | После барьеров, артефакт для людей; не барьер |
 
+- «Mutation» (`mutation.yml`): Stryker раз в неделю (воскресенье 22:17 UTC) и руками; без секретов; падает при счёте ниже 80 %; отчёт в артефакте `mutation-report` (G89). Не барьер PR: прогон идёт около двух часов.
 - `deploy-internal` ждёт `CI ok`. Workflow «Deploy production» (`deploy-production.yml`) идёт после зелёного CI на `main` (с выкладкой внутренней) и ждёт **Approve**; свой workflow, чтобы ожидание Approve не держало очередь CI. Руками: Actions → Deploy production → Run workflow (после «Map data»).
 - Нужна ли выкладка, решает `scripts/deploy-needed.mjs`: код поменялся с последней выкладки своей среды её же workflow («Map data» не в счёт); прод берёт только коммит, чей push прошёл CI, и только новейший `main`: повтор старого запуска не откатит прод (`46`, `179`). Очередь `deploy-production` только у самой выкладки: пустой запуск не вытеснит ждущий Approve.
 - Новая задача-барьер: добавить её имя в шаг «Wait for the other gates» задачи `CI ok` (`GATES`), иначе она не держит слияние.

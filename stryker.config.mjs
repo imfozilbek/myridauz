@@ -16,6 +16,7 @@ export default {
   reporters: ['clear-text', 'progress', 'json'],
   jsonReporter: { fileName: 'reports/mutation/mutation.json' },
   clearTextReporter: { allowColor: false, logTests: false, reportScoreTable: true },
-  thresholds: { high: 90, low: 80, break: null },
+  // Below 80 % the run fails: the weekly job of CI says so (G89, docs/45).
+  thresholds: { high: 90, low: 80, break: 80 },
   tempDirName: '.stryker-tmp',
 };
