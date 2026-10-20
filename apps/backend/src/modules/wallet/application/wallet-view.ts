@@ -2,6 +2,7 @@ import type { Wallet } from '@platform/contracts';
 import { balanceOf } from '../domain/ledger';
 import { bonusExpiresAt } from '../domain/promo';
 import type { WalletDeps } from './ports';
+import { usable } from './wallet';
 
 const HISTORY_LIMIT = 100;
 
@@ -20,8 +21,10 @@ export async function walletView(deps: WalletDeps, driverId: number): Promise<Wa
     bookingIds.length > 0 ? deps.bookings(bookingIds) : new Map(),
     deps.lastPrice(driverId),
   ]);
-  const bonus = balanceOf(operations, 'bonus');
-  const main = balanceOf(operations, 'main');
+  // A bonus whose time is over is no money on the screen either, before the Cron burns it (G89 M12).
+  const money = usable(operations, deps.now());
+  const bonus = balanceOf(money, 'bonus');
+  const main = balanceOf(money, 'main');
   return {
     bonus,
     main,

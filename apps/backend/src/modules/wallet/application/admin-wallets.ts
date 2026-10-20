@@ -11,8 +11,9 @@ export async function adminWallets(deps: WalletDeps, page: number): Promise<Admi
   const wallets = await Promise.all(
     rows.slice(0, WALLETS_PAGE).map(async ({ driverId, bonus, main }) => {
       const person = await deps.people.find(driverId);
-      return { driverId: person?.publicId ?? '', firstName: person?.firstName ?? '', bonus, main };
+      // A driver who deleted the account is no row: no name, no id to open (G89 M11).
+      return person ? [{ driverId: person.publicId, firstName: person.firstName, bonus, main }] : [];
     }),
   );
-  return { wallets, more: rows.length > WALLETS_PAGE };
+  return { wallets: wallets.flat(), more: rows.length > WALLETS_PAGE };
 }

@@ -24,7 +24,7 @@ const grantRow = (deps: WalletDeps, driverId: number, grant: Grant) =>
   });
 
 // A bonus whose time is over is not money any more, even before the Cron job burns it.
-const usable = (operations: readonly Operation[], now: number): Operation[] => {
+export const usable = (operations: readonly Operation[], now: number): Operation[] => {
   const burnt = burnable(operations, now);
   if (burnt === 0) return [...operations];
   const burn: Operation = {
