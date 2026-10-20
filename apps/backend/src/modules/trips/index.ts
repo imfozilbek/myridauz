@@ -80,12 +80,14 @@ export const scheduleErrorFor = (env: Bindings, driverId: number, departAt: numb
 // A live trip of the driver: one at a time, the board offers only to it (docs/172).
 export const driverBusy = async (env: Bindings, driverId: number) =>
   (await driverSchedule(tripsDeps(env), driverId)).full;
-export const tripViewsOf = async (env: Bindings, ids: readonly string[]) => {
+// rides: the trips of bookings keep a deleted driver as «Hisob oʻchirilgan» (G89 M9).
+export const tripViewsOf = async (env: Bindings, ids: readonly string[], rides = false) => {
   const deps = tripsDeps(env);
   const found = await Promise.all(ids.map((id) => deps.trips.find(id)));
   return views(
     deps,
     found.filter((trip) => trip !== undefined),
+    rides,
   );
 };
 export const publishOfferTripFor = (

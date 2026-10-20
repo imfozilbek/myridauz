@@ -3,7 +3,16 @@ import type { Person } from '../../users';
 import type { TripRecord } from '../domain/trip';
 import { regionIn } from '../../../shared/places/place-match';
 import type { TripsDeps } from './ports';
-import { NO_RIDERS, tripView, type Riders } from './views';
+import { NO_RIDERS, tripView, type Riders, type TripDriver } from './views';
+
+// The old rides of a deleted driver stay for the passengers, to rate and to complain: no name, no
+// photo (owner decision 20.10.2026, G89 M9).
+const goneDriver = (name: string): TripDriver => ({
+  publicId: '',
+  firstName: name,
+  avatarShown: false,
+  gender: null,
+});
 
 // Views of many trips: the driver and the car are read once per driver.
 async function ridersOf(deps: TripsDeps, trips: readonly TripRecord[]): Promise<Map<string, Riders>> {
@@ -55,7 +64,9 @@ async function pitaksOf(deps: TripsDeps, trips: readonly TripRecord[]) {
       : (byId.get(trip.pitakId) ?? null);
 }
 
-export async function views(deps: TripsDeps, trips: readonly TripRecord[]): Promise<Trip[]> {
+// rides: the trips of bookings, where a deleted driver keeps the old rides of the passengers; any
+// other view of a deleted driver's trip is gone with the account (docs/30).
+export async function views(deps: TripsDeps, trips: readonly TripRecord[], rides = false): Promise<Trip[]> {
   const now = deps.now();
   const [riders, ratings, recommended, pitakOf] = await Promise.all([
     ridersOf(deps, trips),
@@ -74,7 +85,8 @@ export async function views(deps: TripsDeps, trips: readonly TripRecord[]): Prom
   const found = await Promise.all(
     trips.map(async (trip) => {
       // The car kept in the trip: a new check of the driver hides nothing (docs/65 A1).
-      const [driver, car] = [await driverOf(trip.driverId), trip.car];
+      const person = await driverOf(trip.driverId);
+      const [driver, car] = [person ?? (rides ? goneDriver(deps.goneName) : undefined), trip.car];
       if (!driver || !car) return null;
       const price = recommended.get(`${trip.from}:${trip.to}`) ?? null;
       return tripView(

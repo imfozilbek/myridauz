@@ -1,3 +1,4 @@
+import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../env';
 import { bookingStore } from '../bookings/infrastructure/store';
 import { maskContacts } from '../chat';
@@ -11,6 +12,8 @@ import type { TripEvent, TripsDeps } from './application/ports';
 import { d1Trips } from './infrastructure/d1-trips';
 import { createMemoryTrips } from './infrastructure/memory-trips';
 import { brandOf } from '../../shared/brand/brand-of';
+
+const { t } = createI18n(DEFAULT_LOCALE);
 
 // Without D1 (tests) trips live in memory.
 const localTrips = createMemoryTrips();
@@ -37,6 +40,7 @@ export const tripsDeps = (env: Bindings): TripsDeps => ({
   riders: async (tripIds) =>
     (await bookingStore(env).byTrips(tripIds)).filter((booking) => booking.status === 'confirmed'),
   people: peopleOf(env),
+  goneName: t('account.gone'),
   approvedCar: (driverId) => approvedCar(env, driverId),
   ...standingOf(env),
   recommend: (from, to) => recommendationFor(env, from, to),

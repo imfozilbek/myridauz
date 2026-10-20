@@ -67,6 +67,8 @@ export type TripsDeps = {
   readonly trips: TripRepository;
   readonly riders: (tripIds: readonly string[]) => Promise<readonly Rider[]>;
   readonly people: { find(id: number): Promise<Person | undefined> };
+  // The name a deleted driver shows on the old rides (G89 M9).
+  readonly goneName: string;
   readonly approvedCar: (driverId: number) => Promise<Car | null>;
   // "⭐ 4,8 (37)" of drivers and the people hidden from search by complaints (docs/17, docs/24).
   readonly ratings: (driverIds: readonly number[]) => Promise<ReadonlyMap<number, Rating>>;

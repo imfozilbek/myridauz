@@ -67,6 +67,7 @@ export function setup() {
     trips: createMemoryTrips(),
     riders: async (tripIds) => riders.filter((rider) => tripIds.includes(rider.tripId)),
     people: { find: async (userId) => people.get(userId) },
+    goneName: 'Hisob oʻchirilgan',
     approvedCar: async (userId) => cars.get(userId) ?? null,
     ratings: async () => new Map(),
     hidden: async () => new Set(),
