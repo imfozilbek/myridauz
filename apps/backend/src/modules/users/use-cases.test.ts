@@ -36,13 +36,12 @@ describe('registration', () => {
 
 describe('blocking (docs/17)', () => {
   it('blocks by id and by phone, and a temporary block ends', async () => {
-    const { deps, users, stored } = setup();
+    const { deps, users } = setup();
     await register(deps, ali, input);
     expect(await checkAccess(deps, 1)).toBeNull();
-    const user = await stored(1);
-    await users.save({ ...user, block: { until: NOW + 10 } });
+    await users.blockId(1, { until: NOW + 10 }, NOW);
     expect(await getMe(deps, ali)).toEqual({ state: 'blocked', until: NOW + 10 });
-    await users.save({ ...user, block: { until: NOW - 10 } });
+    await users.blockId(1, { until: NOW - 10 }, NOW);
     expect(await checkAccess(deps, 1)).toBeNull();
     await users.blockPhone('+998901234567', { until: null }, 0);
     expect(await checkAccess(deps, 1)).toEqual({ until: null });

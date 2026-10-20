@@ -77,4 +77,16 @@ describe('face photos and the zone invite in D1', () => {
     expect(await users.claimZoneInvite(1, 8)).toBe(false);
     expect(fullScans(db)).toEqual([]);
   });
+
+  // G89: a change of the person read before a block never lifts the block (a face, «bot yozadi»,
+  // the role of a driver in the same second as the block).
+  it('keeps a block that came between the read and the write of a change', async () => {
+    const users = d1Users(testD1());
+    await users.save(person(5, null));
+    const stale = await users.find(5);
+    if (!stale) throw new Error('no person');
+    await users.blockId(5, { until: null }, 2);
+    await users.save({ ...stale, writeAccess: true, updatedAt: 3 });
+    expect(await users.find(5)).toMatchObject({ block: { until: null }, writeAccess: true });
+  });
 });

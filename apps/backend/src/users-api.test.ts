@@ -99,8 +99,7 @@ describe('registration and profile over HTTP', () => {
 
   it('answers a blocked person only with the block', async () => {
     await registerUser(50);
-    const user = await localUsers.find(50);
-    if (user) await localUsers.save({ ...user, block: { until: null } });
+    await localUsers.blockId(50, { until: null }, Date.now());
     expect(await (await call('/me', 50)).json()).toEqual({ state: 'blocked', until: null });
     expect(await (await call('/users/20', 50)).json()).toEqual({ error: 'users.blocked', until: null });
   });

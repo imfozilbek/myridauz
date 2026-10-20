@@ -53,8 +53,7 @@ describe('chat access (docs/07)', () => {
     expect((await ticket(DRIVER, 'driver')).status).toBe(200);
     expect((await ticket(STRANGER)).status).toBe(403);
     expect((await call('/chats/not-a-key/ticket', PASSENGER, { method: 'POST' })).status).toBe(403);
-    const user = await localUsers.find(BLOCKED);
-    if (user) await localUsers.save({ ...user, block: { until: null } });
+    await localUsers.blockId(BLOCKED, { until: null }, Date.now());
     expect((await ticket(BLOCKED)).status).toBe(403);
     // Without the ticket, or with it but not as a socket, there is no chat.
     const socket = new URL(own.url).pathname;

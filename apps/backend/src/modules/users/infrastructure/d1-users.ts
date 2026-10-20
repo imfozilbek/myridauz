@@ -50,7 +50,9 @@ const toUser = (row: UserRow): User => ({
   updatedAt: row.updated_at,
 });
 
-// Table users (migrations/0002_users.sql).
+// Table users (migrations/0002_users.sql). A change of a person never writes the block: a block that
+// came between the read and the write stays (G89, the face and the block in one second). Only
+// blockId and unblockId write it.
 export const d1Users = (db: D1Database): UserRepository => ({
   find: async (id) => {
     const row = await db
@@ -73,8 +75,7 @@ export const d1Users = (db: D1Database): UserRepository => ({
            blocked_until, avatar_key, avatar_status, avatar_reason, avatar_at, write_access, created_at, updated_at)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
          ON CONFLICT (id) DO UPDATE SET public_id = excluded.public_id, first_name = excluded.first_name, gender = excluded.gender,
-           phone = excluded.phone, is_driver = excluded.is_driver, blocked = excluded.blocked,
-           blocked_until = excluded.blocked_until, avatar_key = excluded.avatar_key,
+           phone = excluded.phone, is_driver = excluded.is_driver, avatar_key = excluded.avatar_key,
            avatar_status = excluded.avatar_status, avatar_reason = excluded.avatar_reason,
            avatar_at = excluded.avatar_at,
            write_access = excluded.write_access, consent_at = excluded.consent_at,
