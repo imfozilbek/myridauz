@@ -61,6 +61,7 @@ export const API_ERRORS = [
   'bookings.invalid_input',
   'bookings.too_many',
   'bookings.has_seat',
+  'bookings.offer_unavailable',
   'bookings.no_seats',
   'bookings.own_trip',
   'bookings.wrong_status',

@@ -72,6 +72,8 @@ const EXPLAINED: readonly string[] = [
   'reviews.published',
   // G89 B19: a confirmed seat on another trip.
   'bookings.has_seat',
+  // G89 B5, U8: the driver of the offer is short of money for the commission.
+  'bookings.offer_unavailable',
 ];
 
 // Codes that mean the same for a person as an explained one.

@@ -42,6 +42,7 @@ import { bookingStore } from './infrastructure/store';
 import { meetingPorts } from './infrastructure/meeting-ports';
 import { telegramNotifier } from './infrastructure/telegram-notifier';
 import { requestNewsOf } from './request-news';
+import { tellNoMoney } from './no-money';
 import { tellPair } from './infrastructure/pair-sign';
 import { brandOf } from '../../shared/brand/brand-of';
 
@@ -108,6 +109,7 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => {
         passenger: passengerNewsOf(env),
         driver: (tripId, about, ring) => driverNewsOf(env, deps)(tripId, about, ring),
         request: (id, offer) => requestNewsOf(env, deps)(id, offer),
+        noMoney: (driverId, commission) => tellNoMoney(env, driverId, commission),
       }),
     ),
     pairTalked: (driverId, passengerId, talks) => tellPair(env, 'pair', driverId, passengerId, talks),

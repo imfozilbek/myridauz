@@ -1,7 +1,7 @@
 import type { Offer } from '@platform/contracts';
 import { offerStatusAt, type OfferRecord } from '../domain/offer';
 import { offerChatKey } from '../domain/talk';
-import { acceptedWith, offerBooking, offerView, type AcceptError } from './accept-steps';
+import { acceptedWith, offerBooking, offerView, walletShort, type AcceptError } from './accept-steps';
 import { acceptOnTrip } from './accept-on-trip';
 import type { BookingsDeps, Result } from './ports';
 import type { RequestFacts } from './request-facts';
@@ -37,15 +37,22 @@ export async function acceptOffer(
   return result;
 }
 
+async function endTaken(deps: BookingsDeps, offer: OfferRecord): Promise<Result<Offer, AcceptError>> {
+  await deps.offers.replace({ ...offer, status: 'expired' }, 'accepted');
+  return { ok: false, error: 'bookings.wrong_status' };
+}
+
 async function acceptTaken(
   deps: BookingsDeps,
   offer: OfferRecord,
   request: RequestFacts,
 ): Promise<Result<Offer, AcceptError>> {
   const car = await deps.approvedCar(offer.driverId);
+  // The car is not approved now (a new check, a block): the offer never will work (G89 B5).
+  if (!car) return endTaken(deps, offer);
   const draft = await offerBooking(deps, offer, request, '', null);
-  if (!car || !(await deps.wallet.canAfford(offer.driverId, draft.commission)))
-    return { ok: false, error: 'wallet.not_enough' };
+  if (!(await deps.wallet.canAfford(offer.driverId, draft.commission)))
+    return walletShort(deps, offer, draft);
   const published = await deps.trips.publish(
     offer.driverId,
     {
@@ -63,15 +70,12 @@ async function acceptTaken(
   );
   // A trip that cannot open now (another live trip of the driver, a price out of bounds) never will:
   // the offer ends instead of waiting for a tap that always fails (G89 B2).
-  if (!published.ok) {
-    await deps.offers.replace({ ...offer, status: 'expired' }, 'accepted');
-    return { ok: false, error: 'bookings.wrong_status' };
-  }
+  if (!published.ok) return endTaken(deps, offer);
   const trip = published.value;
   const booking = await offerBooking(deps, offer, request, trip.id, trip.pitak?.id ?? null);
   if ((await deps.wallet.charge(offer.driverId, booking.id, booking.commission)) !== 'ok') {
     await deps.trips.cancel(offer.driverId, trip.id);
-    return { ok: false, error: 'wallet.not_enough' };
+    return walletShort(deps, offer, booking);
   }
   await deps.bookings.save(booking);
   // Quiet until now: a whole car is nobody's news; the free seats of a seats trip are, with the

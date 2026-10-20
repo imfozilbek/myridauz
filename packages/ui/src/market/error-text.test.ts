@@ -22,6 +22,7 @@ const G27_CODES = [
   // G89 (texts on the owner's approval, 20.10.2026).
   'reviews.published',
   'bookings.has_seat',
+  'bookings.offer_unavailable',
 ] as const;
 
 describe('errorKey (docs/83 N04)', () => {

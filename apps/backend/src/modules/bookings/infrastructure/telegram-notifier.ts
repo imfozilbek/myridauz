@@ -30,13 +30,15 @@ type Wiring = {
   readonly driver: DriverNews;
   // A request lives in one card of the passenger bot; the first offer rings under it (G68).
   readonly request: (requestId: string, offer?: Offer) => Promise<void>;
+  // How much the wallet misses for a commission, with «Hamyon» (G75, G89 B5).
+  readonly noMoney: (driverId: number, commission: number) => Promise<void>;
 };
 
 // The bots tell the other side (docs/07, docs/03): names only, never a phone or a username. The
 // chat of the booking gets a line about it too. A seat and a trip are live cards of their bots, with
 // a ring under them only when the person has to act (G68, docs/122).
 export function telegramNotifier(wiring: Wiring): BookingNotifier {
-  const { brand, notify, system, closeOnes, passenger, driver, request } = wiring;
+  const { brand, notify, system, closeOnes, passenger, driver, request, noMoney } = wiring;
   const open = (app: 'passenger' | 'driver', link?: AppLink) => openButton(brand, app, t('bot.open'), link);
   // The trip card of the driver follows every change of a booking; about: the booking changed.
   const tripOf = (booking: Booking, ring?: DriverRing) => driver(booking.trip.id, booking.id, ring);
@@ -97,6 +99,7 @@ export function telegramNotifier(wiring: Wiring): BookingNotifier {
       await notify([{ bot: 'driver', chatId: driverId, text: t('bot.offer.expired'), markup }]);
     },
     requestChanged: (requestId) => request(requestId),
+    walletShort: noMoney,
     progress: async (booking, step) => {
       await closeOnes(booking, step);
       await passenger(booking);
