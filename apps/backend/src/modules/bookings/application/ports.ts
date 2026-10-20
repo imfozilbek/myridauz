@@ -5,11 +5,8 @@ import type {
   Point,
   Recommendation,
   RouteError,
-  Trip,
-  TripInput,
   Rating,
   RideRequest,
-  PickupMode,
   Where,
 } from '@platform/contracts';
 import type { Person } from '../../users';
@@ -18,6 +15,7 @@ import type { MarkStore, MeetingPorts } from './meeting-ports';
 import type { BookingNotifier } from './notifier-port';
 import type { OfferRepository, TalkRepository } from './offer-ports';
 import type { RequestFacts } from './request-facts';
+import type { TripsPort } from './trip-port';
 
 // Ports of the bookings module: D1 in production, memory in tests.
 export type BookingRepository = MarkStore & {
@@ -51,29 +49,7 @@ export type BookingRepository = MarkStore & {
 export type { OfferRepository } from './offer-ports';
 export type { BookingNotifier } from './notifier-port';
 
-// What bookings need of a trip (the trips module owns it).
-export type TripFacts = {
-  readonly id: string;
-  readonly driverId: number;
-  readonly from: string;
-  readonly to: string;
-  readonly departAt: number;
-  // «Yoʻlga chiqdim» of the driver (G63): the trip is on the road even before its time.
-  readonly departedAt: number | null;
-  // «Yetib keldik» of the driver (G63): the ride is over for the stars before the trip closes.
-  readonly arrivedAt: number | null;
-  readonly km: number;
-  readonly seats: number;
-  readonly price: number;
-  readonly endsAt: number;
-  readonly live: boolean;
-  readonly over: boolean;
-  readonly pickupMode: PickupMode;
-  // The plate of the car kept in the trip (docs/65 A1).
-  readonly plate: string | null;
-};
-
-type Published = { ok: true; value: Trip } | { ok: false; error: string };
+export type { TripFacts } from './trip-port';
 
 export type BookingsDeps = {
   readonly bookings: BookingRepository;
@@ -82,25 +58,7 @@ export type BookingsDeps = {
   // The limits of people with the owner's values (brand, docs/128 §4): the rings about one request
   // before a booking (G64), the bookings waiting for an answer, the meeting, the chat after the trip.
   readonly limits: Pick<BrandConfig, 'calls' | 'bookings' | 'schedule' | 'chat'>;
-  readonly trips: {
-    find(id: string): Promise<TripFacts | undefined>;
-    // Ids of the driver's trips, for "Mening safarlarim" with bookings.
-    ofDriver(driverId: number): Promise<string[]>;
-    // An accepted offer becomes a trip: in time and the driver's only live one (docs/103, docs/172).
-    // Its way is the trips module's: both where the direction has a pitak, else the door (docs/70).
-    scheduleError(driverId: number, departAt: number): Promise<'trips.too_soon' | 'trips.too_many' | null>;
-    views(ids: readonly string[]): Promise<Trip[]>;
-    publish(driverId: number, input: Omit<Required<TripInput>, 'pickupMode'>): Promise<Published>;
-    // «Safar ochib taklif qilish» (G64): a trip only the passenger of the request sees; opened for
-    // everybody by the driver, or released as an ordinary trip once the passenger takes it.
-    publishPrivate(driverId: number, input: Required<TripInput>, requestId: string): Promise<Published>;
-    open(driverId: number, tripId: string): Promise<Published>;
-    release(tripId: string): Promise<void>;
-    // False when the trip is already on its way or over (docs/35).
-    cancel(driverId: number, tripId: string): Promise<boolean>;
-    // Cancelled trips leaving after this time: the hourly repair ends their seats (G89 T2).
-    cancelledAfter(after: number): Promise<string[]>;
-  };
+  readonly trips: TripsPort;
   readonly requests: {
     find(id: string): Promise<RequestFacts | undefined>;
     // The request as drivers see it, on top of a talk (G64).

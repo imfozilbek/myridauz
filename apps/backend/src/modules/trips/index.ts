@@ -94,7 +94,8 @@ export const publishOfferTripFor = (
   env: Bindings,
   driverId: number,
   input: Omit<Required<TripInput>, 'pickupMode'>,
-) => publishOfferTrip(tripsDeps(env), driverId, input);
+  requestId: string,
+) => publishOfferTrip(tripsDeps(env), driverId, input, requestId);
 // «Safar ochib taklif qilish» (G64): a trip for one request; opened for everybody or taken.
 export const publishPrivateTripFor = (env: Bindings, driverId: number, input: Input, requestId: string) =>
   publishPrivateTrip(tripsDeps(env), driverId, input, requestId);

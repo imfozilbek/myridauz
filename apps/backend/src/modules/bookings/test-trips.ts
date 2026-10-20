@@ -55,7 +55,7 @@ export function fakeTrips(
     scheduleError: async (driverId, departAt) => scheduleCheck(departAt, now(), trips.values(), driverId),
     views: async (ids) => Promise.all(ids.flatMap((tripId) => trips.get(tripId) ?? []).map(view)),
     publish: async (driverId, input) =>
-      published(addTrip({ ...input, driverId, bookingRule: input.bookingRule ?? 'seats' })),
+      published(addTrip({ ...input, driverId, bookingRule: input.bookingRule ?? 'seats', private: true })),
     publishPrivate: async (driverId, input) => {
       const busy = scheduleCheck(input.departAt, now(), trips.values(), driverId);
       return busy

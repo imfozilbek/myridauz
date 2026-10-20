@@ -72,7 +72,7 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => {
       ofDriver: (driverId) => driverTripIds(env, driverId),
       scheduleError: (driverId, departAt) => scheduleErrorFor(env, driverId, departAt),
       views: (ids) => tripViewsOf(env, ids),
-      publish: (driverId, input) => publishOfferTripFor(env, driverId, input),
+      publish: (driverId, input, requestId) => publishOfferTripFor(env, driverId, input, requestId),
       publishPrivate: (driverId, input, requestId) => publishPrivateTripFor(env, driverId, input, requestId),
       open: (driverId, tripId) => openTripFor(env, driverId, tripId),
       release: (tripId) => releaseTripFor(env, tripId),

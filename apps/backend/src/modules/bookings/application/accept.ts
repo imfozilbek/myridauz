@@ -46,17 +46,21 @@ async function acceptTaken(
   const draft = await offerBooking(deps, offer, request, '', null);
   if (!car || !(await deps.wallet.canAfford(offer.driverId, draft.commission)))
     return { ok: false, error: 'wallet.not_enough' };
-  const published = await deps.trips.publish(offer.driverId, {
-    from: request.from,
-    to: request.to,
-    departAt: offer.departAt,
-    seats: car.seats,
-    price: offer.price,
-    womanOnBoard: false,
-    comment: '',
-    // The trip of an offer is the passenger's request: seats as asked, or the whole car (docs/09).
-    bookingRule: request.wholeCar ? 'car_only' : 'seats',
-  });
+  const published = await deps.trips.publish(
+    offer.driverId,
+    {
+      from: request.from,
+      to: request.to,
+      departAt: offer.departAt,
+      seats: car.seats,
+      price: offer.price,
+      womanOnBoard: false,
+      comment: '',
+      // The trip of an offer is the passenger's request: seats as asked, or the whole car (docs/09).
+      bookingRule: request.wholeCar ? 'car_only' : 'seats',
+    },
+    request.id,
+  );
   // A trip that cannot open now (another live trip of the driver, a price out of bounds) never will:
   // the offer ends instead of waiting for a tap that always fails (G89 B2).
   if (!published.ok) {
@@ -70,6 +74,10 @@ async function acceptTaken(
     return { ok: false, error: 'wallet.not_enough' };
   }
   await deps.bookings.save(booking);
+  // Quiet until now: a whole car is nobody's news; the free seats of a seats trip are, with the
+  // booking already on it (G89 T12, B13).
+  if (request.wholeCar) await deps.trips.release(trip.id);
+  else await deps.trips.open(offer.driverId, trip.id);
   return acceptedWith(deps, offer, request, booking);
 }
 

@@ -84,8 +84,10 @@ export async function publishOfferTrip(
   deps: TripsDeps,
   driverId: number,
   input: Omit<Input, 'pickupMode'>,
+  requestId: string,
 ): Promise<Result<Trip, PublishError>> {
-  // The passenger takes an offer sent in time: its trip opens until the departure (G89 B2).
+  // The passenger takes an offer sent in time: its trip opens until the departure (G89 B2). It is
+  // quiet until the seat is taken; then bookings opens or releases it (G89 T12).
   const pickupMode = await offerWay(deps, input.from, input.to);
-  return publishTrip(deps, driverId, { ...input, pickupMode }, null, false);
+  return publishTrip(deps, driverId, { ...input, pickupMode }, requestId, false);
 }

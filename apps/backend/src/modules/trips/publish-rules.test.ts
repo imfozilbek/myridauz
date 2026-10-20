@@ -38,9 +38,9 @@ describe('the checks of a new trip (G63, docs/06, docs/70)', () => {
 
   it('gives the trip of an accepted offer both ways, or the door where there is no pitak', async () => {
     const { deps, trip } = setup();
-    const both = await publishOfferTrip(deps, 1, trip);
+    const both = await publishOfferTrip(deps, 1, trip, 'r1');
     expect(both.ok && both.value.pickupMode).toBe('both');
-    const door = await publishOfferTrip(deps, 2, { ...trip, ...NO_PITAK });
+    const door = await publishOfferTrip(deps, 2, { ...trip, ...NO_PITAK }, 'r2');
     expect(door.ok && door.value.pickupMode).toBe('door');
   });
 });
