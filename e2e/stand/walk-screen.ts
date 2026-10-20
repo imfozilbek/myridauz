@@ -43,13 +43,18 @@ async function readTargets(page: Page): Promise<{ label: string }[]> {
         if (box.width < 2 || box.height < 2) return false;
         return getComputedStyle(el).visibility !== 'hidden' && el.checkVisibility({ opacityProperty: true });
       };
+      // Disabled, or under the shade of a sheet: the page under it is aria-hidden and takes no tap.
       const off = (el: HTMLElement) =>
-        el.hasAttribute('disabled') || el.getAttribute('aria-disabled') === 'true';
+        el.hasAttribute('disabled') ||
+        el.getAttribute('aria-disabled') === 'true' ||
+        el.closest('[aria-hidden="true"], [inert]') !== null;
       // A button inside a button is one target: the outer one.
       const inner = (el: HTMLElement) => el.parentElement?.closest(tappable) !== null;
       // The chosen one of a group is not a target: a tap on it rightly changes nothing.
       const chosen = (el: HTMLElement) =>
         el.getAttribute('aria-pressed') === 'true' ||
+        ((el as HTMLInputElement).checked === true && (el as HTMLInputElement).type === 'radio') ||
+        el.querySelector('input[type=radio]:checked') !== null ||
         (['tab', 'radio', 'option'].includes(el.getAttribute('role') ?? '') &&
           [el.getAttribute('aria-selected'), el.getAttribute('aria-checked')].includes('true'));
       // The marks of the last reading go first: a screen gone under keeps its elements.

@@ -15,8 +15,10 @@ const DIR = 'screenshots/stand/walk';
 const WALK_MS = 15 * 60 * 1000;
 const PREPARE_MS = 3 * 60 * 1000;
 
+// A cell of the table: one line, and a «|» of a name («Rida | Oʻzbekiston») does not split it.
+const cell = (words: string) => words.replace(/\s+/gu, ' ').replace(/\|/gu, '/');
 const row = (finding: Finding) =>
-  `| ${finding.kind} | ${finding.at} | ${finding.path} | ${finding.detail.replace(/\s+/gu, ' ').replace(/\|/gu, '/')} |`;
+  `| ${finding.kind} | ${cell(finding.at)} | ${cell(finding.path)} | ${cell(finding.detail)} |`;
 
 function write(name: string, report: WalkReport) {
   mkdirSync(DIR, { recursive: true });

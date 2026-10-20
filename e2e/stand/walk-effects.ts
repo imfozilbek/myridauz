@@ -9,7 +9,13 @@ type Call = {
   readonly status: number;
   readonly error: string;
 };
-export type Effects = { readonly calls: Call[]; readonly screens: string[]; telegram: () => Promise<number> };
+// asked: the calls sent, answered or not: a tap whose answer is slow still did something.
+export type Effects = {
+  readonly calls: Call[];
+  readonly screens: string[];
+  readonly asked: () => number;
+  telegram: () => Promise<number>;
+};
 
 const API = `http://localhost:${STAND_API_PORT}`;
 // Ids in a path are not part of its kind: /trips/<id>/bookings is one call for the report.
@@ -46,12 +52,16 @@ const MOST_WAIT_MS = 5_000;
 
 export function watchEffects(page: Page): Effects {
   const calls: Call[] = [];
+  let sent = 0;
   const screens: string[] = [];
   const ours = (url: string) => url.startsWith(API) && !url.endsWith('/analytics');
   const count = (step: number) => (url: string) => {
     if (ours(url)) loading.set(page, (loading.get(page) ?? 0) + step);
   };
-  page.on('request', (request) => count(1)(request.url()));
+  page.on('request', (request) => {
+    count(1)(request.url());
+    if (ours(request.url())) sent += 1;
+  });
   page.on('requestfinished', (request) => count(-1)(request.url()));
   page.on('requestfailed', (request) => {
     count(-1)(request.url());
@@ -88,50 +98,7 @@ export function watchEffects(page: Page): Effects {
         ).length,
       [...QUIET],
     );
-  return { calls, screens, telegram };
-}
-
-// A sound is a change too (the sounds of «Ovozlar», G54): every start of one is counted.
-export const countSounds = (page: Page) =>
-  page.addInitScript(() => {
-    const start = AudioScheduledSourceNode.prototype.start;
-    const counted = window as unknown as { __walkSounds?: number };
-    AudioScheduledSourceNode.prototype.start = function (...args) {
-      counted.__walkSounds = (counted.__walkSounds ?? 0) + 1;
-      return start.apply(this, args);
-    };
-  });
-
-// The marks of a screen that change without new words: a switch, a chosen chip, a typed value, a sound.
-export const marksOf = (page: Page): Promise<string> =>
-  page.evaluate(() => {
-    const marks = [
-      ...document.querySelectorAll<HTMLElement>(
-        '[aria-checked],[aria-selected],[aria-expanded],[aria-pressed],input,textarea',
-      ),
-    ].map((el) =>
-      ['aria-checked', 'aria-selected', 'aria-expanded', 'aria-pressed']
-        .map((name) => el.getAttribute(name))
-        .concat((el as HTMLInputElement).value ?? '', String((el as HTMLInputElement).checked ?? ''))
-        .join(','),
-    );
-    return [...marks, String((window as unknown as { __walkSounds?: number }).__walkSounds ?? 0)].join('|');
-  });
-
-// The app reports its screens when it goes to the background: the walk sends them at the end.
-export async function flushScreens(page: Page) {
-  const sent = page
-    .waitForRequest((r) => r.url().endsWith('/analytics'), { timeout: 2_000 })
-    .catch(() => null);
-  const setState = (state: string) =>
-    page.evaluate((value) => {
-      Object.defineProperty(document, 'visibilityState', { value, configurable: true });
-      document.dispatchEvent(new Event('visibilitychange'));
-    }, state);
-  await setState('hidden');
-  await sent;
-  await page.waitForTimeout(500);
-  await setState('visible');
+  return { calls, screens, asked: () => sent, telegram };
 }
 
 // The screen has settled: the answers came, the splash left, nothing is loading.

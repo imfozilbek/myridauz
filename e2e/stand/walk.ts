@@ -1,7 +1,8 @@
 import type { Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { pressBack } from '../telegram-mock';
-import { countSounds, flushScreens, marksOf, settle, watchEffects } from './walk-effects';
+import { settle, watchEffects } from './walk-effects';
+import { countSounds, flushScreens, marksOf } from './walk-marks';
 import { order, press, standsFor } from './walk-moves';
 import { readScreen, shape, type ScreenState, type Target } from './walk-screen';
 import type { Finding, FindingKind, WalkReport } from './walk-types';
@@ -98,6 +99,7 @@ export async function walk(
       }
       const now = await readScreen(page);
       const before = {
+        asked: effects.asked(),
         calls: effects.calls.length,
         telegram: await effects.telegram(),
         marks: await marksOf(page),
@@ -115,7 +117,7 @@ export async function walk(
           `${call.method} ${call.path} → ${call.status} ${call.error}`,
         );
       const same = after.key === now.key && after.text === now.text;
-      const quiet = calls.length === 0 && (await effects.telegram()) === before.telegram;
+      const quiet = effects.asked() === before.asked && (await effects.telegram()) === before.telegram;
       const marked = (await marksOf(page)) !== before.marks;
       if (same && quiet && !marked) add('dead_tap', state, [...path, target], 'nothing changed');
       // Ticks and typed words stay on the screen: the next screen comes after all of them (two
