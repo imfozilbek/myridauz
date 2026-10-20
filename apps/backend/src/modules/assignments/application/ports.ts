@@ -24,8 +24,11 @@ export type AssignmentStore = {
   save(assignment: Assignment): Promise<void>;
   // The operator number of the latest question of this person.
   operatorOf(kind: Kind, subjectId: number): Promise<number | undefined>;
-  // The latest question of this person, not answered yet, is answered now.
+  // Every question of this person not answered yet is answered now: one answer covers the days
+  // before it (G89 A3).
   answered(kind: Kind, subjectId: number, at: number): Promise<void>;
+  // A new question of the same day waits for an answer again (G89 A3).
+  reopen(kind: Kind, subjectId: number, day: string): Promise<void>;
   supportOf(day: string): Promise<SupportDone[]>;
   // The support questions from this day on not answered yet: cases of «Navbat» (G75).
   openSupport(fromDay: string): Promise<{ readonly subjectId: number; readonly at: number }[]>;

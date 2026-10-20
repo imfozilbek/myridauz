@@ -10,7 +10,10 @@ export async function assign(deps: AssignDeps, kind: Kind, subjectId: number): P
   const at = deps.now();
   const day = tashkentDate(at);
   const current = await deps.store.assigneeOf(kind, subjectId, day);
-  if (current !== undefined && team.includes(current)) return current;
+  if (current !== undefined && team.includes(current)) {
+    await deps.store.reopen(kind, subjectId, day);
+    return current;
+  }
   const assigneeId = pickAssignee(team, await deps.store.loads(day));
   if (assigneeId === undefined) return undefined;
   await deps.store.save({ kind, subjectId, day, assigneeId, at, operator: operatorNumber(deps.random()) });

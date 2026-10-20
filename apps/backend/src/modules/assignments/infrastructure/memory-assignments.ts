@@ -31,11 +31,12 @@ export function createMemoryAssignments(): AssignmentStore {
     operatorOf: async (kind, subjectId) =>
       rows.filter((row) => row.kind === kind && row.subjectId === subjectId).at(-1)?.operator,
     answered: async (kind, subjectId, at) => {
-      const open = rows.filter(
-        (row) => row.kind === kind && row.subjectId === subjectId && row.answeredAt === null,
-      );
-      const latest = open.at(-1);
-      if (latest) latest.answeredAt = at;
+      for (const row of rows)
+        if (row.kind === kind && row.subjectId === subjectId && row.answeredAt === null) row.answeredAt = at;
+    },
+    reopen: async (kind, subjectId, day) => {
+      const row = rows.find((one) => key(one) === key({ kind, subjectId, day }));
+      if (row) row.answeredAt = null;
     },
     supportOf: async (day) => {
       const done = new Map<number, { total: number; answered: number }>();

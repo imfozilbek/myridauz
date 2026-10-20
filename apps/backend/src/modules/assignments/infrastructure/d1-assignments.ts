@@ -39,10 +39,15 @@ export const d1Assignments = (db: D1Database): AssignmentStore => ({
   answered: async (kind, subjectId, at) => {
     await db
       .prepare(
-        `UPDATE assignments SET answered_at = ? WHERE rowid = (SELECT rowid FROM assignments
-         WHERE kind = ? AND subject_id = ? AND answered_at IS NULL ORDER BY day DESC LIMIT 1)`,
+        'UPDATE assignments SET answered_at = ? WHERE kind = ? AND subject_id = ? AND answered_at IS NULL',
       )
       .bind(at, kind, subjectId)
+      .run();
+  },
+  reopen: async (kind, subjectId, day) => {
+    await db
+      .prepare('UPDATE assignments SET answered_at = NULL WHERE kind = ? AND subject_id = ? AND day = ?')
+      .bind(kind, subjectId, day)
       .run();
   },
   supportOf: async (day) => {
