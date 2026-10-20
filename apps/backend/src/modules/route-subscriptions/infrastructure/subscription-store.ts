@@ -69,6 +69,11 @@ export const d1Subscriptions = (db: D1Database): SubscriptionRepository => {
     live: (kind, now) =>
       many('SELECT * FROM route_subscriptions WHERE kind = ? AND expired = 0 AND expires_at > ?', kind, now),
     overdue: (now) => many('SELECT * FROM route_subscriptions WHERE expired = 0 AND expires_at <= ?', now),
+    expire: async ({ id, expiresAt }) => {
+      const sql =
+        'UPDATE route_subscriptions SET expired = 1 WHERE id = ? AND expired = 0 AND expires_at = ?';
+      return (await db.prepare(sql).bind(id, expiresAt).run()).meta.changes > 0;
+    },
   };
 };
 
@@ -83,5 +88,11 @@ export function createMemorySubscriptions(): SubscriptionRepository {
     byUser: async (userId, kind) => list().filter((s) => s.userId === userId && s.kind === kind),
     live: async (kind, now) => list().filter((s) => s.kind === kind && !s.expired && s.expiresAt > now),
     overdue: async (now) => list().filter((s) => !s.expired && s.expiresAt <= now),
+    expire: async ({ id, expiresAt }) => {
+      const current = all.get(id);
+      if (!current || current.expired || current.expiresAt !== expiresAt) return false;
+      all.set(id, { ...current, expired: true });
+      return true;
+    },
   };
 }

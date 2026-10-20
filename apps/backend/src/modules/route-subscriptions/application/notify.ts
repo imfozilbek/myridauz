@@ -27,12 +27,10 @@ export async function matchCheaper(deps: SubscriptionsDeps, match: Match): Promi
 }
 
 // The hourly Cron job: a dated subscription goes after its day; "any date" that is over is offered
-// to renew once (docs/24).
+// to renew once (docs/24), and not at all when the person renewed it in the same moment (G89).
 export async function endOverdue(deps: SubscriptionsDeps): Promise<void> {
   for (const subscription of await deps.subscriptions.overdue(deps.now())) {
-    if (subscription.date === null) {
-      await deps.tell.renew(subscription);
-      await deps.subscriptions.save({ ...subscription, expired: true });
-    } else await deps.subscriptions.remove(subscription.id);
+    if (subscription.date !== null) await deps.subscriptions.remove(subscription.id);
+    else if (await deps.subscriptions.expire(subscription)) await deps.tell.renew(subscription);
   }
 }

@@ -99,4 +99,21 @@ describe('telling about new trips and requests (docs/24)', () => {
     const order = (await mySubscriptions(deps, 1, 'trips')).map((item) => item.to);
     expect(order).toEqual(['1718', '1718233']);
   });
+
+  // G89: «Uzaytirish» in the same moment as the hourly job: the renewal stays, no offer to renew.
+  it('keeps a renewal made while the job reads the overdue ones', async () => {
+    const { deps, told, pass } = setup();
+    await subscribe(deps, 2, 'trips', { ...ROUTE, date: null });
+    pass(31 * DAY_MS);
+    const [mine] = await mySubscriptions(deps, 2, 'trips');
+    const { subscriptions } = deps;
+    const overdue = async (now: number) => {
+      const read = await subscriptions.overdue(now);
+      await renew(deps, 2, 'trips', mine?.id ?? '');
+      return read;
+    };
+    await endOverdue({ ...deps, subscriptions: { ...subscriptions, overdue } });
+    expect((await mySubscriptions(deps, 2, 'trips'))[0]?.expired).toBe(false);
+    expect(told).toEqual([]);
+  });
 });

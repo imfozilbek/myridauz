@@ -10,6 +10,8 @@ export type SubscriptionRepository = {
   live(kind: SubscriptionKind, now: number): Promise<SubscriptionRecord[]>;
   // The Cron job: the ones whose time is over, "any date" ones not offered to renew yet.
   overdue(now: number): Promise<SubscriptionRecord[]>;
+  // Marks it expired only if its time is still the one read: a renewal in the same moment stays (G89).
+  expire(subscription: SubscriptionRecord): Promise<boolean>;
 };
 
 // What the bots say in the news card of the route (docs/24, docs/122 rule 4): a new trip or
