@@ -74,6 +74,11 @@ const EXPLAINED: readonly string[] = [
   'bookings.has_seat',
   // G89 B5, U8: the driver of the offer is short of money for the commission.
   'bookings.offer_unavailable',
+  // G90 texts 1, 2, 3, 9 (owner, 20.10.2026): a trip, a person, a rating, an application gone for good.
+  'trips.not_found',
+  'users.not_found',
+  'reviews.not_found',
+  'drivers.not_found',
 ];
 
 // Codes that mean the same for a person as an explained one.

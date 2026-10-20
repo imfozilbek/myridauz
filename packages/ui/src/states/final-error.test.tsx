@@ -60,4 +60,20 @@ describe('a screen that cannot load for good', () => {
     );
     expect(await screen.findByText('Qayta urinish')).toBeTruthy();
   });
+
+  // G90 texts 1, 3 (owner, 20.10.2026): a trip that is gone, a rating of a ride that was not hers.
+  it('a rating that cannot be given says so', async () => {
+    renderMarket(
+      <ReviewScreen bookingId={confirmed.id} onBack={() => undefined} onComplain={() => undefined} />,
+      testClients({
+        feedback: {
+          target: async () => {
+            throw new ApiError(404, 'reviews.not_found');
+          },
+        },
+      }),
+    );
+    expect(await screen.findByText('Bu safarni baholab boʻlmaydi.')).toBeTruthy();
+    expect(screen.queryByText('Qayta urinish')).toBeNull();
+  });
 });
