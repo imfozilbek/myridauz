@@ -61,7 +61,7 @@ describe('«Yoʻlga chiqdim» and «Yetib keldik» (G63, docs/35)', () => {
     const id = await published(kit);
     const before = await kit.deps.trips.find(id);
     if (!before) throw new Error('no trip');
-    await kit.deps.trips.save({ ...before, status: 'cancelled' });
+    await kit.deps.trips.cancel(id);
     const stale = { ...kit.deps, trips: { ...kit.deps.trips, find: async () => before } };
     kit.setNow(NOW + 2 * HOUR + 30 * MINUTE);
     expect(await departTrip(stale, 1, id)).toEqual({ ok: false, error: 'trips.wrong_status' });

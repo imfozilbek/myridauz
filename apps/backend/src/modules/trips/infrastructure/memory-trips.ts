@@ -6,7 +6,14 @@ const live = (trip: TripRecord) => trip.status === 'active' || trip.status === '
 export function createMemoryTrips(): TripRepository {
   const trips = new Map<string, TripRecord>();
   return {
-    save: async (trip) => void trips.set(trip.id, trip),
+    // The same condition as the UPSERT of D1: a change never touches the status or the marks (G89 T7).
+    save: async (trip) => {
+      const old = trips.get(trip.id);
+      if (old && (!live(old) || old.departedAt !== null)) return false;
+      const marks = old && { status: old.status, departedAt: old.departedAt, arrivedAt: old.arrivedAt };
+      trips.set(trip.id, { ...trip, ...marks });
+      return true;
+    },
     find: async (id) => trips.get(id),
     byDriver: async (driverId) => [...trips.values()].filter((trip) => trip.driverId === driverId),
     latestOf: async (driverId, limit) =>

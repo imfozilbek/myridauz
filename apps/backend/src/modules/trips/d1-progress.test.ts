@@ -67,6 +67,23 @@ describe('«Yoʻlga chiqdim» and «Yetib keldik» in D1', () => {
     expect(await trips.find('late')).toMatchObject({ status: 'active' });
   });
 
+  // G89 T7: a change read before the cancel or the departure never brings the trip back.
+  it('changes only a live trip that has not left, never its status or marks', async () => {
+    const { trips } = await seeded();
+    const stale = await trips.find('soon');
+    const left = await trips.find('late');
+    if (!stale || !left) throw new Error('no trip');
+    await trips.cancel('soon');
+    await trips.depart('late', NOW);
+    expect(await trips.save({ ...stale, price: 80000 })).toBe(false);
+    expect(await trips.save({ ...left, price: 80000 })).toBe(false);
+    expect(await trips.find('soon')).toMatchObject({ status: 'cancelled', price: 90000 });
+    expect(await trips.find('late')).toMatchObject({ departedAt: NOW, price: 90000 });
+    expect(await trips.save({ ...stale, id: 'new' })).toBe(true);
+    expect(await trips.save({ ...stale, id: 'new', price: 80000 })).toBe(true);
+    expect(await trips.find('new')).toMatchObject({ status: 'active', price: 80000 });
+  });
+
   // G89 T2: the hourly repair reads the cancelled trips of two days back and ahead, through an index.
   it('reads the cancelled trips leaving after a time', async () => {
     const { db, trips } = await seeded();

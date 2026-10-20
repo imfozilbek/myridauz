@@ -58,3 +58,16 @@ describe('a driver lowers the price (G39, docs/104, 9)', () => {
     });
   });
 });
+
+// G89 T7: a cancel between the read and the write of a change wins; the trip stays cancelled.
+describe('a change that came after a cancel', () => {
+  it('writes nothing and brings no cancelled trip back', async () => {
+    const { deps, id, events } = await published(2 * DAY_MS);
+    const before = await deps.trips.find(id);
+    await deps.trips.cancel(id);
+    const stale = { ...deps, trips: { ...deps.trips, find: async () => before } };
+    expect(await lowerTripPrice(stale, 1, id, 80000)).toEqual({ ok: false, error: 'trips.wrong_status' });
+    expect(await deps.trips.find(id)).toMatchObject({ status: 'cancelled', price: 90000 });
+    expect(events).not.toContain(`cheaper ${id}`);
+  });
+});

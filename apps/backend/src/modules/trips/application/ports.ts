@@ -12,7 +12,8 @@ import type { TripRecord } from '../domain/trip';
 
 // Ports of the trips module: D1 in production, memory in tests.
 export type TripRepository = {
-  save(trip: TripRecord): Promise<void>;
+  // A new trip, or a change of a live one not on the way: false when a cancel or a departure came first.
+  save(trip: TripRecord): Promise<boolean>;
   find(id: string): Promise<TripRecord | undefined>;
   byDriver(driverId: number): Promise<TripRecord[]>;
   // «Mening safarlarim»: the newest trips of a driver, the trips ahead always among them (G42).
