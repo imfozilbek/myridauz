@@ -8,8 +8,9 @@ import { endSeatsOfTrip } from './trip-ended';
 const OPEN = new Set(['requested', 'confirmed']);
 
 // A blocked person (docs/17): every live trip of theirs is cancelled with its bookings, and every
-// open booking, request and sent offer of theirs too (docs/65 A5). The other sides hear the team did
-// it; commissions go back. A trip already on the way, by the clock, «Yoʻlga chiqdim» or «Keldi» of
+// open booking, request and sent offer of theirs too (docs/65 A5). The passengers of the trips hear
+// the team did it; the driver of a blocked passenger hears the seat is cancelled, never why;
+// commissions go back. A trip already on the way, by the clock, «Yoʻlga chiqdim» or «Keldi» of
 // the driver, goes on to its end (owner decision 10.10.2026, docs/17, G89 T4).
 export async function cancelEverything(deps: BookingsDeps, userId: number): Promise<void> {
   for (const tripId of await deps.trips.ofDriver(userId)) {
@@ -19,7 +20,7 @@ export async function cancelEverything(deps: BookingsDeps, userId: number): Prom
   }
   for (const booking of await deps.bookings.byPassenger(userId)) {
     const trip = OPEN.has(booking.status) ? await deps.trips.find(booking.tripId) : undefined;
-    if (trip?.live) await cancelByPassenger(deps, userId, booking.id);
+    if (trip?.live) await cancelByPassenger(deps, userId, booking.id, 'team');
   }
   for (const request of await deps.requests.ofPassenger(userId))
     if (request.open) await deps.requests.cancel(userId, request.id);

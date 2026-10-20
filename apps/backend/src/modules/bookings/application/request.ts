@@ -87,11 +87,12 @@ export async function requestBooking(
 }
 
 // The passenger cancels: a waiting request simply ends; a confirmed booking gives the commission
-// back to the driver (docs/12).
+// back to the driver (docs/12). The team cancels so for a blocked passenger (docs/17).
 export async function cancelByPassenger(
   deps: BookingsDeps,
   passengerId: number,
   id: string,
+  by: 'passenger' | 'team' = 'passenger',
 ): Promise<Result<Booking, 'bookings.not_found' | 'bookings.wrong_status'>> {
   const record = await deps.bookings.find(id);
   const facts = record ? await deps.trips.find(record.tripId) : undefined;
@@ -103,7 +104,8 @@ export async function cancelByPassenger(
   // A cancelled confirmed booking gives the commission back (docs/12, owner decision 29.09.2026).
   if (record.status === 'confirmed') {
     await deps.wallet.refund(facts.driverId, id);
-    await watchPairCancels(deps, facts.driverId, passengerId);
+    // The team's cancel rings nothing by itself, as a cancel of the driver's seat (G89 B20).
+    if (by === 'passenger') await watchPairCancels(deps, facts.driverId, passengerId);
   }
   const [view] = await bookingViews(deps, [next], 'passenger');
   if (view) await deps.notify.cancelled(view, 'passenger');
