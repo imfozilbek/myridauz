@@ -65,15 +65,16 @@ describe('driver application (docs/04)', () => {
     expect(await myApplication(deps, 1)).toMatchObject({ status: 'rejected', reasons: ['fake_profile'] });
   });
 
-  it('sends an approved driver back to the check after a new car photo or a new face', async () => {
+  // Decision 1 of the owner (20.10.2026, G90 DRV-1): a new face of an approved driver goes to the
+  // check of photos like any face; the driver stays a driver. A new car photo goes back to the check.
+  it('keeps an approved driver after a new face, sends him back to the check after a new car photo', async () => {
     const { deps, drivers, photos } = setup();
     await photos();
     await submitApplication(deps, 1, CAR);
     await decideApplication(deps, 900, 1, { action: 'approve' });
     await avatarChanged(deps, 1);
-    expect((await myApplication(deps, 1))?.status).toBe('pending');
-    expect(drivers.has(1)).toBe(false);
-    await decideApplication(deps, 900, 1, { action: 'approve' });
+    expect((await myApplication(deps, 1))?.status).toBe('approved');
+    expect(drivers.has(1)).toBe(true);
     await uploadCarPhoto(deps, 1, 'front', jpeg);
     expect((await myApplication(deps, 1))?.status).toBe('draft');
     expect(drivers.has(1)).toBe(false);

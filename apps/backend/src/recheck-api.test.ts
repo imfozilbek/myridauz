@@ -11,8 +11,10 @@ const PASSENGER = 72;
 const jpeg = { body: new Uint8Array(20), headers: { 'content-type': 'image/jpeg' } };
 type Booking = { id: string; status: string; plate: string | null; trip: { id: string } };
 
+// Decision 1 of the owner (20.10.2026, G90 DRV-1): a new face goes to the check of photos; the driver
+// stays a driver, his trips live on.
 describe('a new face of an approved driver (docs/05, docs/65 A1)', () => {
-  it('keeps the confirmed booking of the passenger, the trip in search, and stops only new trips', async () => {
+  it('keeps the confirmed booking of the passenger, the trip in search, and the driver', async () => {
     await approvedDriver(DRIVER);
     await registerUser(PASSENGER);
     const trip = { from: '1726273', to: '1718401', departAt: Date.now() + 5 * 3_600_000, seats: 3 };
@@ -24,7 +26,7 @@ describe('a new face of an approved driver (docs/05, docs/65 A1)', () => {
       call(`/trips/${published.id}/bookings`, PASSENGER, json(doorBooking(1))),
     );
     await call(`/driver/bookings/${asked.id}/confirm`, DRIVER, { method: 'POST', app: 'driver' });
-    // The driver retakes the selfie: the application goes to the team's check again.
+    // The driver retakes the selfie: the photo goes to the team's check of faces.
     expect((await call('/me/avatar', DRIVER, { method: 'PUT', app: 'driver', ...jpeg })).status).toBe(204);
     const mine = await read<{ bookings: Booking[] }>(call('/passenger/bookings', PASSENGER));
     expect(mine.bookings.find((booking) => booking.id === asked.id)).toMatchObject({
@@ -41,6 +43,7 @@ describe('a new face of an approved driver (docs/05, docs/65 A1)', () => {
       app: 'driver',
       ...json({ ...input, departAt: trip.departAt + 3_600_000 }),
     });
-    expect(again.status).toBe(403);
+    // Still a driver: a second trip meets only the rule of one live trip (docs/172), not «not a driver».
+    expect([again.status, await again.json()]).toEqual([409, { error: 'trips.too_many' }]);
   });
 });

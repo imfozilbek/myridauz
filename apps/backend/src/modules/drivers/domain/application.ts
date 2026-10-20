@@ -97,12 +97,11 @@ export function decide(
   return { ...application, status, car, reasons, decidedBy: moderatorId, updatedAt: now };
 }
 
-// A new face of an approved driver is checked again (docs/05). Other statuses wait for the next submit,
-// but a face the team asked to retake is fixed now. null: nothing changes.
+// A new face of an approved driver goes to the check of faces like any face; the application stays
+// approved (owner decision 20.10.2026, G90 DRV-1). Other statuses wait for the next submit, but a face
+// the team asked to retake is fixed now. null: nothing changes.
 export function afterAvatarChange(application: Application, now: number): Application | null {
-  if (application.status === 'approved') {
-    return { ...application, status: 'pending', submittedAt: now, updatedAt: now };
-  }
+  if (application.status === 'approved') return null;
   const reasons = fixed(application.reasons, 'avatar');
   return reasons.length === application.reasons.length ? null : { ...application, reasons, updatedAt: now };
 }

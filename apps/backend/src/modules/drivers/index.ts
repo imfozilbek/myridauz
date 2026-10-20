@@ -66,7 +66,7 @@ export const driversModule = new Hono<AppEnv>()
   .route('/', driverRoutes(driversDeps))
   .route('/', adminRoutes(driversDeps));
 
-// A new face of an approved driver goes back to the team (docs/05). Runs around the users route.
+// A new face fixes the face a driver application was asked to retake. Runs around the users route.
 export const avatarWatch = new Hono<AppEnv>().use(MY_AVATAR_PATH, async (context, next) => {
   await next();
   if (context.req.method === 'PUT' && context.res.status === NO_CONTENT) {

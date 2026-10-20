@@ -98,7 +98,8 @@ export async function decideApplication(
   return view ? { ok: true, value: view } : { ok: false, error: 'drivers.not_found' };
 }
 
-// A new face of an approved driver goes back to the team (docs/05); a face to retake is fixed.
+// A face the team asked to retake is fixed; a new face of an approved driver is the check of faces,
+// not of the application (G90 DRV-1).
 export async function avatarChanged(deps: DriversDeps, userId: number): Promise<void> {
   const application = await deps.applications.find(userId);
   const next = application ? afterAvatarChange(application, deps.now()) : null;
