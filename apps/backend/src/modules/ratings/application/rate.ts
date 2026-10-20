@@ -8,6 +8,7 @@ import {
 import type { z } from 'zod';
 import { needsModerator, ratingOf } from '../domain/rating';
 import type { RatingsDeps, Ride } from './ports';
+import { published } from './read';
 
 type Input = z.output<typeof reviewInputSchema>;
 type Failure = 'reviews.not_found' | 'reviews.not_over' | 'reviews.too_late';
@@ -43,15 +44,16 @@ export async function rate(deps: RatingsDeps, raterId: number, input: Input, fro
     createdAt: old?.createdAt ?? now,
     updatedAt: now,
   });
-  await watch(deps, rateeId, rateeId === ride.driverId ? 'driver' : 'passenger', now);
+  // This review may publish the other side's review of the rater too: both are watched (G89 A9).
+  const roleOf = (userId: number) => (userId === ride.driverId ? 'driver' : 'passenger');
+  for (const userId of [rateeId, raterId]) await watch(deps, userId, roleOf(userId), now);
   return 'ok' as const;
 }
 
-// A low average goes to a moderator once (docs/24), and to the person (G75).
+// A low average goes to a moderator once (docs/24), and to the person (G75): of the published
+// reviews only, as people see it; a blind review is not told before it shows (G89 A9).
 async function watch(deps: RatingsDeps, userId: number, role: 'driver' | 'passenger', now: number) {
-  const stars = (await deps.store.about([userId]))
-    .filter((review) => !review.hidden)
-    .map((review) => review.stars);
+  const stars = (await published(deps, [userId])).map((review) => review.stars);
   if (!needsModerator(stars, deps.limits) || !(await deps.store.flag(userId, now))) return;
   const name = (await deps.names([userId])).get(userId) ?? '';
   const rating = ratingOf(stars, deps.limits);

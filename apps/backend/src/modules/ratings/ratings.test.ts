@@ -77,6 +77,9 @@ describe('the rating of a person (docs/24)', () => {
     const rides = Array.from({ length: 11 }, (_, index) => ride(index + 1));
     const { deps, alerts, told } = setup(rides);
     for (const known of rides.slice(0, 10)) await rate(deps, known.passengerId, review(known.bookingId, 3));
+    // G89 A9: blind reviews are told only once they show: the driver rated back.
+    expect(alerts).toEqual([]);
+    for (const known of rides.slice(0, 10)) await rate(deps, DRIVER, review(known.bookingId, 5));
     expect(alerts).toEqual([{ name: 'Jasur', publicId: publicIdOf(DRIVER) }]);
     await rate(deps, 111, review('b11', 1));
     expect(alerts).toEqual([{ name: 'Jasur', publicId: publicIdOf(DRIVER) }]);
