@@ -86,11 +86,10 @@ export function d1Records(db: D1Database): RecordStore {
         week,
         limit,
       ),
-    told: async (userId, role, at) => {
-      await db
-        .prepare('UPDATE waitlist SET notified_at = ? WHERE telegram_id = ? AND role = ?')
-        .bind(at, userId, role)
-        .run();
+    told: async ({ userId, role, notifiedAt }, at) => {
+      const sql =
+        'UPDATE waitlist SET notified_at = ? WHERE telegram_id = ? AND role = ? AND notified_at IS ?';
+      return (await db.prepare(sql).bind(at, userId, role, notifiedAt).run()).meta.changes > 0;
     },
     stale: (since, limit) =>
       many(`SELECT ${COLUMNS} FROM waitlist WHERE card_at < ? ORDER BY card_at LIMIT ?`, since, limit),

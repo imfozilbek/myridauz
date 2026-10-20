@@ -28,6 +28,8 @@ test('S20, S29, P48, P50. a ride that ended: completed, both asked for stars, re
   expect((await passenger.reviewsOf(driverId)).reviews).toHaveLength(0);
   await (await feedbackOf('driver', BOBUR)).review({ bookingId: seat.id, stars: 5 });
   await expect.poll(async () => (await passenger.reviewsOf(driverId)).reviews.length).toBe(1);
+  // A review that shows keeps its stars: no revenge (G89 A7).
+  expect(await outcome(passenger.review({ bookingId: seat.id, stars: 1 }))).toBe('reviews.published');
   // One complaint per booking (docs/17).
   const complaint = { bookingId: seat.id, reasons: ['unsafe_driving' as const] };
   expect(await outcome(passenger.complain(complaint))).toBe('ok');
@@ -36,7 +38,8 @@ test('S20, S29, P48, P50. a ride that ended: completed, both asked for stars, re
 
 test('S27. 2 hours before: the passenger and the driver are reminded once', async () => {
   const { trip } = await confirmedSeat(BOBUR, MALIKA);
-  moveTrip(trip.id, Date.now() + 90 * MINUTE, Date.now() + 10 * HOUR);
+  // 100 minutes before: the Cron is 20 minutes late for «2 soat qoldi», still told (G89 C10).
+  moveTrip(trip.id, Date.now() + 100 * MINUTE, Date.now() + 10 * HOUR);
   await clearBotMessages();
   await runCron();
   await toldBy('passenger', MALIKA, wordsOf('bot.ring.soonDoor'));

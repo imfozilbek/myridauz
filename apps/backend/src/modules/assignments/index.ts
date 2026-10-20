@@ -1,10 +1,9 @@
 import { appHost } from '@platform/brands';
-import { DAY_MS, MINUTE_MS, tashkentDate, teamWaitMs } from '@platform/contracts';
+import { MINUTE_MS, teamWaitMs } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../env';
 import { adminIds } from '../../shared/telegram/bot-config';
 import { notify } from '../notifications';
-import { teamMembers } from '../team';
 import { caseName, showQueue, tellOwners } from '../team-queue';
 import { blockOf, peopleOf } from '../users';
 import { assign } from './application/assign';
@@ -12,23 +11,21 @@ import { steadyOperator } from './domain/operator';
 import { sendDigest, type DigestDeps } from './application/digest';
 import type { Kind } from './application/ports';
 import { remindWaiting, type Waiting } from './application/remind';
-import { d1Assignments } from './infrastructure/d1-assignments';
 import { digestText } from './infrastructure/digest-text';
-import { createMemoryAssignments } from './infrastructure/memory-assignments';
 import { brandOf } from '../../shared/brand/brand-of';
+import { activeTeam, storeOf } from './team-of';
+export { sendCaseReminders } from './case-reminders';
 
 const { t } = createI18n(DEFAULT_LOCALE);
-const localAssignments = createMemoryAssignments();
 type Sources = Pick<DigestDeps, 'decisions' | 'numbers'>;
 const NO_SOURCES: Sources = {
   decisions: async () => new Map(),
   numbers: async () => ({ newUsers: 0, trips: 0, bookings: 0, fromChannels: 0 }),
 };
-const storeOf = (env: Bindings) => (env.DB ? d1Assignments(env.DB) : localAssignments);
 
 const deps = (env: Bindings, sources: Sources = NO_SOURCES): DigestDeps => ({
   store: storeOf(env),
-  teamIds: async () => (await teamMembers(env)).map((member) => member.id),
+  teamIds: () => activeTeam(env),
   now: Date.now,
   random: Math.random,
   ...sources,
@@ -69,12 +66,12 @@ export const operatorOf = async (env: Bindings, subjectId: number): Promise<numb
 // The Cron job: the summary of the day to the owner at 21:00 in Tashkent, once (G68, docs/122).
 export const sendDaySummary = (env: Bindings, sources: Sources) => sendDigest(deps(env, sources));
 
-// The support questions not answered for two days: cases of «Navbat» in the app (G75, docs/158 К).
-// A person who never registered has no public id: that question stays in the bot (docs/65 A3).
-const SUPPORT_DAYS = 2;
+// The support questions not answered: cases of «Navbat» in the app until somebody answers (G75,
+// docs/158 К; owner decision 20.10.2026, G89 A4). A person who never registered has no public id:
+// that question stays in the bot (docs/65 A3).
 export async function waitingSupport(env: Bindings) {
   const people = peopleOf(env);
-  const open = await storeOf(env).openSupport(tashkentDate(Date.now() - SUPPORT_DAYS * DAY_MS));
+  const open = await storeOf(env).openSupport();
   const cases = await Promise.all(
     open.map(async ({ subjectId, at }) => {
       const person = await people.find(subjectId);
@@ -92,6 +89,7 @@ export function sendApplicationReminders(env: Bindings, waiting: () => Promise<W
   const { hours, remindMinutes, ownerMinutes } = brand.moderation;
   return remindWaiting({
     store: storeOf(env),
+    teamIds: () => activeTeam(env),
     rules: { hours, remindMinutes, ownerMinutes },
     now: Date.now,
     waiting,
@@ -103,7 +101,7 @@ export function sendApplicationReminders(env: Bindings, waiting: () => Promise<W
         minutes: String(minutes),
         left: String(Math.max(0, ownerMinutes - minutes)),
       });
-      await showQueue(env, { kind: 'late', memberId: moderatorId, text });
+      await showQueue(env, { kind: 'late', memberIds: [moderatorId], text });
     },
     // A case over the limit rings under «Diqqat» of the owners (G68, docs/122).
     toOwners: async ({ name, publicId }, moderatorId) => {

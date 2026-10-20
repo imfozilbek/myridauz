@@ -1,24 +1,25 @@
 import { driverTripCancelPath, type ApiErrorCode } from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
-import { answer } from './application/answer';
-import { ridingNow } from './application/riding';
+import { ridingChat, ridingNow } from './application/riding';
 import { bookingsDeps } from './deps';
 import { boardTrip } from './application/board-trip';
 import { cancelEverything } from './application/cancel-all';
 import { eraseOldPoints } from './application/erase';
 import { expireRequests, expireTripRequests } from './application/expire';
 import { chatAbout } from './application/chat-about';
-import { coRiderIds } from './application/co-riders';
+import { coRiderIds, rideTogether } from './application/co-riders';
 import { chatMember } from './application/chat-member';
 import { chatKeysOf } from './application/chat-keys';
 import { liveBookingOf } from './application/live-booking';
 import { meetingBegun } from './application/meeting';
+import { endDriverOffers } from './application/offers-ended';
 import { pastRides } from './application/past';
 import { passengerView } from './application/progress';
 import { filedRideOf, ratableRideOf, rideOf, ridesOf } from './application/rides';
-import { expireTripOffers } from './application/salon-trip';
+import { settleBookings } from './application/settle';
 import { tellTripRetimed } from './application/trip-change';
+import { endSeatsOfTrip } from './application/trip-ended';
 import { bookingRoutes } from './http/booking-routes';
 import { meetingRoutes } from './http/meeting-routes';
 import { offerRoutes } from './http/offer-routes';
@@ -50,16 +51,16 @@ export const tripCancelWatch = new Hono<AppEnv>().use(CANCEL_PATH, async (contex
     return context.json({ error: 'trips.wrong_status' satisfies ApiErrorCode }, 409);
   await next();
   if (context.res.status !== 200) return;
-  for (const booking of await deps.bookings.byTrips([context.req.param('id') ?? '']))
-    if (booking.status === 'requested' || booking.status === 'confirmed')
-      await answer(deps, driverId, booking.id, 'driver_cancel');
-  await expireTripOffers(deps, driverId, context.req.param('id') ?? '');
+  await endSeatsOfTrip(deps, driverId, context.req.param('id') ?? '', 'driver');
+  await endDriverOffers(deps, driverId, context.req.param('id') ?? '');
 });
 
 // The driver moved the time: the booked passengers hear it (G39, docs/104).
 export const tellBookedOfRetime = (env: Bindings, tripId: string) =>
   tellTripRetimed(bookingsDeps(env), tripId);
 
+// The hourly Cron job (G89 T2, M6): a cancel that broke halfway is finished, seats and money.
+export const settleSeats = (env: Bindings) => settleBookings(bookingsDeps(env));
 // The Cron job (docs/35): requests without an answer in time become expired, the passenger hears it.
 export const expireBookings = (env: Bindings, now: number) => expireRequests(bookingsDeps(env), now);
 // «Yoʻlga chiqdim» before the time (G63): the requests of the trip end, the passengers hear it.
@@ -76,6 +77,9 @@ export const erasePointsOf = (env: Bindings, userId: number) => bookingStore(env
 // For the chat: who may open it (docs/07).
 export const chatMemberOf = (env: Bindings, key: string, userId: number) =>
   chatMember(bookingsDeps(env), key, userId);
+// The chat a person blocked on the road still writes to: the one of the trip on the way (G89 C3).
+export const ridingChatOf = (env: Bindings, key: string, userId: number) =>
+  ridingChat(bookingsDeps(env), key, userId);
 export const chatAboutOf = (env: Bindings, key: string, userId: number) =>
   chatAbout(bookingsDeps(env), key, userId);
 export const bookingForShare = (env: Bindings, id: string) => passengerView(bookingsDeps(env), id);
@@ -100,6 +104,8 @@ export {
   tellTripPassengers,
 } from './live-cards';
 
+// Who sees whose face: passengers of one trip ahead or on the way (docs/05, G89 B7).
+export const rideTogetherOf = (env: Bindings, a: number, b: number) => rideTogether(bookingsDeps(env), a, b);
 // Whom a passenger may complain about: the other passengers of the trip (G46, docs/111 Q4).
 export const coRidersOf = (env: Bindings, passengerId: number, bookingId: string) =>
   coRiderIds(bookingsDeps(env), passengerId, bookingId);

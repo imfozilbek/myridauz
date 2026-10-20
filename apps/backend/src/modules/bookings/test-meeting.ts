@@ -5,4 +5,5 @@ export const fakeMeeting = (notes: string[]): MeetingPorts => ({
   fileNoShow: async (driverId, bookingId) => void notes.push(`complaint no_show ${driverId} ${bookingId}`),
   refunds: async () => new Map(),
   refreshPassenger: async (passengerId) => void notes.push(`signal ${passengerId} passenger`),
+  closeShare: async (bookingId) => void notes.push(`share closed ${bookingId}`),
 });

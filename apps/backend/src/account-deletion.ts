@@ -10,6 +10,7 @@ import { eraseRequestPointsOf, forgetRequestViews } from './modules/ride-request
 import { forgetSubscriptions } from './modules/route-subscriptions';
 import { forgetFollows } from './modules/shares';
 import { forgetSupport } from './modules/support';
+import { forgetModerator } from './modules/team';
 import { wireAccountDeletion } from './modules/users';
 import { closeWalletOf } from './modules/wallet';
 import { forgetWaitlist } from './modules/waitlist';
@@ -26,9 +27,11 @@ wireAccountDeletion(async (env, userId) => {
   // The points go at once, even under a complaint: the chat stays the evidence (docs/69).
   await erasePointsOf(env, userId);
   await eraseRequestPointsOf(env, userId);
-  for (const key of await chatsOf(env, userId)) if (!evidence.has(key)) await forgetChat(env, key);
-  // The plates «1 xabar» of the person go with the account (G53).
-  await forgetUnread(env, userId);
+  const chats = await chatsOf(env, userId);
+  for (const key of chats) if (!evidence.has(key)) await forgetChat(env, key);
+  // The plates «1 xabar» of the person go with the account (G53), and its words in the plates of the
+  // other side (G89 C11).
+  await forgetUnread(env, userId, chats);
   // The live cards of the bots too (G68).
   await forgetCards(env, userId);
   // The marks «blocked the bot» too (G46).
@@ -46,6 +49,8 @@ wireAccountDeletion(async (env, userId) => {
   await forgetRequestViews(env, userId);
   // The support talk goes with the account (G32, docs/30).
   await forgetSupport(env, userId);
+  // A moderator leaves the team: no hidden member keeps the admin app (G89 M3).
+  await forgetModerator(env, userId);
   // A new account of the same person starts without old reviews and money (docs/65 A5).
   await forgetRatings(env, userId);
   await closeWalletOf(env, userId);

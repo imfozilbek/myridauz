@@ -4,7 +4,12 @@ import { withoutPoints, type RequestRecord } from '../domain/ride-request';
 export function createMemoryRequests(): RequestRepository {
   const requests = new Map<string, RequestRecord>();
   return {
-    save: async (request) => void requests.set(request.id, request),
+    save: async (request) => {
+      const old = requests.get(request.id);
+      if (old && old.status !== 'open') return false;
+      requests.set(request.id, request);
+      return true;
+    },
     find: async (id) => requests.get(id),
     byPassenger: async (passengerId) =>
       [...requests.values()].filter((request) => request.passengerId === passengerId),

@@ -5,7 +5,8 @@ import type { RatingsDeps } from './ports';
 // The published reviews of a person a page at a time, the newest first (docs/24, G46).
 const SHOWN_REVIEWS = 20;
 
-async function published(deps: RatingsDeps, userIds: readonly number[]) {
+// Shown to people: the others' reviews of a ride once both rated, or the blind days passed (docs/24).
+export async function published(deps: RatingsDeps, userIds: readonly number[]) {
   const [about, answered] = await Promise.all([deps.store.about(userIds), deps.store.writtenBy(userIds)]);
   const now = deps.now();
   return about.filter((review) => isPublished(review, answered, now, deps.limits));

@@ -1,3 +1,4 @@
+import type { Booking } from '@platform/contracts';
 import { useSyncExternalStore } from 'react';
 import type { PassengerMarks } from './passenger-state';
 
@@ -45,6 +46,8 @@ const subscribe = (listener: () => void) => {
 
 export const usePassengerMarks = () => useSyncExternalStore(subscribe, () => marks);
 
-export const markAgreed = (bookingId: string) => (keep(AGREED, bookingId), changed());
+// «Roziman» answers one new time: a second move of the same trip asks again (G89 U14).
+export const agreedTo = (booking: Booking) => `${booking.id}:${booking.trip.departAt}`;
+export const markAgreed = (booking: Booking) => (keep(AGREED, agreedTo(booking)), changed());
 export const markSeen = (tripId: string) => (keep(SEEN, tripId), changed());
 export const markStillOnWay = (bookingId: string) => (stillOnWay.add(bookingId), changed());

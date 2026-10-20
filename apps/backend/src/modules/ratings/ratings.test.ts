@@ -51,6 +51,15 @@ describe('the rating of a person (docs/24)', () => {
     expect((await reviewsOf(other.deps, DRIVER)).reviews).toHaveLength(1);
   });
 
+  // G89 A10: the 7 days count from the ride, as the time to rate: a late review is not hidden longer.
+  it('shows a review written on day 6 once the ride is 7 days old', async () => {
+    const { deps, later } = setup();
+    later(6 * DAY_MS);
+    await rate(deps, 101, review('b1', 4));
+    later(DAY_MS);
+    expect((await reviewsOf(deps, DRIVER)).reviews).toHaveLength(1);
+  });
+
   it('rates only a ride of the person that is over, within 7 days; the bot keeps the text', async () => {
     const { deps, later } = setup([ride(1), ride(2, false)]);
     expect(await rate(deps, 999, review('b1', 5))).toBe('reviews.not_found');
@@ -60,6 +69,14 @@ describe('the rating of a person (docs/24)', () => {
     expect(await deps.store.review('b1', 101)).toMatchObject({ stars: 5, text: 'Yaxshi', tags: ['on_time'] });
     later(8 * DAY_MS);
     expect(await rate(deps, 101, review('b1', 3))).toBe('reviews.too_late');
+  });
+
+  // G89: a star in the bot and the review of the app in the same moment: the words of the app stay.
+  it('keeps the words of the app when a star of the bot comes at the same time', async () => {
+    const { deps } = setup();
+    const words = { ...review('b1', 4, 'Yaxshi'), tags: ['on_time'] };
+    await Promise.all([rate(deps, 101, words), rate(deps, 101, review('b1', 5), true)]);
+    expect(await deps.store.review('b1', 101)).toMatchObject({ stars: 5, text: 'Yaxshi', tags: ['on_time'] });
   });
 
   it('«vaqtida» of «Profil» is the share of published reviews marked on time (G65)', async () => {
@@ -77,6 +94,9 @@ describe('the rating of a person (docs/24)', () => {
     const rides = Array.from({ length: 11 }, (_, index) => ride(index + 1));
     const { deps, alerts, told } = setup(rides);
     for (const known of rides.slice(0, 10)) await rate(deps, known.passengerId, review(known.bookingId, 3));
+    // G89 A9: blind reviews are told only once they show: the driver rated back.
+    expect(alerts).toEqual([]);
+    for (const known of rides.slice(0, 10)) await rate(deps, DRIVER, review(known.bookingId, 5));
     expect(alerts).toEqual([{ name: 'Jasur', publicId: publicIdOf(DRIVER) }]);
     await rate(deps, 111, review('b11', 1));
     expect(alerts).toEqual([{ name: 'Jasur', publicId: publicIdOf(DRIVER) }]);

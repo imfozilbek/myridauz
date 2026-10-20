@@ -1,53 +1,10 @@
-import type { Location } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { changeVariables, directions, preview, rollback, setDirection } from './application/admin';
-import type { PricingDeps } from './application/ports';
 import { recommendDirection, recommendPrice } from './application/recommend';
-import { variablesCache } from './application/variables';
 import { STRATEGIES } from './domain/formula';
-import { createMemoryPricing } from './infrastructure/memory-pricing';
+import { setup, V } from './pricing-test-kit';
 
-const place = (id: string, parentId: string | null, lat = 41): Location => ({
-  id,
-  parentId,
-  type: parentId ? 'city' : 'region',
-  name: id,
-  lat,
-  lng: 69,
-  oneCity: false,
-});
-const PLACES = new Map(
-  [
-    place('17', null),
-    place('1701', '17'),
-    place('18', null, 40),
-    place('1801', '18'),
-    place('1802', '18', 40.1),
-  ].map((item) => [item.id, item]),
-);
-const KM: Record<string, number> = { '1701:1801': 300, '1701:1802': 120, '1801:1802': 35 };
-
-function setup() {
-  const deps: PricingDeps = {
-    pricing: createMemoryPricing(),
-    places: {
-      places: async () => PLACES,
-      km: async (from, to) => {
-        const km = KM[[from, to].sort().join(':')];
-        return km === undefined ? { ok: false, error: 'locations.not_found' } : { ok: true, value: km };
-      },
-    },
-    strategy: STRATEGIES['per-km'],
-    variables: variablesCache(60_000),
-    mainDirections: [['1701', '1801']],
-    realPrices: async () => [],
-    names: async (ids) => new Map(ids.map((id) => [id, `Member ${id}`])),
-    now: () => 1000,
-  };
-  return deps;
-}
 const per = STRATEGIES['per-km'];
-const V = { ratePerKm: 300, roundStep: 5000, minPrice: 30000, maxPrice: 600000 };
 
 describe('per-km formula (docs/16)', () => {
   it('gives the table of docs/16: km × 300, to the nearest 5 000', () => {

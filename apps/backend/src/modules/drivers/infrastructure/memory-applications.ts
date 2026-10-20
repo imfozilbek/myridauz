@@ -7,6 +7,12 @@ export function createMemoryApplications(): ApplicationRepository {
   return {
     find: async (userId) => applications.get(userId),
     save: async (application) => void applications.set(application.userId, application),
+    decide: async (next, read) => {
+      const now = applications.get(next.userId);
+      if (now?.status !== 'pending' || now.updatedAt !== read.updatedAt) return false;
+      applications.set(next.userId, next);
+      return true;
+    },
     queue: async () =>
       [...applications.values()]
         .filter((application) => application.status === 'pending')

@@ -4,11 +4,12 @@ import { toTrip, type TripRow as Row } from './trip-row';
 
 const UPSERT = `INSERT INTO trips (id, driver_id, from_id, to_id, depart_at, ends_at, km, seats, price,
   woman_on_board, comment, status, pickup_mode, created_at, car_make, car_model, car_color, car_plate,
-  first_depart_at, first_price, price_told_at, booking_rule, for_request)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  ON CONFLICT (id) DO UPDATE SET status = excluded.status, depart_at = excluded.depart_at,
+  first_depart_at, first_price, price_told_at, booking_rule, for_request, pitak_id)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  ON CONFLICT (id) DO UPDATE SET depart_at = excluded.depart_at,
   ends_at = excluded.ends_at, price = excluded.price, price_told_at = excluded.price_told_at,
-  for_request = excluded.for_request`;
+  for_request = excluded.for_request
+  WHERE trips.status IN ('active', 'full') AND trips.departed_at IS NULL`;
 
 // «Yoʻlga chiqdim», «Yetib keldik» and the cancel (G63): one conditional write each, like the confirm
 // of a booking; a cancel, a departure, the completion Cron or a second tap that came first wins.
@@ -19,39 +20,42 @@ const ARRIVE = `UPDATE trips SET departed_at = COALESCE(departed_at, depart_at),
 const CANCEL = `UPDATE trips SET status = 'cancelled' WHERE id = ? AND ${LIVE} AND departed_at IS NULL`;
 const changed = (result: D1Result) => result.meta.changes === 1;
 
-// Table trips (migrations 0007, 0035, 0043, 0046, 0051). The route never changes; the driver moves the time
-// later and lowers the price (G39, docs/104). save never writes the marks of the road.
+// Table trips (migrations 0007, 0035, 0043, 0046, 0051, 0080). The route never changes; the driver moves the time
+// later and lowers the price (G39, docs/104). save never writes the marks of the road nor the status:
+// a change read before a cancel or a departure writes nothing (G89 T7).
 export const d1Trips = (db: D1Database): TripRepository => ({
-  save: async (trip) => {
-    await db
-      .prepare(UPSERT)
-      .bind(
-        trip.id,
-        trip.driverId,
-        trip.from,
-        trip.to,
-        trip.departAt,
-        trip.endsAt,
-        trip.km,
-        trip.seats,
-        trip.price,
-        trip.womanOnBoard ? 1 : 0,
-        trip.comment,
-        trip.status,
-        trip.pickupMode,
-        trip.createdAt,
-        trip.car?.make ?? null,
-        trip.car?.model ?? null,
-        trip.car?.color ?? null,
-        trip.car?.plate ?? null,
-        trip.firstDepartAt,
-        trip.firstPrice,
-        trip.priceToldAt,
-        trip.bookingRule,
-        trip.forRequest,
-      )
-      .run();
-  },
+  save: async (trip) =>
+    changed(
+      await db
+        .prepare(UPSERT)
+        .bind(
+          trip.id,
+          trip.driverId,
+          trip.from,
+          trip.to,
+          trip.departAt,
+          trip.endsAt,
+          trip.km,
+          trip.seats,
+          trip.price,
+          trip.womanOnBoard ? 1 : 0,
+          trip.comment,
+          trip.status,
+          trip.pickupMode,
+          trip.createdAt,
+          trip.car?.make ?? null,
+          trip.car?.model ?? null,
+          trip.car?.color ?? null,
+          trip.car?.plate ?? null,
+          trip.firstDepartAt,
+          trip.firstPrice,
+          trip.priceToldAt,
+          trip.bookingRule,
+          trip.forRequest,
+          trip.pitakId,
+        )
+        .run(),
+    ),
   find: async (id) => {
     const row = await db.prepare('SELECT * FROM trips WHERE id = ?').bind(id).first<Row>();
     return row ? toTrip(row) : undefined;
@@ -134,4 +138,12 @@ export const d1Trips = (db: D1Database): TripRepository => ({
         .bind(from, to)
         .all<Row>()
     ).results.map(toTrip),
+  // Through trips_search (status, depart_at) (docs/117).
+  cancelledAfter: async (after) =>
+    (
+      await db
+        .prepare("SELECT id FROM trips WHERE status = 'cancelled' AND depart_at > ?")
+        .bind(after)
+        .all<{ id: string }>()
+    ).results.map((row) => row.id),
 });

@@ -5,7 +5,9 @@ import type { RequestRecord } from '../domain/ride-request';
 
 // Ports of the ride requests module: D1 in production, memory in tests.
 export type RequestRepository = {
-  save(request: RequestRecord): Promise<void>;
+  // A request closed meanwhile (taken, cancelled) is never opened again by a save of an older read
+  // (G89): false then.
+  save(request: RequestRecord): Promise<boolean>;
   find(id: string): Promise<RequestRecord | undefined>;
   byPassenger(passengerId: number): Promise<RequestRecord[]>;
   // Open requests of one day in Tashkent, the oldest first.

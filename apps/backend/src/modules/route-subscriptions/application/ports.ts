@@ -10,6 +10,8 @@ export type SubscriptionRepository = {
   live(kind: SubscriptionKind, now: number): Promise<SubscriptionRecord[]>;
   // The Cron job: the ones whose time is over, "any date" ones not offered to renew yet.
   overdue(now: number): Promise<SubscriptionRecord[]>;
+  // Marks it expired only if its time is still the one read: a renewal in the same moment stays (G89).
+  expire(subscription: SubscriptionRecord): Promise<boolean>;
 };
 
 // What the bots say in the news card of the route (docs/24, docs/122 rule 4): a new trip or
@@ -24,6 +26,8 @@ export type SubscriptionsDeps = {
   readonly subscriptions: SubscriptionRepository;
   readonly placeMatches: () => Promise<(placeId: string, searchId: string) => boolean>;
   readonly tell: SubscriptionTeller;
+  // An approved driver: only they read the requests of passengers (docs/24, G89 B17).
+  readonly approvedDriver: (userId: number) => Promise<boolean>;
   // At most max live ones; one for any date lives anyDateDays (brand, docs/128 §4).
   readonly limits: { readonly max: number; readonly anyDateDays: number };
   readonly newId: () => string;

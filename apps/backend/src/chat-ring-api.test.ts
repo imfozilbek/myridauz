@@ -80,6 +80,13 @@ describe('the chat of a seat in the bots (G68, docs/122 rule 5)', () => {
     vi.setSystemTime(START);
   });
 
+  // G89 C11: a person without an account (deleted) hears nothing of the old chats.
+  it('rings nobody who deleted the account', async () => {
+    const before = telegram.sentTo(6999).length;
+    await botSignals(testEnv).newMessage({ userId: 6999, role: 'passenger', from: DRIVER }, 'tnone');
+    expect(telegram.sentTo(6999)).toHaveLength(before);
+  });
+
   it('a chat without a seat (a talk about a request) is told as before', async () => {
     await registerUser(PASSENGER);
     const passenger = { userId: PASSENGER, role: 'passenger' as const, from: DRIVER };
@@ -90,5 +97,14 @@ describe('the chat of a seat in the bots (G68, docs/122 rule 5)', () => {
     // A call takes the call at once (G79).
     await botSignals(testEnv).incomingCall(passenger, 'tnone');
     expect(JSON.stringify(lastTo(PASSENGER)?.body.reply_markup)).toContain('answer=tnone');
+    // G89 C5: at 23:00 a message and a missed call wait quietly; a call rings (docs/122 rule 3).
+    vi.setSystemTime(START + 13 * HOUR);
+    await botSignals(testEnv).newMessage(passenger, 'tnone');
+    expect(lastTo(PASSENGER)?.body).toMatchObject({ disable_notification: true });
+    await botSignals(testEnv).missedCall(passenger, 'tnone');
+    expect(lastTo(PASSENGER)?.body).toMatchObject({ disable_notification: true });
+    await botSignals(testEnv).incomingCall(passenger, 'tnone');
+    expect(lastTo(PASSENGER)?.body).not.toHaveProperty('disable_notification');
+    vi.setSystemTime(START);
   });
 });

@@ -19,6 +19,13 @@ const CONTACTS = [
   '123-45-67',
   '+7 999 123 45 67',
   '8 999 123-45-67',
+  // Other separators, invisible marks and other digits (G89 C6).
+  '90/123/45/67',
+  '90_123_45_67',
+  '90*123*45*67',
+  '90|123|45|67',
+  '9\u200b0\u200b1\u200b2\u200b3\u200b4\u200b5\u200b6\u200b7',
+  '９０１２３４５６７',
   // Phones in words, Uzbek and Russian.
   'toʻqson bir ikki uch toʻrt besh olti yetti',
   "to'qson bir ikki uch to'rt besh olti",
@@ -42,6 +49,7 @@ const CONTACTS = [
   'www.facebook.com/ali',
   'vk.com/ali',
   'https://example.uz/contact',
+  'tg://resolve?domain=ali_driver',
 ];
 
 describe('masking contacts in the chat (docs/07)', () => {

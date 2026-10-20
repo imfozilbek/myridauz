@@ -8,6 +8,7 @@ const ADD = `INSERT INTO chat_unread (chat_key, user_id, count, role, text, at) 
 const CLEAR = 'DELETE FROM chat_unread WHERE chat_key = ?1 AND user_id = ?2';
 const OF_USER = 'SELECT chat_key AS key, count FROM chat_unread WHERE user_id = ?1';
 const FORGET = 'DELETE FROM chat_unread WHERE user_id = ?1';
+const FORGET_CHAT = 'DELETE FROM chat_unread WHERE chat_key = ?1';
 // The sheet shows one chat at a time: a few of the newest are enough (G68).
 const LAST_SHOWN = 5;
 const LAST = `SELECT chat_key AS key, count, text, at FROM chat_unread
@@ -40,7 +41,10 @@ export async function lastUnread(env: Bindings, userId: number, role: Role): Pro
   return env.DB ? (await env.DB.prepare(LAST).bind(userId, role).all<UnreadChat>()).results : [];
 }
 
-// A deleted account (docs/30): its counters go too.
-export async function forgetUnread(env: Bindings, userId: number): Promise<void> {
-  await env.DB?.prepare(FORGET).bind(userId).run();
+// A deleted account (docs/30): its counters go too, and its last words in the counters of the other
+// side of its chats (G89 C11).
+export async function forgetUnread(env: Bindings, userId: number, keys: readonly string[]): Promise<void> {
+  if (!env.DB) return;
+  await env.DB.prepare(FORGET).bind(userId).run();
+  for (const key of keys) await env.DB.prepare(FORGET_CHAT).bind(key).run();
 }

@@ -1,5 +1,5 @@
 import { appHost } from '@platform/brands';
-import { ANSWER_LINK, CHAT_LINK } from '@platform/contracts';
+import { ANSWER_LINK, CHAT_LINK, isQuietTime } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../../env';
 import { sendEvent } from '../../feed';
@@ -14,12 +14,13 @@ const { t } = createI18n(DEFAULT_LOCALE);
 
 // A message of the bot of this person with one button that opens the chat at once (docs/07): the
 // passenger hears from the passenger bot, the driver from the driver bot; a call is answered there
-// at once (G79).
+// at once (G79). At night only a call rings with sound (docs/122 rule 3, G89 C5).
 const toChat = async (env: Bindings, { to, key, kind }: ChatNews, text: string, button: string) => {
   const link = kind === 'call' ? ANSWER_LINK : CHAT_LINK;
   const url = `https://${appHost(brandOf(env), to.role)}/?${link}=${key}`;
   const markup = { inline_keyboard: [[{ text: button, web_app: { url: botMessageUrl(url, link) } }]] };
-  await notify(env, [{ bot: to.role, chatId: to.userId, text, markup }]);
+  const quiet = kind !== 'call' && isQuietTime(Date.now()) ? { silent: true } : {};
+  await notify(env, [{ bot: to.role, chatId: to.userId, text, markup, ...quiet }]);
 };
 
 // A message or a call about a seat answers its trip card (G68, docs/122 rule 5); the bookings module
@@ -34,7 +35,9 @@ type SeatRing = (env: Bindings, news: ChatNews) => Promise<boolean>;
 let ringUnderSeat: SeatRing = async () => false;
 export const wireChatRings = (next: SeatRing) => void (ringUnderSeat = next);
 
+// A person who deleted the account hears nothing of the old chats (docs/30, G89 C11).
 const ringOr = async (env: Bindings, news: ChatNews, text: string, button: string) => {
+  if (!(await peopleOf(env).find(news.to.userId))) return;
   if (!(await ringUnderSeat(env, news))) await toChat(env, news, text, button);
 };
 

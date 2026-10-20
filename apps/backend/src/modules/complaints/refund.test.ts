@@ -4,6 +4,7 @@ import { complaintQueue, decide, openComplaint } from './application/moderate';
 import { fileNoShow, noShowRefunds } from './application/no-show';
 import { answerRefund } from './application/refund';
 import { BY_MODERATOR, DRIVER, input, NOW, setup } from './complaints-test-kit';
+import { publicIdOf } from '../../test-people';
 
 const BY_OWNER = { id: 900, owner: true };
 
@@ -89,6 +90,17 @@ describe('the refund of a no-show: a moderator proposes, the owner confirms (doc
     const other = typeof passenger === 'string' ? '' : passenger.id;
     await decide(deps, BY_MODERATOR, other, { action: 'warning', refund: true });
     expect((await deps.store.find(other))?.refund).toBeNull();
+  });
+
+  // G89 A1: the commission of b1 belongs to a ride that happened; a co-rider who did not come is no
+  // reason to give it back.
+  it('a passenger complaining that a co-rider did not come gives the driver nothing back', async () => {
+    const { deps, log } = setup();
+    const filed = await fileComplaint(deps, 101, { ...input('b1'), about: publicIdOf(103) });
+    const id = typeof filed === 'string' ? '' : filed.id;
+    expect(await decide(deps, BY_OWNER, id, { action: 'warning', refund: true })).toBe('ok');
+    expect((await deps.store.find(id))?.refund).toBeNull();
+    expect(log.some((line) => line.startsWith('refund'))).toBe(false);
   });
 });
 

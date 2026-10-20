@@ -9,9 +9,12 @@ import { botSignals } from './bot-signals';
 import { d1Unread } from './d1-unread';
 import { sqlMessages } from './sql-messages';
 import { closeCodeFor } from '../../../shared/sockets/close-code';
+import { rightsNow } from './fresh-rights';
 import { brandOf } from '../../../shared/brand/brand-of';
 
 const HISTORY_LIMIT = 100;
+// The socket of a person who may not write or ring any more (G89 C1): a block, a deletion, a cancel.
+const NO_RIGHTS = 4403;
 const SECOND = 1000;
 const KEY = 'key';
 
@@ -45,16 +48,20 @@ export class ChatRoom extends DurableObject<Bindings> {
 
   private socket(ws: WebSocket): ChatSocket {
     const { member } = ws.deserializeAttachment() as { member: Member; key: string };
-    return { member, send: (data) => ws.send(data) };
+    // A socket closed meanwhile hears nothing; the rest of the step goes on (G89, the full stand).
+    return { member, send: (data) => (ws.readyState === WebSocket.OPEN ? ws.send(data) : undefined) };
   }
 
   override async fetch(request: Request): Promise<Response> {
     const key = request.headers.get('x-chat-key') ?? '';
     // The team reads a chat only on a complaint; the backend writes that to the log first (docs/07).
     if (new URL(request.url).pathname === '/history') return Response.json(this.store.recent(HISTORY_LIMIT));
-    // A deleted account (docs/30): the whole chat of its booking goes.
+    // A deleted account (docs/30): the whole chat of its booking goes. Rows, not the database: a room
+    // that lives on keeps its tables, the other side's chat works at once (G89).
     if (new URL(request.url).pathname === '/forget') {
-      await this.ctx.storage.deleteAll();
+      this.store.forget();
+      await this.ctx.storage.delete(KEY);
+      await this.ctx.storage.deleteAlarm();
       return new Response(null, { status: 204 });
     }
     if (new URL(request.url).pathname === '/system') {
@@ -79,9 +86,13 @@ export class ChatRoom extends DurableObject<Bindings> {
     return new Response(null, { status: 101, webSocket: client });
   }
 
+  // Each event asks again who may write and ring now: the rights of the ticket do not last (G89 C1).
   override async webSocketMessage(ws: WebSocket, message: string | ArrayBuffer): Promise<void> {
     if (typeof message !== 'string') return;
-    const { key } = ws.deserializeAttachment() as { key: string };
+    const { key, member } = ws.deserializeAttachment() as { member: Member; key: string };
+    const fresh = await rightsNow(this.env, key, member.userId);
+    if (!fresh) return ws.close(NO_RIGHTS, 'rights');
+    ws.serializeAttachment({ member: fresh, key });
     await received(this.deps(key), this.socket(ws), message);
   }
 

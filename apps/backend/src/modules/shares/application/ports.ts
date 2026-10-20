@@ -9,7 +9,8 @@ export type ShareRepository = {
   // "Ulashishni toʻxtatish": every link of the subject stops working, close people hear no more.
   revoke(subject: ShareSubject, at: number): Promise<void>;
   followers(subject: ShareSubject): Promise<number[]>;
-  follow(subject: ShareSubject, telegramId: number, at: number): Promise<void>;
+  // In one step with the count: two at once never pass the limit (G89). True: the person follows.
+  follow(subject: ShareSubject, telegramId: number, at: number, limit: number): Promise<boolean>;
   // A deleted account (docs/30): it follows no trip any more.
   unfollowAll(telegramId: number): Promise<void>;
 };

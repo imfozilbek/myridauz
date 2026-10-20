@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
+import { isStale } from '../market/error-text';
 import { useI18n } from '../context/i18n-context';
 import { countedWeek } from '../days/week';
 import { WeekRow } from '../days/week-row';
@@ -57,8 +58,11 @@ export function BoardScreen({ query, onDay, onRoute, onTalk, onTrip, onPublish, 
   if (!board.known) return <RouteScreen allowWholeRegion quick onBack={onBack} onDone={onRoute} />;
   const { trip } = board;
   // «Safarimga taklif qilish»: one tap, the time and the price are the trip's (mockup g64/2).
+  // The board loads again after an offer, sent or refused: a closed request leaves it (G89 U7).
   const onTripOffer = async (request: RideRequest) => {
-    if (trip && (await offering.onTrip(request, trip))) void refresh();
+    if (!trip) return;
+    await offering.onTrip(request, trip);
+    void refresh();
   };
   const act = (request: RideRequest, action: RowAction) => {
     if (action === 'onTrip') return onTripOffer(request);
@@ -71,6 +75,7 @@ export function BoardScreen({ query, onDay, onRoute, onTalk, onTrip, onPublish, 
       onTalk(await bookings.openTalk(request.id), ring);
     } catch (caught) {
       fail(caught);
+      if (isStale(caught)) void refresh();
     }
   };
   // No money for the commission: the sheet of the sum short over the board (G75, mockup g75/4 B).
@@ -119,6 +124,7 @@ export function BoardScreen({ query, onDay, onRoute, onTalk, onTrip, onPublish, 
           void refresh();
         }}
         onShort={(need) => short(need, offer)}
+        onStale={() => void refresh()}
       />
       <SalonSheet
         request={salon}

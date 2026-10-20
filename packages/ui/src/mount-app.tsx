@@ -33,6 +33,7 @@ import type { Welcome } from './account/registration/registration-flow';
 import { AppGates } from './app-gates';
 import { AppShell } from './app-shell';
 import { markExpired } from './network/session-expired';
+import { ABOUT_PERSON, askAccountAgain } from './network/account-again';
 import { unlockAudio } from './sounds/audio';
 import { loadSounds } from './sounds/brand-sound';
 import { reportCrashes } from './states/report-crashes';
@@ -78,6 +79,7 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
   reportCrashes(analytics, session.client);
   const onError = (code: string) => {
     if (code === EXPIRED) markExpired();
+    if (ABOUT_PERSON.includes(code)) askAccountAgain();
     if (!QUIET_API_ERRORS.includes(code)) analytics.apiError(code);
   };
   const signed = { baseUrl, fetch, app, initData: session.initData, onError };

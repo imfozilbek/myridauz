@@ -1,5 +1,5 @@
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
-import { answerArrived, ARRIVED_PREFIX } from '../modules/bookings';
+import { answerArrived, ARRIVED_PREFIX, ridingOf } from '../modules/bookings';
 import { isBlocked } from '../modules/users';
 import { botToken } from '../shared/telegram/bot-config';
 import { callTelegram } from '../shared/telegram/telegram-api';
@@ -16,7 +16,9 @@ export async function onArrivedCallback(context: BotContext, query: BotCallback)
   const [, bookingId, value] = (query.data ?? '').split(':');
   const token = botToken(context.env, 'passenger');
   if (!bookingId || (value !== 'yes' && value !== 'no') || !token || !query.message) return answer(query);
-  if (await isBlocked(context.env, query.from.id)) return answer(query);
+  // A person blocked on the road finishes the trip (docs/158 Ж): the answer counts, as in the app.
+  const { env } = context;
+  if ((await isBlocked(env, query.from.id)) && !(await ridingOf(env, query.from.id))) return answer(query);
   const yes = value === 'yes';
   if ((await answerArrived(context.env, query.from.id, bookingId, yes)) !== 'ok') return answer(query);
   await callTelegram(context.fetch, token, 'editMessageText', {

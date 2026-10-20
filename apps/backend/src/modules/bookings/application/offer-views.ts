@@ -4,11 +4,13 @@ import { offerChatKey } from '../domain/talk';
 import type { BookingsDeps } from './ports';
 import type { RequestFacts } from './request-facts';
 
-// An offer as both sides see it: the driver's name, face, car and plate (G61, as a trip of G59).
+// An offer as both sides see it: the driver's name, face, car and plate (G61, as a trip of G59). The
+// commission is the driver's: the passenger gets 0 (docs/52, G89 B6).
 export async function offerViews(
   deps: BookingsDeps,
   offers: readonly OfferRecord[],
   requests: readonly RequestFacts[],
+  viewer: 'driver' | 'passenger' = 'driver',
 ): Promise<Offer[]> {
   const now = deps.now();
   const ratings = await deps.ratings([...new Set(offers.map((offer) => offer.driverId))]);
@@ -41,7 +43,7 @@ export async function offerViews(
         seats,
         wholeCar: request.wholeCar,
         price: offer.price,
-        commission: deps.wallet.commission(offer.price, seats),
+        commission: viewer === 'driver' ? deps.wallet.commission(offer.price, seats) : 0,
         status: offerStatusAt(offer, request.open, now),
         bookingId: offer.bookingId,
         chatKey: offerChatKey(offer),

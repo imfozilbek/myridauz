@@ -16,9 +16,16 @@ export function createMemoryMessages(): MessageStore {
     maskedCount: (userId) => messages.filter((message) => message.author === userId && message.masked).length,
     lastNotified: (userId) => notifiedAt.get(userId) ?? null,
     notified: (userId, at) => void notifiedAt.set(userId, at),
+    seen: (userId) => void notifiedAt.delete(userId),
     call: () => current,
     saveCall: (call) => void (current = call),
     rings: (userId) => rang.get(userId) ?? 0,
     rang: (userId) => void rang.set(userId, (rang.get(userId) ?? 0) + 1),
+    forget: () => {
+      messages.length = 0;
+      notifiedAt.clear();
+      rang.clear();
+      current = null;
+    },
   };
 }

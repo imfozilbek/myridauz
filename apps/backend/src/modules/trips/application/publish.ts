@@ -30,6 +30,7 @@ export async function publishTrip(
   driverId: number,
   input: Input,
   forRequest: string | null = null,
+  lead = true,
 ): Promise<Result<Trip, PublishError>> {
   const now = deps.now();
   const [car, driver] = await Promise.all([deps.approvedCar(driverId), deps.people.find(driverId)]);
@@ -42,9 +43,10 @@ export async function publishTrip(
   const { km, minPrice, maxPrice, price: recommended } = recommendation.value;
   if (input.price < minPrice || input.price > maxPrice)
     return { ok: false, error: 'trips.price_out_of_bounds' };
-  if (input.pickupMode !== 'door' && !(await directionPitak(deps, input.from, input.to)))
-    return { ok: false, error: 'trips.no_pitak' };
-  const busy = await scheduleError(deps, driverId, input.departAt);
+  // The pitak is taken now and stays with the trip (docs/70, G89 T8).
+  const pitak = input.pickupMode === 'door' ? null : await directionPitak(deps, input.from, input.to);
+  if (input.pickupMode !== 'door' && !pitak) return { ok: false, error: 'trips.no_pitak' };
+  const busy = await scheduleError(deps, driverId, input.departAt, lead);
   if (busy) return { ok: false, error: busy };
   const trip: TripRecord = {
     ...input,
@@ -65,6 +67,7 @@ export async function publishTrip(
     departedAt: null,
     arrivedAt: null,
     forRequest,
+    pitakId: pitak?.id ?? null,
   };
   await deps.trips.save(trip);
   if (forRequest === null) {
@@ -81,6 +84,10 @@ export async function publishOfferTrip(
   deps: TripsDeps,
   driverId: number,
   input: Omit<Input, 'pickupMode'>,
+  requestId: string,
 ): Promise<Result<Trip, PublishError>> {
-  return publishTrip(deps, driverId, { ...input, pickupMode: await offerWay(deps, input.from, input.to) });
+  // The passenger takes an offer sent in time: its trip opens until the departure (G89 B2). It is
+  // quiet until the seat is taken; then bookings opens or releases it (G89 T12).
+  const pickupMode = await offerWay(deps, input.from, input.to);
+  return publishTrip(deps, driverId, { ...input, pickupMode }, requestId, false);
 }

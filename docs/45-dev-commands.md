@@ -18,6 +18,7 @@
 | `pnpm stand:check --area <тема>` | Кусок по теме на одном стенде: `registration`, `search`, `map`, `booking`, `requests`, `driver`, `team`, `bots`, `channels` (`75`, G71) |
 | `pnpm stand:check --changed` | Куски, которые задела ветка: сам выбирает темы по изменённым файлам (`75`, G71) |
 | `pnpm stand:check <файл>` | Сценарии одного файла на одном стенде (`75`) |
+| `pnpm mutation` | Мутационный замер Stryker: `domain` и `application` backend, все тесты backend, на месте (`stryker.config.mjs`, урок №359); около 1,5 часа; отчёт `reports/mutation/mutation.json`. Дописать к прошлому замеру: `--incremental` (G89, `215`) |
 | `pnpm --filter @platform/brand-kit-rida build` | Бренд-пакет в `brands/rida/brand-kit/kit/` (нужны `FFMPEG`, Chromium, `38`) |
 | `pnpm --filter @platform/miniapp-passenger dev` | Mini App попутчика локально |
 | `pnpm --filter @platform/landing build` | Лендинг в `apps/landing/dist` (`59`) |
@@ -36,7 +37,7 @@
 | Линтер | ESLint | Файл больше 150 строк, `any`, HEX вне `brands/<brand>/theme.ts`, имя бренда в коде, импорт вверх по слоям FSD и backend, глубокий импорт в чужой модуль, TelegramUI и Lucide вне `packages/ui`, слова для людей в коде Mini App и `ui` (только `t(key)`) | `packages/config/eslint.config.js` |
 | Типы | `tsc` | Ошибки типов, неиспользуемые переменные и параметры | `packages/config/tsconfig.base.json` |
 | Мёртвый код | knip | Неиспользуемые файлы, экспорты, зависимости | `knip.json` |
-| Тесты | Vitest | Логика; покрытие: `domain` и `application` 90%, остальное 70% | `vitest.config.ts` |
+| Тесты | Vitest | Логика; покрытие: `domain` и `application` 90% строк, функций и веток, остальное 70% | `vitest.config.ts` |
 | Текст | `scripts/check-text.mjs` | Длинные тире везде; имя бренда в html, json и css внутри `apps/` и `packages/` | `scripts/text-rules.mjs` |
 | Секреты | gitleaks | Ключи во всей истории git всех веток | `.gitleaks.toml`, `.github/workflows/ci.yml` |
 | Уязвимости | `pnpm audit` | Зависимость с известной уязвимостью (уровень moderate и выше) | `package.json` |
@@ -68,6 +69,7 @@
 | `secrets`, `brand-kit` | gitleaks; бренд-пакет собирается, только если менялись `brands/` или lock |
 | `screenshots (1/2)`, `(2/2)` | После барьеров, артефакт для людей; не барьер |
 
+- «Mutation» (`mutation.yml`): Stryker раз в неделю (воскресенье 22:17 UTC) и руками; без секретов; падает при счёте ниже 80 %; отчёт в артефакте `mutation-report` (G89). Не барьер PR: прогон идёт около двух часов.
 - `deploy-internal` ждёт `CI ok`. Workflow «Deploy production» (`deploy-production.yml`) идёт после зелёного CI на `main` (с выкладкой внутренней) и ждёт **Approve**; свой workflow, чтобы ожидание Approve не держало очередь CI. Руками: Actions → Deploy production → Run workflow (после «Map data»).
 - Нужна ли выкладка, решает `scripts/deploy-needed.mjs`: код поменялся с последней выкладки своей среды её же workflow («Map data» не в счёт); прод берёт только коммит, чей push прошёл CI, и только новейший `main`: повтор старого запуска не откатит прод (`46`, `179`). Очередь `deploy-production` только у самой выкладки: пустой запуск не вытеснит ждущий Approve.
 - Новая задача-барьер: добавить её имя в шаг «Wait for the other gates» задачи `CI ok` (`GATES`), иначе она не держит слияние.

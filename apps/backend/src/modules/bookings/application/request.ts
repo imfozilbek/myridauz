@@ -15,7 +15,9 @@ type RequestError =
   | 'bookings.own_trip'
   | 'bookings.no_seats'
   | 'bookings.too_many'
+  | 'bookings.has_seat'
   | 'bookings.wrong_status'
+  | 'trips.wrong_status'
   | ChoiceError
   | PointsError;
 
@@ -35,7 +37,9 @@ export async function requestBooking(
   const { seats } = input;
   const now = deps.now();
   const facts = await deps.trips.find(tripId);
-  if (!facts?.live) return { ok: false, error: 'bookings.not_found' };
+  if (!facts) return { ok: false, error: 'bookings.not_found' };
+  // Cancelled or over while the passenger chose the points: the trip changed (G89 U2).
+  if (!facts.live) return { ok: false, error: 'trips.wrong_status' };
   // A trip that already left takes no seats: an old link or "Sevimli" opens it (docs/65 B8). An early
   // «Yoʻlga chiqdim» of the driver counts too (G63).
   if (onTheWay(facts, now)) return { ok: false, error: 'bookings.departed' };
@@ -47,7 +51,10 @@ export async function requestBooking(
   const mine = await deps.bookings.byPassenger(passengerId);
   if (mine.some((booking) => booking.tripId === tripId && isHolding(booking, now)))
     return { ok: false, error: 'bookings.wrong_status' };
-  if (await heldSeat(deps, mine, now)) return { ok: false, error: 'bookings.too_many' };
+  // A waiting seat waits for the driver; a confirmed one is cancelled first (G89 B19).
+  const held = await heldSeat(deps, mine, now);
+  if (held)
+    return { ok: false, error: held.status === 'confirmed' ? 'bookings.has_seat' : 'bookings.too_many' };
   const points = await chosenPoints(deps, trip, input);
   if (!points.ok) return points;
   const passenger = await deps.people.find(passengerId);
@@ -84,11 +91,12 @@ export async function requestBooking(
 }
 
 // The passenger cancels: a waiting request simply ends; a confirmed booking gives the commission
-// back to the driver (docs/12).
+// back to the driver (docs/12). The team cancels so for a blocked passenger (docs/17).
 export async function cancelByPassenger(
   deps: BookingsDeps,
   passengerId: number,
   id: string,
+  by: 'passenger' | 'team' = 'passenger',
 ): Promise<Result<Booking, 'bookings.not_found' | 'bookings.wrong_status'>> {
   const record = await deps.bookings.find(id);
   const facts = record ? await deps.trips.find(record.tripId) : undefined;
@@ -100,7 +108,8 @@ export async function cancelByPassenger(
   // A cancelled confirmed booking gives the commission back (docs/12, owner decision 29.09.2026).
   if (record.status === 'confirmed') {
     await deps.wallet.refund(facts.driverId, id);
-    await watchPairCancels(deps, facts.driverId, passengerId);
+    // The team's cancel rings nothing by itself, as a cancel of the driver's seat (G89 B20).
+    if (by === 'passenger') await watchPairCancels(deps, facts.driverId, passengerId);
   }
   const [view] = await bookingViews(deps, [next], 'passenger');
   if (view) await deps.notify.cancelled(view, 'passenger');

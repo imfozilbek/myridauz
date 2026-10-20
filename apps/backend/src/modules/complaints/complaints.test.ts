@@ -103,4 +103,19 @@ describe('complaints (docs/17)', () => {
     expect((await Promise.all([twice(), twice()])).sort()).toEqual(['complaints.wrong_status', 'ok']);
     expect(log.filter((line) => /^block /.test(line))).toHaveLength(1);
   });
+
+  // G89: a moderator who is a side of the ride never decides its complaint; the owner does.
+  it('lets only the owner decide a complaint about or from a member of the team', async () => {
+    const { deps } = setup();
+    const about = await fileComplaint(deps, 101, input('b1'));
+    const from = await fileComplaint(deps, DRIVER, { ...input('b2'), reasons: ['harassment' as const] });
+    const self = { id: DRIVER, owner: false };
+    for (const filed of [about, from]) {
+      const id = typeof filed === 'string' ? '' : filed.id;
+      expect(await decide(deps, self, id, { action: 'none', refund: false })).toBe('auth.not_owner');
+      expect(await decide(deps, { id: DRIVER, owner: true }, id, { action: 'none', refund: false })).toBe(
+        'ok',
+      );
+    }
+  });
 });

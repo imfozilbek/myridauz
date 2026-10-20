@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS notified (user_id INTEGER PRIMARY KEY, at INTEGER NOT
 CREATE TABLE IF NOT EXISTS call_state (id INTEGER PRIMARY KEY CHECK (id = 1), body TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS rings (user_id INTEGER PRIMARY KEY, count INTEGER NOT NULL);`;
 
+const TABLES = ['messages', 'notified', 'call_state', 'rings'] as const;
+
 type Row = { id: number; author: number; text: string; event: string | null; masked: number; at: number };
 const toMessage = (row: Row): StoredMessage => ({
   id: row.id,
@@ -59,6 +61,7 @@ export function sqlMessages(sql: SqlStorage): MessageStore {
         userId,
         at,
       ),
+    seen: (userId) => void sql.exec('DELETE FROM notified WHERE user_id = ?', userId),
     // One call at most per chat (docs/08).
     call: () => {
       const body = sql.exec<{ body: string }>('SELECT body FROM call_state WHERE id = 1').toArray()[0]?.body;
@@ -79,5 +82,8 @@ export function sqlMessages(sql: SqlStorage): MessageStore {
         'INSERT INTO rings (user_id, count) VALUES (?, 1) ON CONFLICT (user_id) DO UPDATE SET count = count + 1',
         userId,
       ),
+    forget: () => {
+      for (const table of TABLES) sql.exec(`DELETE FROM ${table}`);
+    },
   };
 }

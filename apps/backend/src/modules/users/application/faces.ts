@@ -28,11 +28,16 @@ export async function decideFace(
 ): Promise<{ readonly ok: true; readonly user: User } | Failure<FaceError>> {
   const user = await deps.users.find(userId);
   if (!user?.face || user.avatarKey === null) return { ok: false, error: 'users.not_found' };
+  // The moderator saw an older photo: the new one waits for its own look (G89 M8).
+  if (decision.at !== undefined && decision.at !== user.face.at)
+    return { ok: false, error: 'users.face_decided' };
   const face = judgeFace(user.face, decision);
   if (typeof face === 'string') return { ok: false, error: face };
   const now = deps.now();
-  const next = { ...user, face, updatedAt: now };
-  await deps.users.save(next);
+  const next = { ...user, face };
+  // One guarded write: two taps or two members at once decide once (G89 A8).
+  if (!(await deps.users.decideFace(userId, face, user.face.at)))
+    return { ok: false, error: 'users.face_decided' };
   const status = decision.action === 'approve' ? 'approved' : 'rejected';
   await deps.faceLog.add({ userId, status, reason: face.reason, by: moderatorId, at: now });
   if (decision.action === 'reject') await deps.faces.rejected(next, decision.reason);

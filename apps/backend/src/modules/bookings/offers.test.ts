@@ -64,9 +64,11 @@ describe('a driver offers on a request (docs/35)', () => {
     const requestId = addRequest();
     const sent = await sendOffer(deps, DRIVER, requestId, offer);
     const [shown] = await passengerOffers(deps, DILNOZA);
-    expect(shown).toMatchObject({ status: 'sent', seats: 2, price: 95_000, commission: 19_000 });
+    // The commission is the driver's: the passenger never sees it (docs/52, G89 B6).
+    expect(shown).toMatchObject({ status: 'sent', seats: 2, price: 95_000, commission: 0 });
+    expect(sent.ok && sent.value.commission).toBe(19_000);
     const accepted = await acceptOffer(deps, DILNOZA, sent.ok ? sent.value.id : '');
-    expect(accepted).toMatchObject({ ok: true, value: { status: 'accepted' } });
+    expect(accepted).toMatchObject({ ok: true, value: { status: 'accepted', commission: 0 } });
     const [booking] = await passengerBookings(deps, DILNOZA);
     // The car has 4 seats: 2 are booked, the other 2 are open to other passengers.
     expect(booking).toMatchObject({
@@ -97,6 +99,24 @@ describe('a driver offers on a request (docs/35)', () => {
     const id = sent.ok ? sent.value.id : '';
     expect(await declineOffer(deps, ALI, id)).toEqual({ ok: false, error: 'bookings.not_found' });
     expect(await declineOffer(deps, DILNOZA, id)).toMatchObject({ ok: true, value: { status: 'declined' } });
+  });
+
+  // G89 U9: a decline read before an accept that came first writes nothing; the seat stays booked.
+  it('keeps an accepted offer when a «no» read before it comes after', async () => {
+    const { deps, addRequest, bonus } = setup();
+    await bonus();
+    const sent = await sendOffer(deps, DRIVER, addRequest(), offer);
+    const id = sent.ok ? sent.value.id : '';
+    const before = await deps.offers.find(id);
+    const request = await deps.requests.find(before?.requestId ?? '');
+    expect((await acceptOffer(deps, DILNOZA, id)).ok).toBe(true);
+    const stale = {
+      ...deps,
+      offers: { ...deps.offers, find: async () => before },
+      requests: { ...deps.requests, find: async () => request },
+    };
+    expect(await declineOffer(stale, DILNOZA, id)).toEqual({ ok: false, error: 'bookings.wrong_status' });
+    expect((await deps.offers.find(id))?.status).toBe('accepted');
   });
 
   it('lists the offers that still wait above the answered ones (G41, docs/90 F-D10)', async () => {

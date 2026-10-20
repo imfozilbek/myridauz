@@ -12,7 +12,8 @@ import type { TripRecord } from '../domain/trip';
 
 // Ports of the trips module: D1 in production, memory in tests.
 export type TripRepository = {
-  save(trip: TripRecord): Promise<void>;
+  // A new trip, or a change of a live one not on the way: false when a cancel or a departure came first.
+  save(trip: TripRecord): Promise<boolean>;
   find(id: string): Promise<TripRecord | undefined>;
   byDriver(driverId: number): Promise<TripRecord[]>;
   // «Mening safarlarim»: the newest trips of a driver, the trips ahead always among them (G42).
@@ -38,6 +39,8 @@ export type TripRepository = {
   cancel(id: string): Promise<boolean>;
   // Live trips without «Yoʻlga chiqdim» whose time is in [from, to]: the Cron reminds and departs.
   notDeparted(from: number, to: number): Promise<TripRecord[]>;
+  // Cancelled trips leaving after this time: the hourly repair ends their seats (G89 T2).
+  cancelledAfter(after: number): Promise<string[]>;
 };
 
 // retimed and cheaper: the driver moved the time or lowered the price (G39, docs/104); departed:
@@ -64,6 +67,8 @@ export type TripsDeps = {
   readonly trips: TripRepository;
   readonly riders: (tripIds: readonly string[]) => Promise<readonly Rider[]>;
   readonly people: { find(id: number): Promise<Person | undefined> };
+  // The name a deleted driver shows on the old rides (G89 M9).
+  readonly goneName: string;
   readonly approvedCar: (driverId: number) => Promise<Car | null>;
   // "⭐ 4,8 (37)" of drivers and the people hidden from search by complaints (docs/17, docs/24).
   readonly ratings: (driverIds: readonly number[]) => Promise<ReadonlyMap<number, Rating>>;
@@ -82,6 +87,8 @@ export type TripsDeps = {
   >;
   // The main pitak of the direction «region A → region B», when people may see it (docs/72).
   readonly pitakOf: (fromRegion: string, toRegion: string) => Promise<Pitak | null>;
+  // The pitak a trip took at the publishing: shown even if the team closed it later (G89 T8).
+  readonly pitakById: (id: string) => Promise<Pitak | null>;
   // A trip was published or changed: channel posts and route subscriptions follow (docs/15, docs/24).
   readonly changed: (tripId: string, event: TripEvent) => Promise<void>;
   // The driver moved the trip on: the open screens of the driver and the riders refresh (G63).

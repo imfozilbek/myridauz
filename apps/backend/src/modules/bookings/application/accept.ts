@@ -1,7 +1,7 @@
 import type { Offer } from '@platform/contracts';
 import { offerStatusAt, type OfferRecord } from '../domain/offer';
 import { offerChatKey } from '../domain/talk';
-import { acceptedWith, offerBooking, offerView, type AcceptError } from './accept-steps';
+import { acceptedWith, offerBooking, offerView, walletShort, type AcceptError } from './accept-steps';
 import { acceptOnTrip } from './accept-on-trip';
 import type { BookingsDeps, Result } from './ports';
 import type { RequestFacts } from './request-facts';
@@ -37,34 +37,51 @@ export async function acceptOffer(
   return result;
 }
 
+async function endTaken(deps: BookingsDeps, offer: OfferRecord): Promise<Result<Offer, AcceptError>> {
+  await deps.offers.replace({ ...offer, status: 'expired' }, 'accepted');
+  return { ok: false, error: 'bookings.wrong_status' };
+}
+
 async function acceptTaken(
   deps: BookingsDeps,
   offer: OfferRecord,
   request: RequestFacts,
 ): Promise<Result<Offer, AcceptError>> {
   const car = await deps.approvedCar(offer.driverId);
+  // The car is not approved now (a new check, a block): the offer never will work (G89 B5).
+  if (!car) return endTaken(deps, offer);
   const draft = await offerBooking(deps, offer, request, '', null);
-  if (!car || !(await deps.wallet.canAfford(offer.driverId, draft.commission)))
-    return { ok: false, error: 'wallet.not_enough' };
-  const published = await deps.trips.publish(offer.driverId, {
-    from: request.from,
-    to: request.to,
-    departAt: offer.departAt,
-    seats: car.seats,
-    price: offer.price,
-    womanOnBoard: false,
-    comment: '',
-    // The trip of an offer is the passenger's request: seats as asked, or the whole car (docs/09).
-    bookingRule: request.wholeCar ? 'car_only' : 'seats',
-  });
-  if (!published.ok) return { ok: false, error: 'bookings.wrong_status' };
+  if (!(await deps.wallet.canAfford(offer.driverId, draft.commission)))
+    return walletShort(deps, offer, draft);
+  const published = await deps.trips.publish(
+    offer.driverId,
+    {
+      from: request.from,
+      to: request.to,
+      departAt: offer.departAt,
+      seats: car.seats,
+      price: offer.price,
+      womanOnBoard: false,
+      comment: '',
+      // The trip of an offer is the passenger's request: seats as asked, or the whole car (docs/09).
+      bookingRule: request.wholeCar ? 'car_only' : 'seats',
+    },
+    request.id,
+  );
+  // A trip that cannot open now (another live trip of the driver, a price out of bounds) never will:
+  // the offer ends instead of waiting for a tap that always fails (G89 B2).
+  if (!published.ok) return endTaken(deps, offer);
   const trip = published.value;
   const booking = await offerBooking(deps, offer, request, trip.id, trip.pitak?.id ?? null);
   if ((await deps.wallet.charge(offer.driverId, booking.id, booking.commission)) !== 'ok') {
     await deps.trips.cancel(offer.driverId, trip.id);
-    return { ok: false, error: 'wallet.not_enough' };
+    return walletShort(deps, offer, booking);
   }
   await deps.bookings.save(booking);
+  // Quiet until now: a whole car is nobody's news; the free seats of a seats trip are, with the
+  // booking already on it (G89 T12, B13).
+  if (request.wholeCar) await deps.trips.release(trip.id);
+  else await deps.trips.open(offer.driverId, trip.id);
   return acceptedWith(deps, offer, request, booking);
 }
 
@@ -76,7 +93,8 @@ export async function declineOffer(
   const found = await sentToMe(deps, passengerId, id);
   if (typeof found === 'string') return { ok: false, error: found };
   const declined: OfferRecord = { ...found.offer, status: 'declined' };
-  await deps.offers.save(declined);
+  // One answer: an accept that came first wins (docs/65 A4, G89 U9).
+  if (!(await deps.offers.replace(declined, 'sent'))) return { ok: false, error: 'bookings.wrong_status' };
   await deps.notify.offerAnswered(found.offer.driverId, false, {
     id: declined.id,
     chatKey: offerChatKey(declined),

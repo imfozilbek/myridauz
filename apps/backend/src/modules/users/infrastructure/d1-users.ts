@@ -1,8 +1,9 @@
-import { AVATAR_STATUSES, FACE_REASONS, loopOf } from '@platform/contracts';
+import { AVATAR_STATUSES, FACE_REASONS } from '@platform/contracts';
 import type { UserRepository } from '../application/ports';
 import type { FaceCheck } from '../domain/face';
 import type { Block, User } from '../domain/user';
 import { d1Blocks } from './d1-blocks';
+import { d1UserMarks } from './d1-user-marks';
 import { oneOf } from '../../../shared/storage/one-of';
 
 type UserRow = {
@@ -49,7 +50,11 @@ const toUser = (row: UserRow): User => ({
   updatedAt: row.updated_at,
 });
 
-// Table users (migrations/0002_users.sql).
+// Table users (migrations/0002_users.sql). A person registered again after the deletion is a new one:
+// the join date and the zone invite start again (docs/58, G89 M16). A change of a person never writes
+// the block: a block that
+// came between the read and the write stays (G89, the face and the block in one second). Only
+// blockId and unblockId write it.
 export const d1Users = (db: D1Database): UserRepository => ({
   find: async (id) => {
     const row = await db
@@ -72,11 +77,12 @@ export const d1Users = (db: D1Database): UserRepository => ({
            blocked_until, avatar_key, avatar_status, avatar_reason, avatar_at, write_access, created_at, updated_at)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
          ON CONFLICT (id) DO UPDATE SET public_id = excluded.public_id, first_name = excluded.first_name, gender = excluded.gender,
-           phone = excluded.phone, is_driver = excluded.is_driver, blocked = excluded.blocked,
-           blocked_until = excluded.blocked_until, avatar_key = excluded.avatar_key,
+           phone = excluded.phone, is_driver = excluded.is_driver, avatar_key = excluded.avatar_key,
            avatar_status = excluded.avatar_status, avatar_reason = excluded.avatar_reason,
            avatar_at = excluded.avatar_at,
            write_access = excluded.write_access, consent_at = excluded.consent_at,
+           created_at = CASE WHEN users.deleted_at IS NULL THEN users.created_at ELSE excluded.created_at END,
+           zone_invite_at = CASE WHEN users.deleted_at IS NULL THEN users.zone_invite_at END,
            updated_at = excluded.updated_at, deleted_at = NULL`,
       )
       .bind(
@@ -117,17 +123,6 @@ export const d1Users = (db: D1Database): UserRepository => ({
       db.prepare('DELETE FROM share_moments WHERE user_id = ?').bind(id),
     ]);
   },
-  // A link a person shared names its author by a short code (G69, docs/123): who brought whom.
-  arrived: async (id, { source, via, client }, at) => {
-    const code = via ? (loopOf(via)?.code ?? null) : null;
-    await db
-      .prepare(
-        `INSERT OR REPLACE INTO user_arrivals (user_id, source, via, client, arrived_at, inviter_id)
-         VALUES (?, ?, ?, ?, ?, (SELECT user_id FROM user_codes WHERE code = ? AND user_id != ?))`,
-      )
-      .bind(id, source ?? null, via ?? null, client ?? null, at, code, id)
-      .run();
-  },
   // By the index of the status: never every person (G56, docs/117).
   pendingFaces: async () =>
     (
@@ -136,14 +131,6 @@ export const d1Users = (db: D1Database): UserRepository => ({
         .bind('pending')
         .all<UserRow>()
     ).results.map(toUser),
-  claimZoneInvite: async (id, at) => {
-    const { meta } = await db
-      .prepare(
-        'UPDATE users SET zone_invite_at = ? WHERE id = ? AND zone_invite_at IS NULL AND deleted_at IS NULL',
-      )
-      .bind(at, id)
-      .run();
-    return meta.changes > 0;
-  },
+  ...d1UserMarks(db),
   ...d1Blocks(db),
 });

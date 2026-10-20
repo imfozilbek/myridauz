@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { answer, confirm } from './application/answer';
+import { cancelEverything } from './application/cancel-all';
 import { cancelByPassenger, requestBooking } from './application/request';
 import { DILNOZA, DRIVER, seats, setup } from './test-kit';
 
@@ -27,5 +28,18 @@ describe('a pair cancelling again and again', () => {
     expect(signs()).toEqual([]);
     await answer(deps, DRIVER, await confirmedSeat(), 'driver_cancel');
     expect(signs()).toEqual([`pair cancels: ${DRIVER} ${DILNOZA} 3`]);
+  });
+
+  // G89 B20: the seats a block cancels are the team's cancel too, not a step of the pair.
+  it('rings nothing when a block of the passenger cancels the third seat', async () => {
+    const { deps, notes, addTrip, bonus } = setup();
+    await bonus();
+    for (let seat = 0; seat < 3; seat += 1) {
+      const id = idOf(await requestBooking(deps, DILNOZA, addTrip(), seats(1)));
+      await confirm(deps, DRIVER, id);
+      if (seat < 2) await cancelByPassenger(deps, DILNOZA, id);
+    }
+    await cancelEverything(deps, DILNOZA);
+    expect(notes.filter((note) => note.startsWith('pair cancels'))).toEqual([]);
   });
 });

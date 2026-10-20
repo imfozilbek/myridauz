@@ -1,5 +1,6 @@
 import './registration.css';
 import { nameSchema, type Gender } from '@platform/contracts';
+import type { TranslationKey } from '@platform/i18n';
 import { useState } from 'react';
 import { useScreenView } from '../../context/analytics-context';
 import { useBrand } from '../../context/brand-context';
@@ -36,8 +37,8 @@ type AboutStepProps = {
   readonly onBack: () => void;
   // Both answers are there and the person asks Telegram for the number (analytics, docs/29).
   readonly onAnswered: () => void;
-  // Resolves false when the server refused the registration.
-  readonly onSend: (registration: Registration) => Promise<boolean>;
+  // Resolves true, or the text of the failure: a lost network is not a refused number (G89 U4).
+  readonly onSend: (registration: Registration) => Promise<true | TranslationKey>;
   // A passenger may go without a photo, a driver shows the face (owner decision 19.10.2026, G51).
   readonly photoOptional: boolean;
 };
@@ -51,7 +52,7 @@ export function AboutStep({ answers, onChange, onBack, onAnswered, onSend, photo
   const { t } = useI18n();
   const { colors } = useBrand().theme;
   const [edited, setEdited] = useState(false);
-  const [failed, setFailed] = useState(false);
+  const [failed, setFailed] = useState<TranslationKey | null>(null);
   const name = nameSchema.safeParse(answers.name);
   const { photo, gender } = answers;
   // A name from Telegram may be emoji: it is shown wrong only after a touch or a choice.
@@ -65,10 +66,13 @@ export function AboutStep({ answers, onChange, onBack, onAnswered, onSend, photo
   const send = async (face: Blob | null, firstName: string, chosen: Gender) => {
     onAnswered();
     const contact = await requestSignedContact();
-    const accepted = contact !== null && (await onSend({ photo: face, firstName, gender: chosen, contact }));
-    if (accepted) return;
+    const answer =
+      contact === null
+        ? 'account.phone.denied'
+        : await onSend({ photo: face, firstName, gender: chosen, contact });
+    if (answer === true) return;
     haptic.error();
-    setFailed(true);
+    setFailed(answer);
   };
 
   return (
@@ -103,7 +107,7 @@ export function AboutStep({ answers, onChange, onBack, onAnswered, onSend, photo
         <Icon name="hidden" size={NOTE_ICON} />
         {t('account.about.hidden')}
       </p>
-      {failed ? <p className="about-error">{t('account.phone.denied')}</p> : null}
+      {failed ? <p className="about-error">{t(failed)}</p> : null}
       {/* «Raqamni yuborish» works with the name and the gender, and the face of a driver (docs/118,
           G51); before it stands gray, as «Davom etish» of screen 1. */}
       <MainButton

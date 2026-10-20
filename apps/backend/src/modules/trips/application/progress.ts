@@ -58,3 +58,12 @@ export async function arriveTrip(deps: TripsDeps, driverId: number, id: string) 
   await deps.changed(id, 'arrived');
   return shown(deps, moved.value);
 }
+
+// The Cron (docs/35): every trip that is over is completed in one step, then each is told. A trip
+// whose news failed keeps no other trip from its news; the job still reports the failure (G89).
+export async function completeOverTrips(deps: Pick<TripsDeps, 'trips' | 'changed'>, now: number) {
+  const failed: unknown[] = [];
+  for (const id of await deps.trips.completeOver(now))
+    await deps.changed(id, 'completed').catch((error: unknown) => void failed.push(error));
+  if (failed.length > 0) throw failed[0];
+}

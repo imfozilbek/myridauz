@@ -1,4 +1,5 @@
 import type { Booking, Trip } from '@platform/contracts';
+import type { TranslationKey } from '@platform/i18n';
 import { useState } from 'react';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
@@ -23,6 +24,14 @@ type Props = {
   readonly onSent: (booking: Booking) => void;
 };
 
+// The trip cannot take this request any more: the last seat went, it left, or it was cancelled or
+// changed meanwhile (G89 U2). «Boshqa safarlar» leads on.
+const GONE: readonly TranslationKey[] = [
+  'errors.bookings.no_seats',
+  'errors.bookings.departed',
+  'errors.trips.wrong_status',
+];
+
 // «Qayerdan, qayerga?» (owner decision 06.10.2026, docs/118 path 2, B): one screen instead of the way,
 // two maps and the check. A row opens its map; «Soʻrov yuborish» works when both are chosen.
 export function BookPoints({ trip, choice, flow, route, onBack, onOthers, onSent }: Props) {
@@ -32,7 +41,7 @@ export function BookPoints({ trip, choice, flow, route, onBack, onOthers, onSent
   const { track } = useAnalytics();
   const { bookings } = useApiClients();
   const nameText = useNameText();
-  const [error, setError] = useState<ReturnType<typeof errorKey> | null>(null);
+  const [error, setError] = useState<TranslationKey | null>(null);
   const { mode, pickup, dropoff, note, ready, patch } = flow;
   const start =
     mode === 'pitak' ? (trip.pitak?.name ?? null) : pickup ? nameText(pickup.name, pickup.place) : null;
@@ -80,7 +89,7 @@ export function BookPoints({ trip, choice, flow, route, onBack, onOthers, onSent
         </span>
         <b>{formatMoney(trip.price * choice.seats)}</b>
       </div>
-      {error === 'errors.bookings.no_seats' ? (
+      {error && GONE.includes(error) ? (
         <button type="button" className="points-others" onClick={onOthers}>
           {t('bookings.others')}
         </button>

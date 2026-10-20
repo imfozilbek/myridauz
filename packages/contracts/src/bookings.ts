@@ -59,6 +59,13 @@ export type BookingInput = z.input<typeof bookingInputSchema>;
 // sides: the passenger, the driver and the server.
 export const meetingStartsAt = (departAt: number, minutes: number) => departAt - minutes * MINUTE_MS;
 
+// The passenger is in the car (G76, owner decision 10.10.2026, docs/43): the driver marked «Keldi»,
+// or the time of the trip passed by the minutes of the meeting without «Kelmadi», so a driver who
+// forgot the mark never leaves the passenger without «Yetib keldim». The server keeps it too (G89 B1).
+type Seat = { readonly boardedAt: number | null; readonly noShowAt: number | null };
+export const inCarAt = (seat: Seat, departAt: number, now: number, meetMinutes: number) =>
+  seat.boardedAt !== null || (seat.noShowAt === null && now >= departAt + meetMinutes * MINUTE_MS);
+
 export const bookingSchema = z.object({
   id: z.string(),
   trip: tripSchema,

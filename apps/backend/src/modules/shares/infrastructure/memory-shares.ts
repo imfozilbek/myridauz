@@ -24,9 +24,12 @@ export function createMemoryShares(): ShareRepository {
           list.filter((id) => id !== telegramId),
         );
     },
-    follow: async (subject, telegramId) => {
+    follow: async (subject, telegramId, _at, limit) => {
       const list = followers.get(keyOf(subject)) ?? [];
-      if (!list.includes(telegramId)) followers.set(keyOf(subject), [...list, telegramId]);
+      if (list.includes(telegramId)) return true;
+      if (list.length >= limit) return false;
+      followers.set(keyOf(subject), [...list, telegramId]);
+      return true;
     },
   };
 }

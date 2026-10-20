@@ -84,11 +84,8 @@ export async function follow(
 ): Promise<Result<true, 'shares.not_found' | 'shares.too_many'>> {
   const opened = await openShare(deps, token);
   if (!opened) return { ok: false, error: 'shares.not_found' };
-  const followers = await deps.shares.followers(opened.subject);
-  if (followers.includes(telegramId)) return { ok: true, value: true };
-  if (followers.length >= deps.followers) return { ok: false, error: 'shares.too_many' };
-  await deps.shares.follow(opened.subject, telegramId, deps.now());
-  return { ok: true, value: true };
+  const follows = await deps.shares.follow(opened.subject, telegramId, deps.now(), deps.followers);
+  return follows ? { ok: true, value: true } : { ok: false, error: 'shares.too_many' };
 }
 
 // "Mashinaga chiqdi", "Yetib keldi", "Safar bekor qilindi" to every close person (docs/43).

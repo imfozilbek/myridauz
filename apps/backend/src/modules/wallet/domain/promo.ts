@@ -2,7 +2,8 @@ import { DAY_MS } from '@platform/contracts';
 import type { PromoRule } from '@platform/brands';
 import { balanceOf, type Operation } from './ledger';
 
-export type Grant = { readonly amount: number; readonly expiresAt: number };
+// no: bonus 1, 2 or 3 of the promo, written with the grant once per driver (G89).
+export type Grant = { readonly amount: number; readonly expiresAt: number; readonly no: number };
 
 const grants = (operations: readonly Operation[]) => operations.filter((op) => op.kind === 'bonus_grant');
 
@@ -12,27 +13,37 @@ export function bonusExpiresAt(operations: readonly Operation[]): number | null 
   return lives.length === 0 ? null : Math.max(...lives);
 }
 
-const grant = (rule: PromoRule, now: number): Grant => ({
+const grant = (rule: PromoRule, now: number, no: number): Grant => ({
   amount: rule.amount,
   expiresAt: now + rule.days * DAY_MS,
+  no,
 });
 
 // Bonus 1 right after the approval, once: a driver approved again after a new photo gets nothing.
+// The owner's 0 bonuses or a bonus of 0 in «Cheklovlar» means none at all (G89 M4).
 export const welcomeGrant = (operations: readonly Operation[], rule: PromoRule, now: number) =>
-  grants(operations).length === 0 ? grant(rule, now) : null;
+  grants(operations).length === 0 && rule.grants > 0 && rule.amount > 0 ? grant(rule, now, 1) : null;
 
 // The next bonus comes at once when the previous one is spent in its days, within the window
-// after the approval, at most `grants` times (docs/12, question 27).
-export function nextGrant(operations: readonly Operation[], rule: PromoRule, now: number): Grant | null {
+// after the approval, at most `grants` times (docs/12, question 27). A rest smaller than the commission
+// `need` pays no seat: it counts as spent, the next bonus pays the seat with it (G89 M1).
+export function nextGrant(
+  operations: readonly Operation[],
+  rule: PromoRule,
+  now: number,
+  need = 0,
+): Grant | null {
   const given = grants(operations);
   const first = given[0];
   const latest = given.at(-1);
   if (!first || !latest || given.length >= rule.grants) return null;
-  if (balanceOf(operations, 'bonus') > 0) return null;
+  const left = balanceOf(operations, 'bonus');
+  // After a charge the bonus is spent to the end; before one, a rest is there but too small for it.
+  if (need === 0 ? left > 0 : left <= 0 || left >= need) return null;
   if (latest.expiresAt === null || now >= latest.expiresAt) return null;
   // A bonus closed before its time (a deleted account) was not spent: no next one (docs/65 A5).
   if (operations.some((op) => op.kind === 'bonus_expired' && op.createdAt >= latest.createdAt)) return null;
-  return now < first.createdAt + rule.windowDays * DAY_MS ? grant(rule, now) : null;
+  return now < first.createdAt + rule.windowDays * DAY_MS ? grant(rule, now, given.length + 1) : null;
 }
 
 // What burns now: the whole bonus once its time is over; a refund to an old bonus burns too.

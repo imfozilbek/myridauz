@@ -70,6 +70,15 @@ export async function closePosts(deps: ChannelsDeps, tripId: string): Promise<vo
 }
 
 // The Cron job: the posts of trips whose time came; «Yoʻlga chiqdim» closed its posts at once (G63).
+// A trip the driver moved later still waits: its posts close at the new time (G89 T1).
 export async function closeDeparted(deps: ChannelsDeps): Promise<void> {
-  for (const tripId of await deps.posts.departed(deps.now())) await closePosts(deps, tripId);
+  const now = deps.now();
+  for (const tripId of await deps.posts.departed(now)) {
+    const trip = await deps.trip(tripId);
+    if (trip && waits(trip, now)) await deps.posts.moveTo(tripId, trip.departAt);
+    else await closePosts(deps, tripId);
+  }
 }
+
+const waits = (trip: Trip, now: number) =>
+  (trip.status === 'active' || trip.status === 'full') && trip.departedAt === null && trip.departAt > now;

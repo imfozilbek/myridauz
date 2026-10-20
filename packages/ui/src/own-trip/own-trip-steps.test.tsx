@@ -76,6 +76,19 @@ describe('«Yoʻlga chiqdim» and «Yetib keldik» on the server (G63 B1, docs/3
     expect(screen.getByText('Joʻnashga 30 daqiqa')).toBeTruthy();
   });
 
+  // G89 U14: done from another phone or by a lost answer: the page follows the trip, no error.
+  it('reloads the page when the trip left already', async () => {
+    vi.setSystemTime(trip.departAt - 30 * MINUTE);
+    const departTrip = vi.fn(async (): Promise<Trip> => {
+      throw new ApiError(409, 'trips.already_departed');
+    });
+    const { myTrips } = open(trip, { departTrip });
+    await openTrip();
+    await tap('Yoʻlga chiqdim');
+    await vi.waitFor(() => expect(myTrips).toHaveBeenCalledTimes(2));
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+
   it('after «Yetib keldik» rates once and publishes the way back on the one screen', async () => {
     vi.setSystemTime(trip.departAt + 6 * 60 * MINUTE);
     const arriveTrip = vi.fn(async () => ({ ...left, arrivedAt: Date.now() }));

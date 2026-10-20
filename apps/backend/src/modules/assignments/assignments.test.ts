@@ -80,6 +80,17 @@ describe('the summary of the day (docs/92, docs/122)', () => {
     ]);
   });
 
+  // G89 A13: a summary that failed on its way is not lost for the day.
+  it('sends the summary at the next tick after a failure', async () => {
+    const { deps, sent, at } = setup([1]);
+    at(tashkentDayStart(DAY) + 21 * 60 * 60 * 1000);
+    const { send } = deps;
+    const broken = { ...deps, send: async () => Promise.reject(new Error('queue')) };
+    await expect(sendDigest(broken)).rejects.toThrow('queue');
+    await sendDigest({ ...deps, send });
+    expect(sent).toHaveLength(1);
+  });
+
   it('waits for 21:00: in the daytime nothing is sent', async () => {
     const { deps, sent } = setup([1]);
     await sendDigest(deps);

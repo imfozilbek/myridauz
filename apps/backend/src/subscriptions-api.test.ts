@@ -77,6 +77,11 @@ describe('route subscriptions and channel posts (docs/15, docs/24)', () => {
     );
     expect(edit?.body.chat_id).toBe(SAMARQAND);
     expect(String(edit?.body.text)).toContain('Joy qolmadi');
+    // G89 T10: a full trip that became cheaper is no news for the subscriber.
+    telegram.length = 0;
+    const lower = { app: 'driver', ...json({ price: 85_000 }) };
+    expect((await call(`/driver/trips/${published.id}/price`, DRIVER, lower)).status).toBe(200);
+    expect(sentTo(PASSENGER).filter((item) => String(item.body.text).includes('arzonlashdi'))).toEqual([]);
   });
 
   it('tells a subscribed driver about a new request and lets a person manage the list', async () => {

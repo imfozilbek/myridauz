@@ -31,3 +31,7 @@ apps/landing/.client/
 .vitest/
 .tsc/
 .eslintcache
+
+# Mutation testing (G89, docs/45)
+.stryker-*/
+reports/

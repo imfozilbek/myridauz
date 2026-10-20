@@ -4,7 +4,7 @@ import { useI18n } from '../context/i18n-context';
 import { confirm } from '../telegram/feedback';
 import { ActionFailure } from '../states/action-failure';
 import { useFailure } from '../states/use-failure';
-import { ComplainCell, canComplain } from '../feedback/complain-cell';
+import { ComplainCell, useCanComplain } from '../feedback/complain-cell';
 import { ComplaintScreen } from '../feedback/complaint-screen';
 import { ChatScreen } from '../chat/chat-screen';
 import { Cell, Section } from '../components';
@@ -32,6 +32,7 @@ type Props = {
 export function DriverBooking({ booking, onClose, onStale }: Props) {
   const { t } = useI18n();
   const callsOn = useCallsOn();
+  const canComplain = useCanComplain();
   const [step, setStep] = useState<Step>('view');
   const { balance, reload } = useBalance(booking.status === 'requested');
   const { failure, fail, clear } = useFailure();
@@ -100,7 +101,7 @@ export function DriverBooking({ booking, onClose, onStale }: Props) {
             {t('calls.call')}
           </Cell>
         ) : null}
-        {canComplain(booking.status) ? <ComplainCell onClick={() => setStep('complain')} /> : null}
+        {canComplain(booking) ? <ComplainCell onClick={() => setStep('complain')} /> : null}
       </Section>
     </BookingScreen>
   );

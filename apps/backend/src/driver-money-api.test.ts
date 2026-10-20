@@ -28,10 +28,15 @@ describe('a request answered in the bot without money', () => {
     await approvedDriver(DRIVER);
     await registerUser(PASSENGER);
     const wallet = await read<{ bonus: number }>(call(WALLET_PATH, DRIVER, { app: 'driver' }));
-    await call(adminWalletAdjustPath(await pid(DRIVER)), OWNER, {
-      app: 'admin',
-      ...json({ balance: 'bonus', amount: LEFT - wallet.bonus, reason: 'test' }),
-    });
+    // No bonus left, a little main money (a rest of a bonus would bring the next one, G89 M1).
+    const driverId = await pid(DRIVER);
+    const adjust = (balance: string, amount: number) =>
+      call(adminWalletAdjustPath(driverId), OWNER, {
+        app: 'admin',
+        ...json({ balance, amount, reason: 'test' }),
+      });
+    await adjust('bonus', -wallet.bonus);
+    await adjust('main', LEFT);
     const trip = await read<{ id: string }>(
       call('/driver/trips', DRIVER, {
         app: 'driver',

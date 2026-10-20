@@ -26,6 +26,12 @@ import { ComplaintWords } from './complaint-words';
 const ARROW = 16;
 const CHAT = 18;
 
+// The commission goes back only on the driver's «Kelmadi» about the passenger (docs/35, G89 A1).
+const ownNoShow = (complaint: ComplaintCase) =>
+  complaint.reasons.includes('no_show') &&
+  complaint.author.role === 'driver' &&
+  complaint.against.role === 'passenger';
+
 // A complaint (docs/17, docs/120, mockup g67/2 screen 4): who on whom and why, the words, the trip,
 // the history of both sides (G45), the chat on demand; «Ogohlantirish», «Bloklash» for 1, 7, 30 days or for good, «Buzilish yoʻq».
 export function ComplaintCase({ id, onBack, ...props }: CaseProps) {
@@ -88,7 +94,7 @@ function Review({ complaint, progress, onBack, onDone }: ReviewProps) {
         <b className="case-link-title">{t('navbat.complaint.chat')}</b>
         <Icon name="next" size={ARROW} />
       </button>
-      {open && complaint.reasons.includes('no_show') ? (
+      {open && ownNoShow(complaint) ? (
         <label className="case-card case-row">
           <span>{t('complaints.refund')}</span>
           <Switch checked={refund} onChange={() => setRefund(!refund)} />

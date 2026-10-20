@@ -24,7 +24,12 @@ export function createMemoryRatings(): RatingStore {
         if (ask.bookingId === done.bookingId && ask.raterId === done.raterId) ask.reminded = true;
     },
     review: async (bookingId, raterId) => reviews.get(key(bookingId, raterId)),
-    saveReview: async (review) => void reviews.set(key(review.bookingId, review.raterId), review),
+    saveReview: async (review, starsOnly) => {
+      const old = reviews.get(key(review.bookingId, review.raterId));
+      const words = starsOnly ? {} : { tags: review.tags, text: review.text };
+      const next = old ? { ...old, stars: review.stars, updatedAt: review.updatedAt, ...words } : review;
+      reviews.set(key(review.bookingId, review.raterId), next);
+    },
     about: async (ids) => [...reviews.values()].filter((review) => ids.includes(review.rateeId)),
     by: async (raterId) => [...reviews.values()].filter((review) => review.raterId === raterId),
     writtenBy: async (ids) =>

@@ -1,4 +1,4 @@
-import type { UsersClient } from '@platform/api-client';
+import { ApiError, type UsersClient } from '@platform/api-client';
 import { Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { useScreenView } from '../../context/analytics-context';
@@ -36,20 +36,20 @@ export function DeleteAccountScreen({ client, onBack }: ScreenProps) {
       </StepLayout>
     );
   }
-  const erase = () => {
-    client.deleteMe().then(
-      () => {
-        haptic.success();
-        setStage('done');
-        // Why, in one tap that may be skipped (G87, docs/191).
-        askReason('account');
-      },
-      () => {
-        haptic.error();
-        setStage('failed');
-      },
-    );
+  const done = () => {
+    haptic.success();
+    setStage('done');
+    // Why, in one tap that may be skipped (G87, docs/191).
+    askReason('account');
   };
+  // The promise keeps a second tap out while the first runs; an answer lost on the way leaves the
+  // account deleted, and the next tap hears so (G89 U5).
+  const erase = () =>
+    client.deleteMe().then(done, (caught: unknown) => {
+      if (caught instanceof ApiError && caught.code === 'users.not_registered') return done();
+      haptic.error();
+      setStage('failed');
+    });
   return (
     <div className="delete-page" style={brandVars(colors)}>
       <Screen onBack={onBack} />

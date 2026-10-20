@@ -1,6 +1,8 @@
 import { ADMIN_TEAM_PATH, adminTeamMemberPath, teamListSchema } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
+import { assignTo } from './modules/assignments';
 import { teamRole } from './modules/team';
+import { peopleOf } from './modules/users';
 import { call, pid, registerUser, testEnv } from './test-api';
 
 const OWNER = 900;
@@ -52,5 +54,26 @@ describe('«Jamoa»', () => {
     expect((await call(ADMIN_TEAM_PATH, OTHER, team())).status).toBe(403);
     expect((await call(ADMIN_TEAM_PATH, OTHER, add(await pid(PERSON)))).status).toBe(403);
     expect(await teamRole(testEnv, PERSON)).toBeNull();
+  });
+
+  // G89 M3: a moderator who deletes the account leaves the team; nothing hidden stays with access.
+  it('takes a moderator who deleted the account out of the team', async () => {
+    const leaving = 65;
+    await registerUser(leaving);
+    expect((await call(ADMIN_TEAM_PATH, OWNER, add(await pid(leaving)))).status).toBe(204);
+    expect((await call('/me', leaving, { method: 'DELETE' })).status).toBe(204);
+    expect(await teamRole(testEnv, leaving)).toBeNull();
+  });
+
+  // G89 M10: a blocked member of the team gets no new case.
+  it('gives no new case to a blocked moderator', async () => {
+    const blocked = 66;
+    await registerUser(blocked);
+    expect((await call(ADMIN_TEAM_PATH, OWNER, add(await pid(blocked)))).status).toBe(204);
+    await peopleOf(testEnv).block(blocked, null, { by: OWNER, reason: 'admin' });
+    // The least busy member takes each new question: one after another, every member gets one.
+    const assignees: number[] = [];
+    for (let id = 7001; id <= 7012; id += 1) assignees.push(...(await assignTo(testEnv, 'support', id)));
+    expect(assignees).not.toContain(blocked);
   });
 });

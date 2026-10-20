@@ -13,6 +13,7 @@ afterAll(() => {
 
 const DRIVER = 181;
 const PASSENGER = 182;
+const OTHER = 183;
 const MINUTE = 60_000;
 const block = { app: 'admin', ...json({ days: 7 }) };
 const driver = { method: 'POST', app: 'driver' };
@@ -38,6 +39,10 @@ describe('a block during a trip on the way', () => {
       call(`/trips/${trip.id}/bookings`, PASSENGER, json(doorBooking(1))),
     );
     await call(`/driver/bookings/${seat.id}/confirm`, DRIVER, driver);
+    // Another passenger asked and heard «no»: that chat is not the trip on the way.
+    await registerUser(OTHER);
+    const asked = await read<{ id: string }>(call(`/trips/${trip.id}/bookings`, OTHER, json(doorBooking(1))));
+    await call(`/driver/bookings/${asked.id}/decline`, DRIVER, driver);
     // Half an hour later: «Yoʻlga chiqdim» opens an hour before the time.
     vi.useFakeTimers({ toFake: ['Date'], now: Date.now() + 30 * MINUTE });
     expect((await call(tripDepartPath(trip.id), DRIVER, driver)).status).toBe(200);
@@ -54,6 +59,8 @@ describe('a block during a trip on the way', () => {
     });
     // The chat and the steps of the trip work; reading works.
     expect((await call(chatTicketPath(chatKeyOfBooking(seat.id)), DRIVER, driver)).status).toBe(200);
+    // Only the chat of the trip on the way (G89 C3).
+    expect((await call(chatTicketPath(chatKeyOfBooking(asked.id)), DRIVER, driver)).status).toBe(403);
     expect((await call('/driver/trips', DRIVER, { app: 'driver' })).status).toBe(200);
     // Nothing new: no new trip.
     const later = { ...input, departAt: Date.now() + 5 * 60 * MINUTE };

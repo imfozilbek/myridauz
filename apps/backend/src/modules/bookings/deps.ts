@@ -14,6 +14,7 @@ import {
 } from '../ride-requests';
 import {
   cancelFor,
+  cancelledTripsAfter,
   driverTripIds,
   openTripFor,
   publishOfferTripFor,
@@ -41,6 +42,7 @@ import { bookingStore } from './infrastructure/store';
 import { meetingPorts } from './infrastructure/meeting-ports';
 import { telegramNotifier } from './infrastructure/telegram-notifier';
 import { requestNewsOf } from './request-news';
+import { tellNoMoney } from './no-money';
 import { tellPair } from './infrastructure/pair-sign';
 import { brandOf } from '../../shared/brand/brand-of';
 
@@ -70,12 +72,13 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => {
       find: (id) => tripFacts(env, id),
       ofDriver: (driverId) => driverTripIds(env, driverId),
       scheduleError: (driverId, departAt) => scheduleErrorFor(env, driverId, departAt),
-      views: (ids) => tripViewsOf(env, ids),
-      publish: (driverId, input) => publishOfferTripFor(env, driverId, input),
+      views: (ids) => tripViewsOf(env, ids, true),
+      publish: (driverId, input, requestId) => publishOfferTripFor(env, driverId, input, requestId),
       publishPrivate: (driverId, input, requestId) => publishPrivateTripFor(env, driverId, input, requestId),
       open: (driverId, tripId) => openTripFor(env, driverId, tripId),
       release: (tripId) => releaseTripFor(env, tripId),
       cancel: (driverId, tripId) => cancelFor(env, driverId, tripId),
+      cancelledAfter: (after) => cancelledTripsAfter(env, after),
     },
     requests: {
       find: (id) => requestFacts(env, id),
@@ -106,6 +109,7 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => {
         passenger: passengerNewsOf(env),
         driver: (tripId, about, ring) => driverNewsOf(env, deps)(tripId, about, ring),
         request: (id, offer) => requestNewsOf(env, deps)(id, offer),
+        noMoney: (driverId, commission) => tellNoMoney(env, driverId, commission),
       }),
     ),
     pairTalked: (driverId, passengerId, talks) => tellPair(env, 'pair', driverId, passengerId, talks),

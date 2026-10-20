@@ -86,6 +86,18 @@ describe('the wallet of a driver (docs/12)', () => {
     expect(await balances()).toEqual({ bonus: 0, main: 0 });
   });
 
+  // G89 M1: a remainder smaller than one commission is spent with the next bonus, never stuck.
+  it('pays a commission larger than the remainder with the next bonus', async () => {
+    const { deps, balances } = setup({ ...PROMO, grants: 2 });
+    await grantWelcome(deps, 1);
+    await charge(deps, 1, 'b1', 495_000);
+    expect(await charge(deps, 1, 'b2', 9000)).toBe('ok');
+    expect(await balances()).toEqual({ bonus: 496_000, main: 0 });
+    // The bonuses are over: a rest too small stays a rest.
+    await charge(deps, 1, 'b3', 495_000);
+    expect(await charge(deps, 1, 'b4', 9000)).toBe('not_enough');
+  });
+
   it('burns a bonus not spent in 30 days and gives no next one', async () => {
     const { deps, later, balances } = setup();
     await grantWelcome(deps, 1);

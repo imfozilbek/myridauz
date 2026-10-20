@@ -1,5 +1,7 @@
 import { onTheWay, type Booking } from '@platform/contracts';
 import { move, statusAt, type BookingAction, type BookingRecord } from '../domain/booking';
+import { chargeSeat } from './charge-seat';
+import { declineCrowdedOut } from './crowded-out';
 import { watchPairCancels } from './pair-cancels';
 import type { BookingsDeps, Result } from './ports';
 import { bookingViews } from './views';
@@ -42,13 +44,15 @@ export async function confirm(
       error: current?.status === 'requested' ? 'bookings.no_seats' : 'bookings.wrong_status',
     };
   }
-  const charged = await deps.wallet.charge(driverId, id, record.commission);
-  if (charged !== 'ok') {
+  const charged = await chargeSeat(deps, driverId, next);
+  if (charged === 'gone') return { ok: false, error: 'bookings.wrong_status' };
+  if (charged === 'not_enough') {
     await deps.bookings.replace(record, 'confirmed');
-    return { ok: false, error: charged === 'not_enough' ? 'wallet.not_enough' : 'bookings.wrong_status' };
+    return { ok: false, error: 'wallet.not_enough' };
   }
   const [forPassenger] = await bookingViews(deps, [next], 'passenger');
   if (forPassenger) await deps.notify.confirmed(forPassenger);
+  await declineCrowdedOut(deps, facts.id, facts.seats, (other) => answer(deps, driverId, other, 'decline'));
   return driverView(deps, next);
 }
 

@@ -24,7 +24,12 @@ describe('the cases of «Navbat»', () => {
     const one = screen.getByRole('group', { name: 'Bitta odam' });
     fireEvent.click(within(one).getByText('Mos emas'));
     expect(await screen.findByText('Hammasi koʻrildi')).toBeTruthy();
-    expect(decideFace).toHaveBeenCalledWith(MADINA.id, { action: 'reject', reason: 'not_one_person' });
+    // The photo of the case is the one decided (G89 M8).
+    expect(decideFace).toHaveBeenCalledWith(MADINA.id, {
+      action: 'reject',
+      reason: 'not_one_person',
+      at: MADINA.since,
+    });
   });
 
   // Owner, 17.10.2026: the team sees who the person is in Telegram; the public name opens the profile.
@@ -63,7 +68,8 @@ describe('the cases of «Navbat»', () => {
     expect(screen.getByText('Kelmadi')).toBeTruthy();
     expect(screen.getByText('Madinaning soʻzi')).toBeTruthy();
     expect(screen.getByText('2 soat oldin')).toBeTruthy();
-    expect(screen.getByText('Haydovchiga komissiyani qaytarish')).toBeTruthy();
+    // A passenger's «Kelmadi» about the driver: no commission of the driver to give back (G89 A11).
+    expect(screen.queryByText('Haydovchiga komissiyani qaytarish')).toBeNull();
     fireEvent.click(screen.getByText('Bloklash'));
     vi.stubGlobal('confirm', () => true);
     fireEvent.click(await screen.findByText('7 kun'));

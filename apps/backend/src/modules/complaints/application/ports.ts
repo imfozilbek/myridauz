@@ -18,7 +18,10 @@ export type Ride = {
 export type Side = 'driver' | 'passenger';
 
 export type ComplaintStore = {
-  save(complaint: ComplaintRecord): Promise<void>;
+  // A new complaint, once per author and ride: false when one came first (a double tap, G89).
+  add(complaint: ComplaintRecord): Promise<boolean>;
+  // Opening a new complaint takes it into review; a decision that came first stays (G89).
+  take(id: string): Promise<void>;
   // Writes the decision only if nobody decided before: two moderators at once, one decision (docs/65 A4).
   resolve(complaint: ComplaintRecord): Promise<boolean>;
   find(id: string): Promise<ComplaintRecord | undefined>;
@@ -63,6 +66,7 @@ export type ComplaintsDeps = {
     >;
     // The Telegram ID behind a public id from an admin path (docs/65 A3).
     idOf(publicId: string): Promise<number | undefined>;
+    isDriver(id: number): Promise<boolean>;
     block(
       id: number,
       days: number | null,

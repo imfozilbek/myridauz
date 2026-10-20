@@ -2,6 +2,7 @@ import { DAY_MS, type TripInput } from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
 import { openTrip, publishPrivateTrip, releaseTrip } from './application/private-trip';
+import { completeOverTrips } from './application/progress';
 import { publishOfferTrip, type Input } from './application/publish';
 import { realPrices } from './application/prices';
 import { regionTrips } from './application/trip-counts';
@@ -25,10 +26,7 @@ export const tripsModule = new Hono<AppEnv>()
   .route('/', progressRoutes(tripsDeps));
 
 // The Cron job (docs/35): trips over by now become completed, and their live cards say so (G68).
-export const completeTrips = async (env: Bindings, now: number) => {
-  const deps = tripsDeps(env);
-  for (const id of await deps.trips.completeOver(now)) await deps.changed(id, 'completed');
-};
+export const completeTrips = (env: Bindings, now: number) => completeOverTrips(tripsDeps(env), now);
 
 // For bookings (G08): the facts of a trip, the views, a trip from an accepted offer, a cancel.
 export const tripFacts = async (env: Bindings, id: string) => {
@@ -82,19 +80,22 @@ export const scheduleErrorFor = (env: Bindings, driverId: number, departAt: numb
 // A live trip of the driver: one at a time, the board offers only to it (docs/172).
 export const driverBusy = async (env: Bindings, driverId: number) =>
   (await driverSchedule(tripsDeps(env), driverId)).full;
-export const tripViewsOf = async (env: Bindings, ids: readonly string[]) => {
+// rides: the trips of bookings keep a deleted driver as «Hisob oʻchirilgan» (G89 M9).
+export const tripViewsOf = async (env: Bindings, ids: readonly string[], rides = false) => {
   const deps = tripsDeps(env);
   const found = await Promise.all(ids.map((id) => deps.trips.find(id)));
   return views(
     deps,
     found.filter((trip) => trip !== undefined),
+    rides,
   );
 };
 export const publishOfferTripFor = (
   env: Bindings,
   driverId: number,
   input: Omit<Required<TripInput>, 'pickupMode'>,
-) => publishOfferTrip(tripsDeps(env), driverId, input);
+  requestId: string,
+) => publishOfferTrip(tripsDeps(env), driverId, input, requestId);
 // «Safar ochib taklif qilish» (G64): a trip for one request; opened for everybody or taken.
 export const publishPrivateTripFor = (env: Bindings, driverId: number, input: Input, requestId: string) =>
   publishPrivateTrip(tripsDeps(env), driverId, input, requestId);
@@ -137,14 +138,4 @@ export const upcomingTripsOf = (env: Bindings, driverIds: readonly number[]) =>
 // Real prices of trips that left, not cancelled: the team's median hint (docs/09).
 export const realPricesSince = (env: Bindings, from: number) => realPrices(tripsDeps(env), from);
 
-// The Cron job (G63, docs/35): live trips without «Yoʻlga chiqdim» whose time is in [from, to], and
-// the departure the Cron writes by itself.
-export const tripsNotDeparted = async (env: Bindings, from: number, to: number) =>
-  (await tripsDeps(env).trips.notDeparted(from, to)).map(({ id, driverId, departAt }) => ({
-    id,
-    driverId,
-    departAt,
-  }));
-export const departByCron = async (env: Bindings, tripId: string, at: number) => {
-  await tripsDeps(env).trips.depart(tripId, at);
-};
+export { cancelledTripsAfter, departByCron, tripsNotDeparted } from './cron-reads';

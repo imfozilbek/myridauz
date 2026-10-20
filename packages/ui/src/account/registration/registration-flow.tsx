@@ -1,4 +1,5 @@
 import { ApiError, type UsersClient } from '@platform/api-client';
+import { errorKey } from '../../market/error-text';
 import type { LegalDocument, MeResponse, RegistrationStep } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { useCallback, useContext, useRef, useState } from 'react';
@@ -29,13 +30,17 @@ async function saveBotAccess(client: UsersClient, me: MeResponse): Promise<MeRes
 }
 
 // The face goes up right after the registration: only a registered person has a place for it.
-// A failed upload is asked again by the gate: the photo is required (G58, docs/128 §1).
+// A failed upload goes once more (G89 U13); still failed, the gate asks a driver again (G58,
+// docs/128 §1), a passenger adds it in «Profil».
 async function savePhoto(client: UsersClient, me: MeResponse, photo: Blob | null): Promise<MeResponse> {
   if (me.state !== 'active' || photo === null) return me;
-  const saved = await client.uploadAvatar(photo).then(
-    () => true,
-    () => false,
-  );
+  const upload = () => client.uploadAvatar(photo);
+  const saved = await upload()
+    .catch(upload)
+    .then(
+      () => true,
+      () => false,
+    );
   return saved ? { ...me, profile: { ...me.profile, hasAvatar: true } } : me;
 }
 
@@ -91,10 +96,13 @@ export function RegistrationFlow({
         onFinished(me);
         return true;
       } catch (error) {
+        const code = error instanceof ApiError ? error.code : undefined;
         // A blocked phone: the gate shows the block screen (docs/17).
-        if (error instanceof ApiError && error.code === 'users.blocked')
-          onFinished({ state: 'blocked', until: null });
-        return false;
+        if (code === 'users.blocked') onFinished({ state: 'blocked', until: null });
+        // The answer of the first try was lost on the way: the person is in (G89 U4).
+        else if (code === 'users.already_registered') onFinished(await client.getMe());
+        else return errorKey(error);
+        return true;
       }
     },
     [client, app, passed, onFinished],

@@ -8,6 +8,7 @@ import {
 } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { placeMatches } from '../../shared/places/place-match';
+import { approvedCar } from '../drivers';
 import { placesOf } from '../locations';
 import { showNews } from '../notifications';
 import { peopleOf } from '../users';
@@ -34,6 +35,7 @@ const subscriptionsDeps = (env: Bindings): SubscriptionsDeps => ({
     show: (news) => showNews(env, news, undefined, 'mass'),
     now: Date.now,
   }),
+  approvedDriver: async (userId) => (await approvedCar(env, userId)) !== null,
   limits: brandOf(env).subscriptions,
   newId: () => crypto.randomUUID(),
   now: Date.now,

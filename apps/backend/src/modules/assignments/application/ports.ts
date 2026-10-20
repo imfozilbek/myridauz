@@ -24,15 +24,22 @@ export type AssignmentStore = {
   save(assignment: Assignment): Promise<void>;
   // The operator number of the latest question of this person.
   operatorOf(kind: Kind, subjectId: number): Promise<number | undefined>;
-  // The latest question of this person, not answered yet, is answered now.
+  // Every question of this person not answered yet is answered now: one answer covers the days
+  // before it (G89 A3).
   answered(kind: Kind, subjectId: number, at: number): Promise<void>;
+  // A new question of the same day waits for an answer again (G89 A3).
+  reopen(kind: Kind, subjectId: number, day: string): Promise<void>;
   supportOf(day: string): Promise<SupportDone[]>;
-  // The support questions from this day on not answered yet: cases of «Navbat» (G75).
-  openSupport(fromDay: string): Promise<{ readonly subjectId: number; readonly at: number }[]>;
+  // The support questions not answered yet, of any day: cases of «Navbat» (G75, G89 A4).
+  openSupport(): Promise<{ readonly subjectId: number; readonly at: number }[]>;
   // true once: the digest of this day is to be sent now.
   markDigest(day: string, at: number): Promise<boolean>;
+  // The summary failed on its way: the next tick tries again (G89 A13).
+  unmarkDigest(day: string): Promise<void>;
   // true once: this reminder of the application sent at submittedAt is to be sent now (G34).
   markReminder(userId: number, submittedAt: number, step: ReminderStep, at: number): Promise<boolean>;
+  // The same for any other case of «Navbat» (G89 A5).
+  markCase(kind: string, caseId: string, since: number, step: ReminderStep, at: number): Promise<boolean>;
 };
 
 export type AssignDeps = {

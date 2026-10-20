@@ -56,6 +56,21 @@ describe('close people follow a shared trip (docs/43)', () => {
     );
     expect(await screen.findByText('Bu safar endi koʻrinmaydi')).toBeTruthy();
   });
+
+  // G89 U6: a weak network is not a closed link: the close person can try again.
+  it('offers «Qayta urinish» when the network failed, and shows the trip after it', async () => {
+    const sharedTrip = vi
+      .fn<ChatClient['sharedTrip']>()
+      .mockRejectedValueOnce(new ApiError(0, 'network.timeout'))
+      .mockResolvedValue(TRIP);
+    renderMarket(
+      <FollowScreen token={TOKEN} onJoin={() => undefined} />,
+      testClients({ chat: { sharedTrip } }),
+    );
+    await tap('Qayta urinish');
+    expect(screen.queryByText('Bu safar endi koʻrinmaydi')).toBeNull();
+    await waitFor(() => expect(sharedTrip).toHaveBeenCalledTimes(2));
+  });
 });
 
 describe('the passenger shares the trip; in the car by the driver «Keldi» (docs/43, G76)', () => {

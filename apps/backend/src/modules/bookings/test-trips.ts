@@ -14,6 +14,7 @@ export function fakeTrips(
 ) {
   const trips = new Map<string, TripFacts>();
   const extras = new Map<string, Extra>();
+  const cancelled = new Set<string>();
   const view = async (facts: TripFacts): Promise<Trip> => {
     const taken = (await bookings.byTrips([facts.id]))
       .filter((booking) => booking.status === 'confirmed')
@@ -54,7 +55,7 @@ export function fakeTrips(
     scheduleError: async (driverId, departAt) => scheduleCheck(departAt, now(), trips.values(), driverId),
     views: async (ids) => Promise.all(ids.flatMap((tripId) => trips.get(tripId) ?? []).map(view)),
     publish: async (driverId, input) =>
-      published(addTrip({ ...input, driverId, bookingRule: input.bookingRule ?? 'seats' })),
+      published(addTrip({ ...input, driverId, bookingRule: input.bookingRule ?? 'seats', private: true })),
     publishPrivate: async (driverId, input) => {
       const busy = scheduleCheck(input.departAt, now(), trips.values(), driverId);
       return busy
@@ -76,8 +77,11 @@ export function fakeTrips(
     },
     cancel: async (_driverId, tripId) => {
       notes.push(`trip cancelled ${tripId}`);
+      cancelled.add(tripId);
       return true;
     },
+    cancelledAfter: async (after) =>
+      [...trips.values()].filter((t) => cancelled.has(t.id) && t.departAt > after).map((t) => t.id),
   };
   return { trips, port, addTrip };
 }

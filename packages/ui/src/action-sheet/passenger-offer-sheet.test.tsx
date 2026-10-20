@@ -64,6 +64,17 @@ describe('the sheet of a new offer (G68)', { timeout: 20_000 }, () => {
     await sheetClosed();
   });
 
+  // G89 U9: one answer of a card at a time; a second tap while the first runs does nothing.
+  it('«Rad etish» does nothing while «Qabul qilish» runs', async () => {
+    const pending = vi.fn(() => new Promise<never>(() => undefined));
+    const { answerOffer } = passenger([{ ...offer, id: 'o15' }], pending);
+    await tap('Takliflarni koʻrish');
+    await tap('Qabul qilish');
+    await tap('Rad etish');
+    expect(answerOffer).toHaveBeenCalledTimes(1);
+    expect(answerOffer).toHaveBeenCalledWith('o15', 'accept');
+  });
+
   it('two offers: one sheet, «Barcha takliflar (2)» opens the request with its offers', async () => {
     passenger([
       { ...offer, id: 'o13' },

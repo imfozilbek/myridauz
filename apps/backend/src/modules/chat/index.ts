@@ -4,3 +4,4 @@ export { maskContacts } from './domain/mask';
 export { chatHistory, type HistoryLine } from './http/chat-history';
 export { forgetUnread, unreadOf } from './infrastructure/d1-unread';
 export { wireChatRings, type ChatNews } from './infrastructure/bot-signals';
+export { wireChatRights } from './infrastructure/fresh-rights';

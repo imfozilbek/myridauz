@@ -6,7 +6,7 @@ import { departByCron, tripsDeparting, tripsEnded, tripsNotDeparted, tripViewsOf
 import { watchDepartures } from './application/departures';
 import { remindTrips, tellReminder, type TellDeps } from './application/remind';
 import { departReminder } from './infrastructure/depart-reminder';
-import { createMemoryFirst, d1First } from './infrastructure/reminder-store';
+import { createMemoryFirst, d1First, d1Forget } from './infrastructure/reminder-store';
 import { reminderOf, reminderTask } from './infrastructure/reminder-task';
 import { brandOf } from '../../shared/brand/brand-of';
 import { TICK_MINUTES } from '../../shared/cron/tick';
@@ -51,6 +51,7 @@ export const sendReminders = async (env: Bindings, now: number) => {
     trips: (from, to) => tripsDeparting(env, from, to),
     bookings: (tripIds) => confirmedBookings(env, tripIds),
     first,
+    forget: env.DB ? d1Forget(env.DB) : localFirst.forget,
     schedule: scheduleOf(env),
     // Without the queue a reminder goes at once: the Cron then takes only the ones due now.
     windowMs: env.NOTIFICATIONS ? TICK_MINUTES * MINUTE_MS : 0,

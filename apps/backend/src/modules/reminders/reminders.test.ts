@@ -4,12 +4,8 @@ import { remindTrips, tellReminder, type Reminder, type RemindersDeps } from './
 import { reminderAt, spreadMoments } from './domain/due';
 import { createMemoryFirst } from './infrastructure/reminder-store';
 import { reminderOf, reminderTask } from './infrastructure/reminder-task';
-import { publicIdOf } from '../../test-people';
+import { booking, HOUR, MINUTE, MORNING, trip } from './reminders-test-kit';
 
-const HOUR = 3_600_000;
-const MINUTE = 60_000;
-// 2026-10-01 10:00 in Tashkent: day time.
-const MORNING = Date.parse('2026-10-01T05:00:00Z');
 // 2026-10-01 23:30 in Tashkent: night.
 const NIGHT = Date.parse('2026-10-01T18:30:00Z');
 // 2026-10-02 08:00 in Tashkent: the day time after that night.
@@ -19,29 +15,31 @@ describe('the moment a trip is reminded (G10, G85 R3)', () => {
   it('reminds a day before in the day time and 2 hours before at any time, at the minute', () => {
     expect(reminderAt(MORNING + 25 * HOUR, 'day', MORNING)).toBe(MORNING + HOUR);
     expect(reminderAt(MORNING + 25 * HOUR, 'soon', MORNING)).toBe(MORNING + 23 * HOUR);
+    // G89 C10: «2 soat qoldi» only while about 2 hours are left: not 40 minutes before.
+    expect(reminderAt(MORNING + 1.5 * HOUR, 'soon', MORNING)).toBe(MORNING);
+    expect(reminderAt(MORNING + (2 * HOUR) / 3, 'soon', MORNING)).toBeNull();
     // A day before falls in the night: the morning after, while the trip is more than 3 hours away.
     expect(reminderAt(NIGHT + 20 * HOUR, 'day', NIGHT)).toBe(NEXT_MORNING);
     expect(reminderAt(NIGHT + 11 * HOUR, 'day', NIGHT)).toBeNull();
-    // Too close for "a day before"; "soon" is due already, so it goes now.
+    // Too close for "a day before"; "soon" is due already, so it goes now; an hour before is too late.
     expect(reminderAt(MORNING + 2.5 * HOUR, 'day', MORNING)).toBeNull();
-    expect(reminderAt(NIGHT + HOUR, 'soon', NIGHT)).toBe(NIGHT);
+    expect(reminderAt(NIGHT + 1.75 * HOUR, 'soon', NIGHT)).toBe(NIGHT);
+    expect(reminderAt(NIGHT + HOUR, 'soon', NIGHT)).toBeNull();
     expect(reminderAt(NIGHT - HOUR, 'soon', NIGHT)).toBeNull();
   });
 });
-
-const trip = (id: string, departAt: number) => ({ id, departAt, driver: { id: publicIdOf(1) } }) as Trip;
-const booking = (id: string, tripId: string) =>
-  ({ id, seats: 1, trip: { id: tripId }, passenger: { id: publicIdOf(50) } }) as Booking;
 
 describe('holding reminders until their moment, once (G10, G85 R3)', () => {
   it('holds the reminders of the next 15 minutes for each passenger and the driver', async () => {
     let now = MORNING;
     const held: string[] = [];
     const departAt = MORNING + 24 * HOUR + 10 * MINUTE;
+    const first = createMemoryFirst();
     const deps: RemindersDeps = {
       trips: async () => [trip('t1', departAt), trip('t2', departAt)],
       bookings: async () => [booking('b1', 't1'), booking('b2', 't1')],
-      first: createMemoryFirst(),
+      first,
+      forget: first.forget,
       schedule: async (items) =>
         void held.push(
           ...items.map(

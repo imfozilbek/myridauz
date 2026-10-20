@@ -58,7 +58,8 @@ describe('the driver at the point of the passenger (docs/126, G63)', () => {
 
   it('«Keldi» after the passenger already said «Yetib keldim» does not tell the close people again', async () => {
     const { deps, id, notes, setNow } = await booked();
-    setNow(MEETING);
+    // «Yetib keldim» comes once the passenger is in the car: here the time of the meeting passed (G89 B1).
+    setNow(DEPART + HOUR);
     await markProgress(deps, DILNOZA, id, 'arrived');
     await markMeeting(deps, DRIVER, id, 'met');
     expect(notes.filter((note) => note.startsWith('close ones: Dilnoza'))).toEqual([
@@ -69,6 +70,7 @@ describe('the driver at the point of the passenger (docs/126, G63)', () => {
   it('«Kelmadi» once files one complaint of the driver and never turns into «Keldi»', async () => {
     const { deps, id, notes, setNow } = await booked();
     setNow(DEPART + HOUR);
+    await markMeeting(deps, DRIVER, id, 'came');
     const missed = await markMeeting(deps, DRIVER, id, 'no_show');
     expect(missed.ok && missed.value.noShowAt).toBe(DEPART + HOUR);
     const again = { ok: false, error: 'bookings.already_no_show' };
@@ -86,6 +88,7 @@ describe('the driver at the point of the passenger (docs/126, G63)', () => {
   it('the driver sees the marks, the refund and whether the passenger is rated', async () => {
     const { deps, id, setNow } = await booked();
     setNow(MEETING);
+    await markMeeting(deps, DRIVER, id, 'came');
     await markMeeting(deps, DRIVER, id, 'no_show');
     const proposed = { state: 'proposed', amount: 9000 } as const;
     const driverDeps = {
@@ -114,6 +117,7 @@ describe('the driver at the point of the passenger (docs/126, G63)', () => {
     };
     await driverBookings(counting, DRIVER);
     setNow(MEETING);
+    await markMeeting(deps, DRIVER, id, 'came');
     await markMeeting(deps, DRIVER, id, 'no_show');
     await driverBookings(counting, DRIVER);
     expect(asked).toEqual([[id]]);

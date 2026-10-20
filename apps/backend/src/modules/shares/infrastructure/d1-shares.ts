@@ -61,14 +61,20 @@ export const d1Shares = (db: D1Database): ShareRepository => {
         ),
       );
     },
-    follow: async (subject, telegramId, at) => {
-      const table = TABLES[subject.kind];
-      await db
-        .prepare(
-          `INSERT OR IGNORE INTO ${table.followers} (${table.id}, telegram_id, created_at) VALUES (?, ?, ?)`,
-        )
-        .bind(subject.id, telegramId, at)
-        .run();
+    follow: async (subject, telegramId, at, limit) => {
+      const { followers, id } = TABLES[subject.kind];
+      const [, found] = await db.batch<{ one: number }>([
+        db
+          .prepare(
+            `INSERT OR IGNORE INTO ${followers} (${id}, telegram_id, created_at) SELECT ?1, ?2, ?3 ` +
+              `WHERE (SELECT COUNT(*) FROM ${followers} WHERE ${id} = ?1) < ?4`,
+          )
+          .bind(subject.id, telegramId, at, limit),
+        db
+          .prepare(`SELECT 1 AS one FROM ${followers} WHERE ${id} = ? AND telegram_id = ?`)
+          .bind(subject.id, telegramId),
+      ]);
+      return (found?.results.length ?? 0) > 0;
     },
   };
 };

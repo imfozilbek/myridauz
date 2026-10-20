@@ -1,11 +1,12 @@
 import type { Visit, VisitStore } from '../application/ports';
 import { randomCode } from '../../../shared/codes/random-code';
-import { FRIEND_CODE_LENGTH } from '../domain/sources';
+import { FRIEND_CODE_LENGTH, FRIEND_PREFIX } from '../domain/sources';
 
 type Moment = 'started_at' | 'opened_at' | 'invited_at';
 
 // The first touch of a person in D1 (migration 0066): the first mark and the first platform stay,
-// a later link changes nothing (docs/116). The own friend code is made with the row.
+// a later link changes nothing (docs/116). The own friend code is made with the row; the own friend
+// link is no mark (G89): nobody invites oneself.
 export function d1Visits(db: D1Database): VisitStore {
   const read = async (userId: number): Promise<Visit> => {
     const row = await db
@@ -24,7 +25,7 @@ export function d1Visits(db: D1Database): VisitStore {
     await db
       .prepare(
         `INSERT INTO waitlist_visits (telegram_id, code, via, platform, ${moment}) VALUES (?, ?, ?, ?, ?) ` +
-          `ON CONFLICT (telegram_id) DO UPDATE SET via = COALESCE(via, excluded.via), ` +
+          `ON CONFLICT (telegram_id) DO UPDATE SET via = COALESCE(via, NULLIF(excluded.via, '${FRIEND_PREFIX}' || code)), ` +
           `platform = COALESCE(platform, excluded.platform), ${moment} = COALESCE(${moment}, excluded.${moment})`,
       )
       .bind(userId, randomCode(FRIEND_CODE_LENGTH), via, platform, now)

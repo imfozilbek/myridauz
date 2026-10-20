@@ -30,7 +30,20 @@ export function createMemoryBookings(): BookingRepository {
       rows.set(id, next);
       return true;
     },
+    markStep: async (id, step, now) => {
+      const booking = rows.get(id);
+      const done = step === 'came' ? booking?.cameAt : booking?.arrivedAt;
+      if (booking?.status !== 'confirmed' || done !== null) return false;
+      const marks =
+        step === 'came' ? { cameAt: now } : { arrivedAt: now, boardedAt: booking.boardedAt ?? now };
+      rows.set(id, { ...booking, ...marks, updatedAt: now });
+      return true;
+    },
     find: async (id) => rows.get(id),
+    cancelledSince: async (since) =>
+      list().filter(
+        (b) => b.status.startsWith('cancelled') && b.confirmedAt !== null && b.updatedAt >= since,
+      ),
     byTrips: async (tripIds) => list().filter((booking) => tripIds.includes(booking.tripId)),
     byPassenger: async (passengerId) => list().filter((booking) => booking.passengerId === passengerId),
     expireOver: async (now) => {
@@ -56,6 +69,9 @@ export function createMemoryBookings(): BookingRepository {
     erasePoints: async (ids) => {
       for (const booking of list())
         if (ids.includes(booking.id)) rows.set(booking.id, withoutPoints(booking));
+    },
+    discard: async (id) => {
+      if (rows.get(id)?.status === 'requested') rows.delete(id);
     },
     erasePointsOf: async (passengerId) => {
       for (const booking of list())

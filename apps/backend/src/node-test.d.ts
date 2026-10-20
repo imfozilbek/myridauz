@@ -14,5 +14,8 @@ declare module 'node:sqlite' {
 
 // Vite (Vitest) reads files of a folder as text at the build of the test.
 interface ImportMeta {
-  glob(pattern: string, options: { query: '?raw'; import: 'default'; eager: true }): Record<string, string>;
+  glob(
+    pattern: string | readonly string[],
+    options: { query: '?raw'; import: 'default'; eager: true },
+  ): Record<string, string>;
 }

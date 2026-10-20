@@ -1,5 +1,5 @@
 import { quietly } from '@platform/api-client';
-import { BOOKING_LINK, type Trip, type UserReviews } from '@platform/contracts';
+import { BOOKING_LINK, onTheWay, type Trip, type UserReviews } from '@platform/contracts';
 import { useContext, useEffect, useState } from 'react';
 import { useAccount } from '../account/account-context';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
@@ -63,7 +63,7 @@ export function SafarScreen({ trip, onBack, onBook, onOthers }: Props) {
   const closed =
     trip.status !== 'active'
       ? t(`market.trip.closed.${trip.status}`)
-      : trip.departAt <= Date.now()
+      : onTheWay(trip, Date.now())
         ? t('market.trip.departed')
         : null;
   if (reviews)

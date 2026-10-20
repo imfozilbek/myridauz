@@ -42,7 +42,7 @@ describe('the unread messages of a chat (G53)', () => {
 
   it('forgets every counter of a deleted account', async () => {
     await d1Unread(env, BOOKING).add(PASSENGER, { text: 'Salom', at: 1 });
-    await forgetUnread(env, 10);
+    await forgetUnread(env, 10, []);
     expect((await unreadOf(env, 10)).size).toBe(0);
   });
 });

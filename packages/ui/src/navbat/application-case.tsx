@@ -5,7 +5,7 @@ import {
   type DecisionInput,
   type ModerationReason,
 } from '@platform/contracts';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { useLoad } from '../market/use-list';
@@ -51,18 +51,24 @@ function Application({ detail, progress, onBack, onDone }: ApplicationProps) {
   const [ticked, setTicked] = useState<Record<ReasonsMode, readonly ModerationReason[]>>(NO_TICKS);
   const { failure, fail, clear } = useFailure();
   const { userId } = detail;
-  const act = async (work: Promise<unknown>, outcome: Outcome) => {
+  // One decision at a time: a second quick tap sends nothing (G89 M5).
+  const busy = useRef(false);
+  const act = async (work: () => Promise<unknown>, outcome: Outcome) => {
+    if (busy.current) return;
+    busy.current = true;
     clear();
     try {
-      await work;
+      await work();
       haptic.success();
       onDone(outcome);
     } catch (caught) {
       fail(caught);
       setMode('view');
+    } finally {
+      busy.current = false;
     }
   };
-  const decide = (decision: DecisionInput) => void act(moderation.decide(userId, decision), 'decided');
+  const decide = (decision: DecisionInput) => void act(() => moderation.decide(userId, decision), 'decided');
   const back = () => setMode('view');
   if (mode === 'approve')
     return (
@@ -104,7 +110,7 @@ function Application({ detail, progress, onBack, onDone }: ApplicationProps) {
       <BlockSheet
         open={mode === 'block'}
         onClose={back}
-        onBlock={(days) => act(moderation.block(userId, days), 'blocked')}
+        onBlock={(days) => act(() => moderation.block(userId, days), 'blocked')}
       />
     </div>
   );

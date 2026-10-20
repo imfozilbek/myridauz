@@ -76,11 +76,3 @@ export async function openSalonTrip(
   const opened = await deps.trips.open(driverId, tripId);
   return opened.ok ? opened : { ok: false, error: 'trips.not_found' };
 }
-
-// The driver cancelled the trip of an offer that still waits (G64): the passenger sees it is over.
-export async function expireTripOffers(deps: BookingsDeps, driverId: number, tripId: string): Promise<void> {
-  const waiting = (await deps.offers.byDriver(driverId)).filter(
-    (offer) => offer.tripId === tripId && offer.status === 'sent',
-  );
-  for (const offer of waiting) await deps.offers.save({ ...offer, status: 'expired' });
-}

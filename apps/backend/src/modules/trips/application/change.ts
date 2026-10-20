@@ -7,7 +7,7 @@ import { views } from './views-of';
 type Changed = Promise<Result<Trip, ChangeError | 'trips.price_out_of_bounds'>>;
 
 async function saved(deps: TripsDeps, next: TripRecord, event: TripEvent): Changed {
-  await deps.trips.save(next);
+  if (!(await deps.trips.save(next))) return { ok: false, error: 'trips.wrong_status' };
   await deps.changed(next.id, event);
   const [view] = await views(deps, [next]);
   return view ? { ok: true, value: view } : { ok: false, error: 'trips.not_found' };

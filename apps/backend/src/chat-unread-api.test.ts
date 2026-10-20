@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { approvedDriver, json, read } from './bookings-test-api';
 import type { Bindings } from './env';
-import { d1Unread } from './modules/chat/infrastructure/d1-unread';
+import { d1Unread, forgetUnread, lastUnread } from './modules/chat/infrastructure/d1-unread';
 import { testD1 } from './test-d1';
 import { call, doorBooking, registerUser } from './test-api';
 
@@ -38,23 +38,9 @@ beforeAll(async () => {
   ({ chatKey } = await bookedChat());
 });
 
-// The sheet «Yangi xabar» of the open Mini App (G68, docs/122): the last words of an unread chat,
-// a ready answer without opening the chat.
+// The sheet «Yangi xabar» of the open Mini App (G68, docs/122): a ready answer without opening the
+// chat. The list of the sheet itself: modules/chat/sheet-routes.test.ts.
 describe('the unread chats for the sheet (G68)', () => {
-  it('gives the last message of each unread chat only to the Mini App of that side', async () => {
-    await d1Unread(unreadDb as Bindings, chatKey).add(
-      { userId: PASSENGER, role: 'passenger' },
-      { text: 'Grand oldida boʻlaman', at: 5 },
-    );
-    const unread = (id: number, app: string) =>
-      read<{ chats: unknown[] }>(call('/chats/unread', id, { app, env: unreadDb }));
-    expect((await unread(PASSENGER, 'passenger')).chats).toEqual([
-      { key: chatKey, count: 1, text: 'Grand oldida boʻlaman', at: 5 },
-    ]);
-    expect((await unread(PASSENGER, 'driver')).chats).toEqual([]);
-    expect((await unread(STRANGER, 'passenger')).chats).toEqual([]);
-  });
-
   it('a ready answer goes only from a person of the chat, with a text', async () => {
     const answer = (id: number, body: unknown, app = 'passenger') =>
       call(`/chats/${chatKey}/messages`, id, { app, ...json(body) });
@@ -63,5 +49,13 @@ describe('the unread chats for the sheet (G68)', () => {
     expect((await call('/chats/not-a-key/messages', PASSENGER, json({ text: 'Yaxshi' }))).status).toBe(403);
     // Without the Durable Objects of the chats (tests) the message cannot go.
     expect((await answer(DRIVER, { text: 'Yaxshi' }, 'driver')).status).toBe(503);
+  });
+
+  // G89 C11: a deleted account takes its words out of the plates of the other side too.
+  it('forgets the words of a deleted person in the unread chats of the other side', async () => {
+    const unread = d1Unread(unreadDb as Bindings, chatKey);
+    await unread.add({ userId: DRIVER, role: 'driver' }, { text: 'Kelyapman', at: 6 });
+    await forgetUnread(unreadDb as Bindings, PASSENGER, [chatKey]);
+    expect(await lastUnread(unreadDb as Bindings, DRIVER, 'driver')).toEqual([]);
   });
 });

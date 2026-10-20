@@ -49,7 +49,14 @@ describe('a block from the admin app (docs/17, docs/65 A5)', () => {
     // A moderator never blocks a member of the team; the owner may.
     const refused = await call(`/admin/users/${await pid(MODERATOR)}/block`, MODERATOR, block(null));
     expect([refused.status, await refused.json()]).toEqual([403, { error: 'auth.not_owner' }]);
+    const told = telegram.sentTo(PASSENGER).length;
     expect((await call(`/admin/users/${await pid(PASSENGER)}/block`, OWNER, block(1))).status).toBe(204);
+    // A passenger hears the block from the passenger bot: the driver bot never wrote to her (G89 A6).
+    const blockNote = telegram
+      .sentTo(PASSENGER)
+      .slice(told)
+      .find((sent) => String(sent.body.text).includes('blok'));
+    expect(blockNote?.token).toBe(testEnv.PASSENGER_BOT_TOKEN);
     // The journal says who blocked and why; only the owner lifts a block (docs/65 C).
     const journal = async () =>
       read<{ active: unknown; entries: { reason: string }[] }>(

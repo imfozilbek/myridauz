@@ -1,6 +1,8 @@
 import { afterAll, describe, expect, it, vi } from 'vitest';
+import { actionsOf } from '../modules/journal';
+import { peopleOf } from '../modules/users';
 import { call, registerUser } from '../test-api';
-import { botSender, fakeTelegram } from './test-bot';
+import { botEnv, botSender, fakeTelegram } from './test-bot';
 
 const telegram = fakeTelegram();
 vi.stubGlobal('fetch', telegram.fetch);
@@ -38,9 +40,22 @@ describe('admin bot: the card of a new face photo (docs/120, G51)', () => {
     expect(again.text).toBe('Bu rasmga javob berilgan.');
   });
 
-  it('approves a new photo with «Rasm mos»', async () => {
+  it('approves a new photo with «Rasm mos», and «Jurnal» keeps it as from the app (G89 M14)', async () => {
     await call('/me/avatar', PERSON, photo);
     expect((await reply(await send('admin', press(`face:${PERSON}:ok`)))).text).toBe('Tasdiqlandi');
+    const done = await actionsOf(botEnv as never, OWNER, 0, Date.now() + 1);
+    expect(done.filter((action) => action.kind === 'face').map((action) => action.action)).toEqual([
+      'reject',
+      'approve',
+    ]);
+  });
+
+  // G89 M10: a blocked member of the team decides nothing from the buttons of the bot.
+  it('ignores the buttons of a blocked member of the team', async () => {
+    await call('/me/avatar', PERSON, photo);
+    await registerUser(8);
+    await peopleOf(botEnv as never).block(8, null, { by: OWNER, reason: 'admin' });
+    expect((await reply(await send('admin', press(`face:${PERSON}:ok`, 8)))).text).toBeUndefined();
   });
 
   it('ignores broken buttons and strangers', async () => {

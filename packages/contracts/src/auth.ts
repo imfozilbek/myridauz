@@ -60,6 +60,8 @@ export const API_ERRORS = [
   'bookings.not_found',
   'bookings.invalid_input',
   'bookings.too_many',
+  'bookings.has_seat',
+  'bookings.offer_unavailable',
   'bookings.no_seats',
   'bookings.own_trip',
   'bookings.wrong_status',
@@ -94,6 +96,7 @@ export const API_ERRORS = [
   'reviews.not_found',
   'reviews.not_over',
   'reviews.too_late',
+  'reviews.published',
   'reviews.invalid_input',
   'complaints.not_found',
   'complaints.already',
@@ -124,6 +127,14 @@ export const API_ERRORS = [
   'growth.invalid_input',
   'growth.invalid_image',
   'growth.unavailable',
+  // The answer of the team in «Navbat», the cap of requests and a broken route (G89 U11): the screens
+  // read their codes too.
+  'support.not_found',
+  'support.invalid_input',
+  'support.not_sent',
+  'rate.limited',
+  'server.error',
+  'analytics.invalid_batch',
   ...ROUTE_ERRORS,
 ] as const;
 export type ApiErrorCode = (typeof API_ERRORS)[number];

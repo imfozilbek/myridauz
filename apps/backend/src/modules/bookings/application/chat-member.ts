@@ -1,7 +1,8 @@
-import { HOUR_MS, arrivalAt, type Booking } from '@platform/contracts';
+import { DAY_MS, HOUR_MS, arrivalAt, tashkentDayStart, type Booking } from '@platform/contracts';
 import type { Member } from '../../chat';
-import { statusAt } from '../domain/booking';
+import { statusAt, type BookingRecord } from '../domain/booking';
 import type { BookingsDeps } from './ports';
+import type { RequestFacts } from './request-facts';
 import { bookingViews } from './views';
 
 // Who may open a chat (docs/07): the passenger and the driver of the booking, of the offer or of the
@@ -38,8 +39,8 @@ type Pair = Talk & {
 };
 const BOOKED = { callsOff: false, ringLimit: null } as const;
 
-async function talkOf(deps: BookingsDeps, bookingId: string | null): Promise<Talk> {
-  const booking = bookingId === null ? undefined : await deps.bookings.find(bookingId);
+async function talkOf(deps: BookingsDeps, bookingId: string): Promise<Talk> {
+  const booking = await deps.bookings.find(bookingId);
   const trip = booking ? await deps.trips.find(booking.tripId) : undefined;
   if (!booking || !trip) return { canCall: false, canWrite: true };
   const now = deps.now();
@@ -48,8 +49,22 @@ async function talkOf(deps: BookingsDeps, bookingId: string | null): Promise<Tal
   const talkMs = deps.limits.chat.afterTripHours * HOUR_MS;
   const after = now < (trip.arrivedAt ?? arrivalAt(trip.departAt, trip.km)) + talkMs;
   if (status === 'completed') return { canCall: after, canWrite: after };
-  return { canCall: status === 'confirmed', canWrite: true };
+  if (status === 'confirmed' || status === 'requested')
+    return { canCall: status === 'confirmed', canWrite: true };
+  // A seat that will not ride (cancelled, declined, burned): a day more, as after a ride, then read
+  // only; the pair does not move past Rida (owner decision 20.10.2026, G89 B11, docs/83 N26).
+  return { canCall: false, canWrite: now < endOf(booking) + talkMs };
 }
+
+// A burned waiting seat ends at its time to answer; any other at its last change.
+const endOf = (booking: BookingRecord) =>
+  booking.status === 'requested' ? booking.expiresAt : booking.updatedAt;
+
+// A talk or an offer without a booking: open while its request is, then until a day after the day
+// of the request (G89 B11).
+const requestTalk = (deps: BookingsDeps, request: RequestFacts) =>
+  request.open ||
+  deps.now() < tashkentDayStart(request.date) + DAY_MS + deps.limits.chat.afterTripHours * HOUR_MS;
 
 const pairOf = (deps: BookingsDeps, key: string): Promise<Pair | null> => {
   const id = key.slice(1);
@@ -73,8 +88,9 @@ async function offerPair(deps: BookingsDeps, id: string): Promise<Pair | null> {
   const offer = await deps.offers.find(id);
   const request = offer ? await deps.requests.find(offer.requestId) : undefined;
   if (!offer || !request) return null;
-  const talk = await talkOf(deps, offer.bookingId);
-  return { passengerId: request.passengerId, driverId: offer.driverId, ...BOOKED, ...talk };
+  const people = { passengerId: request.passengerId, driverId: offer.driverId, ...BOOKED };
+  if (offer.bookingId === null) return { ...people, canCall: false, canWrite: requestTalk(deps, request) };
+  return { ...people, ...(await talkOf(deps, offer.bookingId)) };
 }
 
 // The booking a talk became: the accepted offer of this driver on the request (G64).
@@ -91,7 +107,7 @@ async function talkPair(deps: BookingsDeps, id: string): Promise<Pair | null> {
   const bookingId = await talkBookingId(deps, id, talk.requestId);
   if (bookingId !== null) return { ...people, ...BOOKED, ...(await talkOf(deps, bookingId)) };
   const before = { callsOff: request.callsOff, ringLimit: deps.limits.calls.requestRings };
-  return { ...people, ...before, canCall: request.open, canWrite: true };
+  return { ...people, ...before, canCall: request.open, canWrite: requestTalk(deps, request) };
 }
 
 // The booking of a chat as its member sees it (G54, docs/115): the call screen shows who and which
@@ -109,7 +125,7 @@ export async function chatBooking(
   return view ? { booking: view, role: member.role } : null;
 }
 
-async function chatBookingRecord(deps: BookingsDeps, key: string) {
+export async function chatBookingRecord(deps: BookingsDeps, key: string) {
   const id = key.slice(1);
   if (key.startsWith('b')) return deps.bookings.find(id);
   const talk = key.startsWith('t') ? await deps.talks.find(id) : undefined;

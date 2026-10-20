@@ -8,6 +8,7 @@ import { PlacesGate } from '../market/places-gate';
 import { useLoad } from '../market/use-list';
 import { ActionFailure } from '../states/action-failure';
 import { EmptyState } from '../states/empty-state';
+import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { useFailure } from '../states/use-failure';
 import { launchParam, rememberVia } from '../telegram/launch-param';
@@ -51,7 +52,14 @@ function Follow({ token, onJoin }: Props) {
   const { colors } = useBrand().theme;
   const { track } = useAnalytics();
   const { chat } = useApiClients();
-  const { value, failed, refresh } = useLoad(() => chat.sharedTrip(token));
+  // Only a link the server does not know is closed; a bad network shows «Qayta urinish» (G89 U6).
+  const [gone, setGone] = useState(false);
+  const { value, failed, refresh, reload } = useLoad(() =>
+    chat.sharedTrip(token).catch((caught: unknown) => {
+      setGone(caught instanceof ApiError && caught.code === 'shares.not_found');
+      throw caught;
+    }),
+  );
   useEffect(() => {
     const timer = setInterval(() => void refresh(), REFRESH_MS);
     return () => clearInterval(timer);
@@ -66,6 +74,7 @@ function Follow({ token, onJoin }: Props) {
     rememberVia(value?.via ?? null);
     onJoin();
   };
+  if (failed && !gone) return <ErrorScreen onRetry={reload} />;
   if (failed) {
     return (
       <>

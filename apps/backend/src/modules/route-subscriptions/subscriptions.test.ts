@@ -43,6 +43,15 @@ describe('telling about new trips and requests (docs/24)', () => {
     expect(told).toEqual(['one 1 t1']);
   });
 
+  // G89 B17: the requests of passengers reach approved drivers only, as the board does.
+  it('tells a new request only to an approved driver', async () => {
+    const { deps, told } = setup();
+    await subscribe(deps, 4, 'requests', ROUTE);
+    await subscribe(deps, 9, 'requests', ROUTE);
+    await matchNew(deps, 'requests', { ...TRIP, id: 'r1', ownerId: 7 });
+    expect(told).toEqual(['one 4 r1']);
+  });
+
   it('tells every match at once: the news card of the day takes them all (docs/122 rule 4)', async () => {
     const { deps, told } = setup();
     await subscribe(deps, 1, 'trips', { ...ROUTE, date: null });
@@ -89,5 +98,22 @@ describe('telling about new trips and requests (docs/24)', () => {
     // The renewed older one is live, the newer one stopped after its 30 days.
     const order = (await mySubscriptions(deps, 1, 'trips')).map((item) => item.to);
     expect(order).toEqual(['1718', '1718233']);
+  });
+
+  // G89: «Uzaytirish» in the same moment as the hourly job: the renewal stays, no offer to renew.
+  it('keeps a renewal made while the job reads the overdue ones', async () => {
+    const { deps, told, pass } = setup();
+    await subscribe(deps, 2, 'trips', { ...ROUTE, date: null });
+    pass(31 * DAY_MS);
+    const [mine] = await mySubscriptions(deps, 2, 'trips');
+    const { subscriptions } = deps;
+    const overdue = async (now: number) => {
+      const read = await subscriptions.overdue(now);
+      await renew(deps, 2, 'trips', mine?.id ?? '');
+      return read;
+    };
+    await endOverdue({ ...deps, subscriptions: { ...subscriptions, overdue } });
+    expect((await mySubscriptions(deps, 2, 'trips'))[0]?.expired).toBe(false);
+    expect(told).toEqual([]);
   });
 });

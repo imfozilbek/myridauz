@@ -1,9 +1,8 @@
-import { answer } from './answer';
 import { meetingBegun } from './meeting';
+import { endDriverOffers } from './offers-ended';
 import type { BookingsDeps } from './ports';
-import { expireTripOffers } from './salon-trip';
+import { endSeatsOfTrip } from './trip-ended';
 
-const OPEN = new Set(['requested', 'confirmed']);
 export type TeamCancelError = 'trips.not_found' | 'trips.wrong_status';
 
 // The team cancels one trip (Q5 of docs/111, G45): as when its driver does, the requests and seats
@@ -19,9 +18,8 @@ export async function cancelTripByTeam(
   const { driverId } = trip;
   if (await meetingBegun(deps, driverId, tripId)) return 'trips.wrong_status';
   if (!(await deps.trips.cancel(driverId, tripId))) return 'trips.wrong_status';
-  for (const booking of await deps.bookings.byTrips([tripId]))
-    if (OPEN.has(booking.status)) await answer(deps, driverId, booking.id, 'driver_cancel', 'team');
-  await expireTripOffers(deps, driverId, tripId);
+  await endSeatsOfTrip(deps, driverId, tripId, 'team');
+  await endDriverOffers(deps, driverId, tripId);
   await deps.notify.teamCancelled(driverId, reason);
   return { driverId };
 }

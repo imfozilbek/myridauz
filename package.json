@@ -14,6 +14,7 @@
     "knip": "knip",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "mutation": "stryker run",
     "check:text": "node scripts/check-text.mjs",
     "check:secrets": "gitleaks git --no-banner --redact",
     "audit": "pnpm audit --audit-level moderate",
@@ -31,10 +32,12 @@
     "@mapbox/vector-tile": "3.0.0",
     "@platform/api-client": "workspace:*",
     "@platform/brands": "workspace:*",
-    "@platform/contracts": "workspace:*",
     "@platform/config": "workspace:*",
+    "@platform/contracts": "workspace:*",
     "@platform/i18n": "workspace:*",
     "@playwright/test": "1.56.1",
+    "@stryker-mutator/core": "10.0.0",
+    "@stryker-mutator/vitest-runner": "10.0.0",
     "@types/node": "22.20.4",
     "@vitest/coverage-v8": "5.0.2",
     "eslint": "10.11.0",
@@ -52,7 +55,11 @@
       "valibot": "1.4.2",
       "undici@>=7.28.0 <7.29.1": "7.29.1",
       "source-map-js@<1.2.2": "1.2.2",
-      "sharp@<0.35.5": "0.35.5"
+      "sharp@<0.35.5": "0.35.5",
+      "qs@<6.16.0": "6.16.0"
+    },
+    "patchedDependencies": {
+      "@stryker-mutator/vitest-runner@10.0.0": "patches/@stryker-mutator__vitest-runner@10.0.0.patch"
     }
   }
 }

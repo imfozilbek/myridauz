@@ -26,7 +26,8 @@ export type RecordStore = {
   counts(region: string, pain: Pain): Promise<DirectionCounts>;
   // The people of opened directions the bot has not told yet, a few at a time (docs/181).
   untold(weekAgo: number, limit: number): Promise<WaitlistRecord[]>;
-  told(userId: number, role: WaitlistRole, at: number): Promise<void>;
+  // Marks a record told only if nobody marked it since it was read: true for the one run that rings.
+  told(record: WaitlistRecord, at: number): Promise<boolean>;
   // The cards not shown since a moment: the Monday update (docs/181).
   stale(since: number, limit: number): Promise<WaitlistRecord[]>;
   shown(userId: number, role: WaitlistRole, at: number): Promise<void>;

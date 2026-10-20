@@ -8,10 +8,15 @@ export const NO_RIDERS: Riders = { seats: 0, woman: false };
 
 export type Riders = { readonly seats: number; readonly woman: boolean };
 
+// Who drives, as a trip shows it: a deleted account keeps only a name for its old rides (G89 M9).
+export type TripDriver = Pick<Person, 'publicId' | 'firstName' | 'avatarShown'> & {
+  readonly gender: Person['gender'] | null;
+};
+
 // What other people see of a trip: the driver's name, face, car and plate (G59), never a phone (docs/07).
 export function tripView(
   trip: TripRecord,
-  driver: Person,
+  driver: TripDriver,
   car: TripCar,
   now: number,
   riders: Riders,

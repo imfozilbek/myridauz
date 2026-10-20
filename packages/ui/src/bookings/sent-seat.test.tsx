@@ -39,4 +39,19 @@ describe('the cancel of a request just sent', { timeout: 20_000 }, () => {
     expect(await screen.findByText('Haydovchi joy bera olmadi.')).toBeTruthy();
     expect(onClose).not.toHaveBeenCalled();
   });
+
+  // G89 U3: the page of the request just sent follows the driver's answer (docs/64).
+  it('shows the confirmed seat once the driver answers', async () => {
+    const myBookings = vi.fn<BookingsClient['myBookings']>(async () => [{ ...booking, status: 'confirmed' }]);
+    const { fire } = openBook('both', {}, undefined, { myBookings });
+    expect(await screen.findByText('Qayerdan, qayerga?')).toBeTruthy();
+    fireEvent.click(row('Tushirish joyi'));
+    await screen.findByText('Yangi Margʻilon', {}, { timeout: 3000 });
+    await tap('Shu yerda tushaman');
+    await tap('Soʻrov yuborish');
+    expect(await screen.findByText('Javob kutilmoqda')).toBeTruthy();
+    fire();
+    await waitFor(() => expect(myBookings).toHaveBeenCalled());
+    expect(await screen.findByText('Joy tasdiqlandi')).toBeTruthy();
+  });
 });

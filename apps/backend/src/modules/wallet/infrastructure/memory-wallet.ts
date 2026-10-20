@@ -14,9 +14,13 @@ const burnRow = (driverId: number, amount: number, now: number, id: string): Ope
   expiresAt: null,
   createdAt: now,
 });
-const onceKey = (op: Operation) => (op.bookingId ? `${op.bookingId}:${op.kind}:${op.balance}` : null);
+const onceKey = (op: Operation) => {
+  if (op.grantNo !== undefined) return `${op.driverId}:grant:${op.grantNo}`;
+  return op.bookingId ? `${op.bookingId}:${op.kind}:${op.balance}` : null;
+};
 
-// The same rules as D1 without a database: all rows or none, one commission and refund per booking.
+// The same rules as D1 without a database: all rows or none, one commission and refund per booking,
+// each grant of the promo once per driver.
 export function createMemoryWallet(): WalletRepository {
   const rows: Operation[] = [];
   return {

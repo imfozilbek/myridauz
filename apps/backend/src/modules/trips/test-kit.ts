@@ -32,7 +32,15 @@ const PLACES = new Map(
   ].map((place) => [place.id, place]),
 );
 
+const PITAK = {
+  id: 'toshkent-avtovokzal',
+  name: 'Toshkent avtovokzali',
+  point: { lat: 41.2569, lng: 69.1925 },
+  hint: null,
+};
+
 export function setup() {
+  let pitakOpen = true;
   let now = NOW;
   let price = 90000;
   let id = 0;
@@ -59,6 +67,7 @@ export function setup() {
     trips: createMemoryTrips(),
     riders: async (tripIds) => riders.filter((rider) => tripIds.includes(rider.tripId)),
     people: { find: async (userId) => people.get(userId) },
+    goneName: 'Hisob oʻchirilgan',
     approvedCar: async (userId) => cars.get(userId) ?? null,
     ratings: async () => new Map(),
     hidden: async () => new Set(),
@@ -83,16 +92,9 @@ export function setup() {
     // Every other place is one trip away (300 km, 5 hours): the road from the end of a trip (docs/103).
     schedule: loadBrand().schedule,
     places: async () => PLACES,
-    // Toshkent shahri → Samarqand viloyati has its pitak; other directions have none.
-    pitakOf: async (from, to) =>
-      from === '1726' && to === '1718'
-        ? {
-            id: 'toshkent-avtovokzal',
-            name: 'Toshkent avtovokzali',
-            point: { lat: 41.2569, lng: 69.1925 },
-            hint: null,
-          }
-        : null,
+    // Toshkent shahri → Samarqand viloyati has its pitak until the team closes it; others have none.
+    pitakOf: async (from, to) => (pitakOpen && from === '1726' && to === '1718' ? PITAK : null),
+    pitakById: async (pitakId) => (pitakId === PITAK.id ? PITAK : null),
     changed: async (tripId, event) => void events.push(`${event} ${tripId}`),
     signal: async (people) => void signals.push(...people.map(({ userId, app }) => `${app} ${userId}`)),
     mask: (text) => maskContacts(text).text,
@@ -113,6 +115,7 @@ export function setup() {
     trip: { ...trip, departAt: NOW + 3 * HOUR },
     setNow: (next: number) => void (now = next),
     setFormula: (next: number) => void (price = next),
+    closePitak: () => void (pitakOpen = false),
     // A new face or car photo: the driver goes to the team's check again (docs/05).
     recheck: (userId: number) => void cars.delete(userId),
     ride: (rider: Rider) => void riders.push(rider),

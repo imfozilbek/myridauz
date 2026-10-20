@@ -65,6 +65,15 @@ const EXPLAINED: readonly string[] = [
   'trips.no_pitak',
   // The answer of the team from the admin app did not reach the person (G75).
   'support.not_sent',
+  // G89 U1: codes with a text that the screens did not show.
+  'complaints.too_late',
+  'users.face_decided',
+  // G89 A7: a review that shows keeps its stars.
+  'reviews.published',
+  // G89 B19: a confirmed seat on another trip.
+  'bookings.has_seat',
+  // G89 B5, U8: the driver of the offer is short of money for the commission.
+  'bookings.offer_unavailable',
 ];
 
 // Codes that mean the same for a person as an explained one.

@@ -21,10 +21,11 @@ const grantRow = (deps: WalletDeps, driverId: number, grant: Grant) =>
     balance: 'bonus',
     amount: grant.amount,
     expiresAt: grant.expiresAt,
+    grantNo: grant.no,
   });
 
 // A bonus whose time is over is not money any more, even before the Cron job burns it.
-const usable = (operations: readonly Operation[], now: number): Operation[] => {
+export const usable = (operations: readonly Operation[], now: number): Operation[] => {
   const burnt = burnable(operations, now);
   if (burnt === 0) return [...operations];
   const burn: Operation = {
@@ -39,28 +40,48 @@ const usable = (operations: readonly Operation[], now: number): Operation[] => {
   return [...operations, burn];
 };
 
+// The money for a seat: a bonus rest too small for it brings the next bonus first (G89 M1).
+function forSeat(deps: WalletDeps, driverId: number, operations: readonly Operation[], amount: number) {
+  const old = usable(operations, deps.now());
+  const early = splitCharge(old, amount) ? null : nextGrant(old, deps.promo, deps.now(), amount);
+  const first = early ? [grantRow(deps, driverId, early)] : [];
+  return { held: [...old, ...first], first };
+}
+
 export async function canAfford(deps: WalletDeps, driverId: number, amount: number) {
-  return splitCharge(usable(await deps.wallet.operations(driverId), deps.now()), amount) !== null;
+  const { held } = forSeat(deps, driverId, await deps.wallet.operations(driverId), amount);
+  return splitCharge(held, amount) !== null;
 }
 
 // How much is missing for this commission: 0 when the money is there (G75, docs/158 Г).
 export async function shortage(deps: WalletDeps, driverId: number, amount: number) {
-  const held = usable(await deps.wallet.operations(driverId), deps.now());
+  const { held } = forSeat(deps, driverId, await deps.wallet.operations(driverId), amount);
   const money = Math.max(0, balanceOf(held, 'bonus')) + Math.max(0, balanceOf(held, 'main'));
   return Math.max(0, amount - money);
 }
 
+type Charged = 'ok' | 'not_enough' | 'duplicate';
+
 // The commission at the confirmation (docs/12): the bonus first. 'duplicate': it is already taken.
-export async function charge(
+// A bonus burnt or another charge between the read and the write: one more read decides (G89 M15).
+export async function charge(deps: WalletDeps, driverId: number, bookingId: string, amount: number) {
+  // No commission (the owner set 0 in «Cheklovlar», docs/12): nothing to write (G89).
+  if (amount === 0) return 'ok';
+  const charged = await chargeOnce(deps, driverId, bookingId, amount);
+  return charged === 'not_enough' ? chargeOnce(deps, driverId, bookingId, amount) : charged;
+}
+
+async function chargeOnce(
   deps: WalletDeps,
   driverId: number,
   bookingId: string,
   amount: number,
-): Promise<'ok' | 'not_enough' | 'duplicate'> {
+): Promise<Charged> {
   const operations = await deps.wallet.operations(driverId);
-  const held = usable(operations, deps.now());
+  const { held, first } = forSeat(deps, driverId, operations, amount);
   const split = splitCharge(held, amount);
   if (!split) return 'not_enough';
+  if (first.length > 0) await deps.wallet.append(first);
   const rows = (['bonus', 'main'] as const)
     .filter((balance) => split[balance] > 0)
     .map((balance) =>
@@ -68,7 +89,7 @@ export async function charge(
     );
   const appended = await appendCharge(deps.wallet, rows);
   if (appended !== 'ok') return appended;
-  const next = nextGrant([...operations, ...rows], deps.promo, deps.now());
+  const next = nextGrant([...operations, ...first, ...rows], deps.promo, deps.now());
   const granted = next ? [grantRow(deps, driverId, next)] : [];
   if (granted.length > 0) await deps.wallet.append(granted);
   await tellFewSeats(deps, driverId, held, [...held, ...rows, ...granted]);

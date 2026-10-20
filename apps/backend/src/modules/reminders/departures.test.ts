@@ -47,9 +47,26 @@ describe('a driver who forgot «Yoʻlga chiqdim» (G63)', () => {
 
   it('asks in the driver bot with a button that opens the trip', async () => {
     const sent: NotificationJob[] = [];
-    await departReminder(loadBrand(), async (jobs) => void sent.push(...jobs))(TRIP);
+    await departReminder(
+      loadBrand(),
+      async (jobs) => void sent.push(...jobs),
+      () => DEPART,
+    )(TRIP);
     expect(sent).toMatchObject([{ bot: 'driver', chatId: 7 }]);
     expect(sent[0]?.text).toContain('«Yoʻlga chiqdim»');
     expect(JSON.stringify(sent[0]?.markup)).toContain(`?mytrip=${TRIP.id}`);
+    expect(sent[0]).not.toHaveProperty('silent');
+  });
+
+  // G89 C5: a trip at 05:30 asks at 06:35, in the night of the bots: without sound (docs/122 rule 3).
+  it('asks without sound at night', async () => {
+    const sent: NotificationJob[] = [];
+    const night = Date.parse('2026-10-08T01:35:00Z');
+    await departReminder(
+      loadBrand(),
+      async (jobs) => void sent.push(...jobs),
+      () => night,
+    )(TRIP);
+    expect(sent[0]).toMatchObject({ silent: true });
   });
 });

@@ -23,6 +23,12 @@ export type BookingNotifier = {
   ): Promise<void>;
   // A request closed before the passenger answered this driver (G75, docs/158 Й).
   offerExpired(driverId: number, offer: Pick<Offer, 'id' | 'chatKey' | 'requestId'>): Promise<void>;
+  // An offer ended or moved before the passenger answered: the card of the request shows its offers
+  // as they are now (G89 T6, T13).
+  requestChanged(requestId: string): Promise<void>;
+  // A passenger accepted while the wallet is short for the commission: the driver tops it up, the
+  // offer waits (G89 B5).
+  walletShort(driverId: number, commission: number): Promise<void>;
   // "Mashinaga chiqdi" and "Yetib keldi" for close people (docs/43); "Men keldim" for the driver (docs/126)
   // and of the driver for the passenger (G63).
   progress(booking: Booking, step: 'boarded' | 'arrived'): Promise<void>;

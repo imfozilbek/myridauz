@@ -16,8 +16,9 @@ const COLUMNS = [
   'decided_at',
   ...REFUND_COLUMNS,
 ] as const;
-const SAVE = `INSERT OR REPLACE INTO complaints (${COLUMNS.join(', ')})
-  VALUES (${COLUMNS.map(() => '?').join(', ')})`;
+const ADD = `INSERT INTO complaints (${COLUMNS.join(', ')})
+  SELECT ${COLUMNS.map(() => '?').join(', ')}
+  WHERE NOT EXISTS (SELECT 1 FROM complaints WHERE author_id = ? AND booking_id = ?)`;
 // The decision and a proposed refund are written in one step, once (docs/65 A4).
 const RESOLVE = `UPDATE complaints SET status = 'resolved', decision = ?, decided_by = ?, decided_at = ?,
   ${REFUND_COLUMNS.map((column) => `${column} = ?`).join(', ')} WHERE id = ? AND status != 'resolved'`;
@@ -27,13 +28,20 @@ const ANSWER = `UPDATE complaints SET refund_state = ?, refund_decided_by = ?, r
 
 // Tables complaints and complaint_chat_reads (migrations/0012_ratings_complaints.sql).
 export const d1Complaints = (db: D1Database): ComplaintStore => ({
-  save: async (c) => {
+  add: async (c) => {
     const { id, authorId, againstId, bookingId, reasons, comment, status } = c;
     const decided = [c.decision, c.decidedBy, c.createdAt, c.decidedAt] as const;
     const values = [id, authorId, againstId, bookingId, reasonsText(reasons), comment, status, ...decided];
+    const added = await db
+      .prepare(ADD)
+      .bind(...values, ...refundValues(c), authorId, bookingId)
+      .run();
+    return added.meta.changes === 1;
+  },
+  take: async (id) => {
     await db
-      .prepare(SAVE)
-      .bind(...values, ...refundValues(c))
+      .prepare("UPDATE complaints SET status = 'in_review' WHERE id = ? AND status = 'new'")
+      .bind(id)
       .run();
   },
   resolve: async (c) => {

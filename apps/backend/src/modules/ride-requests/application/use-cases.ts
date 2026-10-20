@@ -131,7 +131,7 @@ export async function cancelRequest(
   if (!request) return { ok: false, error: 'trips.not_found' };
   const next = cancel(request, passengerId, deps.now());
   if (typeof next === 'string') return { ok: false, error: next };
-  await deps.requests.save(next);
+  if (!(await deps.requests.save(next))) return { ok: false, error: 'trips.wrong_status' };
   await deps.changed(id);
   const [view] = await views(deps, [next]);
   return view ? { ok: true, value: view } : { ok: false, error: 'trips.not_found' };

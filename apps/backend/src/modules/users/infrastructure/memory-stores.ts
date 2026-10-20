@@ -13,10 +13,17 @@ export function createMemoryUsers(): UserRepository {
   return {
     find: async (id) => users.get(id),
     byPublicId: async (publicId) => [...users.values()].find((user) => user.publicId === publicId),
+    // As in D1: a new person comes with the block, a change keeps the block there is.
     save: async (user) => {
-      users.set(user.id, user);
-      if (user.block) idBlocks.set(user.id, user.block);
-      else idBlocks.delete(user.id);
+      const old = users.get(user.id);
+      users.set(user.id, old ? { ...user, block: old.block } : user);
+      if (!old && user.block) idBlocks.set(user.id, user.block);
+    },
+    decideFace: async (id, face, at) => {
+      const user = users.get(id);
+      if (user?.face?.status !== 'pending' || user.face.at !== at) return false;
+      users.set(id, { ...user, face });
+      return true;
     },
     erase: async (id) => void users.delete(id),
     // Local runs show no sources: «Statistika» reads them from D1 only (G55).

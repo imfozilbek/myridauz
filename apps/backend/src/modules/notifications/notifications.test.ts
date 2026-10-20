@@ -44,7 +44,11 @@ describe('bot messages through the queue (docs/03)', () => {
       limited: true,
     });
     expect(await deliver(answer(502, {}), TOKENS, JOB)).toEqual({ outcome: 'retry', afterSeconds: 5 });
-    expect(await deliver(answer(403, {}), TOKENS, JOB)).toEqual({ outcome: 'drop', blocked: true });
+    const blocked = { description: 'Forbidden: bot was blocked by the user' };
+    expect(await deliver(answer(403, blocked), TOKENS, JOB)).toEqual({ outcome: 'drop', blocked: true });
+    // G89 C8: a person who never opened the bot did not block it; the bot may write once allowed.
+    const never = { description: "Forbidden: bot can't initiate conversation with a user" };
+    expect(await deliver(answer(403, never), TOKENS, JOB)).toEqual({ outcome: 'drop' });
     expect(await deliver(answer(200, {}), { ...TOKENS, driver: undefined }, JOB)).toEqual({
       outcome: 'drop',
     });

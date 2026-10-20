@@ -13,14 +13,25 @@ export type AcceptError =
   | 'bookings.wrong_status'
   | 'bookings.no_seats'
   | 'bookings.departed'
-  | 'wallet.not_enough';
+  | 'bookings.offer_unavailable';
+
+// The driver of the offer is short of money for the commission (G89 B5, U8): the passenger reads
+// the offer does not work now, the driver hears what is missing; the offer waits for the top up.
+export async function walletShort(
+  deps: BookingsDeps,
+  offer: OfferRecord,
+  booking: Pick<BookingRecord, 'commission'>,
+): Promise<Result<Offer, AcceptError>> {
+  await deps.notify.walletShort(offer.driverId, booking.commission);
+  return { ok: false, error: 'bookings.offer_unavailable' };
+}
 
 export async function offerView(
   deps: BookingsDeps,
   offer: OfferRecord,
   request: RequestFacts,
 ): Promise<Result<Offer, AcceptError>> {
-  const [shown] = await offerViews(deps, [offer], [request]);
+  const [shown] = await offerViews(deps, [offer], [request], 'passenger');
   return shown ? { ok: true, value: shown } : { ok: false, error: 'bookings.not_found' };
 }
 

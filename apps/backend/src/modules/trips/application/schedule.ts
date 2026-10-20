@@ -13,11 +13,13 @@ export async function driverSchedule(deps: Deps, driverId: number): Promise<Sche
 }
 
 // A new trip of the driver: at least the lead time ahead (G38, docs/103) and no other live trip.
+// The trip of an offer the passenger takes keeps the time the offer had (lead false, G89 B2).
 export async function scheduleError(
   deps: Deps,
   driverId: number,
   departAt: number,
+  lead = true,
 ): Promise<ScheduleError | null> {
-  if (departAt < earliestDepart(deps.now(), deps.schedule)) return 'trips.too_soon';
+  if (lead && departAt < earliestDepart(deps.now(), deps.schedule)) return 'trips.too_soon';
   return (await driverSchedule(deps, driverId)).full ? 'trips.too_many' : null;
 }

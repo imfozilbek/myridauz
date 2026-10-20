@@ -21,9 +21,12 @@ async function openTrips(deps: TripsDeps, from: string, days: number, viewer?: n
   const today = tashkentDate(now);
   const places = await deps.places();
   const end = tashkentDayStart(today) + days * DAY_MS;
-  const trips = (await deps.trips.leaving(now, end, placesMatching(from, places))).filter(
+  const leaving = (await deps.trips.leaving(now, end, placesMatching(from, places))).filter(
     (trip) => trip.driverId !== viewer,
   );
+  // Drivers hidden by complaints are not in the search, nor in its counts (docs/17, G89 T11).
+  const hidden = await deps.hidden([...new Set(leaving.map((trip) => trip.driverId))]);
+  const trips = leaving.filter((trip) => !hidden.has(trip.driverId));
   const taken = new Map<string, number>();
   for (const rider of await deps.riders(trips.map((trip) => trip.id)))
     taken.set(rider.tripId, (taken.get(rider.tripId) ?? 0) + rider.seats);

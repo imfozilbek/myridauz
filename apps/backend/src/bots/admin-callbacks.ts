@@ -1,5 +1,5 @@
 import { teamRole } from '../modules/team';
-import { isFaceButton } from '../modules/users';
+import { isBlocked, isFaceButton } from '../modules/users';
 import { answerQuery as answer, type BotContext } from './bot-context';
 import { onFaceButton } from './face-callbacks';
 import { HISTORY_DATA, REPLY_DATA } from './support-card';
@@ -13,6 +13,8 @@ export async function onAdminCallback(context: BotContext, query: BotCallback) {
   const token = context.env.ADMIN_BOT_TOKEN;
   const data = query.data ?? '';
   if (!token || (await teamRole(context.env, query.from.id)) === null) return answer(query);
+  // A blocked member of the team decides nothing more (G89 M10).
+  if (await isBlocked(context.env, query.from.id)) return answer(query);
   if (data === REPLY_DATA) return onReplyButton(context, query);
   if (data === HISTORY_DATA) return onHistoryButton(context, query);
   if (isFaceButton(data)) return onFaceButton(context, query, token);

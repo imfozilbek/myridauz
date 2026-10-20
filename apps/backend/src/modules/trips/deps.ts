@@ -1,3 +1,4 @@
+import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../env';
 import { bookingStore } from '../bookings/infrastructure/store';
 import { maskContacts } from '../chat';
@@ -6,11 +7,13 @@ import { sendSignals } from '../feed';
 import { placesOf } from '../locations';
 import { directionRecommendationFor, recommendationFor } from '../pricing';
 import { peopleOf } from '../users';
-import { pitakOf } from '../pitaks';
+import { pitakById, pitakOf } from '../pitaks';
 import type { TripEvent, TripsDeps } from './application/ports';
 import { d1Trips } from './infrastructure/d1-trips';
 import { createMemoryTrips } from './infrastructure/memory-trips';
 import { brandOf } from '../../shared/brand/brand-of';
+
+const { t } = createI18n(DEFAULT_LOCALE);
 
 // Without D1 (tests) trips live in memory.
 const localTrips = createMemoryTrips();
@@ -37,6 +40,7 @@ export const tripsDeps = (env: Bindings): TripsDeps => ({
   riders: async (tripIds) =>
     (await bookingStore(env).byTrips(tripIds)).filter((booking) => booking.status === 'confirmed'),
   people: peopleOf(env),
+  goneName: t('account.gone'),
   approvedCar: (driverId) => approvedCar(env, driverId),
   ...standingOf(env),
   recommend: (from, to) => recommendationFor(env, from, to),
@@ -44,6 +48,7 @@ export const tripsDeps = (env: Bindings): TripsDeps => ({
   schedule: brandOf(env).schedule,
   places: () => placesOf(env),
   pitakOf: (from, to) => pitakOf(env, from, to),
+  pitakById: (id) => pitakById(env, id),
   changed: (tripId, event) => onChange(env, tripId, event),
   signal: (people) => sendSignals(env, people),
   mask: (text) => maskContacts(text).text,

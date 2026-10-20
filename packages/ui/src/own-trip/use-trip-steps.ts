@@ -1,9 +1,12 @@
+import { ApiError } from '@platform/api-client';
 import type { Trip } from '@platform/contracts';
 import { useRef } from 'react';
 import { useApiClients } from '../context/api-clients';
 import { useFailure } from '../states/use-failure';
 import { haptic } from '../telegram/feedback';
 import type { TripStep } from './trip-stage';
+
+const DONE: readonly string[] = ['trips.already_departed', 'trips.already_arrived'];
 
 type Options = {
   readonly trip: Trip;
@@ -30,6 +33,12 @@ export function useTripSteps({ trip, onChanged, onArrived }: Options) {
       onChanged();
       if (next === 'arrived') onArrived();
     } catch (caught) {
+      // Done already (another phone, a lost answer): the page follows the trip as it is (G89 U14).
+      if (caught instanceof ApiError && DONE.includes(caught.code ?? '')) {
+        onChanged();
+        if (next === 'arrived') onArrived();
+        return;
+      }
       sent.current.delete(next);
       fail(caught);
     }

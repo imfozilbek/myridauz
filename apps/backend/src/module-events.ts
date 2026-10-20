@@ -10,6 +10,7 @@ import {
   filedRideOfBooking,
   ratableRideOfBooking,
   rideOfBooking,
+  rideTogetherOf,
   ridesOfTrips,
   ridingOf,
   tellRequest,
@@ -20,7 +21,7 @@ import { wireChatRings } from './modules/chat';
 import { hiddenByComplaints, wireComplaints } from './modules/complaints';
 import { assignTo } from './modules/assignments';
 import { inviteFromMark, tripViewCounts } from './modules/channels';
-import { approvedCar, wireLiveTrips } from './modules/drivers';
+import { appliedAsDriver, approvedCar, wireLiveTrips } from './modules/drivers';
 import { wireFavorites } from './modules/favorites';
 import {
   handleRequestChanged,
@@ -40,16 +41,25 @@ import {
   upcomingTripsOf,
   wireTripStanding,
 } from './modules/trips';
-import { peopleOf, wireFaceTeam, wireRegistered, wireRiding } from './modules/users';
+import {
+  peopleOf,
+  wireApplicants,
+  wireCoPassengers,
+  wireFaceTeam,
+  wireRegistered,
+  wireRiding,
+} from './modules/users';
 import { refundNoShow, wireWalletLinks } from './modules/wallet';
 
 // What one module does after another: set here, the one place that knows every module, so the
 // modules do not depend on each other in circles. The trips and their channel posts: trip-events.ts.
 export { closeDepartedPosts, sendChannelSummaries, showChannelBoards } from './trip-events';
+import { inNews } from './trip-events';
 
 // A new face goes to the member who gets the person's application that day (docs/92, G51); a new
 // person who came by a channel post hears of the channel of that zone (docs/119).
 wireFaceTeam((env, userId) => assignTo(env, 'application', userId));
+wireApplicants(appliedAsDriver);
 wireRegistered((env) => (userId, came) => inviteFromMark(env, userId, came?.via));
 
 // A message or a call about a seat rings under its trip card in the bot (G68, docs/122 rule 5).
@@ -85,7 +95,7 @@ handleRequestPublished(async (env, requestId) => {
   // Its own card waits quietly on top of the passenger bot (G68, docs/122).
   await tellRequest(env, requestId);
   const request = await requestViewOf(env, requestId);
-  if (request) await requestPublished(env, request);
+  if (request && (await inNews(env, request.passenger.id))) await requestPublished(env, request);
 });
 // A request cancelled or burned: its card says so (G68), the drivers who offered hear it (G75).
 handleRequestChanged(tellRequestClosed);
@@ -129,3 +139,4 @@ wireComplaints({
 // A car changes only without live trips; a person blocked on the road finishes the trip (docs/158).
 wireLiveTrips(hasLiveTrips);
 wireRiding(ridingOf);
+wireCoPassengers(rideTogetherOf);

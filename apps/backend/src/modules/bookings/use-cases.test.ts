@@ -3,7 +3,6 @@ import { balanceOf } from '../wallet/domain/ledger';
 import { answer, confirm, driverBookings } from './application/answer';
 import { expireRequests } from './application/expire';
 import { cancelByPassenger, passengerBookings, requestBooking } from './application/request';
-import { rideTogether } from './infrastructure/store';
 import { ALI, AWAY, DILNOZA, DRIVER, HOME, HOUR, NOW, OLIM, seats, setup } from './test-kit';
 
 const NAMED_NAME = { step: 'mahalla', name: 'Qatortol' };
@@ -129,20 +128,5 @@ describe('a booking of seats (docs/35)', () => {
       ok: false,
       error: 'bookings.wrong_status',
     });
-  });
-});
-
-describe('photos of passengers (docs/05)', () => {
-  it('are seen by passengers with confirmed bookings on the same trip only', async () => {
-    const { deps, addTrip, bonus } = setup();
-    await bonus();
-    const tripId = addTrip();
-    const first = value(await requestBooking(deps, DILNOZA, tripId, seats(1)));
-    const second = value(await requestBooking(deps, ALI, tripId, seats(1)));
-    expect(await rideTogether(deps.bookings, DILNOZA, ALI)).toBe(false);
-    await confirm(deps, DRIVER, first.id);
-    await confirm(deps, DRIVER, second.id);
-    expect(await rideTogether(deps.bookings, DILNOZA, ALI)).toBe(true);
-    expect(await rideTogether(deps.bookings, DILNOZA, OLIM)).toBe(false);
   });
 });

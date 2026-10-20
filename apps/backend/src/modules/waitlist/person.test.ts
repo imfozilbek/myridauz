@@ -89,6 +89,14 @@ describe('the questionnaire of a person (G83, docs/181)', () => {
     expect(visit?.invited_at).toBe(kit.at());
   });
 
+  // G89: the own friend link is no first mark: «byFriends» never counts a person who asked oneself.
+  it('takes no mark from the own friend link of the person', async () => {
+    const kit = setup();
+    const { code } = await kit.deps.visits.opened(8, null, 'ios', kit.at());
+    await kit.deps.visits.started(8, `fr-${code}`, kit.at());
+    expect((await kit.deps.visits.of(8)).via).toBeNull();
+  });
+
   it('forgets everything of a deleted person (docs/58)', async () => {
     const kit = setup();
     await saveAnswers(kit.deps, 7, passengerAnswers());

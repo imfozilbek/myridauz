@@ -41,6 +41,18 @@ describe('face photos and the zone invite in D1', () => {
     expect(fullScans(db)).toEqual([]);
   });
 
+  // G89 A8, M8: one guarded write, only on the waiting photo that came at that moment.
+  it('decides a waiting photo once, never a newer one', async () => {
+    const db = testD1();
+    const users = d1Users(db);
+    await users.save(person(1, { status: 'pending', reason: null, at: 30 }));
+    const no = { status: 'rejected' as const, reason: 'not_one_person' as const, at: 30 };
+    expect(await users.decideFace(1, no, 20)).toBe(false);
+    expect(await users.decideFace(1, no, 30)).toBe(true);
+    expect(await users.decideFace(1, { ...no, status: 'approved', reason: null }, 30)).toBe(false);
+    expect((await users.find(1))?.face).toEqual(no);
+  });
+
   it('erases the photo and its check with the account (docs/30)', async () => {
     const db = testD1();
     const users = d1Users(db);
@@ -64,5 +76,28 @@ describe('face photos and the zone invite in D1', () => {
     await users.save(person(1, { status: 'pending', reason: null, at: 7 }));
     expect(await users.claimZoneInvite(1, 8)).toBe(false);
     expect(fullScans(db)).toEqual([]);
+  });
+
+  // G89: a change of the person read before a block never lifts the block (a face, «bot yozadi»,
+  // the role of a driver in the same second as the block).
+  it('keeps a block that came between the read and the write of a change', async () => {
+    const users = d1Users(testD1());
+    await users.save(person(5, null));
+    const stale = await users.find(5);
+    if (!stale) throw new Error('no person');
+    await users.blockId(5, { until: null }, 2);
+    await users.save({ ...stale, writeAccess: true, updatedAt: 3 });
+    expect(await users.find(5)).toMatchObject({ block: { until: null }, writeAccess: true });
+  });
+
+  // G89 M16: a person registered again after the deletion starts from the new join date.
+  it('starts a new join date for a person registered again after the deletion', async () => {
+    const users = d1Users(testD1());
+    await users.save(person(6, null));
+    await users.erase(6, 50);
+    await users.save({ ...person(6, null), createdAt: 60, updatedAt: 60 });
+    expect(await users.find(6)).toMatchObject({ createdAt: 60 });
+    await users.save({ ...person(6, null), createdAt: 70, updatedAt: 70 });
+    expect(await users.find(6)).toMatchObject({ createdAt: 60, updatedAt: 70 });
   });
 });

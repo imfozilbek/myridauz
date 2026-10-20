@@ -72,4 +72,15 @@ describe('signedRequest on a bad network (G43)', () => {
     await expect(api.request('/me')).rejects.toEqual(new ApiError(401, 'auth.expired'));
     expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
+
+  // G89 U11: the code of the answer of the team that did not reach the person reaches the screen.
+  it('keeps the codes of the support answer and of the cap of requests', async () => {
+    const answer = (error: string, status: number) => async () => Response.json({ error }, { status });
+    await expect(client(answer('support.not_sent', 502)).api.post('/x', {})).rejects.toEqual(
+      new ApiError(502, 'support.not_sent'),
+    );
+    await expect(client(answer('rate.limited', 429)).api.post('/x', {})).rejects.toEqual(
+      new ApiError(429, 'rate.limited'),
+    );
+  });
 });

@@ -12,14 +12,19 @@ export function chatSheetRoutes(memberOf: MemberOf) {
   return new Hono<AppEnv>()
     .get(CHATS_UNREAD_PATH, async (context) => {
       const { user, app } = context.get('session');
-      const chats = app === 'admin' || app === 'main' ? [] : await lastUnread(context.env, user.id, app);
-      return context.json({ chats });
+      const unread = app === 'admin' || app === 'main' ? [] : await lastUnread(context.env, user.id, app);
+      // A chat read only now (docs/129) offers no ready answer (G89 U10).
+      const open = await Promise.all(
+        unread.map(async (chat) => (await memberOf(context.env, chat.key, user.id))?.canWrite === true),
+      );
+      return context.json({ chats: unread.filter((_, index) => open[index]) });
     })
     .post('/chats/:key/messages', async (context) => {
       const key = context.req.param('key');
       if (!chatKeySchema.safeParse(key).success) return fail('chat.not_member', 403);
       const member = await memberOf(context.env, key, context.get('session').user.id);
-      if (!member) return fail('chat.not_member', 403);
+      // Not a side, or a chat read only now: refused, never «Yuborildi» for nothing sent (G89 U10).
+      if (!member?.canWrite) return fail('chat.not_member', 403);
       const input = chatTextSchema.safeParse(await context.req.json().catch(() => null));
       if (!input.success) return fail('chat.invalid_text', 400);
       const chats = context.env.CHATS;

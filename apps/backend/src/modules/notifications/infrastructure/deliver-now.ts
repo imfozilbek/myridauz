@@ -66,12 +66,16 @@ export async function deliverNow(env: Bindings, job: NotificationJob): Promise<D
   if (delivery.outcome !== 'sent') return delivery;
   // An edit keeps the id of the message it changed.
   const messageId = sent.edit ?? delivery.messageId;
-  // The message is in Telegram already: a failed bookkeeping must not send it once more.
+  // The message is in Telegram already: a failed bookkeeping must not send it once more (a card, and
+  // a channel post, G89 C9).
   if (card && messageId !== null)
     await cardSent(cardsOf(env), opsOf(env), sent, { after: card, messageId, replaced }, Date.now()).catch(
-      (error: unknown) => console.warn(JSON.stringify({ event: 'card_sent_failed', message: String(error) })),
+      warned('card_sent_failed'),
     );
   else if (sent.after?.type === 'channelPost' && delivery.messageId !== null)
-    await afterSent(env, sent.after, delivery.messageId);
+    await afterSent(env, sent.after, delivery.messageId).catch(warned('post_sent_failed'));
   return delivery;
 }
+
+const warned = (event: string) => (error: unknown) =>
+  console.warn(JSON.stringify({ event, message: String(error) }));

@@ -8,6 +8,11 @@ export function createMemoryAssignments(): AssignmentStore {
   const rows: Row[] = [];
   const digests = new Set<string>();
   const reminders = new Set<string>();
+  const once = (reminder: string) => {
+    if (reminders.has(reminder)) return false;
+    reminders.add(reminder);
+    return true;
+  };
   const key = (row: Pick<Assignment, 'kind' | 'subjectId' | 'day'>) =>
     `${row.kind}:${row.subjectId}:${row.day}`;
   return {
@@ -31,11 +36,12 @@ export function createMemoryAssignments(): AssignmentStore {
     operatorOf: async (kind, subjectId) =>
       rows.filter((row) => row.kind === kind && row.subjectId === subjectId).at(-1)?.operator,
     answered: async (kind, subjectId, at) => {
-      const open = rows.filter(
-        (row) => row.kind === kind && row.subjectId === subjectId && row.answeredAt === null,
-      );
-      const latest = open.at(-1);
-      if (latest) latest.answeredAt = at;
+      for (const row of rows)
+        if (row.kind === kind && row.subjectId === subjectId && row.answeredAt === null) row.answeredAt = at;
+    },
+    reopen: async (kind, subjectId, day) => {
+      const row = rows.find((one) => key(one) === key({ kind, subjectId, day }));
+      if (row) row.answeredAt = null;
     },
     supportOf: async (day) => {
       const done = new Map<number, { total: number; answered: number }>();
@@ -48,20 +54,17 @@ export function createMemoryAssignments(): AssignmentStore {
       }
       return [...done].map(([assigneeId, counts]) => ({ assigneeId, ...counts }));
     },
-    openSupport: async (fromDay) =>
+    openSupport: async () =>
       rows
-        .filter((row) => row.kind === 'support' && row.day >= fromDay && row.answeredAt === null)
+        .filter((row) => row.kind === 'support' && row.answeredAt === null)
         .map((row) => ({ subjectId: row.subjectId, at: row.at })),
     markDigest: async (day) => {
       if (digests.has(day)) return false;
       digests.add(day);
       return true;
     },
-    markReminder: async (userId, submittedAt, step) => {
-      const reminder = `${userId}:${submittedAt}:${step}`;
-      if (reminders.has(reminder)) return false;
-      reminders.add(reminder);
-      return true;
-    },
+    unmarkDigest: async (day) => void digests.delete(day),
+    markReminder: async (userId, submittedAt, step) => once(`${userId}:${submittedAt}:${step}`),
+    markCase: async (kind, caseId, since, step) => once(`${kind}:${caseId}:${since}:${step}`),
   };
 }

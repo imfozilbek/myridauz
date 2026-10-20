@@ -45,7 +45,8 @@ test('P63. a declined offer: the driver hears it', async () => {
 test('P65. a cancelled request takes no more offers', async () => {
   const request = await askRide(MALIKA);
   await createMarketClient(await signedAs('passenger', MALIKA)).cancelRequest(request.id);
-  expect(await outcome(offerOn(BOBUR, request.id))).toBe('bookings.not_found');
+  // The request changed while the driver looked: the board loads again (G89 U7).
+  expect(await outcome(offerOn(BOBUR, request.id))).toBe('bookings.wrong_status');
 });
 
 test('P64, S21. a request of a day that is over expires by the Cron', async () => {

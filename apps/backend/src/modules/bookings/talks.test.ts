@@ -74,9 +74,14 @@ describe('a talk about a request (G64)', () => {
       ok: false,
       error: 'bookings.own_trip',
     });
+    // A request closed meanwhile changed: the board loads again (G89 U7).
     expect(await openTalk(deps, DRIVER, addRequest({ open: false }))).toEqual({
       ok: false,
-      error: 'bookings.not_found',
+      error: 'bookings.wrong_status',
+    });
+    expect(await sendOffer(deps, DRIVER, addRequest({ open: false }), offer)).toEqual({
+      ok: false,
+      error: 'bookings.wrong_status',
     });
   });
 

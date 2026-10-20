@@ -8,12 +8,17 @@ export type Masked = { readonly text: string; readonly masked: boolean };
 type Range = readonly [number, number];
 
 const LINK =
-  /(?:https?:\/\/|www\.)\S+|\b(?:t|telegram)\s*\.\s*me\b\S*|\b(?:wa\.me|whatsapp\.com|instagram\.com|facebook\.com|fb\.com|vk\.com|tiktok\.com|ok\.ru|imo\.im|viber\.com)\S*/giu;
+  /(?:https?:\/\/|www\.|tg:\/\/)\S+|\b(?:t|telegram)\s*\.\s*me\b\S*|\b(?:wa\.me|whatsapp\.com|instagram\.com|facebook\.com|fb\.com|vk\.com|tiktok\.com|ok\.ru|imo\.im|viber\.com)\S*/giu;
 const USERNAME = /@[\p{L}\p{N}_.]{3,}/gu;
 // A date (02.10.2026) or a time (08:30) is never a phone, even next to other numbers.
 const DATE_OR_TIME = /\b\d{4}-\d{2}-\d{2}\b|\b\d{1,2}[./-]\d{1,2}[./-]\d{2,4}\b|\b\d{1,2}:\d{2}\b/gu;
 const TOKEN = /[\p{L}\p{N}'ʻʼ’`]+/gu;
-const SEPARATOR = /^[\s\-.()+,]*$/u;
+// Between two numbers of one phone: spaces, invisible marks and up to 3 other signs, «90/123»,
+// «90_123», «9\u200b0» (G89 C6).
+const INVISIBLE = /[\s\p{Cf}]/gu;
+const MAX_SIGNS = 3;
+const SIGNS = new RegExp(`^[^\\p{L}\\p{N}]{0,${MAX_SIGNS}}$`, 'u');
+const joins = (gap: string) => SIGNS.test(gap.replace(INVISIBLE, ''));
 const APOSTROPHES = /['ʻʼ’`]/gu;
 
 const PHONE_DIGITS = 9;
@@ -37,7 +42,8 @@ type Token = {
 function numericToken(match: RegExpMatchArray): Token | null {
   const value = match[0];
   const from = match.index ?? 0;
-  if (/^\d+$/u.test(value)) return { from, to: from + value.length, word: null, digits: value };
+  // Digits of any script: «９０１» is a phone too (G89 C6).
+  if (/^\p{Nd}+$/u.test(value)) return { from, to: from + value.length, word: null, digits: value };
   const word = value.toLowerCase().replace(APOSTROPHES, '');
   return NUMBER_WORDS.has(word) ? { from, to: from + value.length, word, digits: '' } : null;
 }
@@ -80,7 +86,7 @@ function phoneRanges(text: string, protectedRanges: readonly Range[]): Range[] {
       close();
       continue;
     }
-    if (previous && !SEPARATOR.test(text.slice(previous.to, token.from))) close();
+    if (previous && !joins(text.slice(previous.to, token.from))) close();
     run.push(token);
   }
   close();

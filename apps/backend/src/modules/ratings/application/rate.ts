@@ -1,16 +1,18 @@
 import {
   DAY_MS,
   DRIVER_TAGS,
+  NOBODY_ID,
   PASSENGER_TAGS,
   reviewInputSchema,
   type ReviewTarget,
 } from '@platform/contracts';
 import type { z } from 'zod';
-import { needsModerator, ratingOf } from '../domain/rating';
+import { isSettled, needsModerator, ratingOf } from '../domain/rating';
 import type { RatingsDeps, Ride } from './ports';
+import { published } from './read';
 
 type Input = z.output<typeof reviewInputSchema>;
-type Failure = 'reviews.not_found' | 'reviews.not_over' | 'reviews.too_late';
+type Failure = 'reviews.not_found' | 'reviews.not_over' | 'reviews.too_late' | 'reviews.published';
 
 // Only the two sides of a ride that is over, within the brand's days (docs/24).
 async function rideFor(deps: RatingsDeps, bookingId: string, raterId: number): Promise<Ride | Failure> {
@@ -23,35 +25,42 @@ async function rideFor(deps: RatingsDeps, bookingId: string, raterId: number): P
 const rateeOf = (ride: Ride, raterId: number) =>
   raterId === ride.driverId ? ride.passengerId : ride.driverId;
 
-// Stars from the bot keep the tags and the text written in the Mini App before.
+// Stars from the bot keep the tags and the text written in the Mini App, before or at the same time.
 export async function rate(deps: RatingsDeps, raterId: number, input: Input, fromBot = false) {
   const ride = await rideFor(deps, input.bookingId, raterId);
   if (typeof ride === 'string') return ride;
   const rateeId = rateeOf(ride, raterId);
   const allowed: readonly string[] = rateeId === ride.driverId ? DRIVER_TAGS : PASSENGER_TAGS;
-  const old = await deps.store.review(input.bookingId, raterId);
   const now = deps.now();
-  await deps.store.saveReview({
-    id: old?.id ?? deps.newId(),
+  const [mine, theirs] = await Promise.all([
+    deps.store.review(input.bookingId, raterId),
+    deps.store.review(input.bookingId, rateeId),
+  ]);
+  if (isSettled(mine, theirs !== undefined, now, deps.limits)) return 'reviews.published';
+  const review = {
+    id: deps.newId(),
     bookingId: input.bookingId,
     raterId,
     rateeId,
     stars: input.stars,
-    tags: fromBot && old ? old.tags : input.tags.filter((tag) => allowed.includes(tag)),
-    text: fromBot && old ? old.text : deps.mask(input.text),
-    hidden: old?.hidden ?? false,
-    createdAt: old?.createdAt ?? now,
+    tags: input.tags.filter((tag) => allowed.includes(tag)),
+    text: deps.mask(input.text),
+    hidden: false,
+    createdAt: now,
     updatedAt: now,
-  });
-  await watch(deps, rateeId, rateeId === ride.driverId ? 'driver' : 'passenger', now);
+    rideEndsAt: ride.endsAt,
+  };
+  await deps.store.saveReview(review, fromBot);
+  // This review may publish the other side's review of the rater too: both are watched (G89 A9).
+  const roleOf = (userId: number) => (userId === ride.driverId ? 'driver' : 'passenger');
+  for (const userId of [rateeId, raterId]) await watch(deps, userId, roleOf(userId), now);
   return 'ok' as const;
 }
 
-// A low average goes to a moderator once (docs/24), and to the person (G75).
+// A low average goes to a moderator once (docs/24), and to the person (G75): of the published
+// reviews only, as people see it; a blind review is not told before it shows (G89 A9).
 async function watch(deps: RatingsDeps, userId: number, role: 'driver' | 'passenger', now: number) {
-  const stars = (await deps.store.about([userId]))
-    .filter((review) => !review.hidden)
-    .map((review) => review.stars);
+  const stars = (await published(deps, [userId])).map((review) => review.stars);
   if (!needsModerator(stars, deps.limits) || !(await deps.store.flag(userId, now))) return;
   const name = (await deps.names([userId])).get(userId) ?? '';
   const rating = ratingOf(stars, deps.limits);
@@ -70,7 +79,8 @@ export async function reviewTarget(deps: RatingsDeps, raterId: number, bookingId
     deps.people.publicId(rateeId),
   ]);
   const target: ReviewTarget = {
-    rateeId: publicId ?? '',
+    // A deleted account is nobody: the ride still takes the stars (G89 M9).
+    rateeId: publicId ?? NOBODY_ID,
     rateeName: names.get(rateeId) ?? '',
     rateeRole: rateeId === ride.driverId ? 'driver' : 'passenger',
     mine: mine ? { stars: mine.stars, tags: [...mine.tags], text: mine.text } : null,

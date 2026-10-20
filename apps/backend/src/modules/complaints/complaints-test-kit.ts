@@ -46,6 +46,7 @@ export function setup() {
         avatarKey: null,
       }),
       idOf: idOfPublic,
+      isDriver: async (id) => id === DRIVER,
       block: async (id, days) => void log.push(`block ${id} ${days}`),
       releasePhone: async () => undefined,
       unblock: async (id) => void log.push(`unblock ${id}`),

@@ -22,6 +22,10 @@ describe('the ratings in D1', () => {
     await askRatings(deps);
     expect(asked).toHaveLength(4);
     await rate(deps, 101, { ...review('b1', 4, 'Yaxshi'), tags: ['on_time'] });
+    const first = await store.review('b1', 101);
+    // A star of the bot changes the stars only: the words, the id and the first moment stay (G89).
+    await rate(deps, 101, review('b1', 4), true);
+    expect(await store.review('b1', 101)).toEqual(first);
     later(25 * HOUR);
     await askRatings(deps);
     // Only the sides who never rated hear the reminder.

@@ -80,6 +80,7 @@ async function tellPassenger(
   }
   if (step === 'came') return deps.notify.driverCame(view);
   await deps.meeting.refreshPassenger(record.passengerId);
+  await deps.meeting.closeShare(record.id);
   await deps.notify.noShow(view);
 }
 

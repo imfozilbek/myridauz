@@ -1,4 +1,4 @@
-import { afterTrip, DAY_MS, type Booking } from '@platform/contracts';
+import { afterTrip, DAY_MS, isGone, type Booking } from '@platform/contracts';
 import { useOpenSupport } from '../telegram/support-link';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
@@ -31,7 +31,9 @@ export function DoneTools({ booking, onOpen }: Props) {
   );
   const untilText = useUntilText();
   const until = (ms: number) => untilText(ms, now);
-  const talk = now < talkUntil;
+  // A deleted driver has nobody to write or call (G89 M9).
+  const gone = isGone(booking.trip.driver);
+  const talk = now < talkUntil && !gone;
   const rate = now < rateUntil;
   const tile = (icon: IconName, label: string, sub: string, onClick: () => void) => (
     <button type="button" className="booking-button" onClick={onClick}>
@@ -46,8 +48,9 @@ export function DoneTools({ booking, onOpen }: Props) {
         {now < pointsUntil ? t('bookings.done.why', { brand: name }) : t('bookings.done.pointsGone')}
       </p>
       <div className="booking-buttons">
-        {talk
-          ? tile('chat', t('chat.open'), until(talkUntil), () => onOpen('chat'))
+        {talk ? tile('chat', t('chat.open'), until(talkUntil), () => onOpen('chat')) : null}
+        {talk || gone
+          ? null
           : tile('chat', t('bookings.done.messages'), t('bookings.done.readOnly'), () => onOpen('chat'))}
         {talk && callsOn ? tile('phone', t('calls.call'), until(talkUntil), () => onOpen('call')) : null}
         {tile(

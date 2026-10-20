@@ -28,10 +28,10 @@ const proposal = {
 
 // The refund of a no-show in D1 (G63, docs/35): proposed with the decision, answered once by the owner.
 describe('the refunds of no-shows in D1', () => {
-  it('writes the proposal with the decision and keeps it on a later save', async () => {
+  it('writes the proposal with the decision and keeps it when the complaint is opened again', async () => {
     const db = testD1();
     const store = d1Complaints(db);
-    await store.save(complaint);
+    expect(await store.add(complaint)).toBe(true);
     const decided = {
       ...complaint,
       status: 'resolved' as const,
@@ -42,7 +42,7 @@ describe('the refunds of no-shows in D1', () => {
     };
     expect(await store.resolve(decided)).toBe(true);
     expect(await store.find('c1')).toEqual(decided);
-    await store.save(decided);
+    await store.take('c1');
     expect(await store.refundsProposed()).toEqual([decided]);
     expect(await store.ofAuthorRides(1, ['b1', 'b2'])).toEqual([decided]);
     expect(await store.ofAuthorRides(10, ['b1'])).toEqual([]);

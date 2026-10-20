@@ -112,8 +112,7 @@ describe('"Maʼlumotlarimni oʻchirish" (docs/30)', () => {
 
   it('keeps a block: a blocked person cannot delete the account to come back (docs/17)', async () => {
     await registerUser(173);
-    const user = await localUsers.find(173);
-    if (user) await localUsers.save({ ...user, block: { until: null } });
+    await localUsers.blockId(173, { until: null }, Date.now());
     const response = await deleteMe(173, fakeChats().chats);
     expect(await response.json()).toMatchObject({ error: 'users.blocked' });
     expect(await localUsers.find(173)).toBeDefined();

@@ -30,7 +30,7 @@ export async function openTrip(
   if (trip.forRequest === null || !isLive(trip, deps.now()))
     return { ok: false, error: 'trips.wrong_status' };
   const opened = { ...trip, forRequest: null };
-  await deps.trips.save(opened);
+  if (!(await deps.trips.save(opened))) return { ok: false, error: 'trips.wrong_status' };
   await deps.changed(id, 'published');
   const [view] = await views(deps, [opened]);
   return view ? { ok: true, value: view } : { ok: false, error: 'trips.not_found' };

@@ -10,7 +10,7 @@ const at = (hour: number, minute = 0) => tashkentDayStart(DAY) + (hour * 60 + mi
 const RULES = { hours: { from: 7, to: 23 }, remindMinutes: 30, ownerMinutes: 50 };
 const MODERATOR = 950;
 
-function setup(store = createMemoryAssignments()) {
+function setup(store = createMemoryAssignments(), team = [MODERATOR]) {
   let now = at(10);
   const sent: string[] = [];
   const queue: Waiting[] = [];
@@ -19,6 +19,7 @@ function setup(store = createMemoryAssignments()) {
     rules: RULES,
     now: () => now,
     waiting: async () => queue,
+    teamIds: async () => team,
     toModerator: async (id, application) => void sent.push(`moderator ${id}: ${application.name}`),
     toOwners: async (application, id) => void sent.push(`owners: ${application.name}, ${id}`),
   };
@@ -40,6 +41,14 @@ describe('the team answers a driver application within the hour (G34)', () => {
     await send(31, at(10));
     for (const minute of [20, 30, 40, 50, 55]) await tick(at(10, minute));
     expect(sent).toEqual([`moderator ${MODERATOR}: Jasur`, `owners: Jasur, ${MODERATOR}`]);
+  });
+
+  // G89: the moderator left the team after the assignment: only the owners hear it.
+  it('rings no moderator removed from the team', async () => {
+    const { sent, send, tick } = setup(createMemoryAssignments(), []);
+    await send(32, at(10));
+    for (const minute of [30, 50]) await tick(at(10, minute));
+    expect(sent).toEqual([`owners: Jasur, ${MODERATOR}`]);
   });
 
   it('sends nothing at night and counts a night application from 7:00', async () => {

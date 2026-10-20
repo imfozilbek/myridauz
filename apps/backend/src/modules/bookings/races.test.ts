@@ -29,10 +29,12 @@ describe('two taps at the same moment (docs/65 A4)', () => {
     const first = idOf(await requestBooking(deps, DILNOZA, addTrip(), seats(2)));
     const second = idOf(await requestBooking(deps, OLIM, addTrip(), seats(2)));
     const results = await Promise.all([confirm(deps, DRIVER, first), confirm(deps, DRIVER, second)]);
-    expect(results.filter((result) => result.ok)).toHaveLength(1);
-    // One commission of 18 000; the empty bonus then brings the next grant of the promo (docs/12).
+    // One commission takes the last 18 000; the empty bonus brings the next grant of the promo
+    // (docs/12), and the other charge reads the wallet again and takes it, as one after the other.
+    expect(results.filter((result) => result.ok)).toHaveLength(2);
     const commissions = (await wallet()).filter((op) => op.kind === 'commission' && op.bookingId !== null);
-    expect(commissions.map((op) => op.amount)).toEqual([-482_000, -18_000]);
+    expect(commissions.map((op) => op.amount)).toEqual([-482_000, -18_000, -18_000]);
+    expect(balanceOf(await wallet(), 'bonus')).toBe(482_000);
   });
 
   it('accepts an offer only once: one trip, one booking, one commission', async () => {

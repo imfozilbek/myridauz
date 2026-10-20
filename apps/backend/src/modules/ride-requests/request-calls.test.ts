@@ -35,6 +35,22 @@ describe('the calls and the rating of a request (G64)', () => {
     });
   });
 
+  // G89: the switch read an open request that an accepted offer closed in the same moment.
+  it('keeps a request taken in the same moment closed', async () => {
+    const { deps, request } = setup();
+    const published = await publishRequest(deps, 1, request);
+    if (!published.ok) throw new Error(published.error);
+    const stale = await deps.requests.find(published.value.id);
+    if (!stale) throw new Error('no request');
+    await deps.requests.save({ ...stale, status: 'matched' });
+    const racing = { ...deps, requests: { ...deps.requests, find: async () => stale } };
+    expect(await setRequestCalls(racing, 1, stale.id, false)).toEqual({
+      ok: false,
+      error: 'trips.wrong_status',
+    });
+    expect((await deps.requests.find(stale.id))?.status).toBe('matched');
+  });
+
   it('shows the passenger rating to drivers', async () => {
     const { deps, request } = setup();
     await publishRequest(deps, 1, request);
