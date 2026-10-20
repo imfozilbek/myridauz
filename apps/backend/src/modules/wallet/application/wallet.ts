@@ -65,6 +65,8 @@ type Charged = 'ok' | 'not_enough' | 'duplicate';
 // The commission at the confirmation (docs/12): the bonus first. 'duplicate': it is already taken.
 // A bonus burnt or another charge between the read and the write: one more read decides (G89 M15).
 export async function charge(deps: WalletDeps, driverId: number, bookingId: string, amount: number) {
+  // No commission (the owner set 0 in «Cheklovlar», docs/12): nothing to write (G89).
+  if (amount === 0) return 'ok';
   const charged = await chargeOnce(deps, driverId, bookingId, amount);
   return charged === 'not_enough' ? chargeOnce(deps, driverId, bookingId, amount) : charged;
 }
