@@ -2,6 +2,7 @@ import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { confirmed } from '../bookings/booking-test-kit';
 import { DriverBooking } from '../bookings/driver-booking';
+import { CallButton } from '../home/dock/call-button';
 import { useTalkTools } from '../home/dock/talk-tools';
 import { renderMarket } from '../market/market-test-kit';
 import { PlacesGate } from '../market/places-gate';
@@ -37,5 +38,18 @@ describe('calls that are not set up', () => {
     );
     expect(await screen.findByText('Xabar yozish')).toBeTruthy();
     expect(screen.queryByText('Qoʻngʻiroq')).toBeNull();
+  });
+
+  // G90 PAS-12: the button under the cards of the main screen follows the same rule.
+  it('shows no «Qoʻngʻiroq» under a card of the main screen', () => {
+    renderInShell(
+      <CallsOnContext.Provider value={false}>
+        <CallButton onClick={noop} />
+      </CallsOnContext.Provider>,
+    );
+    expect(screen.queryByRole('button', { name: 'Qoʻngʻiroq' })).toBeNull();
+    cleanup();
+    renderInShell(<CallButton onClick={noop} />);
+    expect(screen.getByRole('button', { name: 'Qoʻngʻiroq' })).toBeTruthy();
   });
 });

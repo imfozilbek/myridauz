@@ -49,17 +49,20 @@ function MyTrips({ onBack, link, tripScreen }: ScreenProps) {
   useScreenBackground();
   const { value, fresh, failed, reload, refresh } = useMyTripsLists();
   const [opened, setOpened] = useState<Opened | null>(null);
+  const [tab, setTab] = useState<MineTab>('live');
   const trip = opened && value ? value[0].find((item) => item.id === opened.tripId) : undefined;
   const booking = opened?.bookingId ? value?.[1].find((item) => item.id === opened.bookingId) : undefined;
   // A bot button or the block opens its trip or the booking of an accepted offer (docs/65 B5); the
-  // row of the passenger in the details of «Hamyon» opens that booking (G65).
+  // row of the passenger in the details of «Hamyon» opens that booking (G65); an offer that ended
+  // without a seat is on «Oʻtgan» (G90 DRV-10).
   useLinkOpen(link, fresh ? value : null, (open, [, booked, offers]) => {
-    const offered = offers.find((item) => open.name === OFFER_LINK && item.id === open.id)?.bookingId;
-    const bookingId = open.name === BOOKING_LINK ? open.id : offered;
+    const linked = offers.find((item) => open.name === OFFER_LINK && item.id === open.id);
+    const bookingId = open.name === BOOKING_LINK ? open.id : linked?.bookingId;
     const found = booked.find((item) => item.id === bookingId);
     if (found) setOpened({ tripId: found.trip.id, bookingId: found.id, home: 'booking' });
     else if (open.name === MY_TRIP_LINK)
       setOpened({ tripId: open.id, home: 'trip', ...(tripScreen ? { start: tripScreen } : {}) });
+    else if (linked && linked.status !== 'sent') setTab('past');
   });
   // Back from a booking: to its trip, or home when a link opened the booking itself.
   const tripOf = (tripId: string): Opened =>
@@ -67,7 +70,6 @@ function MyTrips({ onBack, link, tripScreen }: ScreenProps) {
   const leave = () => (opened?.home === 'trip' ? onBack() : setOpened(null));
   const [chatKey, setChatKey] = useState<string | null>(null);
   const [subscriptionsOpen, setSubscriptionsOpen] = useState(false);
-  const [tab, setTab] = useState<MineTab>('live');
   const [again, setAgain] = useState<ReturnTrip | null>(null);
   const [publishing, setPublishing] = useState(false);
   const directory = usePlaces();

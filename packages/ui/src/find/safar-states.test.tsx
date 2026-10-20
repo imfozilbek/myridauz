@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { AppLink, Booking, RideRequest, Trip } from '@platform/contracts';
-import { booking, request } from '../bookings/booking-test-kit';
+import { booking, confirmed, request } from '../bookings/booking-test-kit';
 import { AppLinkContext } from '../market/app-link';
 import { PlacesGate } from '../market/places-gate';
 import { renderMarket, trip } from '../market/market-test-kit';
@@ -42,10 +42,14 @@ describe('«Safar» that cannot be booked', () => {
     expect(screen.queryByText(BOOK)).toBeNull();
   });
 
-  it('says the seat is asked already', async () => {
-    open(trip, theirs([{ ...booking, trip: { ...booking.trip, id: trip.id } }]));
+  // G90 PAS-9: the seat of this trip opens from it.
+  it('says the seat is asked already, «Joyimni ochish» opens it', async () => {
+    const openLink = vi.fn();
+    open(trip, theirs([{ ...booking, trip: { ...booking.trip, id: trip.id } }]), openLink);
     expect(await screen.findByText('Bu safarda joyingiz bor.')).toBeTruthy();
     expect(screen.queryByText(BOOK)).toBeNull();
+    fireEvent.click(screen.getByText('Joyimni ochish'));
+    expect(openLink).toHaveBeenCalledWith({ name: 'booking', id: booking.id });
   });
 
   it('says a trip on the road left and a cancelled one is closed', async () => {
@@ -66,7 +70,7 @@ describe('«Safar» that cannot be booked', () => {
   // One at a time (owner decision 12.10.2026, docs/172): a seat on another trip opens instead.
   it('says a seat is held on another trip, «Joyimni ochish» opens it', async () => {
     const openLink = vi.fn();
-    const held = { ...booking, id: 'held', trip: { ...booking.trip, id: 'other' } };
+    const held = { ...confirmed, id: 'held', trip: { ...booking.trip, id: 'other' } };
     open(trip, theirs([held]), openLink);
     expect(
       await screen.findByText('Sizda boshqa safarda joy bor. Yangi joy shu safar tugagach.'),
@@ -74,6 +78,18 @@ describe('«Safar» that cannot be booked', () => {
     expect(screen.queryByText(BOOK)).toBeNull();
     fireEvent.click(screen.getByText('Joyimni ochish'));
     expect(openLink).toHaveBeenCalledWith({ name: 'booking', id: 'held' });
+  });
+
+  // G90 PAS-10: a seat that waits for its driver ends with a cancel too, not only with its trip.
+  it('says a seat asked on another trip is cancelled first', async () => {
+    const asked = { ...booking, id: 'asked', trip: { ...booking.trip, id: 'other' } };
+    open(trip, theirs([asked]));
+    expect(
+      await screen.findByText(
+        'Sizda boshqa safarda joy bor. Yangi joy soʻrash uchun avval uni bekor qiling.',
+      ),
+    ).toBeTruthy();
+    expect(screen.getByText('Joyimni ochish')).toBeTruthy();
   });
 
   it('says an open request closes with the seat, the button stays', async () => {

@@ -63,4 +63,13 @@ describe('«Safardan keyin» of the driver: who a row is about (docs/129, mockup
     (await screen.findByRole('button', { name: 'Xabar yozish' })).click();
     expect(await screen.findByText('chat Madina')).toBeTruthy();
   });
+
+  // G90 DRV-11: nobody rode: no rows that open nothing, only what the trip cost.
+  it('a trip nobody rode has only the row of the commission', async () => {
+    openPast([]);
+    expect(await screen.findByText('Safardan keyin')).toBeTruthy();
+    for (const row of ['Yoʻlovchilarni baholash', 'Suhbatlar', 'Shikoyat'])
+      expect(screen.queryByText(row)).toBeNull();
+    expect(document.querySelectorAll('.past-after-row')).toHaveLength(1);
+  });
 });

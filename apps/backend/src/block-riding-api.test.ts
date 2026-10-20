@@ -70,4 +70,34 @@ describe('a block during a trip on the way', () => {
     // The trip is over: the block is the whole app again.
     expect(await read(call('/me', DRIVER, { app: 'driver' }))).toMatchObject({ state: 'blocked' });
   });
+
+  // G90 PAS-8: the close people follow the trip on the way: a passenger blocked on the road still
+  // shares it and stops sharing, as the steps of the trip.
+  it('lets a passenger blocked on the road share the trip and stop sharing', async () => {
+    vi.useRealTimers();
+    const [driverId, passengerId] = [184, 185];
+    await approvedDriver(driverId);
+    await registerUser(passengerId);
+    const way = {
+      from: '1726273',
+      to: '1718401',
+      departAt: Date.now() + 90 * MINUTE,
+      seats: 2,
+      price: 90_000,
+    };
+    const input = { ...way, womanOnBoard: false, pickupMode: 'door', comment: '' };
+    const trip = await read<{ id: string }>(
+      call('/driver/trips', driverId, { app: 'driver', ...json(input) }),
+    );
+    const seat = await read<{ id: string }>(
+      call(`/trips/${trip.id}/bookings`, passengerId, json(doorBooking(1))),
+    );
+    await call(`/driver/bookings/${seat.id}/confirm`, driverId, driver);
+    vi.useFakeTimers({ toFake: ['Date'], now: Date.now() + 30 * MINUTE });
+    expect((await call(tripDepartPath(trip.id), driverId, driver)).status).toBe(200);
+    expect((await call(`/admin/users/${await pid(passengerId)}/block`, OWNER, block)).status).toBe(204);
+    const share = `/passenger/bookings/${seat.id}/share`;
+    expect((await call(share, passengerId, { method: 'POST' })).status).toBe(201);
+    expect((await call(`${share}/stop`, passengerId, { method: 'POST' })).status).toBe(204);
+  });
 });

@@ -10,6 +10,7 @@ import { markStillOnWay } from './passenger-marks';
 import type { SeatActions } from './seat-actions';
 import { SeatMeetCard } from './seat-meet-card';
 import { useTalkTools } from './talk-tools';
+import { CallButton } from './call-button';
 
 type Kind = 'meeting' | 'driverWaits' | 'onRoad' | 'arrivedAsk';
 type Props = {
@@ -66,7 +67,7 @@ export function PassengerDayCard({ kind, booking, words, act, onTold }: Props) {
               { label: t('sheet.meet.ten'), onClick: act.say(booking, 'ten') },
             ]}
           />
-          <SecondaryButton beside text={t('sheet.meet.call')} onClick={act.call(booking)} />
+          <CallButton onClick={act.call(booking)} />
           {main(true)}
         </>
       );

@@ -8,6 +8,7 @@ import { DockCard } from './dock-card';
 import type { DockWords } from './dock-words';
 import type { TripActions } from './trip-actions';
 import { useTalkTools } from './talk-tools';
+import { CallButton } from './call-button';
 
 type Props = {
   readonly trip: Trip;
@@ -98,7 +99,7 @@ export function PointCard({
             { label: t('sheet.meet.ten'), onClick: act.say(booking, 'ten') },
           ]}
         />
-        <SecondaryButton beside text={t('sheet.meet.call')} onClick={act.call(booking)} />
+        <CallButton onClick={act.call(booking)} />
         {/* The passenger is at the point already: «Keldi» at once, no «Men keldim» first (G78 В1 … В3). */}
         <MainButton text={t('driverAfter.meet.met')} onClick={act.met(booking)} />
       </>

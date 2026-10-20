@@ -113,7 +113,8 @@ function Follow({ token, onJoin }: Props) {
       ) : (
         <JoinNote onJoin={join} />
       )}
-      {note || arrived ? null : (
+      {/* A cancelled trip has no steps for the bot to tell (G90 PAS-11). */}
+      {note || arrived || value.status === 'cancelled' ? null : (
         <MainButton text={t('share.follow.subscribe')} onClick={() => void subscribe()} />
       )}
     </div>

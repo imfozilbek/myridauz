@@ -7,7 +7,7 @@ import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { AppLinkContext } from '../market/app-link';
-import { useAskedSeat } from '../market/asked-seat';
+import { useAskedSeat, type SeatBlock } from '../market/asked-seat';
 import { ClosedTrip } from '../market/closed-trip';
 import { usePlaces } from '../market/places-gate';
 import { Screen } from '../screen/screen';
@@ -57,9 +57,17 @@ export function SafarScreen({ trip, onBack, onBook, onOthers }: Props) {
   // The own trip and a trip already asked are not booked again (G52, docs/112).
   const mine = useAccount()?.profile.id === trip.driver.id;
   const asked = useAskedSeat(trip.id, !mine);
-  // One at a time (owner decision 12.10.2026, docs/172): a seat held on another trip opens instead.
+  // One at a time (owner decision 12.10.2026, docs/172): a seat held on another trip opens instead,
+  // the seat of this trip too (G90 PAS-9).
   const openLink = useContext(AppLinkContext);
-  const held = asked?.kind === 'held' && openLink ? asked.bookingId : null;
+  const held = asked && asked.kind !== 'request' ? asked.bookingId : null;
+  const openSeat =
+    held && openLink ? (
+      <MainButton
+        text={t('market.trip.openSeat')}
+        onClick={() => openLink({ name: BOOKING_LINK, id: held })}
+      />
+    ) : null;
   const closed =
     trip.status !== 'active'
       ? t(`market.trip.closed.${trip.status}`)
@@ -86,23 +94,17 @@ export function SafarScreen({ trip, onBack, onBook, onOthers }: Props) {
           <ClosedTrip trip={trip} reason={closed} onOthers={onOthers} />
         </div>
       ) : mine || asked?.kind === 'asked' ? (
-        <p className="safar-note">{t(mine ? 'market.trip.yours' : 'market.trip.asked')}</p>
+        <>
+          <p className="safar-note">{t(mine ? 'market.trip.yours' : 'market.trip.asked')}</p>
+          {openSeat}
+        </>
       ) : (
         <>
           <p className="find-head safar-head">{t('find.seatsTitle')}</p>
           <SeatsCard trip={trip} choice={choice} onChoice={setChoice} />
-          {asked ? (
-            <p className="safar-alert">
-              {t(asked.kind === 'held' ? 'market.trip.heldElsewhere' : 'market.trip.closesRequest')}
-            </p>
-          ) : null}
+          {asked ? <p className="safar-alert">{t(blockKey(asked))}</p> : null}
           <p className="safar-note">{t('find.payHint')}</p>
-          {held && openLink ? (
-            <MainButton
-              text={t('market.trip.openSeat')}
-              onClick={() => openLink({ name: BOOKING_LINK, id: held })}
-            />
-          ) : (
+          {openSeat ?? (
             <MainButton
               text={choice.wholeCar ? t('find.bookCar') : t('find.book', { count: String(choice.seats) })}
               onClick={() => onBook(choice)}
@@ -113,3 +115,12 @@ export function SafarScreen({ trip, onBack, onBook, onOthers }: Props) {
     </div>
   );
 }
+
+// The line above the button: a seat on another trip that ends with its trip, or that waits for its
+// driver and ends with a cancel (G90 PAS-10, the text of B19 in G89); an open request it closes.
+const blockKey = (asked: NonNullable<SeatBlock>) =>
+  asked.kind === 'request'
+    ? 'market.trip.closesRequest'
+    : asked.kind === 'held' && asked.waiting
+      ? 'errors.bookings.has_seat'
+      : 'market.trip.heldElsewhere';
