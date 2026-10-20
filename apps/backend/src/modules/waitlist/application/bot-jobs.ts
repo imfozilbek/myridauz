@@ -7,11 +7,13 @@ export type BotJobDeps = PersonDeps & {
 };
 
 // The people of the opened directions hear it, a few at a time: the rest in the next Cron run.
-// They are marked first: a failed run never rings twice, the promise «bir marta» (docs/181).
+// They are marked first: a failed run never rings twice, the promise «bir marta» (docs/181); of
+// two runs at once («Ochish» and the Cron), only the one that marked a person rings (G89 A12).
 export async function tellOpened(deps: BotJobDeps, limit: number): Promise<number> {
   const now = deps.now();
-  const records = await deps.records.untold(now - WEEK_MS, limit);
-  for (const { userId, role } of records) await deps.records.told(userId, role, now);
+  const records = [];
+  for (const record of await deps.records.untold(now - WEEK_MS, limit))
+    if (await deps.records.told(record, now)) records.push(record);
   if (records.length > 0) await deps.ring(await cardViews(deps, records));
   return records.length;
 }

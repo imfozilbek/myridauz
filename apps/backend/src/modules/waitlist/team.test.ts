@@ -80,6 +80,16 @@ describe('«Ochish»: the bot tells the waiting people once (docs/181)', () => {
     kit.later(WEEK_MS);
     expect(await tellOpened(kit.deps, 50)).toBe(1);
   });
+
+  // G89 A12: «Ochish» and a Cron run in the same second read the same people: one rings them.
+  it('rings a person once when two runs read the list together', async () => {
+    const kit = await filled();
+    await openDirection(kit.deps, '1718', 900);
+    await saveAnswers(kit.deps, 8, passengerAnswers());
+    await Promise.all([tellOpened(kit.deps, 50), tellOpened(kit.deps, 50)]);
+    const rung = kit.rung.slice(1).flat();
+    expect(rung.map((view) => view.record.userId)).toEqual([8]);
+  });
 });
 
 describe('the Monday update of the cards (docs/181)', () => {
