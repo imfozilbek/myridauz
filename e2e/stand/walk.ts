@@ -65,10 +65,11 @@ export async function walk(
     }
   };
 
+  // The same taps again; a tap that is gone, or the time that is over, ends it (a drift).
   const replay = async (path: readonly Target[]) => {
     await start();
     for (const step of path) {
-      await press(page, step);
+      if (Date.now() > until || !(await press(page, step))) return;
       await settle(page);
     }
   };

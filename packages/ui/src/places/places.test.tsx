@@ -85,6 +85,8 @@ describe('RouteScreen (docs/14)', () => {
     expect(screen.getByText('Shahar ichida safar yoʻq. Boshqa shahar yoki tumanni tanlang.')).toBeTruthy();
     fireEvent.click(screen.getByText('Davom etish'));
     expect(onDone).not.toHaveBeenCalled();
+    // G90 (robot): «Davom etish» opens the end to change, as the error asks, never a tap with nothing.
+    expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
   });
 
   it('finds a place typed with any apostrophe and offers the whole region', async () => {

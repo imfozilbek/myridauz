@@ -88,9 +88,11 @@ function RouteForm({
     },
     [picking, from, to, directory, onEnd, quick, onDone],
   );
+  // «Davom etish» with an end missing or refused opens that end: a tap always leads on (G90 robot).
   const submit = useCallback(() => {
-    if (!from || !to || error) return haptic.error();
-    onDone({ from, to });
+    if (from && to && !error) return onDone({ from, to });
+    haptic.error();
+    setPicking(!from ? 'from' : 'to');
   }, [from, to, error, onDone]);
   if (picking) {
     return (

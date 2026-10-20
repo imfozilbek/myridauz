@@ -112,7 +112,9 @@ export async function readScreen(page: Page): Promise<ScreenState> {
 }
 
 // Taps the target the way a person does; a field gets typed words. False when it is gone.
+// A number field, by its type or its keyboard (inputMode), gets digits.
 const TYPED: Record<string, string> = { tel: '901234567', number: '2' };
+const TAP_MS = 3_000;
 export async function tap(page: Page, target: Target): Promise<boolean> {
   const raw = await readTargets(page);
   const index = raw
@@ -121,18 +123,19 @@ export async function tap(page: Page, target: Target): Promise<boolean> {
     .at(target.nth)?.at;
   if (index === undefined) return false;
   const element = page.locator(`[data-walk="${index}"]`);
-  await element.scrollIntoViewIfNeeded().catch(() => undefined);
+  await element.scrollIntoViewIfNeeded({ timeout: TAP_MS }).catch(() => undefined);
   const field = await element
     .evaluate((el) =>
       el instanceof HTMLTextAreaElement ||
       (el instanceof HTMLInputElement && !['checkbox', 'radio'].includes(el.type))
-        ? { type: el.type, value: el.value }
+        ? { type: el.inputMode === 'numeric' ? 'number' : el.type, value: el.value }
         : null,
     )
     .catch(() => null);
   // A field typed before keeps its words (a draft): the robot types other ones, a change to see.
   const words = field && (TYPED[field.type] ?? 'Salom');
   const typed = words && field?.value === words ? `${words}1` : words;
-  const done = typed ? element.fill(typed) : element.click({ timeout: 3_000 });
+  // Never longer than a person waits: a field or a button that does not answer is a dead tap.
+  const done = typed ? element.fill(typed, { timeout: TAP_MS }) : element.click({ timeout: TAP_MS });
   return done.then(() => true).catch(() => false);
 }
