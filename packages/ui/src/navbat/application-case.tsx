@@ -34,8 +34,8 @@ const NO_TICKS: Record<ReasonsMode, readonly ModerationReason[]> = { reject: [],
 // the plate and the driver; «Tasdiqlash» after the plate check, «Tuzatish», «Rad etish», «Bloklash».
 export function ApplicationCase({ id, onBack, ...props }: CaseProps) {
   const { moderation } = useApiClients();
-  const { value, failed, reload } = useLoad(() => moderation.get(id));
-  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
+  const { value, failed, error, reload } = useLoad(() => moderation.get(id));
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} error={error} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   return <Application detail={value} onBack={onBack} {...props} />;
 }

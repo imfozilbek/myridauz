@@ -88,8 +88,8 @@ type LinkedProps = {
 // One trip by its id with its bookings; back goes to the trips of the days.
 function LinkedTrip({ id, onBack, onPerson }: LinkedProps) {
   const { market } = useApiClients();
-  const { value, failed, reload } = useLoad(() => market.trip(id));
-  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
+  const { value, failed, error, reload } = useLoad(() => market.trip(id));
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} error={error} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   return (
     <TripScreen trip={value} onBack={onBack} onPerson={onPerson}>

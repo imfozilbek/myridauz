@@ -40,11 +40,11 @@ export function TripLink({ enabled, children }: { readonly enabled: boolean; rea
 // One trip by its id, ready to book: a link, or a trip of a saved driver (G18).
 export function TripById({ id, onClose }: { readonly id: string; readonly onClose: () => void }) {
   const { market } = useApiClients();
-  const { value, failed, reload } = useLoad(() => market.trip(id));
+  const { value, failed, error, reload } = useLoad(() => market.trip(id));
   // «Band qilish» before the registration: the booking opens with the seats chosen then (G79 П5).
   const [booking, setBooking] = useState<SeatChoice | null>(() => takeChoice(id));
   const [others, setOthers] = useState(false);
-  if (failed) return <ErrorScreen onRetry={reload} onBack={onClose} />;
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onClose} error={error} />;
   if (!value) return <ScreenSkeleton onBack={onClose} />;
   if (booking)
     return (

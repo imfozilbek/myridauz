@@ -102,6 +102,15 @@ export function errorKey(
   return (answered && codeKey(answered)) || fallback;
 }
 
+// An answer a retry never changes: the API said no to this person or about this thing (G90 ERR-1).
+// No answer, a lost launch (the gate signs again), too many taps or a busy server pass on a retry.
+const RETRIED = new Set([0, 401, 408, 429]);
+const SERVER = 500;
+export function finalKey(error: unknown): TranslationKey | null {
+  if (!(error instanceof ApiError) || RETRIED.has(error.status) || error.status >= SERVER) return null;
+  return error.code ? codeKey(error.code) : null;
+}
+
 // The seat or the request changed meanwhile (another tap, the other side, the Cron): the screen
 // loads it again at once (G52, docs/112).
 export const isStale = (caught: unknown) =>
