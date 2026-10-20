@@ -48,7 +48,8 @@ export class ChatRoom extends DurableObject<Bindings> {
 
   private socket(ws: WebSocket): ChatSocket {
     const { member } = ws.deserializeAttachment() as { member: Member; key: string };
-    return { member, send: (data) => ws.send(data) };
+    // A socket closed meanwhile hears nothing; the rest of the step goes on (G89, the full stand).
+    return { member, send: (data) => (ws.readyState === WebSocket.OPEN ? ws.send(data) : undefined) };
   }
 
   override async fetch(request: Request): Promise<Response> {

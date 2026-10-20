@@ -17,6 +17,7 @@ vi.mock('cloudflare:workers', () => ({
 }));
 
 const OPEN = 1;
+const CLOSED = 3;
 function openSocket(member: Member) {
   let attachment: unknown = { member, key: 'b1' };
   return {
@@ -55,5 +56,17 @@ describe('the rights of an open chat', () => {
     await roomWith(ws).webSocketMessage(asSocket(ws), '{}');
     expect(ws.close).not.toHaveBeenCalled();
     expect(ws.attachment().member).toEqual(now);
+  });
+
+  // G89 (full stand of 20.10.2026): the person closed the chat right after a phone in the text. The
+  // warning goes nowhere; the rest of the step (the other side hears of the message) goes on.
+  it('finishes the step when the socket closed meanwhile', async () => {
+    wireChatRights(async () => DRIVER);
+    const ws = { ...openSocket(DRIVER), readyState: CLOSED };
+    ws.send.mockImplementation(() => {
+      throw new TypeError("Can't call WebSocket send() after close().");
+    });
+    const text = JSON.stringify({ type: 'send', text: 'Tel 998901234567' });
+    await expect(roomWith(ws).webSocketMessage(asSocket(ws), text)).resolves.toBeUndefined();
   });
 });
