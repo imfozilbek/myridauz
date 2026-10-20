@@ -31,23 +31,17 @@ const full = args.length === 0 && shards > 1;
 const groups = full ? balance(readTimes(TIMES), shards) : [];
 const report = (index) => `test-results/stand-${index}/report.json`;
 
+// Files on several stands (pnpm stand:walk): each stand its own whole files, never two files that make
+// the same people on one stand (G91: the walk of a driver answered the seat of a passenger walk).
+const spread = (index) => args.filter((_, at) => at % shards === index - 1);
+
 const runShard = (index) =>
   new Promise((done) => {
-    const own = full ? groups[index - 1] : [];
-    const split = shards > 1 && !full ? [`--shard=${index}/${shards}`, '--pass-with-no-tests'] : [];
+    const own = full ? groups[index - 1] : shards > 1 ? spread(index) : args;
+    if (own.length === 0 && shards > 1) return done(0);
     const child = spawn(
       'pnpm',
-      [
-        'exec',
-        'playwright',
-        'test',
-        '-c',
-        'playwright.stand.config.ts',
-        '--reporter=list,json',
-        ...split,
-        ...own,
-        ...args,
-      ],
+      ['exec', 'playwright', 'test', '-c', 'playwright.stand.config.ts', '--reporter=list,json', ...own],
       {
         stdio: 'inherit',
         env: {
