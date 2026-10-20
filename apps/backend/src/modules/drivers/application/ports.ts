@@ -6,6 +6,8 @@ import type { Application } from '../domain/application';
 export type ApplicationRepository = {
   find(userId: number): Promise<Application | undefined>;
   save(application: Application): Promise<void>;
+  // The decision on a waiting application, written only if nobody decided it since `read` (G89 M5).
+  decide(next: Application, read: Application): Promise<boolean>;
   // Applications waiting for the team, the oldest first.
   queue(): Promise<Application[]>;
   // Ids of approved drivers, for the wallet's Cron job (docs/12).

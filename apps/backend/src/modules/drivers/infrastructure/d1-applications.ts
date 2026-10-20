@@ -57,6 +57,20 @@ const UPSERT = `INSERT INTO driver_applications (user_id, status, car_make, car_
   photo_side = excluded.photo_side, photo_interior = excluded.photo_interior, reason = excluded.reason,
   submitted_at = excluded.submitted_at, decided_by = excluded.decided_by, updated_at = excluded.updated_at`;
 
+// A decision only on the application as the team read it (G89 M5): a second tap changes nothing.
+const DECIDE = `UPDATE driver_applications SET status = ?, car_make = ?, car_model = ?, car_color = ?,
+  car_plate = ?, seats = ?, reason = ?, decided_by = ?, updated_at = ?
+  WHERE user_id = ? AND status = 'pending' AND updated_at = ?`;
+const carValues = ({ car }: Application) =>
+  [
+    car?.make ?? null,
+    car?.model ?? null,
+    car?.color ?? null,
+    car?.plate ?? null,
+    car?.seats ?? null,
+  ] as const;
+const reasonOf = ({ reasons }: Application) => (reasons.length > 0 ? reasons.join(REASON_SEPARATOR) : null);
+
 // Table driver_applications (migrations/0004_drivers.sql).
 export const d1Applications = (db: D1Database): ApplicationRepository => ({
   find: async (userId) => {
@@ -67,26 +81,33 @@ export const d1Applications = (db: D1Database): ApplicationRepository => ({
     return row ? toApplication(row) : undefined;
   },
   save: async (application) => {
-    const car = application.car;
     await db
       .prepare(UPSERT)
       .bind(
         application.userId,
         application.status,
-        car?.make ?? null,
-        car?.model ?? null,
-        car?.color ?? null,
-        car?.plate ?? null,
-        car?.seats ?? null,
+        ...carValues(application),
         application.photos.front,
         application.photos.side,
         application.photos.interior,
-        application.reasons.length > 0 ? application.reasons.join(REASON_SEPARATOR) : null,
+        reasonOf(application),
         application.submittedAt,
         application.decidedBy,
         application.updatedAt,
       )
       .run();
+  },
+  decide: async (next, read) => {
+    const { status, decidedBy, updatedAt, userId } = next;
+    const values = [status, ...carValues(next), reasonOf(next), decidedBy, updatedAt, userId, read.updatedAt];
+    return (
+      (
+        await db
+          .prepare(DECIDE)
+          .bind(...values)
+          .run()
+      ).meta.changes === 1
+    );
   },
   queue: async () => {
     const rows = await db

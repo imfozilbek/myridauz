@@ -63,7 +63,8 @@ describe('the cases of «Navbat»', () => {
     expect(screen.getByText('Kelmadi')).toBeTruthy();
     expect(screen.getByText('Madinaning soʻzi')).toBeTruthy();
     expect(screen.getByText('2 soat oldin')).toBeTruthy();
-    expect(screen.getByText('Haydovchiga komissiyani qaytarish')).toBeTruthy();
+    // A passenger's «Kelmadi» about the driver: no commission of the driver to give back (G89 A11).
+    expect(screen.queryByText('Haydovchiga komissiyani qaytarish')).toBeNull();
     fireEvent.click(screen.getByText('Bloklash'));
     vi.stubGlobal('confirm', () => true);
     fireEvent.click(await screen.findByText('7 kun'));

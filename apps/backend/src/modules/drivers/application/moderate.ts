@@ -84,7 +84,8 @@ export async function decideApplication(
   if (!application) return { ok: false, error: 'drivers.not_found' };
   const next = decide(application, decision, moderatorId, deps.now());
   if (typeof next === 'string') return { ok: false, error: next };
-  await deps.applications.save(next);
+  if (!(await deps.applications.decide(next, application)))
+    return { ok: false, error: 'drivers.wrong_status' };
   const reasons = [...next.reasons];
   const car = next.status === 'approved' ? next.car : null;
   await deps.decisions.add({ userId, status: next.status, reasons, by: moderatorId, at: deps.now(), car });

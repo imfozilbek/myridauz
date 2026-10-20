@@ -21,6 +21,18 @@ describe('an application in «Navbat»', () => {
     expect(decide).toHaveBeenCalledWith(JASUR.id, { action: 'approve' });
   });
 
+  // G89 M5: a second tap while the first decision goes sends nothing.
+  it('sends one decision for two quick taps', async () => {
+    const { decide } = renderNavbat(open, [JASUR, BOBUR]);
+    decide.mockImplementationOnce(() => new Promise((done) => setTimeout(done, 50)));
+    fireEvent.click(await screen.findByText('Tasdiqlash'));
+    const yes = await screen.findByText('Raqam mos, tasdiqlash');
+    fireEvent.click(yes);
+    fireEvent.click(yes);
+    expect(await screen.findByText('Javob yuborildi')).toBeTruthy();
+    expect(decide).toHaveBeenCalledTimes(1);
+  });
+
   it('keeps the plate fixed by the photo through Back and a failed decision', async () => {
     const { decide } = renderNavbat(open, [JASUR]);
     decide.mockRejectedValueOnce(new Error('offline'));
