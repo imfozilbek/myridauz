@@ -12,6 +12,8 @@ export type StoredReview = {
   readonly hidden: boolean;
   readonly createdAt: number;
   readonly updatedAt: number;
+  // The end of the ride: the blind days count from it, as the days to rate (docs/129, G89 A10).
+  readonly rideEndsAt: number;
 };
 
 // The rules of ratings: the brand gives them, the owner changes them (docs/24, docs/128 §4).
@@ -23,7 +25,7 @@ type RatingRule = {
 };
 
 // "Slepaya" publication: a review shows once the other side reviewed the same ride too,
-// or blindDays passed. Nobody answers a bad review with revenge (docs/24).
+// or blindDays passed since the ride. Nobody answers a bad review with revenge (docs/24).
 const counterpartKey = (review: StoredReview) => `${review.bookingId}:${review.rateeId}`;
 export const isPublished = (
   review: StoredReview,
@@ -32,7 +34,7 @@ export const isPublished = (
   rule: Pick<RatingRule, 'blindDays'>,
 ) =>
   !review.hidden &&
-  (answered.has(counterpartKey(review)) || review.createdAt + rule.blindDays * DAY_MS <= now);
+  (answered.has(counterpartKey(review)) || review.rideEndsAt + rule.blindDays * DAY_MS <= now);
 
 const TENTHS = 10;
 

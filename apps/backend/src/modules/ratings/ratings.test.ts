@@ -51,6 +51,15 @@ describe('the rating of a person (docs/24)', () => {
     expect((await reviewsOf(other.deps, DRIVER)).reviews).toHaveLength(1);
   });
 
+  // G89 A10: the 7 days count from the ride, as the time to rate: a late review is not hidden longer.
+  it('shows a review written on day 6 once the ride is 7 days old', async () => {
+    const { deps, later } = setup();
+    later(6 * DAY_MS);
+    await rate(deps, 101, review('b1', 4));
+    later(DAY_MS);
+    expect((await reviewsOf(deps, DRIVER)).reviews).toHaveLength(1);
+  });
+
   it('rates only a ride of the person that is over, within 7 days; the bot keeps the text', async () => {
     const { deps, later } = setup([ride(1), ride(2, false)]);
     expect(await rate(deps, 999, review('b1', 5))).toBe('reviews.not_found');

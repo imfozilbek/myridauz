@@ -13,6 +13,7 @@ type ReviewRow = {
   hidden: number;
   created_at: number;
   updated_at: number;
+  ride_ends_at: number | null;
 };
 type AskRow = { booking_id: string; rater_id: number; ratee_id: number; asked_at: number };
 
@@ -27,6 +28,7 @@ const toReview = (row: ReviewRow): StoredReview => ({
   hidden: row.hidden === 1,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
+  rideEndsAt: row.ride_ends_at ?? row.created_at,
 });
 const toAsk = (row: AskRow): Ask => ({
   bookingId: row.booking_id,
@@ -70,7 +72,7 @@ export const d1Ratings = (db: D1Database): RatingStore => ({
     await db
       .prepare(
         'INSERT OR REPLACE INTO reviews (id, booking_id, rater_id, ratee_id, stars, tags, text, hidden, ' +
-          'created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+          'created_at, updated_at, ride_ends_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       )
       .bind(
         r.id,
@@ -83,6 +85,7 @@ export const d1Ratings = (db: D1Database): RatingStore => ({
         r.hidden ? 1 : 0,
         r.createdAt,
         r.updatedAt,
+        r.rideEndsAt,
       )
       .run();
   },

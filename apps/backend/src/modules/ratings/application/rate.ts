@@ -43,6 +43,7 @@ export async function rate(deps: RatingsDeps, raterId: number, input: Input, fro
     hidden: old?.hidden ?? false,
     createdAt: old?.createdAt ?? now,
     updatedAt: now,
+    rideEndsAt: ride.endsAt,
   });
   // This review may publish the other side's review of the rater too: both are watched (G89 A9).
   const roleOf = (userId: number) => (userId === ride.driverId ? 'driver' : 'passenger');
