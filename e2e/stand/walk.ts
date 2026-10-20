@@ -142,6 +142,7 @@ export async function walk(
   await countSounds(page);
   await start();
   const first = await readScreen(page);
+  if (LOG) console.log(`start ${first.key}`);
   roots.add(shape(first.heading));
   await visit([], first);
   await flushScreens(page);
