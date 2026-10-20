@@ -101,11 +101,17 @@ export function watchEffects(page: Page): Effects {
   return { calls, screens, asked: () => sent, telegram };
 }
 
-// The screen has settled: the answers came, the splash left, nothing is loading.
+// The screen has settled: the answers came, the splash left, nothing is loading. An answer often
+// asks the next call (an offer accepted, the lists, the seat): quiet means no call for a while.
+const QUIET_MS = 500;
 export async function settle(page: Page): Promise<void> {
   const until = Date.now() + MOST_WAIT_MS;
   await page.waitForTimeout(SETTLED_MS);
-  while ((loading.get(page) ?? 0) > 0 && Date.now() < until) await page.waitForTimeout(SETTLED_MS);
+  let still = 0;
+  while (still < QUIET_MS && Date.now() < until) {
+    await page.waitForTimeout(SETTLED_MS);
+    still = (loading.get(page) ?? 0) > 0 ? 0 : still + SETTLED_MS;
+  }
   for (const busy of ['#splash', '[aria-busy="true"]'])
     await page
       .locator(busy)

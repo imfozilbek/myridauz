@@ -12,6 +12,7 @@ import type { Finding, FindingKind, WalkReport } from './walk-types';
 const { t } = createI18n(DEFAULT_LOCALE);
 // A walk of one person stops after this: the stand runs several people in one file.
 const LIMITS = { depth: 12, taps: 400, perScreen: 30, ms: 8 * 60 * 1000 };
+const LOG = process.env['STAND_WALK_LOG'] === '1';
 // No path of the apps is deeper than this: «Назад» so many times always reaches the main screen.
 const MOST_BACKS = 8;
 
@@ -28,7 +29,6 @@ export async function walk(
   const walked = seen.size;
   let taps = 0;
   let drifts = 0;
-  let root = '';
   const add = (kind: FindingKind, state: ScreenState, path: readonly Target[], detail: string) =>
     findings.push({
       kind,
@@ -39,7 +39,16 @@ export async function walk(
 
   // The general error names the call that failed last: the reason to look at.
   const failed = () => effects.calls.findLast((call) => call.status === 0 || call.status >= 400);
-  const judge = (path: readonly Target[], state: ScreenState) => {
+  // The first screen of a new open, whatever the data made it (the questionnaire, then «Siz
+  // roʻyxatdasiz»): a home without «Назад», never a dead end.
+  const roots = new Set<string>();
+  const isRoot = async (state: ScreenState) => {
+    if (roots.has(shape(state.heading))) return true;
+    await start();
+    roots.add(shape((await readScreen(page)).heading));
+    return roots.has(shape(state.heading));
+  };
+  const judge = async (path: readonly Target[], state: ScreenState) => {
     if (state.text.includes(t('errors.generic.title'))) {
       const call = failed();
       add(
@@ -50,7 +59,7 @@ export async function walk(
       );
     }
     // The first screen of the app has no «Назад» in all its states: the main one, the welcome.
-    if (state.home || state.back || path.length === 0 || shape(state.heading) === root) return;
+    if (state.home || state.back || path.length === 0 || (await isRoot(state))) return;
     const nothing = !state.main && !state.second && state.targets.length === 0;
     add(nothing ? 'dead_end' : 'no_back', state, path, state.text.slice(0, 200));
   };
@@ -89,7 +98,7 @@ export async function walk(
   const visit = async (path: readonly Target[], state: ScreenState): Promise<void> => {
     if (seen.has(state.key)) return;
     seen.add(state.key);
-    judge(path, state);
+    await judge(path, state);
     if (path.length >= limits.depth) return;
     const kept: Target[] = [];
     for (const target of order(state).slice(0, limits.perScreen)) {
@@ -106,6 +115,8 @@ export async function walk(
         marks: await marksOf(page),
       };
       taps += 1;
+      // STAND_WALK_LOG=1: each tap with its time, to see where a walk spends it.
+      if (LOG) console.log(`${Math.round((Date.now() + limits.ms - until) / 1000)}s ${target.label}`);
       if (!(await press(page, target))) continue;
       await settle(page);
       const after = await readScreen(page);
@@ -131,7 +142,7 @@ export async function walk(
   await countSounds(page);
   await start();
   const first = await readScreen(page);
-  root = shape(first.heading);
+  roots.add(shape(first.heading));
   await visit([], first);
   await flushScreens(page);
   return { findings, screens: seen.size - walked, taps, drifts, named: [...new Set(effects.screens)].sort() };
