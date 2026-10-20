@@ -1,3 +1,4 @@
+import { ApiError } from '@platform/api-client';
 import type { Wallet } from '@platform/contracts';
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -58,6 +59,25 @@ describe('delete my data (docs/30, docs/58)', () => {
     expect(screen.queryByText('Nega maʼlumotlaringizni oʻchirdingiz?')).toBeNull();
     fireEvent.click(screen.getByText('Yopish'));
     expect(reload).toHaveBeenCalled();
+  });
+
+  // G89 U5: a second tap while the first runs does nothing; an answer lost on the way is still done.
+  it('deletes once on a double tap and says done after a lost answer', async () => {
+    const { client } = openDelete();
+    let answer = (): void => undefined;
+    client.deleteMe.mockImplementationOnce(
+      () => new Promise<undefined>((resolve) => (answer = () => resolve(undefined))),
+    );
+    fireEvent.click(screen.getByText('Oʻchirish'));
+    fireEvent.click(screen.getByText('Oʻchirish'));
+    expect(client.deleteMe).toHaveBeenCalledTimes(1);
+    await act(async () => answer());
+    expect(screen.getByText('Maʼlumotlaringiz oʻchirildi')).toBeTruthy();
+    cleanup();
+    const again = openDelete();
+    again.client.deleteMe.mockRejectedValueOnce(new ApiError(409, 'users.not_registered'));
+    await act(async () => fireEvent.click(screen.getByText('Oʻchirish')));
+    expect(screen.getByText('Maʼlumotlaringiz oʻchirildi')).toBeTruthy();
   });
 
   it('«Bekor qilish» goes back to «Profil» and removes nothing', () => {
