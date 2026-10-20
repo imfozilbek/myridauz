@@ -22,9 +22,10 @@ export function TripPreview({ id, onDone }: Props) {
 
 function PreviewTrip({ id, onDone }: Props) {
   const { market } = useApiClients();
-  const { value, failed } = useLoad(() => market.trip(id));
-  // A trip that does not open is no reason to wait: the registration goes on.
-  if (failed) return <ErrorScreen onRetry={onDone} onBack={onDone} />;
+  const { value, failed, error, reload } = useLoad(() => market.trip(id));
+  // «Qayta urinish» tries the trip again; back, or a trip that is gone for good, goes on to the
+  // registration (G90 PAS-6).
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onDone} error={error} />;
   if (!value) return <ScreenSkeleton onBack={onDone} />;
   const book = (choice: SeatChoice) => {
     keepChoice(id, choice);
