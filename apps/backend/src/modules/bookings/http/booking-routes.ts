@@ -22,6 +22,7 @@ const STATUS = {
   'bookings.not_found': 404,
   'bookings.invalid_input': 400,
   'bookings.too_many': 409,
+  'bookings.has_seat': 409,
   'bookings.no_seats': 409,
   'bookings.own_trip': 422,
   'bookings.wrong_status': 409,

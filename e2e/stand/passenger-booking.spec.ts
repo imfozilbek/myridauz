@@ -29,9 +29,12 @@ test('P24, P25, C12. the last seat goes to one; the next hears there are no seat
 test('P26, P27. one waiting seat: not twice on a trip, not on another trip', async () => {
   const first = await publishTrip(RUSTAM, CHILONZOR, SAMARQAND, 'door');
   const second = await publishTrip(ULUGBEK, CHILONZOR, SAMARQAND, 'door');
-  await book(SEVARA, first, door(1));
+  const held = await book(SEVARA, first, door(1));
   expect(await outcome(book(SEVARA, first, door(1)))).toBe('bookings.wrong_status');
   expect(await outcome(book(SEVARA, second, door(1)))).toBe('bookings.too_many');
+  // A confirmed seat: she has a seat on another trip, cancel it first (G89 B19).
+  await answer(RUSTAM, held.id, 'confirm');
+  expect(await outcome(book(SEVARA, second, door(1)))).toBe('bookings.has_seat');
 });
 
 test('P29, C04. a declined seat: the passenger hears it from the passenger bot', async () => {

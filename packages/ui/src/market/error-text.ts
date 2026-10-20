@@ -70,6 +70,8 @@ const EXPLAINED: readonly string[] = [
   'users.face_decided',
   // G89 A7: a review that shows keeps its stars.
   'reviews.published',
+  // G89 B19: a confirmed seat on another trip.
+  'bookings.has_seat',
 ];
 
 // Codes that mean the same for a person as an explained one.

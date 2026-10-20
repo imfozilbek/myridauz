@@ -15,6 +15,7 @@ type RequestError =
   | 'bookings.own_trip'
   | 'bookings.no_seats'
   | 'bookings.too_many'
+  | 'bookings.has_seat'
   | 'bookings.wrong_status'
   | 'trips.wrong_status'
   | ChoiceError
@@ -50,7 +51,10 @@ export async function requestBooking(
   const mine = await deps.bookings.byPassenger(passengerId);
   if (mine.some((booking) => booking.tripId === tripId && isHolding(booking, now)))
     return { ok: false, error: 'bookings.wrong_status' };
-  if (await heldSeat(deps, mine, now)) return { ok: false, error: 'bookings.too_many' };
+  // A waiting seat waits for the driver; a confirmed one is cancelled first (G89 B19).
+  const held = await heldSeat(deps, mine, now);
+  if (held)
+    return { ok: false, error: held.status === 'confirmed' ? 'bookings.has_seat' : 'bookings.too_many' };
   const points = await chosenPoints(deps, trip, input);
   if (!points.ok) return points;
   const passenger = await deps.people.find(passengerId);
