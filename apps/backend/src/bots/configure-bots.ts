@@ -47,7 +47,9 @@ export async function configureBots(env: Bindings, fetch: Fetch, secret: string)
       url: hook,
       secret_token: secret,
       allowed_updates: BOT_UPDATES,
-      drop_pending_updates: true,
+      // Updates waiting at a new setup are presses and messages of people: they come, never dropped.
+      // A setup the Cron repeats after a refusal would drop them every time (G89).
+      drop_pending_updates: false,
     });
     await setTextsWhenChanged(fetch, token, profile);
     // The face of the bot (G34): a missing picture must not stop the rest of the setup.
@@ -67,7 +69,9 @@ export async function configureBots(env: Bindings, fetch: Fetch, secret: string)
       url: `https://${apiHost(brandOf(env))}${POSTER_WEBHOOK_PATH}`,
       secret_token: secret,
       allowed_updates: POSTER_UPDATES,
-      drop_pending_updates: true,
+      // Updates waiting at a new setup are presses and messages of people: they come, never dropped.
+      // A setup the Cron repeats after a refusal would drop them every time (G89).
+      drop_pending_updates: false,
     });
     configured.push('poster');
   }

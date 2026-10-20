@@ -9,11 +9,13 @@ const TOKENS = { PASSENGER_BOT_TOKEN: 'p', DRIVER_BOT_TOKEN: 'd', TELEGRAM_WEBHO
 
 function telegram(status = 200) {
   const urls: string[] = [];
-  const fetch = async (url: string) => {
+  const bodies: string[] = [];
+  const fetch = async (url: string, init?: RequestInit) => {
     urls.push(url);
+    if (url.endsWith('/setWebhook')) bodies.push(String(init?.body));
     return new Response(url.endsWith('.jpg') ? new Uint8Array([255]) : '{}', { status });
   };
-  return { urls, fetch, hooks: () => urls.filter((url) => url.endsWith('/setWebhook')) };
+  return { urls, bodies, fetch, hooks: () => urls.filter((url) => url.endsWith('/setWebhook')) };
 }
 
 // The owner adds the token of a new bot from a phone (G83): the next Cron tick sets it up, no
@@ -46,6 +48,8 @@ describe('the Cron sets the bots up by itself', () => {
     const retry = telegram();
     await setupBotsWhenChanged(env, retry.fetch, 2);
     expect(retry.hooks()).toHaveLength(2);
+    // G89: a setup again keeps the presses and messages waiting: nothing is dropped.
+    expect(retry.bodies.every((body) => body.includes('"drop_pending_updates":false'))).toBe(true);
     const noSecret = telegram();
     const unset = { ...TOKENS, TELEGRAM_WEBHOOK_SECRET: undefined, DB: testD1() } as unknown as Bindings;
     await setupBotsWhenChanged(unset, noSecret.fetch, 3);
