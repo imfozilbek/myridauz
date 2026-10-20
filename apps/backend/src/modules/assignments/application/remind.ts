@@ -15,6 +15,8 @@ export type ReminderDeps = {
   readonly rules: ReminderRules;
   readonly now: () => number;
   readonly waiting: () => Promise<Waiting[]>;
+  // The team now: a moderator removed or blocked since the assignment hears nothing (G89).
+  readonly teamIds: () => Promise<number[]>;
   readonly toModerator: (moderatorId: number, application: Waiting) => Promise<void>;
   readonly toOwners: (application: Waiting, moderatorId: number) => Promise<void>;
 };
@@ -23,6 +25,7 @@ export type ReminderDeps = {
 // a new sending of the same application starts its own reminders.
 export async function remindWaiting(deps: ReminderDeps): Promise<void> {
   const now = deps.now();
+  const team = await deps.teamIds();
   for (const application of await deps.waiting()) {
     const steps = dueSteps(application.submittedAt, now, deps.rules);
     if (steps.length === 0) continue;
@@ -31,8 +34,8 @@ export async function remindWaiting(deps: ReminderDeps): Promise<void> {
     if (moderatorId === undefined) continue;
     for (const step of steps) {
       if (!(await deps.store.markReminder(application.userId, application.submittedAt, step, now))) continue;
-      if (step === 'moderator') await deps.toModerator(moderatorId, application);
-      else await deps.toOwners(application, moderatorId);
+      if (step === 'owner') await deps.toOwners(application, moderatorId);
+      else if (team.includes(moderatorId)) await deps.toModerator(moderatorId, application);
     }
   }
 }

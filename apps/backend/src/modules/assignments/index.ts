@@ -97,6 +97,7 @@ export function sendApplicationReminders(env: Bindings, waiting: () => Promise<W
   const { hours, remindMinutes, ownerMinutes } = brand.moderation;
   return remindWaiting({
     store: storeOf(env),
+    teamIds: deps(env).teamIds,
     rules: { hours, remindMinutes, ownerMinutes },
     now: Date.now,
     waiting,
