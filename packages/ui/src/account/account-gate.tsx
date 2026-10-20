@@ -3,6 +3,7 @@ import { ApiError, type UsersClient } from '@platform/api-client';
 import type { MeResponse, MiniApp } from '@platform/contracts';
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useFeedChange } from '../feed/feed-context';
+import { useAccountAgain } from '../network/account-again';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { AccountContext, UsersClientContext, type Account } from './account-context';
@@ -40,8 +41,11 @@ export function AccountGate({ app, client, welcome, children }: AccountGateProps
       );
   }, [client]);
   useEffect(load, [load]);
-  // A decision of the team (a block, a new photo rule) shows without a reload (G43, docs/64).
-  useFeedChange(() => void client.getMe().then(setMe, () => undefined));
+  // A decision of the team (a block, a new photo rule) shows without a reload (G43, docs/64), also
+  // when it came as a refusal in the other Mini App of the person (G89 U12).
+  const again = () => void client.getMe().then(setMe, () => undefined);
+  useFeedChange(again);
+  useAccountAgain(again);
   const onAvatarChanged = useCallback(() => {
     setAvatarVersion((version) => version + 1);
     load();
