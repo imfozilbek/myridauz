@@ -19,12 +19,16 @@ describe('the moment a trip is reminded (G10, G85 R3)', () => {
   it('reminds a day before in the day time and 2 hours before at any time, at the minute', () => {
     expect(reminderAt(MORNING + 25 * HOUR, 'day', MORNING)).toBe(MORNING + HOUR);
     expect(reminderAt(MORNING + 25 * HOUR, 'soon', MORNING)).toBe(MORNING + 23 * HOUR);
+    // G89 C10: «2 soat qoldi» only while about 2 hours are left: not 40 minutes before.
+    expect(reminderAt(MORNING + 1.5 * HOUR, 'soon', MORNING)).toBe(MORNING);
+    expect(reminderAt(MORNING + (2 * HOUR) / 3, 'soon', MORNING)).toBeNull();
     // A day before falls in the night: the morning after, while the trip is more than 3 hours away.
     expect(reminderAt(NIGHT + 20 * HOUR, 'day', NIGHT)).toBe(NEXT_MORNING);
     expect(reminderAt(NIGHT + 11 * HOUR, 'day', NIGHT)).toBeNull();
-    // Too close for "a day before"; "soon" is due already, so it goes now.
+    // Too close for "a day before"; "soon" is due already, so it goes now; an hour before is too late.
     expect(reminderAt(MORNING + 2.5 * HOUR, 'day', MORNING)).toBeNull();
-    expect(reminderAt(NIGHT + HOUR, 'soon', NIGHT)).toBe(NIGHT);
+    expect(reminderAt(NIGHT + 1.75 * HOUR, 'soon', NIGHT)).toBe(NIGHT);
+    expect(reminderAt(NIGHT + HOUR, 'soon', NIGHT)).toBeNull();
     expect(reminderAt(NIGHT - HOUR, 'soon', NIGHT)).toBeNull();
   });
 });

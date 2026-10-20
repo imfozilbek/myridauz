@@ -2,6 +2,9 @@ import { DAY_MS, HOUR_MS, tashkentDate, tashkentDayStart, tashkentTime } from '@
 
 const DAY_BEFORE_MS = 24 * HOUR_MS;
 const SOON_MS = 2 * HOUR_MS;
+// «Safarga 2 soat qoldi» late by at most half an hour (a late Cron) is still about the truth; a seat
+// taken later hears no such words (G89 C10).
+const SOON_LATE_MS = HOUR_MS / 2;
 // A "day before" reminder closer than this to the trip only repeats the "soon" one.
 const MIN_LEAD_MS = 3 * HOUR_MS;
 // People are not woken up: the "day before" reminder waits for the day time in Tashkent.
@@ -25,7 +28,8 @@ function dayTimeFrom(at: number): number {
 // reminders of its window and the queue holds each one until its moment (G85 R3).
 export function reminderAt(departAt: number, kind: ReminderKind, now: number): number | null {
   if (departAt <= now) return null;
-  if (kind === 'soon') return Math.max(departAt - SOON_MS, now);
+  if (kind === 'soon')
+    return departAt - now >= SOON_MS - SOON_LATE_MS ? Math.max(departAt - SOON_MS, now) : null;
   const at = dayTimeFrom(Math.max(departAt - DAY_BEFORE_MS, now));
   return departAt - at > MIN_LEAD_MS ? at : null;
 }
