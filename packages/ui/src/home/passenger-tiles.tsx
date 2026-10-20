@@ -1,3 +1,4 @@
+import { lastDepart } from '@platform/contracts';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { HomeTile } from '../flow/home-tile';
@@ -45,7 +46,7 @@ function FavoritesTile({ now, onOpen }: { readonly now: number; readonly onOpen:
   const tap = useHomeTap();
   const when = useWhen(now);
   const { value } = useLoad(() => comfort.favorites(), 'favorites');
-  const [trip] = value?.trips.filter((one) => one.seatsLeft > 0 && one.departAt > now) ?? [];
+  const [trip] = value?.trips.filter((one) => one.seatsLeft > 0 && lastDepart(one) > now) ?? [];
   const count = value?.drivers.length ?? 0;
   const hint = trip
     ? t('home.favorites.trip', {

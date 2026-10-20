@@ -1,4 +1,4 @@
-import type { Booking, Offer, RideRequest, Trip } from '@platform/contracts';
+import { lastDepart, type Booking, type Offer, type RideRequest, type Trip } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { nextTrip, weekTrips } from './driver-day';
 import { waitingOffers, waitingRequests } from './home-items';
@@ -36,7 +36,7 @@ export function driverTripsHint(
   bookings: readonly Booking[],
   now: number,
 ): TripsHint {
-  const live = trips.filter((trip) => LIVE_TRIPS.includes(trip.status) && trip.departAt > now);
+  const live = trips.filter((trip) => LIVE_TRIPS.includes(trip.status) && lastDepart(trip) > now);
   const waiting = live.reduce((sum, trip) => sum + waitingRequests(trip, bookings), 0);
   if (waiting > 0) return { key: 'home.newRequests', count: waiting };
   const next = nextTrip(trips, now);

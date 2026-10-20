@@ -1,4 +1,4 @@
-import { DAY_MS, MINUTE_MS, onTheWay, tashkentDate } from '@platform/contracts';
+import { DAY_MS, HOUR_MS, MINUTE_MS, onTheWay, tashkentDate } from '@platform/contracts';
 import { endsAt, isLive, type TripRecord } from './trip';
 
 export type ChangeError = 'trips.not_found' | 'trips.wrong_status' | 'trips.invalid_input';
@@ -10,7 +10,8 @@ function blocked(trip: TripRecord, driverId: number, now: number): ChangeError |
 }
 
 // Later only, at most the brand's minutes (+1 hour) from the first time in all, the same day; the end
-// moves along (docs/104, 8, owner decision 04.10.2026). A range moves whole (G90, docs/216).
+// moves along (docs/104, 8, owner decision 04.10.2026). A range moves whole, by whole hours: its hours
+// stay whole (G90, docs/216).
 export function retime(
   trip: TripRecord,
   driverId: number,
@@ -22,6 +23,7 @@ export function retime(
   if (error) return error;
   const later = departAt > trip.departAt && departAt <= trip.firstDepartAt + shiftMinutes * MINUTE_MS;
   const departUntil = trip.departUntil === null ? null : trip.departUntil + departAt - trip.departAt;
+  if (departUntil !== null && departAt % HOUR_MS !== 0) return 'trips.invalid_input';
   const day = tashkentDate(trip.firstDepartAt);
   if (!later || tashkentDate(departUntil ?? departAt) !== day) return 'trips.invalid_input';
   const moved = { ...trip, departAt, departUntil };

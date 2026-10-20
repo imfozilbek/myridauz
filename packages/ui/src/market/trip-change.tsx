@@ -12,6 +12,7 @@ import { FormSheet } from '../sheet/form-sheet';
 import { ActionFailure } from '../states/action-failure';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
+import { useTripTime } from '../trip/trip-time';
 import { errorKey } from './error-text';
 import { useSeatCommission } from './seat-commission';
 import { laterTimes, lowerPrices } from './trip-change-options';
@@ -29,11 +30,17 @@ type Props = {
 // g75/3 A phone 2): a later time while there is one, a lower price; one choice, one button.
 export function TripChangeSheet({ trip, open, onClose, onDone }: Props) {
   useScreenView('market.change');
-  const { t, formatTime, formatMoney } = useI18n();
+  const { t, formatMoney } = useI18n();
   const { market } = useApiClients();
   const seatCommission = useSeatCommission();
   const { shiftMinutes } = useBrand().schedule;
   const times = laterTimes(trip, shiftMinutes);
+  const tripTime = useTripTime();
+  // A range moves whole (G90, docs/216).
+  const moved = (at: number) => ({
+    departAt: at,
+    departUntil: trip.departUntil === null ? null : trip.departUntil + at - trip.departAt,
+  });
   const [change, setChange] = useState<TripChange>(times.length > 0 ? 'time' : 'price');
   const [bounds, setBounds] = useState<Recommendation | null>(null);
   const [failure, setFailure] = useState<TranslationKey | null>(null);
@@ -46,7 +53,7 @@ export function TripChangeSheet({ trip, open, onClose, onDone }: Props) {
     change === 'time'
       ? times.map((at) => ({
           key: String(at),
-          title: t('market.change.at', { time: formatTime(new Date(at)) }),
+          title: t('market.change.at', { time: tripTime(moved(at)) }),
           hint: t('market.change.later', { minutes: String((at - trip.departAt) / 60_000) }),
         }))
       : bounds

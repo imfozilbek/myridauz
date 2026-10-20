@@ -1,4 +1,4 @@
-import { WALLET_SECTION, type Booking, type Wallet } from '@platform/contracts';
+import { lastDepart, WALLET_SECTION, type Booking, type Wallet } from '@platform/contracts';
 import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
@@ -23,7 +23,7 @@ export function DriverTiles({ go }: { readonly go: HomeGo }) {
   // The requests of the trips other than the one in the block at the bottom.
   const shown = nextTrip(trips, now);
   const badge = trips
-    .filter((trip) => trip !== shown && trip.departAt > now)
+    .filter((trip) => trip !== shown && lastDepart(trip) > now)
     .reduce((sum, trip) => sum + waitingRequests(trip, bookings), 0);
   return (
     <>

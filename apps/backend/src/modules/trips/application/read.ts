@@ -1,4 +1,11 @@
-import { DAY_MS, tashkentDayStart, type Trip, type TripSearch } from '@platform/contracts';
+import {
+  DAY_MS,
+  HOUR_MS,
+  lastDepart,
+  tashkentDayStart,
+  type Trip,
+  type TripSearch,
+} from '@platform/contracts';
 import { placeMatches, placesMatching } from '../../../shared/places/place-match';
 import { cancel, isLive } from '../domain/trip';
 import type { Result, TripsDeps } from './ports';
@@ -11,13 +18,16 @@ import { upcomingFirst } from '../../../shared/order/upcoming-first';
 // complaints from 3 different people wait for the moderator out of the search (docs/17). The trips
 // leaving soon and the cheaper ones are on top (G39, docs/104, 10).
 // The own trips of the person are not in their search: they cannot book them (G41, docs/90 F-P8).
+// A range stays in the search until its end: the driver still takes people (docs/216).
 export async function searchTrips(deps: TripsDeps, search: TripSearch, viewer?: number): Promise<Trip[]> {
-  const start = Math.max(tashkentDayStart(search.date), deps.now());
+  const now = deps.now();
+  const start = Math.max(tashkentDayStart(search.date), now - deps.schedule.rangeMaxHours * HOUR_MS);
   const places = await deps.places();
   const end = tashkentDayStart(search.date) + DAY_MS;
   const trips = await deps.trips.leaving(start, end, placesMatching(search.from, places));
   const fits = trips.filter(
     (trip) =>
+      lastDepart(trip) >= now &&
       trip.driverId !== viewer &&
       placeMatches(trip.from, search.from, places) &&
       placeMatches(trip.to, search.to, places),
@@ -26,7 +36,7 @@ export async function searchTrips(deps: TripsDeps, search: TripSearch, viewer?: 
   const hidden = await deps.hidden([...new Set(fits.map((trip) => trip.driverId))]);
   const shown = fits.filter((trip) => !hidden.has(trip.driverId));
   const found = (await views(deps, shown)).filter((trip) => trip.seatsLeft > 0).sort(byHourThenRating);
-  return markedFirst(search.woman ? found.filter((trip) => trip.woman) : found, deps.now());
+  return markedFirst(search.woman ? found.filter((trip) => trip.woman) : found, now);
 }
 
 // A trip opened for one request is its driver's only (G64): its passenger sees the offer instead.
