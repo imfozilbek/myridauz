@@ -92,9 +92,9 @@ export function TripOnRoute({ flow, route, onBack, onPublished }: Props) {
         open={screen === 'when'}
         now={now}
         schedule={schedule}
-        initial={{ date: values.date, ...(values.time ? { time: values.time } : {}) }}
+        initial={{ date: values.date, until: values.until, ...(values.time ? { time: values.time } : {}) }}
         onClose={() => back()}
-        onDone={({ date, time }) => back({ date, time })}
+        onDone={({ date, time, until }) => back({ date, time, until })}
       />
       <CommentSheet
         open={screen === 'comment'}

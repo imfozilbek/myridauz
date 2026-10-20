@@ -33,6 +33,7 @@ describe('NewTripFlow: a new trip on one screen', { timeout: 20_000 }, () => {
       from: '1726269',
       to: '1730401',
       departAt,
+      departUntil: null,
       seats: 4,
       price: 95000,
       womanOnBoard: false,

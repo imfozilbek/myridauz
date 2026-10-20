@@ -1,12 +1,23 @@
-import type { BookingRule, PickupMode, Pitak, Recommendation, ScheduleRules } from '@platform/contracts';
+import {
+  rangeEnds,
+  rangeStarts,
+  slotAt,
+  type BookingRule,
+  type PickupMode,
+  type Pitak,
+  type Recommendation,
+  type ScheduleRules,
+} from '@platform/contracts';
 import type { Route } from '../places/route-screen';
-import { departAtOf, firstDayOf, slotsOn, timeOn } from './first-when';
+import { firstDayOf, slotsOn, timeOn } from './first-when';
 
 export type TripDraft = {
   readonly route: Route;
   readonly pickupMode: PickupMode;
   readonly date: string;
   readonly time: string;
+  // The end of a range from time (G90, docs/216); null: one exact time.
+  readonly until: string | null;
   readonly seats: number;
   readonly price: number;
   readonly womanOnBoard: boolean;
@@ -47,6 +58,10 @@ export function tripValues(answer: Partial<TripDraft> & { readonly route: Route 
   // A time kept in the draft may be gone since: the first free one of the day instead (docs/103).
   const slots = slotsOn(date, now, rules);
   const time = answer.time && slots.includes(answer.time) ? answer.time : timeOn(date, now, rules);
+  // A range stays while its start is still a start and its end one of its ends.
+  const range = time === answer.time && rangeStarts(date, now, rules).includes(time);
+  const until =
+    range && answer.until && rangeEnds(date, time, rules).includes(answer.until) ? answer.until : null;
   const seats = clamp(answer.seats ?? carSeats, 1, carSeats);
   const askWoman = isMan && seats < carSeats;
   const mode = answer.pickupMode ?? 'pitak';
@@ -55,6 +70,7 @@ export function tripValues(answer: Partial<TripDraft> & { readonly route: Route 
     pickupMode: pitak ? mode : 'door',
     date,
     time,
+    until,
     seats,
     price: clamp(answer.price ?? recommendation.price, recommendation.minPrice, recommendation.maxPrice),
     womanOnBoard: askWoman && (answer.womanOnBoard ?? false),
@@ -66,13 +82,13 @@ export function tripValues(answer: Partial<TripDraft> & { readonly route: Route 
 
 // The trip to publish; null until the day has a time.
 export function publishInput(values: TripValues) {
-  const { route, date, time, seats, price, womanOnBoard, comment, pickupMode, bookingRule } = values;
+  const { route, date, time, until, seats, price, womanOnBoard, comment, pickupMode, bookingRule } = values;
   if (!time) return null;
-  const departAt = departAtOf(date, time);
   return {
     from: route.from.id,
     to: route.to.id,
-    departAt,
+    departAt: slotAt(date, time),
+    departUntil: until ? slotAt(date, until) : null,
     seats,
     price,
     womanOnBoard,

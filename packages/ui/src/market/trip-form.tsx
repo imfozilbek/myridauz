@@ -50,7 +50,8 @@ export function TripForm(props: Props) {
     const input = publishInput(sent);
     // The day has no free time left, or the time on the screen became too soon meanwhile: the day and
     // the time are chosen again, never a time the person did not see (docs/103, G77).
-    if (!input || sent.date !== values.date || sent.time !== values.time) return onOpen('when');
+    const moved = sent.date !== values.date || sent.time !== values.time || sent.until !== values.until;
+    if (!input || moved) return onOpen('when');
     setError(null);
     try {
       const trip = await market.publishTrip(input);
