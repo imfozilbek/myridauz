@@ -60,14 +60,13 @@ export const d1Assignments = (db: D1Database): AssignmentStore => ({
       .all<{ assignee_id: number; total: number; answered: number }>();
     return results.map((row) => ({ assigneeId: row.assignee_id, total: row.total, answered: row.answered }));
   },
-  // Through the index assignments_day (docs/117).
-  openSupport: async (fromDay) => {
+  // Through the partial index assignments_open_support (docs/117, G89 A4).
+  openSupport: async () => {
     const { results } = await db
       .prepare(
         `SELECT subject_id, assigned_at FROM assignments
-         WHERE day >= ? AND kind = 'support' AND answered_at IS NULL ORDER BY assigned_at`,
+         WHERE kind = 'support' AND answered_at IS NULL ORDER BY assigned_at`,
       )
-      .bind(fromDay)
       .all<{ subject_id: number; assigned_at: number }>();
     return results.map((row) => ({ subjectId: row.subject_id, at: row.assigned_at }));
   },

@@ -1,5 +1,5 @@
 import { appHost } from '@platform/brands';
-import { DAY_MS, MINUTE_MS, tashkentDate, teamWaitMs } from '@platform/contracts';
+import { MINUTE_MS, teamWaitMs } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../env';
 import { adminIds } from '../../shared/telegram/bot-config';
@@ -74,12 +74,12 @@ export const operatorOf = async (env: Bindings, subjectId: number): Promise<numb
 // The Cron job: the summary of the day to the owner at 21:00 in Tashkent, once (G68, docs/122).
 export const sendDaySummary = (env: Bindings, sources: Sources) => sendDigest(deps(env, sources));
 
-// The support questions not answered for two days: cases of «Navbat» in the app (G75, docs/158 К).
-// A person who never registered has no public id: that question stays in the bot (docs/65 A3).
-const SUPPORT_DAYS = 2;
+// The support questions not answered: cases of «Navbat» in the app until somebody answers (G75,
+// docs/158 К; owner decision 20.10.2026, G89 A4). A person who never registered has no public id:
+// that question stays in the bot (docs/65 A3).
 export async function waitingSupport(env: Bindings) {
   const people = peopleOf(env);
-  const open = await storeOf(env).openSupport(tashkentDate(Date.now() - SUPPORT_DAYS * DAY_MS));
+  const open = await storeOf(env).openSupport();
   const cases = await Promise.all(
     open.map(async ({ subjectId, at }) => {
       const person = await people.find(subjectId);

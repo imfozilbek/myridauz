@@ -30,8 +30,8 @@ export type AssignmentStore = {
   // A new question of the same day waits for an answer again (G89 A3).
   reopen(kind: Kind, subjectId: number, day: string): Promise<void>;
   supportOf(day: string): Promise<SupportDone[]>;
-  // The support questions from this day on not answered yet: cases of «Navbat» (G75).
-  openSupport(fromDay: string): Promise<{ readonly subjectId: number; readonly at: number }[]>;
+  // The support questions not answered yet, of any day: cases of «Navbat» (G75, G89 A4).
+  openSupport(): Promise<{ readonly subjectId: number; readonly at: number }[]>;
   // true once: the digest of this day is to be sent now.
   markDigest(day: string, at: number): Promise<boolean>;
   // The summary failed on its way: the next tick tries again (G89 A13).
