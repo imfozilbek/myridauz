@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { approvedDriver, json, read } from './bookings-test-api';
 import type { Bindings } from './env';
-import { d1Unread } from './modules/chat/infrastructure/d1-unread';
+import { d1Unread, forgetUnread } from './modules/chat/infrastructure/d1-unread';
 import { testD1 } from './test-d1';
 import { call, doorBooking, registerUser } from './test-api';
 
@@ -63,5 +63,16 @@ describe('the unread chats for the sheet (G68)', () => {
     expect((await call('/chats/not-a-key/messages', PASSENGER, json({ text: 'Yaxshi' }))).status).toBe(403);
     // Without the Durable Objects of the chats (tests) the message cannot go.
     expect((await answer(DRIVER, { text: 'Yaxshi' }, 'driver')).status).toBe(503);
+  });
+
+  // G89 C11: a deleted account takes its words out of the plates of the other side too.
+  it('forgets the words of a deleted person in the unread chats of the other side', async () => {
+    const unread = d1Unread(unreadDb as Bindings, chatKey);
+    await unread.add({ userId: DRIVER, role: 'driver' }, { text: 'Kelyapman', at: 6 });
+    await forgetUnread(unreadDb as Bindings, PASSENGER, [chatKey]);
+    const left = await read<{ chats: unknown[] }>(
+      call('/chats/unread', DRIVER, { app: 'driver', env: unreadDb }),
+    );
+    expect(left.chats).toEqual([]);
   });
 });

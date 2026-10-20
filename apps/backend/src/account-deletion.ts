@@ -27,9 +27,11 @@ wireAccountDeletion(async (env, userId) => {
   // The points go at once, even under a complaint: the chat stays the evidence (docs/69).
   await erasePointsOf(env, userId);
   await eraseRequestPointsOf(env, userId);
-  for (const key of await chatsOf(env, userId)) if (!evidence.has(key)) await forgetChat(env, key);
-  // The plates «1 xabar» of the person go with the account (G53).
-  await forgetUnread(env, userId);
+  const chats = await chatsOf(env, userId);
+  for (const key of chats) if (!evidence.has(key)) await forgetChat(env, key);
+  // The plates «1 xabar» of the person go with the account (G53), and its words in the plates of the
+  // other side (G89 C11).
+  await forgetUnread(env, userId, chats);
   // The live cards of the bots too (G68).
   await forgetCards(env, userId);
   // The marks «blocked the bot» too (G46).

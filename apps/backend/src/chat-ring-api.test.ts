@@ -80,6 +80,13 @@ describe('the chat of a seat in the bots (G68, docs/122 rule 5)', () => {
     vi.setSystemTime(START);
   });
 
+  // G89 C11: a person without an account (deleted) hears nothing of the old chats.
+  it('rings nobody who deleted the account', async () => {
+    const before = telegram.sentTo(6999).length;
+    await botSignals(testEnv).newMessage({ userId: 6999, role: 'passenger', from: DRIVER }, 'tnone');
+    expect(telegram.sentTo(6999)).toHaveLength(before);
+  });
+
   it('a chat without a seat (a talk about a request) is told as before', async () => {
     await registerUser(PASSENGER);
     const passenger = { userId: PASSENGER, role: 'passenger' as const, from: DRIVER };

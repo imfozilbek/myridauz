@@ -35,7 +35,9 @@ type SeatRing = (env: Bindings, news: ChatNews) => Promise<boolean>;
 let ringUnderSeat: SeatRing = async () => false;
 export const wireChatRings = (next: SeatRing) => void (ringUnderSeat = next);
 
+// A person who deleted the account hears nothing of the old chats (docs/30, G89 C11).
 const ringOr = async (env: Bindings, news: ChatNews, text: string, button: string) => {
+  if (!(await peopleOf(env).find(news.to.userId))) return;
   if (!(await ringUnderSeat(env, news))) await toChat(env, news, text, button);
 };
 
