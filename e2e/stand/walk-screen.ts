@@ -44,8 +44,11 @@ async function readTargets(page: Page): Promise<{ label: string }[]> {
         el.hasAttribute('disabled') || el.getAttribute('aria-disabled') === 'true';
       // A button inside a button is one target: the outer one.
       const inner = (el: HTMLElement) => el.parentElement?.closest(tappable) !== null;
+      // The open tab is not a target: a tap on it rightly changes nothing.
+      const open = (el: HTMLElement) =>
+        el.getAttribute('role') === 'tab' && el.getAttribute('aria-selected') === 'true';
       const found = [...document.querySelectorAll<HTMLElement>(tappable)].filter(
-        (el) => !native.includes(el.id) && seen(el) && !off(el) && !inner(el),
+        (el) => !native.includes(el.id) && seen(el) && !off(el) && !inner(el) && !open(el),
       );
       return found.map((el, index) => {
         el.dataset['walk'] = String(index);
@@ -90,22 +93,6 @@ export async function readScreen(page: Page): Promise<ScreenState> {
   const labels = [...new Set(targets.map((target) => shape(target.label)))].sort();
   const key = JSON.stringify([back, main && shape(main), second && shape(second), shape(heading), labels]);
   return { key, back, main, second, targets, text, heading: heading.trim(), home };
-}
-
-// The screen has settled: the answers came, nothing is loading, the sheet stopped moving.
-export async function settle(page: Page): Promise<void> {
-  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => undefined);
-  // The splash of a new start leaves first (docs/121 §4).
-  await page
-    .locator('#splash')
-    .waitFor({ state: 'detached', timeout: 5_000 })
-    .catch(() => undefined);
-  await page
-    .locator('[aria-busy="true"]')
-    .first()
-    .waitFor({ state: 'detached', timeout: 5_000 })
-    .catch(() => undefined);
-  await page.waitForTimeout(250);
 }
 
 // Taps the target the way a person does; false when it is not on the screen any more.

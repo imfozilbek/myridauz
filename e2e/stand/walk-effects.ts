@@ -39,9 +39,21 @@ const QUIET = new Set([
 
 type Sent = { readonly events?: readonly { name?: string; screen?: string }[] };
 
+// The calls to the API still on the way, per page: the screen settles when none is left.
+const loading = new WeakMap<Page, number>();
+const SETTLED_MS = 150;
+const MOST_WAIT_MS = 5_000;
+
 export function watchEffects(page: Page): Effects {
   const calls: Call[] = [];
   const screens: string[] = [];
+  const ours = (url: string) => url.startsWith(API) && !url.endsWith('/analytics');
+  const count = (step: number) => (url: string) => {
+    if (ours(url)) loading.set(page, (loading.get(page) ?? 0) + step);
+  };
+  page.on('request', (request) => count(1)(request.url()));
+  page.on('requestfinished', (request) => count(-1)(request.url()));
+  page.on('requestfailed', (request) => count(-1)(request.url()));
   page.on('request', (request) => {
     if (!request.url().endsWith('/analytics') || request.method() !== 'POST') return;
     const sent = JSON.parse(request.postData() ?? '{}') as Sent;
@@ -108,4 +120,18 @@ export async function flushScreens(page: Page) {
   await sent;
   await page.waitForTimeout(500);
   await setState('visible');
+}
+
+// The screen has settled: the answers came, the splash left, nothing is loading.
+export async function settle(page: Page): Promise<void> {
+  const until = Date.now() + MOST_WAIT_MS;
+  await page.waitForTimeout(SETTLED_MS);
+  while ((loading.get(page) ?? 0) > 0 && Date.now() < until) await page.waitForTimeout(SETTLED_MS);
+  for (const busy of ['#splash', '[aria-busy="true"]'])
+    await page
+      .locator(busy)
+      .first()
+      .waitFor({ state: 'detached', timeout: MOST_WAIT_MS })
+      .catch(() => undefined);
+  await page.waitForTimeout(SETTLED_MS);
 }

@@ -1,9 +1,9 @@
 import type { Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { pressBack } from '../telegram-mock';
-import { flushScreens, marksOf, watchEffects } from './walk-effects';
-import { MAIN, order, press, SECOND } from './walk-moves';
-import { readScreen, settle, type ScreenState, type Target } from './walk-screen';
+import { flushScreens, marksOf, settle, watchEffects } from './walk-effects';
+import { order, press, standsFor } from './walk-moves';
+import { readScreen, type ScreenState, type Target } from './walk-screen';
 
 // The walk of the screens (G90): from the main screen the robot taps every target of every screen it
 // reaches, as a person may, and writes down where a person gets stuck or a tap makes no sense.
@@ -28,14 +28,22 @@ export type WalkReport = {
 };
 
 const { t } = createI18n(DEFAULT_LOCALE);
-const LIMITS = { depth: 7, taps: 300, perScreen: 30 };
+// A walk of one person stops after this: the stand runs several people in one file.
+const LIMITS = { depth: 7, taps: 400, perScreen: 30, ms: 10 * 60 * 1000 };
 // No path of the apps is deeper than this: «Назад» so many times always reaches the main screen.
 const MOST_BACKS = 8;
 
-export async function walk(page: Page, open: () => Promise<void>, limits = LIMITS): Promise<WalkReport> {
+// seen: the screens other people of the same app walked already; one walk of each is enough.
+export async function walk(
+  page: Page,
+  open: () => Promise<void>,
+  seen = new Set<string>(),
+  limits = LIMITS,
+): Promise<WalkReport> {
   const effects = watchEffects(page);
   const findings: Finding[] = [];
-  const seen = new Set<string>();
+  const until = Date.now() + limits.ms;
+  const walked = seen.size;
   let taps = 0;
   const add = (kind: FindingKind, state: ScreenState, path: readonly Target[], detail: string) =>
     findings.push({
@@ -71,26 +79,16 @@ export async function walk(page: Page, open: () => Promise<void>, limits = LIMIT
     }
   };
 
-  // The robot stands where it can tap the target: the same screen (its title and «Назад») with the
-  // target on it. The rest of the screen may change on the way: a new trip, a remembered route.
-  const standsFor = async (state: ScreenState, target: Target) => {
-    const now = await readScreen(page);
-    if (now.heading !== state.heading || now.back !== state.back) return false;
-    if (target === MAIN) return now.main !== null;
-    if (target === SECOND) return now.second !== null;
-    return now.targets.some((there) => there.label === target.label && there.nth === target.nth);
-  };
-
   // Back to a screen already walked: by «Назад» first, as a person, else by the same taps again.
   const reach = async (path: readonly Target[], state: ScreenState, target: Target): Promise<boolean> => {
-    if (await standsFor(state, target)) return true;
+    if (await standsFor(page, state, target)) return true;
     if ((await readScreen(page)).back && path.length > 0) {
       await pressBack(page);
       await settle(page);
-      if (await standsFor(state, target)) return true;
+      if (await standsFor(page, state, target)) return true;
     }
     await replay(path);
-    return standsFor(state, target);
+    return standsFor(page, state, target);
   };
 
   const visit = async (path: readonly Target[], state: ScreenState): Promise<void> => {
@@ -99,7 +97,7 @@ export async function walk(page: Page, open: () => Promise<void>, limits = LIMIT
     judge(path, state);
     if (path.length >= limits.depth) return;
     for (const target of order(state).slice(0, limits.perScreen)) {
-      if (taps >= limits.taps) return;
+      if (taps >= limits.taps || Date.now() > until) return;
       if (!(await reach(path, state, target))) {
         const there = await readScreen(page);
         add(
@@ -139,5 +137,5 @@ export async function walk(page: Page, open: () => Promise<void>, limits = LIMIT
   await start();
   await visit([], await readScreen(page));
   await flushScreens(page);
-  return { findings, screens: seen.size, taps, named: [...new Set(effects.screens)].sort() };
+  return { findings, screens: seen.size - walked, taps, named: [...new Set(effects.screens)].sort() };
 }

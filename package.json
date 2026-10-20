@@ -26,7 +26,7 @@
     "keys": "node scripts/keys.mjs",
     "stand": "node scripts/stand/stand.mjs",
     "stand:check": "node scripts/stand/check.mjs",
-    "stand:walk": "STAND_WALK=1 node scripts/stand/check.mjs e2e/stand/walk-people.spec.ts",
+    "stand:walk": "STAND_WALK=1 STAND_SHARDS=4 node scripts/stand/check.mjs --area walk",
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm knip && pnpm test:coverage && pnpm check:text && pnpm check:secrets && pnpm audit"
   },
   "devDependencies": {

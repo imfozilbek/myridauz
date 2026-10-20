@@ -51,7 +51,7 @@ export const AREAS = {
   bots: ['bots', 'bots-team', 'complaints-time', 'g68-bots', 'g83'],
   channels: ['system-channels', 'system-cron', 'system-cron-team', 'system-people'],
   // The walk of the screens (G90): only on its own fresh stand, pnpm stand:walk.
-  walk: ['walk-people'],
+  walk: ['walk-passenger', 'walk-riders', 'walk-driver', 'walk-team'],
 };
 const NAMES = Object.keys(AREAS);
 
