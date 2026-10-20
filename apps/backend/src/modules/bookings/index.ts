@@ -13,10 +13,10 @@ import { chatMember } from './application/chat-member';
 import { chatKeysOf } from './application/chat-keys';
 import { liveBookingOf } from './application/live-booking';
 import { meetingBegun } from './application/meeting';
+import { endDriverOffers } from './application/offers-ended';
 import { pastRides } from './application/past';
 import { passengerView } from './application/progress';
 import { filedRideOf, ratableRideOf, rideOf, ridesOf } from './application/rides';
-import { expireTripOffers } from './application/salon-trip';
 import { settleBookings } from './application/settle';
 import { tellTripRetimed } from './application/trip-change';
 import { endSeatsOfTrip } from './application/trip-ended';
@@ -52,7 +52,7 @@ export const tripCancelWatch = new Hono<AppEnv>().use(CANCEL_PATH, async (contex
   await next();
   if (context.res.status !== 200) return;
   await endSeatsOfTrip(deps, driverId, context.req.param('id') ?? '', 'driver');
-  await expireTripOffers(deps, driverId, context.req.param('id') ?? '');
+  await endDriverOffers(deps, driverId, context.req.param('id') ?? '');
 });
 
 // The driver moved the time: the booked passengers hear it (G39, docs/104).

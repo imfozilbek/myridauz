@@ -1,6 +1,6 @@
 import { meetingBegun } from './meeting';
+import { endDriverOffers } from './offers-ended';
 import type { BookingsDeps } from './ports';
-import { expireTripOffers } from './salon-trip';
 import { endSeatsOfTrip } from './trip-ended';
 
 export type TeamCancelError = 'trips.not_found' | 'trips.wrong_status';
@@ -19,7 +19,7 @@ export async function cancelTripByTeam(
   if (await meetingBegun(deps, driverId, tripId)) return 'trips.wrong_status';
   if (!(await deps.trips.cancel(driverId, tripId))) return 'trips.wrong_status';
   await endSeatsOfTrip(deps, driverId, tripId, 'team');
-  await expireTripOffers(deps, driverId, tripId);
+  await endDriverOffers(deps, driverId, tripId);
   await deps.notify.teamCancelled(driverId, reason);
   return { driverId };
 }

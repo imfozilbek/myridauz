@@ -1,5 +1,6 @@
 import { onTheWay } from '@platform/contracts';
 import { meetingBegun } from './meeting';
+import { endDriverOffers } from './offers-ended';
 import type { BookingsDeps } from './ports';
 import { cancelByPassenger } from './request';
 import { endSeatsOfTrip } from './trip-ended';
@@ -22,6 +23,5 @@ export async function cancelEverything(deps: BookingsDeps, userId: number): Prom
   }
   for (const request of await deps.requests.ofPassenger(userId))
     if (request.open) await deps.requests.cancel(userId, request.id);
-  for (const offer of await deps.offers.byDriver(userId))
-    if (offer.status === 'sent') await deps.offers.replace({ ...offer, status: 'expired' }, 'sent');
+  await endDriverOffers(deps, userId);
 }

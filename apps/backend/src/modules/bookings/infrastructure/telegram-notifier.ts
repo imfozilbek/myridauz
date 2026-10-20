@@ -96,6 +96,7 @@ export function telegramNotifier(wiring: Wiring): BookingNotifier {
       const markup = open('driver', { name: OFFER_LINK, id: offer.id });
       await notify([{ bot: 'driver', chatId: driverId, text: t('bot.offer.expired'), markup }]);
     },
+    offerEnded: (requestId) => request(requestId),
     progress: async (booking, step) => {
       await closeOnes(booking, step);
       await passenger(booking);

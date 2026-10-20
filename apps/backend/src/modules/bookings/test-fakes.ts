@@ -60,6 +60,7 @@ export const fakeNotifier = (notes: string[]): BookingsDeps['notify'] => ({
   offerAnswered: async (_driverId, accepted) =>
     void notes.push(`offer ${accepted ? 'accepted' : 'declined'}`),
   offerExpired: async (driverId) => void notes.push(`offer expired: ${driverId}`),
+  offerEnded: async (requestId) => void notes.push(`offer ended: ${requestId}`),
 });
 
 // The points of a booking: a home in Tashkent, a home in Samarkand; a point in Almaty is abroad.
