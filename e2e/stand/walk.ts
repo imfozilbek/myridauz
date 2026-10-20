@@ -3,32 +3,11 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { pressBack } from '../telegram-mock';
 import { countSounds, flushScreens, marksOf, settle, watchEffects } from './walk-effects';
 import { order, press, standsFor } from './walk-moves';
-import { readScreen, type ScreenState, type Target } from './walk-screen';
+import { readScreen, shape, type ScreenState, type Target } from './walk-screen';
+import type { Finding, FindingKind, WalkReport } from './walk-types';
 
 // The walk of the screens (G90): from the main screen the robot taps every target of every screen it
-// reaches, as a person may, and writes down where a person gets stuck or a tap makes no sense.
-//  dead_end: not the main screen, no «Назад», no button of Telegram, nothing to tap;
-//  no_back: not the main screen and no «Назад»: Android «Назад» closes the whole app there;
-//  dead_tap: a tap that changes nothing, calls nothing, opens nothing;
-//  refused: the screen offered a tap and the server said no to it;
-//  error_screen: the screen shows the general error.
-// drifts: how often the world changed under the robot (a seat confirmed, a trip cancelled) and a
-// screen it walked was not there any more: counted, not a finding.
-type FindingKind = 'dead_end' | 'no_back' | 'dead_tap' | 'refused' | 'error_screen';
-export type Finding = {
-  readonly kind: FindingKind;
-  readonly at: string;
-  readonly path: string;
-  readonly detail: string;
-};
-export type WalkReport = {
-  readonly findings: Finding[];
-  readonly screens: number;
-  readonly taps: number;
-  readonly drifts: number;
-  readonly named: string[];
-};
-
+// reaches, as a person may, and writes down where a person gets stuck (the kinds: walk-types.ts).
 const { t } = createI18n(DEFAULT_LOCALE);
 // A walk of one person stops after this: the stand runs several people in one file.
 const LIMITS = { depth: 7, taps: 400, perScreen: 30, ms: 10 * 60 * 1000 };
@@ -48,6 +27,7 @@ export async function walk(
   const walked = seen.size;
   let taps = 0;
   let drifts = 0;
+  let root = '';
   const add = (kind: FindingKind, state: ScreenState, path: readonly Target[], detail: string) =>
     findings.push({
       kind,
@@ -56,10 +36,20 @@ export async function walk(
       detail,
     });
 
+  // The general error names the call that failed last: the reason to look at.
+  const failed = () => effects.calls.findLast((call) => call.status === 0 || call.status >= 400);
   const judge = (path: readonly Target[], state: ScreenState) => {
-    if (state.text.includes(t('errors.generic.title')))
-      add('error_screen', state, path, state.text.slice(0, 200));
-    if (state.home || state.back || path.length === 0) return;
+    if (state.text.includes(t('errors.generic.title'))) {
+      const call = failed();
+      add(
+        'error_screen',
+        state,
+        path,
+        call ? `${call.method} ${call.path} → ${call.status} ${call.error}` : '',
+      );
+    }
+    // The first screen of the app has no «Назад» in all its states: the main one, the welcome.
+    if (state.home || state.back || path.length === 0 || shape(state.heading) === root) return;
     const nothing = !state.main && !state.second && state.targets.length === 0;
     add(nothing ? 'dead_end' : 'no_back', state, path, state.text.slice(0, 200));
   };
@@ -133,7 +123,9 @@ export async function walk(
 
   await countSounds(page);
   await start();
-  await visit([], await readScreen(page));
+  const first = await readScreen(page);
+  root = shape(first.heading);
+  await visit([], first);
   await flushScreens(page);
   return { findings, screens: seen.size - walked, taps, drifts, named: [...new Set(effects.screens)].sort() };
 }

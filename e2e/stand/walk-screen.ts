@@ -52,6 +52,8 @@ async function readTargets(page: Page): Promise<{ label: string }[]> {
         el.getAttribute('aria-pressed') === 'true' ||
         (['tab', 'radio', 'option'].includes(el.getAttribute('role') ?? '') &&
           [el.getAttribute('aria-selected'), el.getAttribute('aria-checked')].includes('true'));
+      // The marks of the last reading go first: a screen gone under keeps its elements.
+      for (const old of document.querySelectorAll<HTMLElement>('[data-walk]')) delete old.dataset['walk'];
       const found = [...document.querySelectorAll<HTMLElement>(tappable)].filter(
         (el) => !native.includes(el.id) && seen(el) && !off(el) && !inner(el) && !chosen(el),
       );
@@ -93,7 +95,10 @@ export async function readScreen(page: Page): Promise<ScreenState> {
   ]);
   const { text, heading, home } = await page.evaluate(() => ({
     text: document.body.innerText,
-    heading: document.querySelector('h1, h2, [role=heading]')?.textContent ?? '',
+    // A screen kept under another one keeps its title in the page, unseen (KeptBehind).
+    heading:
+      [...document.querySelectorAll('h1, h2, [role=heading]')].find((title) => title.checkVisibility())
+        ?.textContent ?? '',
     home: document.querySelector('.home')?.checkVisibility() === true,
   }));
   const labels = [...new Set(targets.map((target) => shape(target.label)))].sort();
@@ -112,12 +117,14 @@ export async function tap(page: Page, target: Target): Promise<boolean> {
   if (index === undefined) return false;
   const element = page.locator(`[data-walk="${index}"]`);
   await element.scrollIntoViewIfNeeded().catch(() => undefined);
-  const field = await element.evaluate((el) =>
-    el instanceof HTMLTextAreaElement ||
-    (el instanceof HTMLInputElement && !['checkbox', 'radio'].includes(el.type))
-      ? el.type
-      : null,
-  );
+  const field = await element
+    .evaluate((el) =>
+      el instanceof HTMLTextAreaElement ||
+      (el instanceof HTMLInputElement && !['checkbox', 'radio'].includes(el.type))
+        ? el.type
+        : null,
+    )
+    .catch(() => null);
   const done = field ? element.fill(TYPED[field] ?? 'Salom') : element.click({ timeout: 3_000 });
   return done.then(() => true).catch(() => false);
 }

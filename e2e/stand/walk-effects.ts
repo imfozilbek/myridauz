@@ -53,7 +53,13 @@ export function watchEffects(page: Page): Effects {
   };
   page.on('request', (request) => count(1)(request.url()));
   page.on('requestfinished', (request) => count(-1)(request.url()));
-  page.on('requestfailed', (request) => count(-1)(request.url()));
+  page.on('requestfailed', (request) => {
+    count(-1)(request.url());
+    const url = new URL(request.url());
+    // A call that never got an answer (the network, a crash of the Worker): status 0.
+    if (ours(request.url()))
+      calls.push({ method: request.method(), path: pathKind(url.pathname), status: 0, error: 'failed' });
+  });
   page.on('request', (request) => {
     if (!request.url().endsWith('/analytics') || request.method() !== 'POST') return;
     const sent = JSON.parse(request.postData() ?? '{}') as Sent;

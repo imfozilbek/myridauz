@@ -4,7 +4,8 @@ import type { MiniApp } from '@platform/contracts';
 import { expect, test } from '../crash-guard';
 import { NARROW } from './screen-tour';
 import { openAs, type Person } from './stand-kit';
-import { walk, type Finding, type WalkReport } from './walk';
+import { walk } from './walk';
+import type { Finding, WalkReport } from './walk-types';
 
 // pnpm stand:walk (G90, docs/75): the walk changes the data of the stand as a person does (books,
 // cancels, sends), so it runs on its own fresh stand, never inside the other scenarios.
