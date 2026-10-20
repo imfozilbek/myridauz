@@ -16,13 +16,15 @@ type Props = {
   readonly route: string;
   // The record of the other role when there is one: the row opens it instead of a new questionnaire.
   readonly other: { readonly role: WaitlistRole; readonly route: string } | null;
+  // The list takes new records: closed by the owner, no record of the other role (G90 DRV-9).
+  readonly listOpen: boolean;
   readonly onPick: (choice: EditChoice) => void;
   readonly onClose: () => void;
 };
 
 // «Oʻzgartirish» (mockup 3-result, screen 4): the pains, the route, «Qachon», the other role.
 // No «Roʻyxatdan chiqish»: the general deletion of the data removes the record (owner, 14.10.2026).
-export function EditSheet({ open, entry, route, other, onPick, onClose }: Props) {
+export function EditSheet({ open, entry, route, other, listOpen, onPick, onClose }: Props) {
   const { t } = useI18n();
   const cadence = t(`waitlist.cadence.${entry.cadence}`);
   const otherRole: WaitlistRole = entry.role === 'driver' ? 'passenger' : 'driver';
@@ -55,12 +57,14 @@ export function EditSheet({ open, entry, route, other, onPick, onClose }: Props)
           hint={cadence}
           onClick={() => onPick('when')}
         />
-        <WaitlistCell
-          icon={otherRole === 'driver' ? 'car' : 'profile'}
-          title={other ? t(`waitlist.role.${other.role}`) : t(`waitlist.edit.${otherRole}`)}
-          hint={other ? other.route : t(`waitlist.edit.${otherRole}Hint`)}
-          onClick={() => onPick('other')}
-        />
+        {other || listOpen ? (
+          <WaitlistCell
+            icon={otherRole === 'driver' ? 'car' : 'profile'}
+            title={other ? t(`waitlist.role.${other.role}`) : t(`waitlist.edit.${otherRole}`)}
+            hint={other ? other.route : t(`waitlist.edit.${otherRole}Hint`)}
+            onClick={() => onPick('other')}
+          />
+        ) : null}
       </div>
     </FormSheet>
   );
