@@ -40,15 +40,27 @@ describe('a complaint in «Navbat»', () => {
     expect(await screen.findByText('Madina → Jasur (haydovchi)')).toBeTruthy();
   });
 
+  // The driver's «Kelmadi» about the passenger: only then the commission goes back (G89 A1, A11).
   it('gives the commission back on a no-show with the warning', async () => {
     const decide = vi.fn(async () => undefined);
+    const noShow = {
+      ...COMPLAINT_DETAIL,
+      author: COMPLAINT_DETAIL.against,
+      against: COMPLAINT_DETAIL.author,
+    };
     const { tracked } = renderNavbat(open, [COMPLAINT], {
-      feedback: { complaint: async () => COMPLAINT_DETAIL, decide },
+      feedback: { complaint: async () => noShow, decide },
     });
     fireEvent.click(await screen.findByLabelText('Haydovchiga komissiyani qaytarish'));
     fireEvent.click(screen.getByText('Ogohlantirish'));
     await waitFor(() => expect(decide).toHaveBeenCalledWith('c1', { action: 'warning', refund: true }));
     expect(tracked.some((event) => event.name === 'complaint_decided')).toBe(true);
+  });
+
+  it('offers no refund when a passenger says the driver did not come', async () => {
+    renderNavbat(open, [COMPLAINT], { feedback: { complaint: async () => COMPLAINT_DETAIL } });
+    expect(await screen.findByText('Ogohlantirish')).toBeTruthy();
+    expect(screen.queryByLabelText('Haydovchiga komissiyani qaytarish')).toBeNull();
   });
 
   it('keeps the complaint with the reason when the decision did not go through (G43)', async () => {

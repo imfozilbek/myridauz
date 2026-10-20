@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { fileComplaint } from './application/file';
 import { decide } from './application/moderate';
 import { BY_MODERATOR, DRIVER, input, setup } from './complaints-test-kit';
+import { publicIdOf } from '../../test-people';
 
 const NOTHING = { action: 'none', refund: false } as const;
 
@@ -36,5 +37,20 @@ describe('the chat kept as evidence (G44, docs/58)', () => {
     const { deps, log } = setup();
     await decide(deps, BY_MODERATOR, idOf(await fileComplaint(deps, 101, input('b1'))), NOTHING);
     expect(log).not.toContain('forget b1');
+  });
+});
+
+// The phone of a deleted account waits for every complaint against it (docs/58, G89 A2): a block
+// decided later still blocks the phone, so a new account with it cannot come back.
+describe('the held phone of a deleted account', () => {
+  it('is kept until the last open complaint against the person is decided', async () => {
+    const { deps, log } = withDeleted(101);
+    deps.people.releasePhone = async (id) => void log.push(`release ${id}`);
+    const first = idOf(await fileComplaint(deps, DRIVER, input('b1')));
+    const second = idOf(await fileComplaint(deps, 102, { ...input('b2'), about: publicIdOf(101) }));
+    await decide(deps, BY_MODERATOR, first, NOTHING);
+    expect(log).not.toContain('release 101');
+    await decide(deps, BY_MODERATOR, second, { action: 'block', days: null, refund: false });
+    expect(log).toEqual(expect.arrayContaining(['block 101 null', 'release 101']));
   });
 });

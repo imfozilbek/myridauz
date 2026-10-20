@@ -1,6 +1,6 @@
 import type { Complaint, complaintDecisionSchema } from '@platform/contracts';
 import type { z } from 'zod';
-import { queueOrder } from '../domain/complaint';
+import { queueOrder, type ComplaintRecord } from '../domain/complaint';
 import { blockPerson } from './block';
 import { caseView, complaintView as view, sideOf } from './complaint-view';
 import type { ComplaintsDeps, Ride } from './ports';
@@ -67,8 +67,9 @@ export async function decide(deps: ComplaintsDeps, moderator: Moderator, id: str
   const now = deps.now();
   const days = decision.action === 'block' ? (decision.days ?? null) : null;
   const label = decision.action === 'block' ? `block:${days ?? 'forever'}` : decision.action;
-  const refund =
-    decision.refund && complaint.reasons.includes('no_show') && side === 'passenger' && ride.commission > 0;
+  // Only the driver's «Kelmadi» about the passenger of this booking: its commission is the one paid.
+  const ownNoShow = complaint.authorId === ride.driverId && against === ride.passengerId;
+  const refund = decision.refund && complaint.reasons.includes('no_show') && ownNoShow && ride.commission > 0;
   const proposal = { state: 'proposed', proposedBy: moderatorId, proposedAt: now } as const;
   const decided = {
     decision: refund ? `${label}:refund` : label,
@@ -91,9 +92,10 @@ export async function decide(deps: ComplaintsDeps, moderator: Moderator, id: str
       side,
     });
   }
-  // A deleted account kept its phone for this complaint only (docs/58).
-  await deps.people.releasePhone(against);
-  await forgetEvidence(deps, ride);
+  // A deleted account kept its phone for the complaints against it (docs/58): the last one ends it.
+  const open = await deps.store.open();
+  if (!open.some((known) => known.againstId === against)) await deps.people.releasePhone(against);
+  await forgetEvidence(deps, ride, open);
   await deps.tell.resolved(complaint.authorId, sideOf(ride, complaint.authorId));
   await deps.tell.queueChanged();
   return refund && moderator.owner ? answerRefund(deps, moderator, id, 'confirm') : ('ok' as const);
@@ -101,9 +103,8 @@ export async function decide(deps: ComplaintsDeps, moderator: Moderator, id: str
 
 // The chat of a ride stays as evidence when a side deletes the account (docs/65 A5); the last
 // decision on the ride ends it (G44, docs/58).
-async function forgetEvidence(deps: ComplaintsDeps, ride: Ride) {
+async function forgetEvidence(deps: ComplaintsDeps, ride: Ride, open: readonly ComplaintRecord[]) {
   const sides = await Promise.all([ride.driverId, ride.passengerId].map((id) => deps.people.find(id)));
   if (!sides.includes(undefined)) return;
-  const open = await deps.store.open();
   if (!open.some((complaint) => complaint.bookingId === ride.bookingId)) await deps.forgetChat(ride.chatKey);
 }
