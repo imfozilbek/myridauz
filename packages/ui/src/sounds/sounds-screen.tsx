@@ -9,6 +9,8 @@ import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { unlockAudio } from './audio';
 import { previewSound } from './brand-sound';
+import { ActionFailure } from '../states/action-failure';
+import { useFailure } from '../states/use-failure';
 
 // «Ovozlar» in «Boshqaruv» (G54, docs/115, G78 sheet 5): each set its own card to listen to, the one
 // in use marked green; the owner picks it by its first row.
@@ -26,6 +28,7 @@ function SoundSets({ loaded, onBack }: { readonly loaded: SoundsState; readonly 
   const { sounds } = useApiClients();
   const [state, setState] = useState(loaded);
   const [busy, setBusy] = useState(false);
+  const { failure, fail, clear } = useFailure();
   const listen = (set: string, kind: 'ring' | 'notify') => () => {
     // The tap itself opens the sound on iPhone.
     unlockAudio();
@@ -33,14 +36,19 @@ function SoundSets({ loaded, onBack }: { readonly loaded: SoundsState; readonly 
   };
   const pick = (set: string) => async () => {
     setBusy(true);
+    clear();
     try {
       setState(await sounds.pick(set));
+    } catch (caught) {
+      // The pick did not go through: the reason, never a silent tap (G90 ADM-10).
+      fail(caught);
     } finally {
       setBusy(false);
     }
   };
   return (
     <ManagePage title={t('common.admin.sounds')} onBack={onBack}>
+      <ActionFailure error={failure} />
       {state.sets.map((set) => {
         const chosen = set === state.set;
         const canPick = !chosen && !busy;

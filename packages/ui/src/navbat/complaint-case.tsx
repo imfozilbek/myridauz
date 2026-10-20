@@ -12,10 +12,10 @@ import { Screen } from '../screen/screen';
 import { ActionFailure } from '../states/action-failure';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { useFailure } from '../states/use-failure';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { CaseButtons } from './case-buttons';
+import { NextCaseButton, useCaseFailure } from './case-gone';
 import { CaseHeader } from './case-header';
 import type { CaseProps } from './case-props';
 import { ComplaintChat } from './complaint-chat';
@@ -44,14 +44,15 @@ export function ComplaintCase({ id, onBack, ...props }: CaseProps) {
 
 type ReviewProps = Omit<CaseProps, 'id' | 'item'> & { readonly complaint: ComplaintCase };
 
-function Review({ complaint, progress, onBack, onDone }: ReviewProps) {
+function Review({ complaint, progress, onBack, onDone, onGone }: ReviewProps) {
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { feedback } = useApiClients();
   const [mode, setMode] = useState<'view' | 'block' | 'chat'>('view');
   const [refund, setRefund] = useState(false);
-  const { failure, fail, clear } = useFailure();
-  const open = complaint.status !== 'resolved';
+  const { failure, fail, clear, gone } = useCaseFailure();
+  const resolved = complaint.status === 'resolved';
+  const open = !resolved && !gone;
   const decide = async (decision: ComplaintDecision) => {
     clear();
     try {
@@ -83,6 +84,13 @@ function Review({ complaint, progress, onBack, onDone }: ReviewProps) {
           <span className="case-muted">{t('navbat.complaint.reason')}</span>
           <b>{complaint.reasons.map((reason) => t(`complaints.reason.${reason}`)).join(', ')}</b>
         </div>
+        {/* A bot link opens a complaint decided already: it says so (G90 ADM-7). */}
+        {resolved ? (
+          <div className="case-row">
+            <span className="case-muted">{t('market.review.status')}</span>
+            <b>{t('manage.complaintStatus.resolved')}</b>
+          </div>
+        ) : null}
       </div>
       <ComplaintWords complaint={complaint} />
       <ComplaintTrip tripId={complaint.tripId} />
@@ -112,7 +120,9 @@ function Review({ complaint, progress, onBack, onDone }: ReviewProps) {
           />
           <MainButton text={t('complaints.warning')} onClick={() => decide({ action: 'warning' })} />
         </>
-      ) : null}
+      ) : (
+        <NextCaseButton onClick={onGone} />
+      )}
       <BlockSheet
         open={mode === 'block'}
         onClose={back}

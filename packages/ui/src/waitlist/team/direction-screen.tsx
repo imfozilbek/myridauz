@@ -13,6 +13,7 @@ import { MainButton, SecondaryButton } from '../../telegram/bottom-button';
 import { painKey } from '../parts';
 import { useRouteName } from './waiting-block';
 import './team.css';
+import { ErrorScreen } from '../../states/error-screen';
 
 type Counted = { readonly label: string; readonly count: number };
 
@@ -39,9 +40,10 @@ export function DirectionScreen({ region, onBack }: Props) {
   const { t, formatDate } = useI18n();
   const { waitlist } = useApiClients();
   const route = useRouteName();
-  const { value, reload } = useLoad(() => waitlist.direction(region));
+  const { value, failed, error, reload } = useLoad(() => waitlist.direction(region));
   const [asking, setAsking] = useState(false);
   const owner = useTeamOwner();
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} error={error} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   const cadences = (side: WaitlistDirection['passengers']) =>
     side.cadences.map(({ cadence, count }: { cadence: Cadence; count: number }) => ({

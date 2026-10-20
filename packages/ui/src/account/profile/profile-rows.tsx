@@ -75,8 +75,8 @@ export function ProfileRows({ standing, onOpen }: Props) {
           onClick={() => onOpen('subscriptions')}
         />
         {/* «Haydovchi boʻling» is here always for a passenger, the strip of the main screen only while
-            its block is free (G76, docs/165). */}
-        {account.profile.roles.includes('driver') ? null : (
+            its block is free (G76, docs/165); never in the driver app itself (G90 DRV-13). */}
+        {driver || account.profile.roles.includes('driver') ? null : (
           <ProfileRow
             icon="carSide"
             title={t('home.becomeDriver.title')}

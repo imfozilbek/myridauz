@@ -64,10 +64,31 @@ describe('a complaint in «Navbat»', () => {
   });
 
   it('keeps the complaint with the reason when the decision did not go through (G43)', async () => {
+    const decide = vi.fn(async () => Promise.reject(new ApiError(0, 'network.failed')));
+    renderNavbat(open, [COMPLAINT], { feedback: { complaint: async () => COMPLAINT_DETAIL, decide } });
+    fireEvent.click(await screen.findByText('Buzilish yoʻq'));
+    await waitFor(() => expect(screen.getByRole('alert').textContent).not.toBe(''));
+    expect(screen.getByText('Ogohlantirish')).toBeTruthy();
+  });
+
+  // G90 ADM-8: another member decided it meanwhile: the reason stays, its decisions go (they would fail
+  // for good), «Davom etish» opens the next case.
+  it('decided by another member: says so and leads on', async () => {
     const decide = vi.fn(async () => Promise.reject(new ApiError(409, 'complaints.wrong_status')));
     renderNavbat(open, [COMPLAINT], { feedback: { complaint: async () => COMPLAINT_DETAIL, decide } });
     fireEvent.click(await screen.findByText('Buzilish yoʻq'));
     expect(await screen.findByText(/Bu shikoyat allaqachon koʻrib chiqilgan/u)).toBeTruthy();
-    expect(screen.getByText('Ogohlantirish')).toBeTruthy();
+    expect(screen.queryByText('Ogohlantirish')).toBeNull();
+    fireEvent.click(screen.getByText('Davom etish'));
+    expect(await screen.findByText('Hammasi koʻrildi')).toBeTruthy();
+  });
+
+  // G90 ADM-7: an urgent complaint of a bot link decided already says so.
+  it('a complaint decided already says so and leads on', async () => {
+    const resolved = { ...COMPLAINT_DETAIL, status: 'resolved' as const };
+    renderNavbat(open, [], { feedback: { complaint: async () => resolved } });
+    expect(await screen.findByText('Hal qilindi')).toBeTruthy();
+    expect(screen.queryByText('Ogohlantirish')).toBeNull();
+    expect(screen.getByText('Davom etish')).toBeTruthy();
   });
 });

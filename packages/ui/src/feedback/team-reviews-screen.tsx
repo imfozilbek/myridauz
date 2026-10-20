@@ -8,6 +8,8 @@ import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { HideReviewSheet } from './hide-review-sheet';
+import { ActionFailure } from '../states/action-failure';
+import { useFailure } from '../states/use-failure';
 
 const isTag = (tag: string): tag is ReviewTag => (REVIEW_TAGS as readonly string[]).includes(tag);
 
@@ -21,13 +23,17 @@ export function TeamReviewsScreen({ onBack }: { readonly onBack: () => void }) {
   const [end, setEnd] = useState(false);
   const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
   const [open, setOpen] = useState<AdminReview | null>(null);
+  const { failure, fail, clear } = useFailure();
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   const reviews = [...value.reviews, ...older];
   const more = async () => {
     const last = reviews.at(-1);
     if (!last) return;
-    const next = await feedback.teamReviews(last.at);
+    clear();
+    // «Yana» that failed says so (G90 ADM-10).
+    const next = await feedback.teamReviews(last.at).catch(fail);
+    if (!next) return;
     setOlder((list) => [...list, ...next.reviews]);
     if (!next.more) setEnd(true);
   };
@@ -63,6 +69,7 @@ export function TeamReviewsScreen({ onBack }: { readonly onBack: () => void }) {
           <ManageRow icon="down" title={t('manage.journalMore')} onClick={() => void more()} />
         </ManageGroup>
       ) : null}
+      <ActionFailure error={failure} />
       <HideReviewSheet
         review={open}
         words={open ? words(open) : ''}

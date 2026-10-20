@@ -22,10 +22,12 @@ const { t, formatMoney, formatTime } = createI18n(DEFAULT_LOCALE);
 
 type Stage = 'published' | 'onWay' | 'arrived' | 'cancelled';
 
-function stageOf(trip: Trip, now: number): Stage {
+// On the road once the driver tapped «Yoʻlga chiqdim»: the time alone does not, as in the app
+// (G90 DRV-12).
+function stageOf(trip: Trip): Stage {
   if (trip.status === 'cancelled') return 'cancelled';
   if (trip.status === 'completed' || trip.arrivedAt !== null) return 'arrived';
-  return onTheWay(trip, now) ? 'onWay' : 'published';
+  return trip.departedAt !== null ? 'onWay' : 'published';
 }
 
 const riding = (booking: Booking) =>
@@ -100,7 +102,7 @@ type Facts = {
 // The live card of a trip in the driver bot, on top of the chat (G68, mockup g68/3). It shows the trip now: published with its passengers, the order of the road on the day
 // of the trip, arrived or cancelled. On the road it says that the bot keeps quiet (docs/122).
 export function driverCard({ brand, chatId, trip, bookings, places, now, via }: Facts): Card {
-  const stage = stageOf(trip, now);
+  const stage = stageOf(trip);
   const onWay = stage === 'onWay';
   const tripDay = onWay || tashkentDate(trip.departAt) === tashkentDate(now);
   const people = tripDay ? roadLines(bookings.filter(riding)) : passengerLines(bookings);
@@ -112,7 +114,8 @@ export function driverCard({ brand, chatId, trip, bookings, places, now, via }: 
     t('bot.dcard.price', { price: bold(formatMoney(trip.price)) }),
     ...(onWay ? [italic(t('bot.dcard.quiet'))] : []),
   ].join('\n');
-  const free = stage === 'published' && trip.seatsLeft > 0;
+  // Its time came: the trip takes nobody now (onTheWay), nothing to share.
+  const free = stage === 'published' && !onTheWay(trip, now) && trip.seatsLeft > 0;
   const keyboard = buttons(brand, trip, stage, free ? shareButton(brand, trip, places, via) : null);
   return {
     bot: 'driver',

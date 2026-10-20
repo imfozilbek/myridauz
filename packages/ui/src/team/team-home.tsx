@@ -6,6 +6,7 @@ import { useI18n } from '../context/i18n-context';
 import type { HomeGo } from '../flow/start-action';
 import { Icon } from '../icons';
 import { useLoad } from '../market/use-list';
+import { ActionFailure } from '../states/action-failure';
 import { ErrorScreen } from '../states/error-screen';
 import { haptic } from '../telegram/feedback';
 import { brandVars } from '../theme/brand-vars';
@@ -29,9 +30,11 @@ export function TeamHome({ go }: GoProps) {
   const { moderation, team } = useApiClients();
   const { colors } = useBrand().theme;
   const { value: me, failed, reload } = useLoad(() => moderation.me(), 'home.me');
-  const navbat = useLoad(() => team.navbat(), 'team.navbat').value;
-  // Who the person is did not come: the error with «Qayta urinish», never an empty screen (G77).
-  if (failed) return <ErrorScreen onRetry={reload} />;
+  const queue = useLoad(() => team.navbat(), 'team.navbat');
+  const navbat = queue.value;
+  // Who the person is or «Navbat» did not come: the error with «Qayta urinish», never an empty
+  // screen (G77, G90 ADM-10).
+  if (failed || (queue.failed && !navbat)) return <ErrorScreen onRetry={() => (reload(), queue.reload())} />;
   if (!me) return null;
   const owner = me.role === 'owner';
   return (
@@ -49,8 +52,10 @@ export function TeamHome({ go }: GoProps) {
 // Only the owner reads «Diqqat»: a moderator never asks for it.
 function OwnerDiqqat({ go }: GoProps) {
   const { team } = useApiClients();
-  const attention = useLoad(() => team.attention(), 'team.attention').value;
-  return attention ? <DiqqatSection attention={attention} go={go} /> : null;
+  const { value: attention, failed } = useLoad(() => team.attention(), 'team.attention');
+  if (attention) return <DiqqatSection attention={attention} go={go} />;
+  // «Diqqat» that did not load says so, never vanishes (G90 ADM-10).
+  return failed ? <ActionFailure error="errors.generic.description" /> : null;
 }
 
 // The own numbers of the day, then «Statistika» and «Kanallar» to read only (owner decision
@@ -60,10 +65,11 @@ function ModeratorNumbers({ go }: GoProps) {
   const { t } = useI18n();
   const brand = useBrand();
   const { team } = useApiClients();
-  const work = useLoad(() => team.work(), 'team.work').value;
+  const { value: work, failed } = useLoad(() => team.work(), 'team.work');
   return (
     <>
       {work ? <WorkNumbers work={work} /> : null}
+      {!work && failed ? <ActionFailure error="errors.generic.description" /> : null}
       <ManageGroup title={brand.name}>
         <ManageRow
           icon="statistics"

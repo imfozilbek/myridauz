@@ -6,11 +6,11 @@ import { Icon } from '../icons';
 import { useBlobUrl } from '../media/use-blob-url';
 import { Screen } from '../screen/screen';
 import { ActionFailure } from '../states/action-failure';
-import { useFailure } from '../states/use-failure';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { CaseHeader } from './case-header';
 import { TelegramLine } from './telegram-line';
+import { NextCaseButton, useCaseFailure } from './case-gone';
 import type { CaseProps } from './case-props';
 import './face-case.css';
 
@@ -19,12 +19,12 @@ const HOUR = 60;
 
 // The face photo of a passenger (G51, docs/120, mockup g67/2 screen 5): the 3 points the team
 // ticks and «Rasm mos»; «Mos emas» at a point refuses the photo for it in one tap (G78 К1).
-export function FaceCase({ id, item, progress, onBack, onDone }: CaseProps) {
+export function FaceCase({ id, item, progress, onBack, onDone, onGone }: CaseProps) {
   const { t } = useI18n();
   const { moderation } = useApiClients();
   const url = useBlobUrl(() => moderation.facePhoto(id), `face:${id}`);
   const [ticked, setTicked] = useState<readonly FaceReason[]>([]);
-  const { failure, fail, clear } = useFailure();
+  const { failure, fail, clear, gone } = useCaseFailure();
   const name = item?.name ?? '';
   const decide = async (decision: FaceDecision) => {
     clear();
@@ -83,7 +83,11 @@ export function FaceCase({ id, item, progress, onBack, onDone }: CaseProps) {
         })}
       </div>
       <ActionFailure error={failure} />
-      <MainButton text={t('navbat.face.approve')} onClick={() => decide({ action: 'approve' })} />
+      {gone ? (
+        <NextCaseButton onClick={onGone} />
+      ) : (
+        <MainButton text={t('navbat.face.approve')} onClick={() => decide({ action: 'approve' })} />
+      )}
     </div>
   );
 }

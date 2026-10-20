@@ -12,7 +12,13 @@ import { confirm, haptic } from '../telegram/feedback';
 
 // "Bloklar tarixi" of a person (docs/65 C): the block now, every block before it, who and why, a
 // card of «Boshqaruv» (G78 sheet 6). The owner lifts a block here; a moderator sees why it is not allowed.
-export function BlockJournal({ userId }: { readonly userId: PersonId }) {
+type Props = {
+  readonly userId: PersonId;
+  // The card above shows the block too: a lift reloads it (G90 ADM-6).
+  readonly onChanged?: () => void;
+};
+
+export function BlockJournal({ userId, onChanged }: Props) {
   const { t, formatDate } = useI18n();
   const { moderation } = useApiClients();
   const { value, reload } = useLoad(() => moderation.blocks(userId));
@@ -25,7 +31,8 @@ export function BlockJournal({ userId }: { readonly userId: PersonId }) {
       setFailure(null);
       await moderation.unblock(userId);
       haptic.success();
-      reload();
+      if (onChanged) onChanged();
+      else reload();
     } catch (caught) {
       haptic.error();
       setFailure(errorKey(caught));

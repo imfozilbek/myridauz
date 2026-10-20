@@ -7,6 +7,8 @@ import { useLoad } from '../../market/use-list';
 import { FormSheet } from '../../sheet/form-sheet';
 import { Switch } from '../../switch';
 import { MainButton, SecondaryButton } from '../../telegram/bottom-button';
+import { ActionFailure } from '../../states/action-failure';
+import { useFailure } from '../../states/use-failure';
 
 // «Kutish roʻyxati» on top of «Boshqaruv» (docs/181, mockup 8-team-switch): the switch of the list,
 // asked again in a sheet, and the links of the ads (docs/184).
@@ -17,12 +19,15 @@ export function ListGroup({ onAds }: { readonly onAds: () => void }) {
   const state = useLoad(() => waitlist.switchState(), 'waitlist.switch');
   const overview = useLoad(() => waitlist.overview(), 'waitlist.overview');
   const [asking, setAsking] = useState(false);
+  const { failure, fail, clear } = useFailure();
   const value = state.value;
-  if (!value) return null;
+  // The group that did not load says so, never vanishes (G90 ADM-10).
+  if (!value) return state.failed ? <ActionFailure error="errors.generic.description" /> : null;
   const waiting = (overview.value?.passengers ?? 0) + (overview.value?.drivers ?? 0);
   const since = value.at === null ? '' : when(value.at);
   const change = async () => {
-    await waitlist.setSwitch(!value.open);
+    clear();
+    await waitlist.setSwitch(!value.open).catch(fail);
     setAsking(false);
     state.reload();
   };
@@ -54,6 +59,7 @@ export function ListGroup({ onAds }: { readonly onAds: () => void }) {
           onClick={onAds}
         />
       </ManageGroup>
+      <ActionFailure error={failure} />
       <FormSheet
         open={asking}
         grouped
