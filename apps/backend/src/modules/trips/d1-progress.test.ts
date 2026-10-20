@@ -79,9 +79,10 @@ describe('«Yoʻlga chiqdim» and «Yetib keldik» in D1', () => {
     expect(await trips.save({ ...left, price: 80000 })).toBe(false);
     expect(await trips.find('soon')).toMatchObject({ status: 'cancelled', price: 90000 });
     expect(await trips.find('late')).toMatchObject({ departedAt: NOW, price: 90000 });
-    expect(await trips.save({ ...stale, id: 'new' })).toBe(true);
+    expect(await trips.save({ ...stale, id: 'new', pitakId: 'p1' })).toBe(true);
     expect(await trips.save({ ...stale, id: 'new', price: 80000 })).toBe(true);
-    expect(await trips.find('new')).toMatchObject({ status: 'active', price: 80000 });
+    // The pitak of the publishing stays with the trip (G89 T8).
+    expect(await trips.find('new')).toMatchObject({ status: 'active', price: 80000, pitakId: 'p1' });
   });
 
   // G89 T2: the hourly repair reads the cancelled trips of two days back and ahead, through an index.

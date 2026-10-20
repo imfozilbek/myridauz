@@ -85,6 +85,8 @@ export type TripsDeps = {
   >;
   // The main pitak of the direction «region A → region B», when people may see it (docs/72).
   readonly pitakOf: (fromRegion: string, toRegion: string) => Promise<Pitak | null>;
+  // The pitak a trip took at the publishing: shown even if the team closed it later (G89 T8).
+  readonly pitakById: (id: string) => Promise<Pitak | null>;
   // A trip was published or changed: channel posts and route subscriptions follow (docs/15, docs/24).
   readonly changed: (tripId: string, event: TripEvent) => Promise<void>;
   // The driver moved the trip on: the open screens of the driver and the riders refresh (G63).

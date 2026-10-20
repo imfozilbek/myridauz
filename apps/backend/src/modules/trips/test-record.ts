@@ -30,4 +30,5 @@ export const aTrip: TripRecord = {
   departedAt: null,
   arrivedAt: null,
   forRequest: null,
+  pitakId: null,
 };

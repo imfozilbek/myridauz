@@ -46,6 +46,8 @@ export type TripRecord = {
   readonly arrivedAt: number | null;
   // Opened for one «Boʻsh salon kerak» request (G64): only its passenger sees it until the answer.
   readonly forRequest: string | null;
+  // The pitak taken at the publishing (G89 T8); null for «from the door» and for older trips.
+  readonly pitakId: string | null;
 };
 
 export const endsAt = tripEndsAt;

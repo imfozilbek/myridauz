@@ -4,8 +4,8 @@ import { toTrip, type TripRow as Row } from './trip-row';
 
 const UPSERT = `INSERT INTO trips (id, driver_id, from_id, to_id, depart_at, ends_at, km, seats, price,
   woman_on_board, comment, status, pickup_mode, created_at, car_make, car_model, car_color, car_plate,
-  first_depart_at, first_price, price_told_at, booking_rule, for_request)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  first_depart_at, first_price, price_told_at, booking_rule, for_request, pitak_id)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   ON CONFLICT (id) DO UPDATE SET depart_at = excluded.depart_at,
   ends_at = excluded.ends_at, price = excluded.price, price_told_at = excluded.price_told_at,
   for_request = excluded.for_request
@@ -20,7 +20,7 @@ const ARRIVE = `UPDATE trips SET departed_at = COALESCE(departed_at, depart_at),
 const CANCEL = `UPDATE trips SET status = 'cancelled' WHERE id = ? AND ${LIVE} AND departed_at IS NULL`;
 const changed = (result: D1Result) => result.meta.changes === 1;
 
-// Table trips (migrations 0007, 0035, 0043, 0046, 0051). The route never changes; the driver moves the time
+// Table trips (migrations 0007, 0035, 0043, 0046, 0051, 0080). The route never changes; the driver moves the time
 // later and lowers the price (G39, docs/104). save never writes the marks of the road nor the status:
 // a change read before a cancel or a departure writes nothing (G89 T7).
 export const d1Trips = (db: D1Database): TripRepository => ({
@@ -52,6 +52,7 @@ export const d1Trips = (db: D1Database): TripRepository => ({
           trip.priceToldAt,
           trip.bookingRule,
           trip.forRequest,
+          trip.pitakId,
         )
         .run(),
     ),

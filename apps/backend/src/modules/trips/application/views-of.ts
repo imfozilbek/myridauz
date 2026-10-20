@@ -46,7 +46,13 @@ async function pitaksOf(deps: TripsDeps, trips: readonly TripRecord[]) {
     }),
   );
   const byDirection = new Map(found);
-  return (trip: TripRecord) => byDirection.get(`${regionOf(trip.from)}:${regionOf(trip.to)}`) ?? null;
+  // The pitak the trip took at the publishing; older trips have the one of the direction (G89 T8).
+  const kept = [...new Set(trips.flatMap((trip) => trip.pitakId ?? []))];
+  const byId = new Map(await Promise.all(kept.map(async (id) => [id, await deps.pitakById(id)] as const)));
+  return (trip: TripRecord) =>
+    trip.pitakId === null
+      ? (byDirection.get(`${regionOf(trip.from)}:${regionOf(trip.to)}`) ?? null)
+      : (byId.get(trip.pitakId) ?? null);
 }
 
 export async function views(deps: TripsDeps, trips: readonly TripRecord[]): Promise<Trip[]> {

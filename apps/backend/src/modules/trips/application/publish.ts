@@ -43,8 +43,9 @@ export async function publishTrip(
   const { km, minPrice, maxPrice, price: recommended } = recommendation.value;
   if (input.price < minPrice || input.price > maxPrice)
     return { ok: false, error: 'trips.price_out_of_bounds' };
-  if (input.pickupMode !== 'door' && !(await directionPitak(deps, input.from, input.to)))
-    return { ok: false, error: 'trips.no_pitak' };
+  // The pitak is taken now and stays with the trip (docs/70, G89 T8).
+  const pitak = input.pickupMode === 'door' ? null : await directionPitak(deps, input.from, input.to);
+  if (input.pickupMode !== 'door' && !pitak) return { ok: false, error: 'trips.no_pitak' };
   const busy = await scheduleError(deps, driverId, input.departAt, lead);
   if (busy) return { ok: false, error: busy };
   const trip: TripRecord = {
@@ -66,6 +67,7 @@ export async function publishTrip(
     departedAt: null,
     arrivedAt: null,
     forRequest,
+    pitakId: pitak?.id ?? null,
   };
   await deps.trips.save(trip);
   if (forRequest === null) {

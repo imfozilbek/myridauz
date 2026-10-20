@@ -6,7 +6,7 @@ import { sendSignals } from '../feed';
 import { placesOf } from '../locations';
 import { directionRecommendationFor, recommendationFor } from '../pricing';
 import { peopleOf } from '../users';
-import { pitakOf } from '../pitaks';
+import { pitakById, pitakOf } from '../pitaks';
 import type { TripEvent, TripsDeps } from './application/ports';
 import { d1Trips } from './infrastructure/d1-trips';
 import { createMemoryTrips } from './infrastructure/memory-trips';
@@ -44,6 +44,7 @@ export const tripsDeps = (env: Bindings): TripsDeps => ({
   schedule: brandOf(env).schedule,
   places: () => placesOf(env),
   pitakOf: (from, to) => pitakOf(env, from, to),
+  pitakById: (id) => pitakById(env, id),
   changed: (tripId, event) => onChange(env, tripId, event),
   signal: (people) => sendSignals(env, people),
   mask: (text) => maskContacts(text).text,
