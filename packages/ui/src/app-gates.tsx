@@ -23,9 +23,15 @@ type AppGatesProps = {
 };
 
 // What stands before the page of a Mini App. The questionnaire of the main bot needs no account and
-// no live channel (G83, docs/181); the passenger and the driver register (G04); the team is checked.
+// no live channel (G83, docs/181), only its «/hujjatlar» (G90 BOT-1); the passenger and the driver
+// register (G04); the team is checked.
 export function AppGates({ app, welcome, users, connect, Page }: AppGatesProps) {
-  if (app === 'main') return <Page />;
+  if (app === 'main')
+    return (
+      <LegalGate>
+        <Page />
+      </LegalGate>
+    );
   return (
     <FeedProvider connect={connect} onWake={onAppVisible} onSignal={() => playNotify()}>
       {welcome ? (

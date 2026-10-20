@@ -65,6 +65,9 @@ export function pinFirst(id: string): void {
   changed();
 }
 
+// The thing a bot link named and no list has (yet): a message read since then (G90 BOT-2).
+export const namedSheet = (): string | null => (opening?.kind === null ? opening.first : null);
+
 // An answer: this thing leaves for good, the next of its kind comes (docs/122).
 export function answeredSheet(key: string): void {
   answered.add(key);
