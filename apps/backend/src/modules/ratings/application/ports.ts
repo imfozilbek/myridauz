@@ -31,7 +31,9 @@ export type RatingStore = {
   toRemind(before: number, after: number): Promise<Ask[]>;
   markReminded(ask: Ask): Promise<void>;
   review(bookingId: string, raterId: number): Promise<StoredReview | undefined>;
-  saveReview(review: StoredReview): Promise<void>;
+  // A new review, or new stars and words on the old one: its id, hidden mark and first moment stay.
+  // From the bot only the stars change, in the same step: the words of the app are kept (G89).
+  saveReview(review: StoredReview, starsOnly: boolean): Promise<void>;
   about(userIds: readonly number[]): Promise<StoredReview[]>;
   // Every review this person wrote: "Safarlar tarixi" shows the stars given (G18).
   by(raterId: number): Promise<StoredReview[]>;

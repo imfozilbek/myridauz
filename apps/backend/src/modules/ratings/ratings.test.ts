@@ -71,6 +71,14 @@ describe('the rating of a person (docs/24)', () => {
     expect(await rate(deps, 101, review('b1', 3))).toBe('reviews.too_late');
   });
 
+  // G89: a star in the bot and the review of the app in the same moment: the words of the app stay.
+  it('keeps the words of the app when a star of the bot comes at the same time', async () => {
+    const { deps } = setup();
+    const words = { ...review('b1', 4, 'Yaxshi'), tags: ['on_time'] };
+    await Promise.all([rate(deps, 101, words), rate(deps, 101, review('b1', 5), true)]);
+    expect(await deps.store.review('b1', 101)).toMatchObject({ stars: 5, text: 'Yaxshi', tags: ['on_time'] });
+  });
+
   it('«vaqtida» of «Profil» is the share of published reviews marked on time (G65)', async () => {
     const { deps, later } = setup([ride(1), ride(2), ride(3)]);
     const onTime = (n: number) => ({ ...review(`b${n}`, 5), tags: ['on_time'] });

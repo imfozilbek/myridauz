@@ -68,11 +68,13 @@ export const d1Ratings = (db: D1Database): RatingStore => ({
     const row = await db.prepare(sql).bind(bookingId, raterId).first<ReviewRow>();
     return row ? toReview(row) : undefined;
   },
-  saveReview: async (r) => {
+  saveReview: async (r, starsOnly) => {
+    const words = starsOnly ? '' : 'tags = excluded.tags, text = excluded.text, ';
     await db
       .prepare(
-        'INSERT OR REPLACE INTO reviews (id, booking_id, rater_id, ratee_id, stars, tags, text, hidden, ' +
-          'created_at, updated_at, ride_ends_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        'INSERT INTO reviews (id, booking_id, rater_id, ratee_id, stars, tags, text, hidden, created_at, ' +
+          'updated_at, ride_ends_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (booking_id, rater_id) ' +
+          `DO UPDATE SET stars = excluded.stars, ${words}updated_at = excluded.updated_at`,
       )
       .bind(
         r.id,

@@ -24,27 +24,27 @@ async function rideFor(deps: RatingsDeps, bookingId: string, raterId: number): P
 const rateeOf = (ride: Ride, raterId: number) =>
   raterId === ride.driverId ? ride.passengerId : ride.driverId;
 
-// Stars from the bot keep the tags and the text written in the Mini App before.
+// Stars from the bot keep the tags and the text written in the Mini App, before or at the same time.
 export async function rate(deps: RatingsDeps, raterId: number, input: Input, fromBot = false) {
   const ride = await rideFor(deps, input.bookingId, raterId);
   if (typeof ride === 'string') return ride;
   const rateeId = rateeOf(ride, raterId);
   const allowed: readonly string[] = rateeId === ride.driverId ? DRIVER_TAGS : PASSENGER_TAGS;
-  const old = await deps.store.review(input.bookingId, raterId);
   const now = deps.now();
-  await deps.store.saveReview({
-    id: old?.id ?? deps.newId(),
+  const review = {
+    id: deps.newId(),
     bookingId: input.bookingId,
     raterId,
     rateeId,
     stars: input.stars,
-    tags: fromBot && old ? old.tags : input.tags.filter((tag) => allowed.includes(tag)),
-    text: fromBot && old ? old.text : deps.mask(input.text),
-    hidden: old?.hidden ?? false,
-    createdAt: old?.createdAt ?? now,
+    tags: input.tags.filter((tag) => allowed.includes(tag)),
+    text: deps.mask(input.text),
+    hidden: false,
+    createdAt: now,
     updatedAt: now,
     rideEndsAt: ride.endsAt,
-  });
+  };
+  await deps.store.saveReview(review, fromBot);
   // This review may publish the other side's review of the rater too: both are watched (G89 A9).
   const roleOf = (userId: number) => (userId === ride.driverId ? 'driver' : 'passenger');
   for (const userId of [rateeId, raterId]) await watch(deps, userId, roleOf(userId), now);
