@@ -38,6 +38,8 @@ const inBot = (from: string, to: string) => t('bot.time.range', { from, to });
 async function draw(page: Page, name: string, messages: Awaited<ReturnType<typeof botMessages>>, bot: Chat) {
   await showChat(page, bot, messages);
   await page.screenshot({ path: `screenshots/stand/g90/${name}.png`, fullPage: true });
+  // The chat sets its own size: the screens after it are the phone again.
+  await page.setViewportSize(NARROW);
 }
 type Chat = Parameters<typeof showChat>[1];
 const ofBot = async (bot: 'passenger' | 'driver', person: Person) =>
