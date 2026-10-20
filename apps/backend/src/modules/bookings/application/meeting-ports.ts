@@ -12,4 +12,7 @@ export type MeetingPorts = {
   refunds(driverId: number, bookingIds: readonly string[]): Promise<ReadonlyMap<string, RefundState>>;
   // The open Mini App of the passenger refreshes (docs/64).
   refreshPassenger(passengerId: number): Promise<void>;
+  // «Kelmadi»: the passenger is not on the trip, the link of close people closes (owner decision
+  // 20.10.2026, G89 C7, docs/43).
+  closeShare(bookingId: string): Promise<void>;
 };
