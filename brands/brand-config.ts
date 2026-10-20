@@ -55,14 +55,16 @@ type ModerationRules = {
 
 // When a driver may leave (G38, docs/103): at least leadMinutes after making the trip and at most
 // daysAhead; another day opens at defaultTime; one live trip (docs/172). A trip moves at most
-// shiftMinutes later (G39); the meeting opens meetMinutes before the departure (docs/126); the Cron
-// departs a trip autoDepartHours after its time.
+// shiftMinutes later (G39); a range of the time is at most rangeMaxHours (docs/216); the meeting
+// opens meetMinutes before the departure (docs/126); the Cron departs a trip autoDepartHours after
+// its time.
 // The way back after a trip leaves today when it can at returnUntil the latest, else the next morning.
 type ScheduleRules = {
   readonly leadMinutes: number;
   readonly daysAhead: number;
   readonly defaultTime: string;
   readonly shiftMinutes: number;
+  readonly rangeMaxHours: number;
   readonly meetMinutes: number;
   readonly autoDepartHours: number;
   readonly returnUntil: string;

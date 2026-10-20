@@ -25,8 +25,8 @@ export function useDockWords(directory: PlaceDirectory, now: number) {
     // «Ertaga», «Bugun», «12-okt».
     day: (at: number) => cardDay(tashkentDate(at), now),
     // «6 kun» left for the stars, as the page of the trip counts them (docs/129).
-    daysLeft: (trip: Pick<Trip, 'departAt' | 'km'>) =>
-      t('home.dock.days', { count: wholeDays(afterTrip(brand, trip.departAt, trip.km).rateUntil, now) }),
+    daysLeft: (trip: Pick<Trip, 'departAt' | 'departUntil' | 'km'>) =>
+      t('home.dock.days', { count: wholeDays(afterTrip(brand, trip).rateUntil, now) }),
     route: (trip: Pick<Trip, 'from' | 'to'>) => regions(trip.from, trip.to),
     car: (car: Car, plate: string | null) =>
       withPlate(

@@ -1,4 +1,4 @@
-import { DEPART_EARLY_MS, onTheWay } from '@platform/contracts';
+import { DEPART_EARLY_MS, lastDepart, onTheWay } from '@platform/contracts';
 import { isLive, type TripRecord } from './trip';
 
 export type DepartError =
@@ -22,12 +22,13 @@ export function depart(trip: TripRecord, driverId: number, now: number): TripRec
   return { ...trip, departedAt: now };
 }
 
-// «Yetib keldik»: only on the road, once. Without «Yoʻlga chiqdim» the time of the trip counts as
-// the departure. The deadlines after the trip stay as they were: they count from its end (docs/129).
+// «Yetib keldik»: only on the road, once. Without «Yoʻlga chiqdim» the time of the trip, the end of
+// its range, counts as the departure (docs/216). The deadlines after the trip stay as they were: they
+// count from its end (docs/129).
 export function arrive(trip: TripRecord, driverId: number, now: number): TripRecord | ArriveError {
   const error = closed(trip, driverId, now);
   if (error) return error;
   if (trip.arrivedAt !== null) return 'trips.already_arrived';
   if (!onTheWay(trip, now)) return 'trips.not_departed';
-  return { ...trip, departedAt: trip.departedAt ?? trip.departAt, arrivedAt: now };
+  return { ...trip, departedAt: trip.departedAt ?? lastDepart(trip), arrivedAt: now };
 }

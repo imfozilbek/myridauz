@@ -11,6 +11,8 @@ export type ScheduleRules = {
   readonly defaultTime: string;
   // A trip moves at most this much later than its first time (docs/104).
   readonly shiftMinutes: number;
+  // A range of whole hours is at most this long (owner decision 20.10.2026, docs/216).
+  readonly rangeMaxHours: number;
 };
 
 // Whether the driver has a live trip already: one at a time (owner decision 12.10.2026, docs/172).
@@ -21,6 +23,14 @@ export type Schedule = z.infer<typeof scheduleSchema>;
 export const SLOT_MINUTES = 30;
 const SLOT_MS = SLOT_MINUTES * MINUTE_MS;
 const SLOTS_A_DAY = (24 * 60) / SLOT_MINUTES;
+
+const HOUR_MINUTES = 60;
+
+// "07:30" on a Tashkent day: the moment in ms.
+export const slotAt = (date: string, time: string) => {
+  const [hours = 0, minutes = 0] = time.split(':').map(Number);
+  return tashkentDayStart(date) + (hours * HOUR_MINUTES + minutes) * MINUTE_MS;
+};
 
 export const earliestDepart = (now: number, rules: Pick<ScheduleRules, 'leadMinutes'>) =>
   now + rules.leadMinutes * MINUTE_MS;

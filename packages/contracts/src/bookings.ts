@@ -7,6 +7,7 @@ import { ratingSchema } from './ratings';
 import { bookedPlaceSchema, bookingModeSchema, pitakSchema } from './pickup';
 import { complaintRefundSchema } from './complaints';
 import { MINUTE_MS } from './team-hours';
+import { lastDepart } from './depart-range';
 
 // A seat booking (docs/35): a passenger asks, the driver confirms; or the driver offers on a
 // request and the passenger accepts. G08. Direct contacts are never part of it (docs/07).
@@ -62,9 +63,11 @@ export const meetingStartsAt = (departAt: number, minutes: number) => departAt -
 // The passenger is in the car (G76, owner decision 10.10.2026, docs/43): the driver marked «Keldi»,
 // or the time of the trip passed by the minutes of the meeting without «Kelmadi», so a driver who
 // forgot the mark never leaves the passenger without «Yetib keldim». The server keeps it too (G89 B1).
+// A range counts from its last hour: the driver may come at any hour of it (docs/216).
 type Seat = { readonly boardedAt: number | null; readonly noShowAt: number | null };
-export const inCarAt = (seat: Seat, departAt: number, now: number, meetMinutes: number) =>
-  seat.boardedAt !== null || (seat.noShowAt === null && now >= departAt + meetMinutes * MINUTE_MS);
+type Departs = { readonly departAt: number; readonly departUntil: number | null };
+export const inCarAt = (seat: Seat, trip: Departs, now: number, meetMinutes: number) =>
+  seat.boardedAt !== null || (seat.noShowAt === null && now >= lastDepart(trip) + meetMinutes * MINUTE_MS);
 
 export const bookingSchema = z.object({
   id: z.string(),

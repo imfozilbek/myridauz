@@ -37,8 +37,9 @@ export type TripRepository = {
   arrive(id: string, at: number): Promise<boolean>;
   // The driver's cancel, also one conditional write: a «Yoʻlga chiqdim» that came first wins (G63).
   cancel(id: string): Promise<boolean>;
-  // Live trips without «Yoʻlga chiqdim» whose time is in [from, to]: the Cron reminds and departs.
-  notDeparted(from: number, to: number): Promise<TripRecord[]>;
+  // Live trips without «Yoʻlga chiqdim» whose last departure (the end of a range, docs/216) is in
+  // [from, to]: the Cron reminds and departs. longest: the longest range, for the index of depart_at.
+  notDeparted(from: number, to: number, longest: number): Promise<TripRecord[]>;
   // Cancelled trips leaving after this time: the hourly repair ends their seats (G89 T2).
   cancelledAfter(after: number): Promise<string[]>;
 };

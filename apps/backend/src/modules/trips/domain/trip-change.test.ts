@@ -36,6 +36,21 @@ describe('the time of a trip (G39, docs/104, 8)', () => {
   });
 });
 
+describe('the time of a range (G90, docs/216)', () => {
+  it('moves the range whole, on its day', () => {
+    const range = { ...trip, departUntil: DEPART + 120 * MINUTE };
+    expect(retime(range, DRIVER, DEPART + 60 * MINUTE, NOW, SHIFT)).toMatchObject({
+      departAt: DEPART + 60 * MINUTE,
+      departUntil: DEPART + 180 * MINUTE,
+      endsAt: trip.endsAt + 180 * MINUTE,
+    });
+    // 21:00 … 23:00 an hour later ends the next day in Tashkent.
+    const evening = Date.parse('2026-10-02T16:00:00Z');
+    const late = { ...range, departAt: evening, firstDepartAt: evening, departUntil: evening + 120 * MINUTE };
+    expect(retime(late, DRIVER, evening + 60 * MINUTE, NOW, SHIFT)).toBe('trips.invalid_input');
+  });
+});
+
 describe('the price of a trip (G39, docs/104, 9)', () => {
   it('goes only down, not below the bound of the route', () => {
     expect(lowerPrice(trip, DRIVER, 80000, 30000, NOW)).toMatchObject({ price: 80000, firstPrice: 90000 });

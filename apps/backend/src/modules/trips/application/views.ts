@@ -38,6 +38,7 @@ export function tripView(
     from: trip.from,
     to: trip.to,
     departAt: trip.departAt,
+    departUntil: trip.departUntil,
     km: trip.km,
     seats: trip.seats,
     seatsLeft,

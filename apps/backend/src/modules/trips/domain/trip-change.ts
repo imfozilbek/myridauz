@@ -10,7 +10,7 @@ function blocked(trip: TripRecord, driverId: number, now: number): ChangeError |
 }
 
 // Later only, at most the brand's minutes (+1 hour) from the first time in all, the same day; the end
-// moves along (docs/104, 8, owner decision 04.10.2026).
+// moves along (docs/104, 8, owner decision 04.10.2026). A range moves whole (G90, docs/216).
 export function retime(
   trip: TripRecord,
   driverId: number,
@@ -21,8 +21,11 @@ export function retime(
   const error = blocked(trip, driverId, now);
   if (error) return error;
   const later = departAt > trip.departAt && departAt <= trip.firstDepartAt + shiftMinutes * MINUTE_MS;
-  if (!later || tashkentDate(departAt) !== tashkentDate(trip.firstDepartAt)) return 'trips.invalid_input';
-  return { ...trip, departAt, endsAt: endsAt(departAt, trip.km) };
+  const departUntil = trip.departUntil === null ? null : trip.departUntil + departAt - trip.departAt;
+  const day = tashkentDate(trip.firstDepartAt);
+  if (!later || tashkentDate(departUntil ?? departAt) !== day) return 'trips.invalid_input';
+  const moved = { ...trip, departAt, departUntil };
+  return { ...moved, endsAt: endsAt(moved) };
 }
 
 // Lower only, not below the bound of the route (docs/104, 9). A booking keeps its own price.

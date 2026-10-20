@@ -53,7 +53,7 @@ describe('the stage of the own trip (mockup g63/3, docs/118 path 6)', () => {
 
   it('is over once its time ended, as the server closes it, before the list is fresh', () => {
     const left = { ...trip, departedAt: AT };
-    const end = tripEndsAt(trip.departAt, trip.km);
+    const end = tripEndsAt(trip);
     expect(tripStep(left, end - 1)).toBe('arrived');
     expect(tripStage(left, end)).toBe('over');
     expect(tripStep(left, end)).toBeNull();

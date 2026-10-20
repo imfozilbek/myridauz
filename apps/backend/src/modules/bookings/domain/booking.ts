@@ -92,7 +92,7 @@ export function move(
   booking: BookingRecord,
   action: BookingAction,
   now: number,
-  trip: { readonly departAt: number; readonly departedAt: number | null },
+  trip: Parameters<typeof onTheWay>[0],
 ): BookingRecord | 'bookings.wrong_status' {
   const status = statusAt(booking, now, false);
   const over = onTheWay(trip, now) || metOrMissed(booking);

@@ -46,7 +46,10 @@ function bookingShared(deps: SharesDeps, booking: Booking, followers: number): S
     // Where the passenger boards: the pitak or the own point at the door (docs/43, docs/70).
     meetingPoint: booking.pitak?.point ?? booking.pickup?.point ?? null,
     dropoffPoint: booking.dropoff?.point ?? null,
-    status: shareStatus({ ...booking, departAt: trip.departAt, departedAt: trip.departedAt }, deps.now()),
+    status: shareStatus(
+      { ...booking, departAt: trip.departAt, departUntil: trip.departUntil, departedAt: trip.departedAt },
+      deps.now(),
+    ),
     followers,
   };
 }

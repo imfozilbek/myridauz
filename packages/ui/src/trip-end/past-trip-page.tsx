@@ -52,7 +52,7 @@ export function PastTripPage(props: Props) {
   const done = useDoneLine(trip, directory.find(trip.to)?.name ?? trip.to);
   const riders = bookings.filter(taken);
   const { now, back } = useReturnPlan(trip);
-  const talk = now < afterTrip(brand, trip.departAt, trip.km, trip.arrivedAt).talkUntil;
+  const talk = now < afterTrip(brand, trip).talkUntil;
   const seats = riders.reduce((sum, booking) => sum + booking.seats, 0);
   return (
     <div className="own-trip past-trip" style={brandVars(colors)}>

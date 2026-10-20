@@ -53,6 +53,7 @@ export const trip: Trip = {
   from: '1726269',
   to: '1730401',
   departAt: Date.parse('2026-10-02T03:00:00Z'),
+  departUntil: null,
   km: 320,
   seats: 3,
   seatsLeft: 3,
@@ -133,8 +134,7 @@ export async function chooseRoute(wholeRegion = false) {
   await tap(wholeRegion ? 'Butun viloyat' : 'Fargʻona shahri');
 }
 
-// The search and a request (G35, docs/97 K1): «Qayerga» opens at once, then «Qayerdan»; both
-// chosen, the next screen opens without «Davom etish».
+// The search and a request (G35, docs/97 K1): «Qayerga», then «Qayerdan»; no «Davom etish».
 export async function quickRoute(wholeRegion = false) {
   await tap('Fargʻona viloyati');
   await tap(wholeRegion ? 'Butun viloyat' : 'Fargʻona shahri');

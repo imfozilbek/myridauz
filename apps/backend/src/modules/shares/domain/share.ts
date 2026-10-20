@@ -1,6 +1,7 @@
 import {
   arrivalAt,
   HOUR_MS,
+  lastDepart,
   onTheWay,
   type BookingStatus,
   type ShareStatus,
@@ -42,6 +43,7 @@ export const openUntil = (departAt: number, km: number) => arrivalAt(departAt, k
 type Progress = {
   readonly status: BookingStatus;
   readonly departAt: number;
+  readonly departUntil: number | null;
   readonly departedAt: number | null;
   readonly boardedAt: number | null;
   readonly arrivedAt: number | null;
@@ -57,13 +59,13 @@ export function shareStatus(trip: Progress, now: number): ShareStatus {
   return trip.boardedAt === null ? 'waiting' : 'boarded';
 }
 
-type DriverProgress = Pick<Trip, 'status' | 'departAt' | 'departedAt' | 'arrivedAt' | 'km'>;
+type DriverProgress = Pick<Trip, 'status' | 'departAt' | 'departUntil' | 'departedAt' | 'arrivedAt' | 'km'>;
 
 // The driver has no boarding step: the family reads «Yoʻlga chiqdim» and «Yetib keldik»
 // (G63), the clock and the trip status.
 export function driverShareStatus(trip: DriverProgress, now: number): ShareStatus {
   if (trip.status === 'cancelled') return 'cancelled';
   if (trip.arrivedAt !== null) return 'arrived';
-  if (trip.status === 'completed' || now >= arrivalAt(trip.departAt, trip.km)) return 'completed';
+  if (trip.status === 'completed' || now >= arrivalAt(lastDepart(trip), trip.km)) return 'completed';
   return onTheWay(trip, now) ? 'on_the_way' : 'waiting';
 }

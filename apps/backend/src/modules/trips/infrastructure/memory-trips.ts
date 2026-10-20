@@ -1,3 +1,4 @@
+import { lastDepart, onTheWay } from '@platform/contracts';
 import type { TripRepository } from '../application/ports';
 import type { TripRecord } from '../domain/trip';
 
@@ -64,8 +65,8 @@ export function createMemoryTrips(): TripRepository {
     arrive: async (id, at) => {
       const trip = trips.get(id);
       if (!trip || !live(trip) || trip.arrivedAt !== null) return false;
-      if (trip.departedAt === null && trip.departAt > at) return false;
-      trips.set(id, { ...trip, departedAt: trip.departedAt ?? trip.departAt, arrivedAt: at });
+      if (!onTheWay(trip, at)) return false;
+      trips.set(id, { ...trip, departedAt: trip.departedAt ?? lastDepart(trip), arrivedAt: at });
       return true;
     },
     cancel: async (id) => {
@@ -76,7 +77,8 @@ export function createMemoryTrips(): TripRepository {
     },
     notDeparted: async (from, to) =>
       [...trips.values()].filter(
-        (trip) => live(trip) && trip.departedAt === null && trip.departAt >= from && trip.departAt <= to,
+        (trip) =>
+          live(trip) && trip.departedAt === null && lastDepart(trip) >= from && lastDepart(trip) <= to,
       ),
     cancelledAfter: async (after) =>
       [...trips.values()]

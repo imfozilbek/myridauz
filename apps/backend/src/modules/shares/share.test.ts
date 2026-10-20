@@ -7,6 +7,7 @@ const DEPART = Date.parse('2026-10-02T03:00:00Z');
 const trip = {
   status: 'confirmed' as const,
   departAt: DEPART,
+  departUntil: null,
   departedAt: null,
   boardedAt: null,
   arrivedAt: null,
@@ -22,10 +23,21 @@ describe('what close people read (docs/43)', () => {
     expect(shareStatus({ ...trip, status: 'cancelled_by_driver' }, DEPART - 1)).toBe('cancelled');
     // «Yoʻlga chiqdim» of the driver before the time (G63).
     expect(shareStatus({ ...trip, departedAt: DEPART - 9 }, DEPART - 1)).toBe('on_the_way');
+    // A range is on the way by the clock only at its end (docs/216).
+    const range = { ...trip, departUntil: DEPART + 2 * 3_600_000 };
+    expect(shareStatus(range, DEPART + 1)).toBe('waiting');
+    expect(shareStatus(range, DEPART + 2 * 3_600_000)).toBe('on_the_way');
   });
 
   it('reads the clock for a driver, who has no boarding step (G18)', () => {
-    const own = { status: 'active' as const, departAt: DEPART, departedAt: null, arrivedAt: null, km: 300 };
+    const own = {
+      status: 'active' as const,
+      departAt: DEPART,
+      departUntil: null,
+      departedAt: null,
+      arrivedAt: null,
+      km: 300,
+    };
     expect(driverShareStatus(own, DEPART - 1)).toBe('waiting');
     expect(driverShareStatus({ ...own, departedAt: DEPART - 9 }, DEPART - 1)).toBe('on_the_way');
     // «Yetib keldik» of the driver: the family reads it at once, not hours later by the clock (G63).

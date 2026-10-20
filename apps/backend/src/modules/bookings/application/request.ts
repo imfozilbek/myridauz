@@ -68,7 +68,7 @@ export async function requestBooking(
     price: facts.price,
     commission: deps.wallet.commission(facts.price, seats),
     status: 'requested',
-    expiresAt: answerDeadline(facts.departAt, now, deps.limits.bookings.answerHours),
+    expiresAt: answerDeadline(facts, now, deps.limits.bookings.answerHours),
     ...points.value,
     note: input.note ? deps.mask(input.note) : null,
     offerId: null,

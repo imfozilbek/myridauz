@@ -20,7 +20,7 @@ export function PastTripTags({ trip, bookings, now }: Props) {
   const { colors } = brand.theme;
   if (!tripPast(trip)) return null;
   const riders = ridersOf(bookings);
-  const { rateUntil } = afterTrip(brand, trip.departAt, trip.km);
+  const { rateUntil } = afterTrip(brand, trip);
   const tags: (readonly [Tone, string])[] = [];
   if (riders.length > 0 && riders.every((booking) => booking.rated === true))
     tags.push(['done', t('driverAfter.tag.rated')]);
