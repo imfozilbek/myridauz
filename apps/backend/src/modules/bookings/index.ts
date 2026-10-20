@@ -8,7 +8,7 @@ import { cancelEverything } from './application/cancel-all';
 import { eraseOldPoints } from './application/erase';
 import { expireRequests, expireTripRequests } from './application/expire';
 import { chatAbout } from './application/chat-about';
-import { coRiderIds } from './application/co-riders';
+import { coRiderIds, rideTogether } from './application/co-riders';
 import { chatMember } from './application/chat-member';
 import { chatKeysOf } from './application/chat-keys';
 import { liveBookingOf } from './application/live-booking';
@@ -104,6 +104,8 @@ export {
   tellTripPassengers,
 } from './live-cards';
 
+// Who sees whose face: passengers of one trip ahead or on the way (docs/05, G89 B7).
+export const rideTogetherOf = (env: Bindings, a: number, b: number) => rideTogether(bookingsDeps(env), a, b);
 // Whom a passenger may complain about: the other passengers of the trip (G46, docs/111 Q4).
 export const coRidersOf = (env: Bindings, passengerId: number, bookingId: string) =>
   coRiderIds(bookingsDeps(env), passengerId, bookingId);

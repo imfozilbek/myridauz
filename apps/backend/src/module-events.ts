@@ -10,6 +10,7 @@ import {
   filedRideOfBooking,
   ratableRideOfBooking,
   rideOfBooking,
+  rideTogetherOf,
   ridesOfTrips,
   ridingOf,
   tellRequest,
@@ -40,7 +41,14 @@ import {
   upcomingTripsOf,
   wireTripStanding,
 } from './modules/trips';
-import { peopleOf, wireApplicants, wireFaceTeam, wireRegistered, wireRiding } from './modules/users';
+import {
+  peopleOf,
+  wireApplicants,
+  wireCoPassengers,
+  wireFaceTeam,
+  wireRegistered,
+  wireRiding,
+} from './modules/users';
 import { refundNoShow, wireWalletLinks } from './modules/wallet';
 
 // What one module does after another: set here, the one place that knows every module, so the
@@ -130,3 +138,4 @@ wireComplaints({
 // A car changes only without live trips; a person blocked on the road finishes the trip (docs/158).
 wireLiveTrips(hasLiveTrips);
 wireRiding(ridingOf);
+wireCoPassengers(rideTogetherOf);

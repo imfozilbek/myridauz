@@ -19,7 +19,6 @@ import { showQueue } from '../team-queue';
 import { createMemoryImages } from '../../shared/storage/memory-images';
 import { r2Images } from '../../shared/storage/r2-images';
 import { createMemoryUsers } from './infrastructure/memory-stores';
-import { bookingStore, rideTogether } from '../bookings/infrastructure/store';
 import { brandOf } from '../../shared/brand/brand-of';
 import { arrivalsByChannelVia } from './infrastructure/channel-arrivals';
 
@@ -39,6 +38,10 @@ export const wireRiding = (next: RidingOf) => void (ridingOf = next);
 // A driver applicant hears about the face in the driver bot (G89 M7).
 let applicantOf: RidingOf = async () => false;
 export const wireApplicants = (next: RidingOf) => void (applicantOf = next);
+// Passengers of one trip ahead or on the way see each other's faces (docs/05, G89 B7).
+type PairOf = (env: Bindings, a: number, b: number) => Promise<boolean>;
+let coPassengersOf: PairOf = async () => false;
+export const wireCoPassengers = (next: PairOf) => void (coPassengersOf = next);
 
 const avatarsOf = (env: Bindings) => (env.MEDIA ? r2Images(env.MEDIA) : localAvatars);
 // Without D1 (tests and the stand) the names stay in memory.
@@ -47,10 +50,9 @@ const namesOf = (env: Bindings) => (env.DB ? d1TelegramNames(env.DB) : localName
 const usersDeps = (env: Bindings): UsersDeps => ({
   users: env.DB ? d1Users(env.DB) : localUsers,
   avatars: avatarsOf(env),
-  // Passengers with confirmed bookings on one trip see each other's photos (docs/05).
   trips: {
     relation: async (viewerId, ownerId) =>
-      (await rideTogether(bookingStore(env), viewerId, ownerId)) ? 'co_passenger' : 'none',
+      (await coPassengersOf(env, viewerId, ownerId)) ? 'co_passenger' : 'none',
   },
   // Local runs keep no journal of the face decisions.
   faceLog: env.DB ? d1FaceLog(env.DB) : { add: async () => undefined },
