@@ -1,3 +1,4 @@
+import type { FavoriteDriver } from '@platform/contracts';
 import { Caption, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { PersonBadge } from '../find/person-badge';
@@ -8,6 +9,7 @@ import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { RatingBadge } from '../feedback/rating-badge';
+import { FavoriteSheet } from './favorite-sheet';
 import { SearchTripCard } from '../find/search-trip-card';
 import { PlacesGate } from '../market/places-gate';
 import { TripById } from '../market/trip-link';
@@ -41,6 +43,8 @@ function Favorites({ onBack }: { readonly onBack: () => void }) {
   const { comfort } = useApiClients();
   const { value, failed, reload, refresh } = useLoad(() => comfort.favorites(), 'favorites');
   const [opened, setOpened] = useState<string | null>(null);
+  // The saved driver whose sheet is open (G90 PAS-4).
+  const [picked, setPicked] = useState<FavoriteDriver | null>(null);
   if (opened) return <TripById id={opened} onClose={() => setOpened(null)} />;
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
@@ -81,6 +85,7 @@ function Favorites({ onBack }: { readonly onBack: () => void }) {
             title={driver.firstName}
             hint={`${driver.car.make} ${driver.car.model}, ${t(`drivers.color.${driver.car.color}`)}`}
             after={<RatingBadge rating={driver.rating} />}
+            onOpen={() => setPicked(driver)}
           />
         ))}
         {value.trips.length === 0 ? (
@@ -96,6 +101,11 @@ function Favorites({ onBack }: { readonly onBack: () => void }) {
           </div>
         )}
       </List>
+      <FavoriteSheet
+        driver={picked}
+        onClose={() => setPicked(null)}
+        onRemoved={() => (setPicked(null), void refresh())}
+      />
     </div>
   );
 }
