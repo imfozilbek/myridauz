@@ -74,6 +74,9 @@ export async function applicantPhoto(
   return key ? deps.photos.get(key) : undefined;
 }
 
+const approvedOnce = async (deps: DriversDeps, userId: number) =>
+  (await deps.decisions.of(userId)).some((entry) => entry.status === 'approved');
+
 export async function decideApplication(
   deps: DriversDeps,
   moderatorId: number,
@@ -82,6 +85,10 @@ export async function decideApplication(
 ): Promise<Result<ApplicationSummary, ModerationError>> {
   const application = await deps.applications.find(userId);
   if (!application) return { ok: false, error: 'drivers.not_found' };
+  // «Rad etish» is the last word for a new application only: a driver approved once gets «Tuzatish»
+  // or a block (owner decision 20.10.2026, G90 DRV-2).
+  if (decision.action === 'reject' && (await approvedOnce(deps, userId)))
+    return { ok: false, error: 'drivers.wrong_status' };
   const next = decide(application, decision, moderatorId, deps.now());
   if (typeof next === 'string') return { ok: false, error: next };
   if (!(await deps.applications.decide(next, application)))

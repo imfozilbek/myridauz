@@ -51,6 +51,7 @@ function Application({ detail, progress, onBack, onDone, onGone }: ApplicationPr
   const [ticked, setTicked] = useState<Record<ReasonsMode, readonly ModerationReason[]>>(NO_TICKS);
   const { failure, fail, clear, gone } = useCaseFailure();
   const { userId } = detail;
+  const approvedOnce = detail.history.some((entry) => entry.status === 'approved');
   // One decision at a time: a second quick tap sends nothing (G89 M5).
   const busy = useRef(false);
   const act = async (work: () => Promise<unknown>, outcome: Outcome) => {
@@ -99,7 +100,16 @@ function Application({ detail, progress, onBack, onDone, onGone }: ApplicationPr
           <CaseButtons
             actions={[
               { labelKey: 'moderation.requestChanges', onClick: () => setMode('request_changes') },
-              { labelKey: 'moderation.reject', danger: true, onClick: () => setMode('reject') },
+              // A driver approved once: «Tuzatish» or a block, never «Rad etish» (G90 DRV-2).
+              ...(approvedOnce
+                ? []
+                : [
+                    {
+                      labelKey: 'moderation.reject' as const,
+                      danger: true,
+                      onClick: () => setMode('reject'),
+                    },
+                  ]),
               { labelKey: 'moderation.block', danger: true, onClick: () => setMode('block') },
             ]}
           />

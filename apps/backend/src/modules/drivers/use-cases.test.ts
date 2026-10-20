@@ -80,6 +80,26 @@ describe('driver application (docs/04)', () => {
     expect(drivers.has(1)).toBe(false);
   });
 
+  // Decision 2 of the owner (20.10.2026, G90 DRV-2): «Rad etish» is the last word for a new
+  // application only; a new car of an approved driver gets «Tuzatish» or a block.
+  it('never rejects for good the new car of an approved driver', async () => {
+    const { deps, photos } = setup();
+    await photos();
+    await submitApplication(deps, 1, CAR);
+    await decideApplication(deps, 900, 1, { action: 'approve' });
+    await uploadCarPhoto(deps, 1, 'front', jpeg);
+    await submitApplication(deps, 1, CAR);
+    expect(await decideApplication(deps, 900, 1, { action: 'reject', reasons: ['car_mismatch'] })).toEqual({
+      ok: false,
+      error: 'drivers.wrong_status',
+    });
+    const fix = await decideApplication(deps, 900, 1, {
+      action: 'request_changes',
+      reasons: ['car_mismatch'],
+    });
+    expect(fix.ok).toBe(true);
+  });
+
   it('keeps photos private and checks their type and size', async () => {
     const { deps } = setup();
     expect(await uploadCarPhoto(deps, 1, 'front', { body: new ArrayBuffer(1), type: 'text/html' })).toEqual({
