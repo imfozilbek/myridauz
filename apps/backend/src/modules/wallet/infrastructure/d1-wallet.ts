@@ -14,6 +14,7 @@ type Row = {
   created_by: number | null;
   expires_at: number | null;
   created_at: number;
+  grant_no: number | null;
 };
 
 const toOperation = (row: Row): Operation => ({
@@ -27,11 +28,12 @@ const toOperation = (row: Row): Operation => ({
   createdBy: row.created_by,
   expiresAt: row.expires_at,
   createdAt: row.created_at,
+  ...(row.grant_no === null ? {} : { grantNo: row.grant_no }),
 });
 
 const INSERT = `INSERT INTO wallet_operations
-  (id, driver_id, kind, balance, amount, booking_id, reason, created_by, expires_at, created_at)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  (id, driver_id, kind, balance, amount, booking_id, reason, created_by, expires_at, created_at, grant_no)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
 // The bonus of every driver whose latest bonus time is over burns (docs/12, the same rule as
 // domain/promo burnable): one statement for all drivers (G42). The id is new for each row. Only
@@ -77,10 +79,12 @@ export const d1Wallet = (db: D1Database): WalletRepository => ({
           op.createdBy,
           op.expiresAt,
           op.createdAt,
+          op.grantNo ?? null,
         ),
     );
     try {
-      // A batch is one transaction: the unique index (booking, kind, balance) stops a second charge.
+      // A batch is one transaction: the unique indexes stop a second charge of a booking (booking,
+      // kind, balance) and a second grant of the same bonus (driver, grant number, G89).
       await db.batch(statements);
       return true;
     } catch (error) {

@@ -21,6 +21,7 @@ const grantRow = (deps: WalletDeps, driverId: number, grant: Grant) =>
     balance: 'bonus',
     amount: grant.amount,
     expiresAt: grant.expiresAt,
+    grantNo: grant.no,
   });
 
 // A bonus whose time is over is not money any more, even before the Cron job burns it.

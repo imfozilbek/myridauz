@@ -13,6 +13,8 @@ export type Operation = {
   // A bonus lives until this time (a grant or a bonus given by hand).
   readonly expiresAt: number | null;
   readonly createdAt: number;
+  // The number of a grant of the promo (1, 2, 3): the database keeps each once per driver (G89).
+  readonly grantNo?: number;
 };
 
 export type Split = Readonly<Record<BalanceKind, number>>;
