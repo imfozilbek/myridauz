@@ -55,6 +55,12 @@ export async function sendDigest(deps: DigestDeps): Promise<void> {
   if (tashkentTime(now) < SUMMARY_FROM) return;
   const day = tashkentDate(now);
   if (!(await deps.store.markDigest(day, now))) return;
-  const [rows, numbers] = await Promise.all([digestOf(deps, day), deps.numbers(tashkentDayStart(day))]);
-  await deps.send(day, rows, numbers);
+  try {
+    const [rows, numbers] = await Promise.all([digestOf(deps, day), deps.numbers(tashkentDayStart(day))]);
+    await deps.send(day, rows, numbers);
+  } catch (error) {
+    // The day is not lost: the mark goes, the next tick builds the summary again (G89 A13).
+    await deps.store.unmarkDigest(day);
+    throw error;
+  }
 }

@@ -34,6 +34,8 @@ export type AssignmentStore = {
   openSupport(fromDay: string): Promise<{ readonly subjectId: number; readonly at: number }[]>;
   // true once: the digest of this day is to be sent now.
   markDigest(day: string, at: number): Promise<boolean>;
+  // The summary failed on its way: the next tick tries again (G89 A13).
+  unmarkDigest(day: string): Promise<void>;
   // true once: this reminder of the application sent at submittedAt is to be sent now (G34).
   markReminder(userId: number, submittedAt: number, step: ReminderStep, at: number): Promise<boolean>;
 };

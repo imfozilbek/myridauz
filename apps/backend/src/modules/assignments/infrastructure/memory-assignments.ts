@@ -58,6 +58,7 @@ export function createMemoryAssignments(): AssignmentStore {
       digests.add(day);
       return true;
     },
+    unmarkDigest: async (day) => void digests.delete(day),
     markReminder: async (userId, submittedAt, step) => {
       const reminder = `${userId}:${submittedAt}:${step}`;
       if (reminders.has(reminder)) return false;

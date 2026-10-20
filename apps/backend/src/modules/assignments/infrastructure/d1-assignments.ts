@@ -78,6 +78,9 @@ export const d1Assignments = (db: D1Database): AssignmentStore => ({
       .run();
     return result.meta.changes > 0;
   },
+  unmarkDigest: async (day) => {
+    await db.prepare('DELETE FROM team_digests WHERE day = ?').bind(day).run();
+  },
   markReminder: async (userId, submittedAt, step, at) => {
     const result = await db
       .prepare(
