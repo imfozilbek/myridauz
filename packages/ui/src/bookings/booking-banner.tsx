@@ -4,6 +4,7 @@ import { useDayLabel } from '../market/when';
 import { OutcomePlate } from '../states/outcome-plate';
 import { useBookingEnds } from '../trip/booking-ends';
 import { useDoneLine } from '../trip/done-line';
+import { shownStatus } from './booking-status';
 
 // The plate on top of a booking page (docs/118 path 3, docs/124 A): what happened and when.
 // «Joy tasdiqlandi» and «Safar tugadi» in the colour of the app, an end without a trip in grey; a
@@ -11,7 +12,7 @@ import { useDoneLine } from '../trip/done-line';
 export function BookingBanner({ booking }: { readonly booking: Booking }) {
   const { t, formatTime } = useI18n();
   const dayLabel = useDayLabel();
-  const { status } = booking;
+  const status = shownStatus(booking);
   const { departAt } = booking.trip;
   const { end } = useBookingEnds(booking);
   const done = useDoneLine(booking.trip, end);

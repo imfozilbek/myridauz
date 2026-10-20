@@ -48,16 +48,7 @@ export function LiveSeatTools({ booking, steps, onOpen, onCancel, onOthers, miss
         {live && callsOn && !gone ? button('phone', t('calls.call'), () => onOpen('call')) : null}
         {live ? button('share', t('bookings.toClose'), steps.share) : null}
       </div>
-      {steps.note ? (
-        <p className="booking-hint booking-note">
-          {t(`share.${steps.note}`)}
-          {steps.note === 'told' ? (
-            <button type="button" className="booking-link" onClick={steps.stop}>
-              {t('share.stop')}
-            </button>
-          ) : null}
-        </p>
-      ) : null}
+      <SeatNote steps={steps} />
       {/* Free seats in the car before it goes: a friend books one by the passenger's own link (G69,
           docs/123 loop 3). */}
       {live && freeSeats(booking) ? (
@@ -95,3 +86,20 @@ const freeSeats = ({ status, boardedAt, trip }: Booking) =>
   trip.status === 'active' &&
   trip.departedAt === null &&
   trip.seatsLeft > 0;
+
+// What the last step told the close people, with «stop» while they follow (docs/43); it stays on the
+// page after the arrival too (G90 PAS-7).
+export function SeatNote({ steps }: { readonly steps: ReturnType<typeof useSeatSteps> }) {
+  const { t } = useI18n();
+  if (!steps.note) return null;
+  return (
+    <p className="booking-hint booking-note">
+      {t(`share.${steps.note}`)}
+      {steps.note === 'told' ? (
+        <button type="button" className="booking-link" onClick={steps.stop}>
+          {t('share.stop')}
+        </button>
+      ) : null}
+    </p>
+  );
+}

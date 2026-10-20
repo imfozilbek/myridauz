@@ -13,8 +13,9 @@ import { brandVars } from '../theme/brand-vars';
 import { DriverRow } from '../trip/driver-row';
 import { TripCard } from '../trip/trip-card';
 import { BookingBanner } from './booking-banner';
+import { shownStatus } from './booking-status';
 import { DoneTools } from './done-tools';
-import { LiveSeatTools } from './live-seat-tools';
+import { LiveSeatTools, SeatNote } from './live-seat-tools';
 import { MeetingCard, meetingTime } from './meeting-card';
 import { mapUrl } from './map-link';
 import { useSeatSteps } from './use-seat-steps';
@@ -49,6 +50,8 @@ export function ConfirmedBooking(props: Props) {
   const support = useOpenSupport();
   // The driver marked «Kelmadi»: the seat is not ridden, nothing of a live seat is left (G90 PAS-1).
   const missed = booking.noShowAt !== null;
+  // After the arrival the ride is over at once: the page after the trip (G90 PAS-7).
+  const status = shownStatus(booking);
   const meeting = !missed && meetingTime(booking, Date.now(), brand.schedule.meetMinutes);
   return (
     <div className="booking-page" style={brandVars(brand.theme.colors)}>
@@ -71,9 +74,10 @@ export function ConfirmedBooking(props: Props) {
         )}
         <TripCard booking={booking} onPoint={(point) => openExternal(mapUrl(point))} />
       </div>
-      {booking.status === 'confirmed' ? <CoRiders bookingId={booking.id} /> : null}
-      {booking.status === 'completed' ? (
+      {status === 'confirmed' ? <CoRiders bookingId={booking.id} /> : null}
+      {status === 'completed' ? (
         <>
+          <SeatNote steps={steps} />
           <DoneTools booking={booking} onOpen={onOpen} missed={missed} />
           {missed ? (
             <MainButton text={t('home.support')} onClick={() => support()} />
