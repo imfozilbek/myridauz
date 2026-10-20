@@ -20,17 +20,19 @@ import { brandOf } from '../../shared/brand/brand-of';
 type Cases = (env: Bindings) => Promise<Case[]>;
 let casesOf: Cases = async () => [];
 export const wireTeamQueue = (next: Cases) => void (casesOf = next);
+// The cases of the whole team, as «Navbat» lists them: the reminders of the Cron (G89 A5).
+export const waitingCases = async (env: Bindings) => teamWork(await casesOf(env));
 
 // What rings under «Navbat» (docs/122): a case after an empty queue, a case its member left too long
 // (in team hours), an urgent complaint (day and night).
 export type QueueNews =
   | { readonly kind: 'new' }
-  | { readonly kind: 'late'; readonly memberId: number; readonly text: string }
+  | { readonly kind: 'late'; readonly memberIds: readonly number[]; readonly text: string }
   | { readonly kind: 'urgent'; readonly text: string; readonly markup?: object };
 
 function ringsOf(news: QueueNews | undefined, total: number, members: number[], teamTime: boolean): Ring[] {
   if (news?.kind === 'urgent') return members.map((id) => navbatRing(id, news.text, false, news.markup));
-  if (news?.kind === 'late') return [navbatRing(news.memberId, news.text, !teamTime)];
+  if (news?.kind === 'late') return news.memberIds.map((id) => navbatRing(id, news.text, !teamTime));
   if (news?.kind === 'new' && total === 1) return members.map((id) => newCaseRing(id, !teamTime));
   return [];
 }

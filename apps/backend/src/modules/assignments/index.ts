@@ -4,36 +4,28 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../env';
 import { adminIds } from '../../shared/telegram/bot-config';
 import { notify } from '../notifications';
-import { teamMembers } from '../team';
 import { caseName, showQueue, tellOwners } from '../team-queue';
-import { blockOf, isBlocked, peopleOf } from '../users';
+import { blockOf, peopleOf } from '../users';
 import { assign } from './application/assign';
 import { steadyOperator } from './domain/operator';
 import { sendDigest, type DigestDeps } from './application/digest';
 import type { Kind } from './application/ports';
 import { remindWaiting, type Waiting } from './application/remind';
-import { d1Assignments } from './infrastructure/d1-assignments';
 import { digestText } from './infrastructure/digest-text';
-import { createMemoryAssignments } from './infrastructure/memory-assignments';
 import { brandOf } from '../../shared/brand/brand-of';
+import { activeTeam, storeOf } from './team-of';
+export { sendCaseReminders } from './case-reminders';
 
 const { t } = createI18n(DEFAULT_LOCALE);
-const localAssignments = createMemoryAssignments();
 type Sources = Pick<DigestDeps, 'decisions' | 'numbers'>;
 const NO_SOURCES: Sources = {
   decisions: async () => new Map(),
   numbers: async () => ({ newUsers: 0, trips: 0, bookings: 0, fromChannels: 0 }),
 };
-const storeOf = (env: Bindings) => (env.DB ? d1Assignments(env.DB) : localAssignments);
 
 const deps = (env: Bindings, sources: Sources = NO_SOURCES): DigestDeps => ({
   store: storeOf(env),
-  // A blocked member gets no new cases (G89 M10).
-  teamIds: async () => {
-    const ids = (await teamMembers(env)).map((member) => member.id);
-    const blocked = await Promise.all(ids.map((id) => isBlocked(env, id)));
-    return ids.filter((_, index) => !blocked[index]);
-  },
+  teamIds: () => activeTeam(env),
   now: Date.now,
   random: Math.random,
   ...sources,
@@ -97,7 +89,7 @@ export function sendApplicationReminders(env: Bindings, waiting: () => Promise<W
   const { hours, remindMinutes, ownerMinutes } = brand.moderation;
   return remindWaiting({
     store: storeOf(env),
-    teamIds: deps(env).teamIds,
+    teamIds: () => activeTeam(env),
     rules: { hours, remindMinutes, ownerMinutes },
     now: Date.now,
     waiting,
@@ -109,7 +101,7 @@ export function sendApplicationReminders(env: Bindings, waiting: () => Promise<W
         minutes: String(minutes),
         left: String(Math.max(0, ownerMinutes - minutes)),
       });
-      await showQueue(env, { kind: 'late', memberId: moderatorId, text });
+      await showQueue(env, { kind: 'late', memberIds: [moderatorId], text });
     },
     // A case over the limit rings under «Diqqat» of the owners (G68, docs/122).
     toOwners: async ({ name, publicId }, moderatorId) => {

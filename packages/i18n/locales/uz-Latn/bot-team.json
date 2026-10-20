@@ -13,6 +13,8 @@
   "navbat.case.support": "{name} murojaati",
   "navbat.ringNew": "📋 Yangi ish keldi: navbat boʻsh edi",
   "navbat.ringLate": "⏱ {case} {minutes} daqiqa kutmoqda: {left} daqiqa qoldi",
+  "navbat.ownerLate": "⚠️ {case} {minutes} daqiqadan beri koʻrilmadi. Moderator: {moderator}.",
+  "navbat.ownerLateAll": "⚠️ {case} {minutes} daqiqadan beri koʻrilmadi.",
   "diqqat.title": "⚠️ Diqqat · bugun",
   "diqqat.hint": "Kuniga bitta karta: yangi belgi chiqsa, shu karta yangilanadi",
   "diqqat.stats": "📊 Statistika",

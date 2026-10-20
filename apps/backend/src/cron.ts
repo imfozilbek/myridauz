@@ -9,7 +9,7 @@ import { keepTelegramLooks } from './modules/looks';
 import { erasePastPoints, expireBookings, settleSeats } from './modules/bookings';
 import { bookingsUnderComplaint } from './modules/complaints';
 import { decisionsBetween, grantMissedBonuses, waitingApplications } from './modules/drivers';
-import { sendApplicationReminders, sendDaySummary } from './modules/assignments';
+import { sendApplicationReminders, sendCaseReminders, sendDaySummary } from './modules/assignments';
 import { forgetOldCards } from './modules/notifications';
 import { askForRatings } from './modules/ratings';
 import { askArrived, sendReminders, watchLateDepartures } from './modules/reminders';
@@ -33,7 +33,7 @@ const LOOKS_MINUTE = 30;
 
 // Closes trips, requests and bookings whose time is over, sends trip reminders, asks a driver who
 // forgot «Yoʻlga chiqdim» and departs the trip later, asks a passenger «Yetib keldingizmi?», edits channel posts of trips that left and the
-// boards of the day, reminds the team of waiting driver applications and keeps the minutes of
+// boards of the day, reminds the team of waiting applications and other cases (G89 A5) and keeps the minutes of
 // «Navbat» fresh; tells the waiting people of opened directions and refreshes the cards of the list
 // on Monday, a few at a time; sets the bots up again when their tokens or texts changed; posts the
 // welcomes of the bots to the channels, a few at a time (docs/15, docs/35, docs/122, docs/176,
@@ -50,6 +50,8 @@ const everyTick = (env: Bindings, now: number): Job[] => [
   ['closeDepartedPosts', () => closeDepartedPosts(env)],
   ['showChannelBoards', () => showChannelBoards(env)],
   ['sendApplicationReminders', () => sendApplicationReminders(env, () => waitingApplications(env))],
+  // Complaints, photos and support questions ring as applications do (G89 A5).
+  ['sendCaseReminders', () => sendCaseReminders(env)],
   ['showTeamQueue', () => showQueue(env)],
   ['tellOpenedDirections', () => tellOpenedDirections(env)],
   ['refreshWaitlistCards', () => refreshWaitlistCards(env)],

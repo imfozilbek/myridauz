@@ -8,6 +8,11 @@ export function createMemoryAssignments(): AssignmentStore {
   const rows: Row[] = [];
   const digests = new Set<string>();
   const reminders = new Set<string>();
+  const once = (reminder: string) => {
+    if (reminders.has(reminder)) return false;
+    reminders.add(reminder);
+    return true;
+  };
   const key = (row: Pick<Assignment, 'kind' | 'subjectId' | 'day'>) =>
     `${row.kind}:${row.subjectId}:${row.day}`;
   return {
@@ -59,11 +64,7 @@ export function createMemoryAssignments(): AssignmentStore {
       return true;
     },
     unmarkDigest: async (day) => void digests.delete(day),
-    markReminder: async (userId, submittedAt, step) => {
-      const reminder = `${userId}:${submittedAt}:${step}`;
-      if (reminders.has(reminder)) return false;
-      reminders.add(reminder);
-      return true;
-    },
+    markReminder: async (userId, submittedAt, step) => once(`${userId}:${submittedAt}:${step}`),
+    markCase: async (kind, caseId, since, step) => once(`${kind}:${caseId}:${since}:${step}`),
   };
 }

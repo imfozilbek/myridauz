@@ -90,4 +90,13 @@ export const d1Assignments = (db: D1Database): AssignmentStore => ({
       .run();
     return result.meta.changes > 0;
   },
+  markCase: async (kind, caseId, since, step, at) => {
+    const result = await db
+      .prepare(
+        `INSERT OR IGNORE INTO case_reminders (kind, case_id, since, step, sent_at) VALUES (?, ?, ?, ?, ?)`,
+      )
+      .bind(kind, caseId, since, step, at)
+      .run();
+    return result.meta.changes > 0;
+  },
 });

@@ -38,6 +38,8 @@ export type AssignmentStore = {
   unmarkDigest(day: string): Promise<void>;
   // true once: this reminder of the application sent at submittedAt is to be sent now (G34).
   markReminder(userId: number, submittedAt: number, step: ReminderStep, at: number): Promise<boolean>;
+  // The same for any other case of «Navbat» (G89 A5).
+  markCase(kind: string, caseId: string, since: number, step: ReminderStep, at: number): Promise<boolean>;
 };
 
 export type AssignDeps = {

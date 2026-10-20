@@ -9,7 +9,7 @@ const HOUR = 60 * 60 * 1000;
 // 00:05 UTC: the first tick of the daily hour runs every job but the looks of half past (docs/180).
 const NOW = Date.UTC(2026, 9, 5, 0, 5);
 const HALF_PAST = NOW + 30 * 60_000;
-const TICK_JOBS = 14;
+const TICK_JOBS = 15;
 const ago = (hours: number) => NOW - hours * HOUR;
 
 // One row for each job to work on, so that every read of every job runs (G56).
@@ -59,7 +59,7 @@ describe('the reads of the Cron', () => {
     await db.exec(SEED);
     const env = { ...testEnv, DB: db } as unknown as Bindings;
     const jobs = [...cronJobs(env, NOW), ...cronJobs(env, HALF_PAST).slice(TICK_JOBS)];
-    expect(jobs).toHaveLength(29);
+    expect(jobs).toHaveLength(30);
     expect(await runJobs(jobs)).toEqual([]);
     expect(fullScans(db)).toEqual([]);
   });
@@ -67,9 +67,9 @@ describe('the reads of the Cron', () => {
   it('runs the rare jobs once an hour and once a day', () => {
     const names = (at: number) => cronJobs({ ...testEnv } as unknown as Bindings, at).map(([name]) => name);
     expect(names(NOW + 15 * 60_000)).toHaveLength(TICK_JOBS);
-    expect(names(NOW + 5 * HOUR)).toEqual([...names(NOW + 15 * 60_000), ...names(NOW).slice(TICK_JOBS, 24)]);
+    expect(names(NOW + 5 * HOUR)).toEqual([...names(NOW + 15 * 60_000), ...names(NOW).slice(TICK_JOBS, 25)]);
     expect(names(HALF_PAST)).toEqual([...names(NOW + 15 * 60_000), 'keepTelegramLooks']);
-    expect(names(NOW).slice(24)).toEqual([
+    expect(names(NOW).slice(25)).toEqual([
       'grantMissedBonuses',
       'warnBonusEnd',
       'purgeSupport',
@@ -77,6 +77,6 @@ describe('the reads of the Cron', () => {
     ]);
     // The stand runs the Cron by hand at any minute: every job runs.
     const stand = { ...testEnv, CRON_TIERS: 'off' } as unknown as Bindings;
-    expect(cronJobs(stand, NOW + 15 * 60_000)).toHaveLength(29);
+    expect(cronJobs(stand, NOW + 15 * 60_000)).toHaveLength(30);
   });
 });
