@@ -54,6 +54,7 @@
   "share.arrived": "{name} yetib keldi.",
   "share.cancelled": "Safar bekor qilindi.",
   "share.retimed": "Vaqt oʻzgardi: {name} {date}, {time} da yoʻlga chiqadi.",
+  "share.retimedRange": "Vaqt oʻzgardi: {name} {date}, {time} yoʻlga chiqadi.",
   "rating.ask": "{name} bilan safar qanday oʻtdi? Baholang:",
   "rating.remind": "Eslatma: {name} bilan safarni hali baholamadingiz.",
   "rating.review": "Izoh qoldirish",

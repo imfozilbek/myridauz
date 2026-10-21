@@ -1,9 +1,10 @@
 import type { BrandConfig } from '@platform/brands';
-import { FIND_LINK, requestsLinkValue, tashkentDate, tashkentTime, type Trip } from '@platform/contracts';
+import { FIND_LINK, requestsLinkValue, tashkentDate, type Trip } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { News } from '../../notifications';
 import { appButton } from '../../../shared/telegram/open-button';
 import { newsFoot, newsHead, newsRoute, tripLine } from '../../../shared/telegram/route-news';
+import { tripTimeText } from '../../../shared/telegram/trip-time';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
@@ -22,7 +23,7 @@ export const favoriteTeller =
     const [from, to] = await Promise.all([placeName(trip.from), placeName(trip.to)]);
     const find = { name: FIND_LINK, id: requestsLinkValue(trip.from, trip.to, tashkentDate(trip.departAt)) };
     const line = tripLine(
-      { ...trip, name: trip.driver.firstName, time: tashkentTime(trip.departAt), seats: trip.seatsLeft },
+      { ...trip, name: trip.driver.firstName, time: tripTimeText(trip), seats: trip.seatsLeft },
       { favorite: true },
       now(),
     );

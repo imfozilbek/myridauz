@@ -1,20 +1,22 @@
 import type { BrandConfig } from '@platform/brands';
-import { botStartLink, formatPlate, type Booking } from '@platform/contracts';
+import { botStartLink, formatPlate, type Booking, type Trip } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { passengerValue, withValue } from '../../../shared/share/value-lines';
+import { tripTimeText } from '../../../shared/telegram/trip-time';
 import type { ShareTexts, ShareUpdate } from '../application/ports';
 
-const { t, formatDate, formatTime } = createI18n(DEFAULT_LOCALE);
+const { t, formatDate } = createI18n(DEFAULT_LOCALE);
 const UPDATE_TEXT = {
   boarded: 'bot.share.boarded',
   arrived: 'bot.share.arrived',
   cancelled: 'bot.share.cancelled',
 } as const satisfies Record<Exclude<ShareUpdate, 'retimed'>, string>;
-const retimed = (name: string, departAt: number) =>
-  t('bot.share.retimed', {
+// A range: «08:00 dan 10:00 gacha yoʻlga chiqadi» (G90, docs/216).
+const retimed = (name: string, trip: Pick<Trip, 'departAt' | 'departUntil'>) =>
+  t(trip.departUntil === null ? 'bot.share.retimed' : 'bot.share.retimedRange', {
     name,
-    date: formatDate(new Date(departAt)),
-    time: formatTime(new Date(departAt)),
+    date: formatDate(new Date(trip.departAt)),
+    time: tripTimeText(trip),
   });
 
 const carOf = (booking: Booking) => {
@@ -45,7 +47,7 @@ export const shareTexts = (brand: BrandConfig, placeName: (id: string) => Promis
           from: await placeName(booking.trip.from),
           to: await placeName(booking.trip.to),
           date: formatDate(new Date(booking.trip.departAt)),
-          time: formatTime(new Date(booking.trip.departAt)),
+          time: tripTimeText(booking.trip),
           car: carOf(booking),
           plate: plateOf(booking),
           driver: booking.trip.driver.firstName,
@@ -59,7 +61,7 @@ export const shareTexts = (brand: BrandConfig, placeName: (id: string) => Promis
           from: await placeName(trip.from),
           to: await placeName(trip.to),
           date: formatDate(new Date(trip.departAt)),
-          time: formatTime(new Date(trip.departAt)),
+          time: tripTimeText(trip),
           car: `${trip.car.make} ${trip.car.model}`,
           plate: formatPlate(trip.plate),
         }),
@@ -68,7 +70,7 @@ export const shareTexts = (brand: BrandConfig, placeName: (id: string) => Promis
     retimed,
     update: (booking, update) =>
       update === 'retimed'
-        ? retimed(booking.passenger.firstName, booking.trip.departAt)
+        ? retimed(booking.passenger.firstName, booking.trip)
         : t(UPDATE_TEXT[update], {
             name: booking.passenger.firstName,
             car: carOf(booking),

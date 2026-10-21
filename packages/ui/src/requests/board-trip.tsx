@@ -1,12 +1,14 @@
 import { tashkentDate, type Trip } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
+import { useTripTime } from '../trip/trip-time';
 import { useEnds } from './ends';
 import { useRequestDay } from './request-day';
 
 // «Safaringiz: ertaga 08:00, Samarqand · 3 boʻsh joy · 90 000» (mockup g64/2): the live trip the
 // requests below are measured against; a tap opens it.
 export function BoardTrip({ trip, onOpen }: { readonly trip: Trip; readonly onOpen: () => void }) {
-  const { t, formatTime, formatNumber } = useI18n();
+  const { t, formatNumber } = useI18n();
+  const tripTime = useTripTime();
   const day = useRequestDay();
   const { to } = useEnds()(trip);
   return (
@@ -14,7 +16,7 @@ export function BoardTrip({ trip, onOpen }: { readonly trip: Trip; readonly onOp
       <b>
         {t('requests.board.trip', {
           day: day(tashkentDate(trip.departAt)),
-          time: formatTime(new Date(trip.departAt)),
+          time: tripTime(trip),
           to,
         })}
       </b>

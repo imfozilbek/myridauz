@@ -36,6 +36,8 @@ export const brandConfig: BrandBase = {
     daysAhead: 6,
     defaultTime: '08:00',
     shiftMinutes: 60,
+    // A range of the time «08:00 dan 10:00 gacha» is 1 to 3 whole hours (owner decision 20.10.2026, docs/216).
+    rangeMaxHours: 3,
     meetMinutes: 30,
     autoDepartHours: 2,
     // The way back today at 22:00 the latest, later: the next morning (owner decision 12.10.2026, G78 В11).

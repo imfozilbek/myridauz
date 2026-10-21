@@ -1,4 +1,4 @@
-import type { Trip } from '@platform/contracts';
+import { lastDepart, type Trip } from '@platform/contracts';
 import { useApiClients } from '../../context/api-clients';
 import { useBrand } from '../../context/brand-context';
 import type { HomeGo } from '../../flow/start-action';
@@ -77,7 +77,9 @@ export function usePassengerState(): PassengerState {
 function useFavoriteTrip(now: number, seen: ReadonlySet<string>): Trip | null {
   const { comfort } = useApiClients();
   const { value } = useLoad(() => comfort.favorites(), 'favorites');
-  return value?.trips.find((trip) => trip.seatsLeft > 0 && trip.departAt > now && !seen.has(trip.id)) ?? null;
+  return (
+    value?.trips.find((trip) => trip.seatsLeft > 0 && lastDepart(trip) > now && !seen.has(trip.id)) ?? null
+  );
 }
 
 type CardProps = { readonly state: PassengerState; readonly go: HomeGo; readonly directory: PlaceDirectory };

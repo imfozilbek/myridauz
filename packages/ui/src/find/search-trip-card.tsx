@@ -3,6 +3,7 @@ import { Tappable } from '@telegram-apps/telegram-ui';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 import { freeCar } from '../market/trip-filters';
+import { useTripTime } from '../trip/trip-time';
 import { PersonBadge } from './person-badge';
 
 const BADGE = 22;
@@ -13,6 +14,7 @@ type Props = { readonly trip: Trip; readonly onOpen: () => void };
 // the driver picks up, then the driver.
 export function SearchTripCard({ trip, onOpen }: Props) {
   const { t, formatTime, formatMoney, formatRating } = useI18n();
+  const tripTime = useTripTime();
   const { driver } = trip;
   const mode =
     trip.pickupMode === 'both' ? 'both' : trip.pickupMode === 'door' || !trip.pitak ? 'door' : 'pitak';
@@ -37,10 +39,13 @@ export function SearchTripCard({ trip, onOpen }: Props) {
       ) : null}
       <div className="search-trip-head">
         <span className="search-trip-times">
-          {t('find.times', {
-            from: formatTime(new Date(trip.departAt)),
-            to: formatTime(new Date(arrivalAt(trip.departAt, trip.km))),
-          })}
+          {/* A range «08:00 … 10:00» shows no arrival (G90, mockup g90/5). */}
+          {trip.departUntil === null
+            ? t('find.times', {
+                from: formatTime(new Date(trip.departAt)),
+                to: formatTime(new Date(arrivalAt(trip.departAt, trip.km))),
+              })
+            : tripTime(trip)}
         </span>
         <span className="search-trip-price">{formatMoney(trip.price)}</span>
       </div>

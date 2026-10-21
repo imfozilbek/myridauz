@@ -27,6 +27,13 @@ const times = () =>
 const time = async () => (await screen.findAllByRole('button', { pressed: true })).at(-1)?.textContent;
 const halves = (from: number) =>
   Array.from({ length: 24 - from }, (_, hour) => `${String(from + hour).padStart(2, '0')}:30`);
+const exact = (time: string, departAt: number) => ({
+  date: '2026-10-01',
+  time,
+  departAt,
+  until: null,
+  departUntil: null,
+});
 const wholes = (from: number) =>
   Array.from({ length: 24 - from }, (_, hour) => `${String(from + hour).padStart(2, '0')}:00`);
 
@@ -42,7 +49,7 @@ describe('WhenSheet', () => {
     expect(screen.queryByText('Tayyor')).toBeNull();
     await tap('15:30');
     const departAt = tashkentDayStart('2026-10-01') + 15.5 * HOUR;
-    expect(onDone).toHaveBeenCalledWith({ date: '2026-10-01', time: '15:30', departAt });
+    expect(onDone).toHaveBeenCalledWith(exact('15:30', departAt));
   });
 
   it('switches to the whole hours and back: only the free ones', async () => {
@@ -51,7 +58,7 @@ describe('WhenSheet', () => {
     expect(times()).toEqual(wholes(16));
     await tap('16:00');
     const departAt = tashkentDayStart('2026-10-01') + 16 * HOUR;
-    expect(onDone).toHaveBeenCalledWith({ date: '2026-10-01', time: '16:00', departAt });
+    expect(onDone).toHaveBeenCalledWith(exact('16:00', departAt));
     await tap('Soat yarimida');
     expect(times()).toEqual(halves(15));
   });

@@ -63,7 +63,7 @@ test.beforeAll(async () => {
 // «Keldi», then «Yoʻlga chiqdim» on the main button (mockup g63/4 screens 11, 12, 13). It returns the page of the driver that is open now.
 async function meetAndLeave(context: BrowserContext, page: Page, walk: Walk, trip: Trip) {
   const departAt = Date.now() + MEET_BEFORE_MINUTES * MINUTE;
-  moveTrip(trip.id, departAt, tripEndsAt(departAt, trip.km));
+  moveTrip(trip.id, departAt, tripEndsAt({ departAt, departUntil: null, km: trip.km }));
   await page.close();
   const later = await context.newPage();
   const search = `?${MY_TRIP_LINK}=${trip.id}`;

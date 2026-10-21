@@ -1,5 +1,5 @@
 import type { Trip, TripInput } from '@platform/contracts';
-import { departError, endsAt, type TripRecord } from '../domain/trip';
+import { departError, endsAt, rangeError, type TripRecord } from '../domain/trip';
 import { directionPitak, offerWay } from './direction-pitak';
 import type { Result, TripsDeps } from './ports';
 import { scheduleError, type ScheduleError } from './schedule';
@@ -10,6 +10,7 @@ export type PublishError =
   | 'trips.too_many_seats'
   | 'trips.in_past'
   | 'trips.invalid_input'
+  | 'trips.bad_range'
   | 'trips.price_out_of_bounds'
   | 'trips.no_pitak'
   | ScheduleError
@@ -20,7 +21,7 @@ export type PublishError =
 export type Input = Required<
   Pick<TripInput, 'from' | 'to' | 'departAt' | 'seats' | 'price' | 'womanOnBoard' | 'pickupMode'>
 > &
-  Pick<TripInput, 'bookingRule'> & { readonly comment: string };
+  Pick<TripInput, 'bookingRule' | 'departUntil'> & { readonly comment: string };
 
 // Only an approved driver publishes (docs/04), within the seats of the car and the price bounds (docs/09),
 // at a time the driver makes (docs/103), by the pitak only where the direction has one (docs/70).
@@ -36,7 +37,10 @@ export async function publishTrip(
   const [car, driver] = await Promise.all([deps.approvedCar(driverId), deps.people.find(driverId)]);
   if (!car || !driver) return { ok: false, error: 'trips.not_driver' };
   if (input.seats > car.seats) return { ok: false, error: 'trips.too_many_seats' };
-  const timeError = departError(input.departAt, now, deps.schedule.daysAhead);
+  const departUntil = input.departUntil ?? null;
+  const timeError =
+    departError(input.departAt, now, deps.schedule.daysAhead) ??
+    rangeError(input.departAt, departUntil, deps.schedule.rangeMaxHours);
   if (timeError) return { ok: false, error: timeError };
   const recommendation = await deps.recommend(input.from, input.to);
   if (!recommendation.ok) return recommendation;
@@ -57,7 +61,8 @@ export async function publishTrip(
     car: { make: car.make, model: car.model, color: car.color, plate: car.plate },
     id: deps.newId(),
     driverId,
-    endsAt: endsAt(input.departAt, km),
+    departUntil,
+    endsAt: endsAt({ departAt: input.departAt, departUntil, km }),
     km,
     status: 'active',
     createdAt: now,
@@ -79,11 +84,12 @@ export async function publishTrip(
     : { ok: false, error: 'trips.not_driver' };
 }
 
-// An accepted offer becomes a trip (docs/35): the way is the one the direction has (docs/70).
+// An accepted offer becomes a trip (docs/35): the way is the one the direction has (docs/70). An
+// offer has one exact time, never a range (docs/216).
 export async function publishOfferTrip(
   deps: TripsDeps,
   driverId: number,
-  input: Omit<Input, 'pickupMode'>,
+  input: Omit<Input, 'pickupMode' | 'departUntil'>,
   requestId: string,
 ): Promise<Result<Trip, PublishError>> {
   // The passenger takes an offer sent in time: its trip opens until the departure (G89 B2). It is

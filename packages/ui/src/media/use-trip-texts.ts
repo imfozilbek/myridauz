@@ -3,6 +3,7 @@ import type { Trip } from '@platform/contracts';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { usePlaceLabel } from '../market/places-gate';
+import { useTripTime } from '../trip/trip-time';
 import type { TripPictureTexts } from './trip-paint';
 
 // The words of a picture of a trip in the language of the app (docs/88 L19, G88 docs/193).
@@ -18,13 +19,17 @@ export function usePictureChecks(): readonly string[] {
 }
 
 export function useTripTexts() {
-  const { t, formatDate, formatTime, formatMoney } = useI18n();
+  const { t, formatDate, formatMoney } = useI18n();
+  const tripTime = useTripTime();
   const brand = useBrand();
   const place = usePlaceLabel();
   const checks = usePictureChecks();
   return (trip: Trip): TripPictureTexts => {
-    const day = new Date(trip.departAt);
-    const values = { date: formatDate(day), time: formatTime(day), seats: String(trip.seatsLeft) };
+    const values = {
+      date: formatDate(new Date(trip.departAt)),
+      time: tripTime(trip),
+      seats: String(trip.seatsLeft),
+    };
     return {
       title: t('share.storyTitle'),
       from: place(trip.from),

@@ -1,4 +1,4 @@
-import { afterTrip, arrivalAt, type ChatAbout, type ChatMessage } from '@platform/contracts';
+import { afterTrip, tripArrival, type ChatAbout, type ChatMessage } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { useUntilText } from '../trip/until-text';
 import { useBrand } from '../context/brand-context';
@@ -11,10 +11,9 @@ export function useAfterTripChat(about: ChatAbout | null, messages: readonly Cha
   const brand = useBrand();
   const booking = about?.booking ?? null;
   if (!booking || booking.status !== 'completed') return { endAt: -1, placeholder: t('chat.placeholder') };
-  const { departAt, km } = booking.trip;
-  const ended = arrivalAt(departAt, km);
+  const ended = tripArrival(booking.trip);
   const now = Date.now();
-  const { talkUntil } = afterTrip(brand, departAt, km, booking.trip.arrivedAt);
+  const { talkUntil } = afterTrip(brand, booking.trip);
   const later = messages.findIndex((message) => message.at > ended);
   return {
     endAt: later === -1 ? messages.length : later,

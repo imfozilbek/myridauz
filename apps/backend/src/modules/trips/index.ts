@@ -33,7 +33,7 @@ export const tripFacts = async (env: Bindings, id: string) => {
   const trip = await tripsDeps(env).trips.find(id);
   if (!trip) return undefined;
   const now = Date.now();
-  const { driverId, from, to, departAt, departedAt, arrivedAt, km, seats, price, pickupMode, endsAt } = trip;
+  const { driverId, from, to, departAt, departUntil, departedAt, arrivedAt, km, seats, price } = trip;
   const over = statusAt(trip, now) === 'completed';
   return {
     id,
@@ -41,14 +41,15 @@ export const tripFacts = async (env: Bindings, id: string) => {
     from,
     to,
     departAt,
+    departUntil,
     departedAt,
     arrivedAt,
     km,
     seats,
     price,
-    pickupMode,
+    pickupMode: trip.pickupMode,
     plate: trip.car?.plate ?? null,
-    endsAt,
+    endsAt: trip.endsAt,
     live: isLive(trip, now),
     over,
   };
@@ -93,7 +94,7 @@ export const tripViewsOf = async (env: Bindings, ids: readonly string[], rides =
 export const publishOfferTripFor = (
   env: Bindings,
   driverId: number,
-  input: Omit<Required<TripInput>, 'pickupMode'>,
+  input: Omit<Required<TripInput>, 'pickupMode' | 'departUntil'>,
   requestId: string,
 ) => publishOfferTrip(tripsDeps(env), driverId, input, requestId);
 // «Safar ochib taklif qilish» (G64): a trip for one request; opened for everybody or taken.

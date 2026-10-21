@@ -1,10 +1,10 @@
 import { ApiError } from '@platform/api-client';
-import type { RideRequest } from '@platform/contracts';
+import { slotAt, type RideRequest } from '@platform/contracts';
 import { Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
-import { departAtOf, slotsOn } from '../market/first-when';
+import { slotsOn } from '../market/first-when';
 import { useSchedule } from '../market/use-schedule';
 import { useClock } from '../own-trip/use-now';
 import { haptic } from '../telegram/feedback';
@@ -28,7 +28,7 @@ export function useOfferTime(request: RideRequest) {
     const slots = slotsOn(request.date, at, rules);
     const time =
       picked !== null && slots.includes(picked) ? picked : (offerTimes(slots)[0] ?? slots[0] ?? null);
-    return { slots, time, departAt: time === null ? null : departAtOf(request.date, time) };
+    return { slots, time, departAt: time === null ? null : slotAt(request.date, time) };
   };
   const shown = timeAt(now);
   return {

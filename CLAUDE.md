@@ -55,7 +55,7 @@ Mini App, каналах, уведомлениях и лендинге. Код: 
 
 ## Причины и следствия (решение владельца)
 
-- Каждая ошибка записывается в `docs/26-lessons-learned.md` (продолжение `docs/44`, `docs/49`, `docs/66`, `docs/84`, `docs/91`, `docs/99`, `docs/113`, `docs/131`, `docs/142`, `docs/147`, `docs/157`, `docs/169`, `docs/173`, `docs/178`, `docs/186`, `docs/190`, `docs/195`, `docs/205`): что случилось,
+- Каждая ошибка записывается в `docs/26-lessons-learned.md` (продолжение `docs/44`, `docs/49`, `docs/66`, `docs/84`, `docs/91`, `docs/99`, `docs/113`, `docs/131`, `docs/142`, `docs/147`, `docs/157`, `docs/169`, `docs/173`, `docs/178`, `docs/186`, `docs/190`, `docs/195`, `docs/205`, `docs/219`): что случилось,
   причина, следствие, урок. Урок становится правилом.
 - **Перед каждым решением** проверять журнал уроков. Если предложение
   повторяет старую ошибку, сразу сказать: «Это похоже на урок №N».
@@ -160,7 +160,7 @@ Mini App, каналах, уведомлениях и лендинге. Код: 
 | `docs/41-promo-video.md` | Рекламное видео: музыка и лицензия, логика, сценарий, нарезки |
 | `docs/42-promo-prompts.md` | Промпты: задача владельца для Claude и промпт для ИИ-видео |
 | `docs/43-share-trip.md` | «Поделиться поездкой с близкими»: карточка, статусы, приватность |
-| `docs/44-lessons-learned-2.md`, `docs/49-lessons-learned-3.md`, `docs/66-lessons-learned-4.md`, `docs/84-lessons-learned-5.md`, `docs/91-lessons-learned-6.md`, `docs/99-lessons-learned-7.md`, `docs/113-lessons-learned-8.md`, `docs/131-lessons-learned-9.md`, `docs/142-lessons-learned-10.md`, `docs/147-lessons-learned-11.md`, `docs/157-lessons-learned-12.md`, `docs/169-lessons-learned-13.md`, `docs/173-lessons-learned-14.md`, `docs/178-lessons-learned-15.md`, `docs/186-lessons-learned-16.md`, `docs/190-lessons-learned-17.md`, `docs/195-lessons-learned-18.md`, `docs/205-lessons-learned-19.md` | Журнал уроков: продолжение (№7, №21, №39, №59, №80, №101, №122, №141, №162, №183, №204, №224, №245, №265, №288, №308, №329, №350 и дальше) |
+| `docs/44-lessons-learned-2.md`, `docs/49-lessons-learned-3.md`, `docs/66-lessons-learned-4.md`, `docs/84-lessons-learned-5.md`, `docs/91-lessons-learned-6.md`, `docs/99-lessons-learned-7.md`, `docs/113-lessons-learned-8.md`, `docs/131-lessons-learned-9.md`, `docs/142-lessons-learned-10.md`, `docs/147-lessons-learned-11.md`, `docs/157-lessons-learned-12.md`, `docs/169-lessons-learned-13.md`, `docs/173-lessons-learned-14.md`, `docs/178-lessons-learned-15.md`, `docs/186-lessons-learned-16.md`, `docs/190-lessons-learned-17.md`, `docs/195-lessons-learned-18.md`, `docs/205-lessons-learned-19.md`, `docs/219-lessons-learned-20.md` | Журнал уроков: продолжение (№7, №21, №39, №59, №80, №101, №122, №141, №162, №183, №204, №224, №245, №265, №288, №308, №329, №350, №370 и дальше) |
 | `docs/45-dev-commands.md` | Команды разработки, барьеры качества, как устроен CI |
 | `docs/46-infrastructure.md` | Адреса, ресурсы Cloudflare, боты, где лежат секреты, деплой |
 | `docs/47-users-and-registration.md` | Вход по подписи Telegram, регистрация, блокировка, фото |
@@ -236,7 +236,7 @@ Mini App, каналах, уведомлениях и лендинге. Код: 
 | `docs/202-g46-texts.md` | G46: новые тексты доверия («Yetib keldingizmi?» в боте, истёкшая заявка, «Hamrohlaringiz», выбор в жалобе, конец слежения близких) на согласие владельца |
 | `docs/203-g51-texts.md` | G51: новые тексты фото попутчика по желанию («Rasm (ixtiyoriy)», «Rasm qoʻshish (ixtiyoriy)») на согласие владельца |
 | `docs/206-g89-chains-trips.md` … `docs/215-g89-measure.md` | G89, логика без дыр: карта цепочек с уровнем тестов (`206` поездки и брони, `207` деньги, чат, боты, `208` команда и экраны); схемы статусов (`209`, `210`); сочетания и гонки (`211`, `212`); находки P0 … P3 и решения (`213`, `214`); замер «до» и «после»: ветки, мутационный счёт Stryker (`215`) |
-| `docs/216-time-range.md` | Промежуток времени отъезда «Oraliqda» (G90): водитель выбирает «08:00 dan 10:00 gacha», попутчик видит «08:00 … 10:00»; правила, места, тексты, макет |
+| `docs/216-time-range.md`, `docs/217-g90-texts.md`, `docs/218-g90-pixel-perfect.md` | Промежуток времени отъезда «Oraliqda» (G90): водитель выбирает «08:00 dan 10:00 gacha», попутчик видит «08:00 … 10:00»; правила, места, тексты, макет; новые тексты на согласие владельца; сверка Pixel Perfect и отступления |
 | `docs/197-blablacar-history.md` … `docs/201-carpooling-histories-summary.md` | Истории сервисов попутчиков и уроки для Rida: BlaBlaCar, inDrive (три попытки в Узбекистане), Zimride и Lyft, Didi Hitch и Dida; сводка: что общего, кто не дошёл, три числа после запуска |
 | `docs/187-g69-texts.md`, `docs/188-growth-loops.md` | G69: новые тексты петель роста на согласие владельца; петли роста как сделано: код автора в метке, моменты «Men Rida bilan», QR водителя, «Sizning taʼsiringiz», «Rost» |
 | `docs/goals/INDEX.md` | Цели по порядку (G01 … G20) и операционные цели владельца (OPS) |

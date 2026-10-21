@@ -1,9 +1,10 @@
-import { arrivalAt, tashkentDate, type BookingRule, type Trip } from '@platform/contracts';
+import { tashkentDate, type BookingRule, type Trip } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { useI18n } from '../context/i18n-context';
 import { usePlaces } from '../market/places-gate';
 import { useShortDay } from '../market/when';
 import { TripPoint, TripRoad } from './trip-point';
+import { useArrivalTime, useTripTime } from './trip-time';
 import './trip-card.css';
 import './own-trip-card.css';
 
@@ -18,15 +19,19 @@ const RULE_LABEL = {
 // 6): the same card as on a booking, from the trip itself. The pitak or the district with the day and
 // time, the road, the end with the arrival; then the free seats with the price and the rule.
 export function OwnTripCard({ trip }: { readonly trip: Trip }) {
-  const { t, formatTime, formatNumber } = useI18n();
+  const { t, formatNumber } = useI18n();
+  const tripTime = useTripTime();
+  const arrivalTime = useArrivalTime();
   const directory = usePlaces();
   const shortDay = useShortDay();
   const placeName = (id: string) => directory.find(id)?.name ?? id;
   const when = t('driverTrip.when', {
     day: shortDay(tashkentDate(trip.departAt), Date.now()),
-    time: formatTime(new Date(trip.departAt)),
+    time: tripTime(trip),
   });
-  const arrives = t('market.trip.arrival', { time: formatTime(new Date(arrivalAt(trip.departAt, trip.km))) });
+  // A range has no arrival (G90, docs/216).
+  const arrival = arrivalTime(trip);
+  const arrives = arrival === null ? null : t('market.trip.arrival', { time: arrival });
   const price = formatNumber(trip.price);
   return (
     <div className="trip-sheet trip-sheet-own">

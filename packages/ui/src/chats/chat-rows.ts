@@ -8,6 +8,8 @@ export type ChatRow = {
   readonly key: string;
   readonly person: { readonly id: string; readonly firstName: string; readonly hasAvatar: boolean };
   readonly at: number;
+  // The end of a range of a booked trip (G90); null: one time.
+  readonly until: number | null;
   readonly from: string;
   readonly to: string;
   // A request has a day, not a time.
@@ -41,19 +43,43 @@ export function chatRows({ bookings, offers, unread, driver, now }: Sources): re
   for (const booking of bookings.filter((one) => shownBooking(one, now))) {
     const { trip } = booking;
     const person = driver ? booking.passenger : trip.driver;
-    add({ key: booking.chatKey, person, at: trip.departAt, from: trip.from, to: trip.to, day: false });
+    add({
+      key: booking.chatKey,
+      person,
+      at: trip.departAt,
+      until: trip.departUntil,
+      from: trip.from,
+      to: trip.to,
+      day: false,
+    });
   }
   // A driver talks with the passenger who got the offer, a passenger with the driver (mockup g76/5).
   for (const offer of offers.filter((one) => one.status === 'sent')) {
     const person = driver ? offer.passenger : offer.driver;
     if (person)
-      add({ key: offer.chatKey, person, at: offer.departAt, from: offer.from, to: offer.to, day: false });
+      add({
+        key: offer.chatKey,
+        person,
+        at: offer.departAt,
+        until: offer.departUntil,
+        from: offer.from,
+        to: offer.to,
+        day: false,
+      });
   }
   for (const one of unread) {
     const person = otherSide(one.about);
     const way = wayOf(one.about);
     if (!rows.has(one.key) && person && way)
-      add({ key: one.key, person, at: way.at, from: way.from, to: way.to, day: Boolean(way.day) });
+      add({
+        key: one.key,
+        person,
+        at: way.at,
+        until: way.until,
+        from: way.from,
+        to: way.to,
+        day: Boolean(way.day),
+      });
   }
   return [...rows.values()].sort(order(now));
 }

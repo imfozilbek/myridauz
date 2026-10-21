@@ -53,6 +53,8 @@ export const tripInputSchema = z.object({
   from: locationIdSchema,
   to: locationIdSchema,
   departAt: z.number().int(),
+  // The end of a range «08:00 dan 10:00 gacha»; null: one exact time (owner decision 20.10.2026, docs/216).
+  departUntil: z.number().int().nullable().default(null),
   seats: z.number().int().min(1).max(MAX_SEATS),
   price,
   // "With me goes a woman": a relative without Telegram (docs/06).
@@ -84,6 +86,8 @@ export const tripSchema = z.object({
   from: locationIdSchema,
   to: locationIdSchema,
   departAt: z.number().int(),
+  // The end of the range of the time (docs/216); null and from an older server: one exact time.
+  departUntil: z.number().int().nullable().default(null),
   km: z.number().int(),
   seats: z.number().int(),
   // Seats not taken by confirmed bookings (G08).

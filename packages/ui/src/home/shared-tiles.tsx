@@ -22,7 +22,9 @@ export function TripsTile({ hint, badge, now, onOpen }: TripsProps) {
   const when = useWhen(now);
   const tap = useHomeTap();
   const words =
-    'at' in hint ? when(hint.at) : t(hint.key, 'count' in hint ? { count: String(hint.count) } : {});
+    'at' in hint
+      ? when(hint.at, hint.until)
+      : t(hint.key, 'count' in hint ? { count: String(hint.count) } : {});
   return (
     <HomeTile
       square

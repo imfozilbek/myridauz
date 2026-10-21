@@ -20,10 +20,14 @@ export const meetOpen = (booking: Booking) => {
 
 // The meeting opens the brand's minutes before the departure and closes with the trip, as on the
 // server (docs/129): «Kelmadi» is possible until then.
-export const meetingOpen = (trip: Pick<Trip, 'departAt' | 'km' | 'status'>, now: number, minutes: number) =>
+export const meetingOpen = (
+  trip: Pick<Trip, 'departAt' | 'departUntil' | 'km' | 'status'>,
+  now: number,
+  minutes: number,
+) =>
   (trip.status === 'active' || trip.status === 'full') &&
   now >= meetingStartsAt(trip.departAt, minutes) &&
-  now < tripEndsAt(trip.departAt, trip.km);
+  now < tripEndsAt(trip);
 
 export type MeetPoint = { readonly booking: Booking; readonly number: number };
 

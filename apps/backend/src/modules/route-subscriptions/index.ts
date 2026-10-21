@@ -1,13 +1,13 @@
 import {
   SUBSCRIPTION_KINDS,
   tashkentDate,
-  tashkentTime,
   type RideRequest,
   type SubscriptionKind,
   type Trip,
 } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { placeMatches } from '../../shared/places/place-match';
+import { tripTimeText } from '../../shared/telegram/trip-time';
 import { approvedCar } from '../drivers';
 import { placesOf } from '../locations';
 import { showNews } from '../notifications';
@@ -55,7 +55,7 @@ const tripMatch = async (env: Bindings, trip: Trip) => ({
   date: tashkentDate(trip.departAt),
   woman: trip.woman,
   name: trip.driver.firstName,
-  time: tashkentTime(trip.departAt),
+  time: tripTimeText(trip),
   seats: trip.seatsLeft,
   price: trip.price,
   wholeCar: false,

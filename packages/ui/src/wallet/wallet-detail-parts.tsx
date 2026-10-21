@@ -1,4 +1,4 @@
-import { arrivalAt, tashkentDate, type Booking, type WalletDetail } from '@platform/contracts';
+import { tashkentDate, type Booking, type WalletDetail } from '@platform/contracts';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { PersonBadge } from '../find/person-badge';
@@ -6,6 +6,7 @@ import { Icon } from '../icons';
 import { useShortDay } from '../market/when';
 import { useBookingEnds } from '../trip/booking-ends';
 import { TripPoint } from '../trip/trip-point';
+import { useArrivalTime, useTripTime } from '../trip/trip-time';
 import '../trip/trip-card.css';
 
 const FACE = 32;
@@ -19,15 +20,18 @@ type TripProps = {
 // «Safar» of the details (mockup g65/2): the two points of the booking with the day and the times,
 // then the passenger and the seats.
 export function DetailTrip({ booking, onRider }: TripProps) {
-  const { t, formatTime } = useI18n();
+  const { t } = useI18n();
+  const tripTime = useTripTime();
+  const arrival = useArrivalTime()(booking.trip);
   const shortDay = useShortDay();
   const { start, end } = useBookingEnds(booking);
   const { trip, passenger } = booking;
   const when = t('driverTrip.when', {
     day: shortDay(tashkentDate(trip.departAt), Date.now()),
-    time: formatTime(new Date(trip.departAt)),
+    time: tripTime(trip),
   });
-  const arrives = t('market.trip.arrival', { time: formatTime(new Date(arrivalAt(trip.departAt, trip.km))) });
+  // A range has no arrival (G90, docs/216).
+  const arrives = arrival === null ? null : t('market.trip.arrival', { time: arrival });
   const rider = (
     <>
       <PersonBadge

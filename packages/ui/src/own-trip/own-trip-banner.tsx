@@ -1,4 +1,4 @@
-import { arrivalAt, type Trip } from '@platform/contracts';
+import { roadArrival, type Trip } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 import { usePlaces } from '../market/places-gate';
@@ -41,7 +41,7 @@ export function OwnTripBanner({ trip, stage, riders, now }: Props) {
               t('driverTrip.onWay.sub', {
                 place,
                 last: place.slice(-1),
-                time: formatTime(new Date(arrivalAt(trip.departAt, trip.km))),
+                time: formatTime(new Date(roadArrival(trip))),
               }),
             ]
           : [t(trip.status === 'cancelled' ? 'market.trip.cancelled' : 'bookings.done.title'), null];

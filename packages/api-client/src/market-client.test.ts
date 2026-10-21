@@ -18,6 +18,7 @@ const trip = {
   from: '1726273',
   to: '1718401',
   departAt: DEPART,
+  departUntil: null,
   km: 300,
   seats: 3,
   seatsLeft: 3,

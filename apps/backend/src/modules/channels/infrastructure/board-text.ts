@@ -12,9 +12,9 @@ import type { Places } from '../../../shared/places/end-names';
 import { serviceValue, withValue } from '../../../shared/share/value-lines';
 import { bold, escapeHtml, italic } from '../../../shared/telegram/html';
 import { shareLink } from '../../../shared/telegram/share-link';
+import { tripTimeShort } from '../../../shared/telegram/trip-time';
 import { covers, postState, regionOf } from '../domain/route-channels';
 import type { TeamChannel } from '../application/team';
-import { timeOf } from './post-parts';
 
 const { t, formatDate, formatTime, formatNumber } = createI18n(DEFAULT_LOCALE);
 // A Telegram message holds 4096 signs: a busy day ends with «… va yana N ta».
@@ -36,7 +36,7 @@ function line(trip: Trip, places: Places, now: number, inbound: boolean, book: s
   const from = nameOf(trip.from, places);
   const to = nameOf(trip.to, places);
   const state = postState(trip, now);
-  const time = timeOf(trip.departAt);
+  const time = tripTimeShort(trip);
   if (state === 'full' || state === 'started' || state === 'arrived')
     return `<s>${t('bot.board.done', { time, route: t('bot.news.route', { from, to }), state: t(DONE[state]) })}</s>`;
   const route = t('bot.news.route', inbound ? { from, to: bold(to) } : { from: bold(from), to });

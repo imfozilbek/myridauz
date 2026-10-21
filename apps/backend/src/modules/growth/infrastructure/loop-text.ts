@@ -4,10 +4,11 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Places } from '../../../shared/places/end-names';
 import { tripShareText, tripShareWords } from '../../../shared/share/trip-text';
 import { driverValue, passengerValue, withValue } from '../../../shared/share/value-lines';
+import { tripTimeText } from '../../../shared/telegram/trip-time';
 import type { LoopInput } from '../application/loop-cards';
 import type { CardMessage } from '../application/ports';
 
-const { t, formatDate, formatTime } = createI18n(DEFAULT_LOCALE);
+const { t, formatDate } = createI18n(DEFAULT_LOCALE);
 const nameOf = (id: string, places: Places) => places.get(id)?.name ?? id;
 
 // The ready messages of the loops (docs/123): the route and the day, never a phone or a name. The last
@@ -34,8 +35,8 @@ export function loopMessage(brand: BrandConfig, input: LoopInput, places: Places
       words: { title: t('growth.group.messageTitle'), button: t('growth.group.link') },
     };
   }
-  const day = new Date(input.departAt);
-  const text = t('growth.seats.message', { ...route, date: formatDate(day), time: formatTime(day) });
+  const date = formatDate(new Date(input.departAt));
+  const text = t('growth.seats.message', { ...route, date, time: tripTimeText(input) });
   return {
     text: withValue(text, passengerValue()),
     words: { title: t('growth.seats.messageTitle'), button: t('market.trip.book') },

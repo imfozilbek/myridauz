@@ -9,6 +9,7 @@
   "trips.price_out_of_bounds": "Narx ruxsat etilgan chegarada boʻlsin.",
   "trips.in_past": "Bu vaqt oʻtib ketgan. Keyinroq vaqtni tanlang.",
   "trips.too_soon": "Bu vaqt juda yaqin. Keyinroq vaqtni tanlang.",
+  "trips.bad_range": "Vaqt oraligʻini qaytadan tanlang.",
   "trips.not_driver": "Safar eʼlon qilish uchun haydovchi arizangiz tasdiqlangan boʻlishi kerak.",
   "bookings.no_seats": "Boʻsh joy qolmagan. Boshqa safarni tanlang.",
   "bookings.salon_taken": "Safaringizda band joylar bor. Butun salonni taklif qilib boʻlmaydi.",

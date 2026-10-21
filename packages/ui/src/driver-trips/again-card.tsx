@@ -2,6 +2,7 @@ import type { Trip } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 import { useEnds } from '../requests/ends';
+import { useTripTime } from '../trip/trip-time';
 import './driver-trips.css';
 
 const PLUS = 18;
@@ -10,7 +11,8 @@ const CHEVRON = 10;
 // «Ertaga shu safar» (G64, mockup g64/6): the last trip the driver made, tomorrow at its time, on
 // the one screen of the publishing with every answer filled (G63).
 export function AgainCard({ trip, onOpen }: { readonly trip: Trip; readonly onOpen: () => void }) {
-  const { t, formatTime } = useI18n();
+  const { t } = useI18n();
+  const tripTime = useTripTime();
   const ends = useEnds()(trip);
   return (
     <button type="button" className="driver-again" onClick={onOpen}>
@@ -22,7 +24,7 @@ export function AgainCard({ trip, onOpen }: { readonly trip: Trip; readonly onOp
         <span>
           {t('driverTrip.again.sub', {
             route: t('requests.card.route', ends),
-            time: formatTime(new Date(trip.departAt)),
+            time: tripTime(trip),
           })}
         </span>
       </span>

@@ -7,10 +7,12 @@ import type { Trip } from './trips';
 // The server and the Mini Apps count by these rules alone.
 
 // A trip holds its driver until «Yetib keldik», a cancel or its end: the way back is free (G78 В11).
-export const tripHolds = (trip: Pick<Trip, 'status' | 'departAt' | 'km' | 'arrivedAt'>, now: number) =>
-  (trip.status === 'active' || trip.status === 'full') &&
-  trip.arrivedAt === null &&
-  now < tripEndsAt(trip.departAt, trip.km);
+// The end of a range counts from its last hour (docs/216).
+export const tripHolds = (
+  trip: Pick<Trip, 'status' | 'departAt' | 'departUntil' | 'km' | 'arrivedAt'>,
+  now: number,
+) =>
+  (trip.status === 'active' || trip.status === 'full') && trip.arrivedAt === null && now < tripEndsAt(trip);
 
 type Seat = {
   readonly status: BookingStatus;

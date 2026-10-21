@@ -11,7 +11,7 @@ afterEach(cleanup);
 const trip = { ...madina.trip, status: 'completed' as const };
 const rode = { ...madina, trip, status: 'completed' as const };
 const gone = { ...akmal, trip, status: 'completed' as const, noShowAt: 1 };
-const { rateUntil } = afterTrip(loadBrand(), trip.departAt, trip.km);
+const { rateUntil } = afterTrip(loadBrand(), trip);
 const DAY = 24 * 60 * 60 * 1000;
 
 describe('the tags of a past trip in «Oʻtgan» (docs/129, mockup g63/5 phone 4)', () => {

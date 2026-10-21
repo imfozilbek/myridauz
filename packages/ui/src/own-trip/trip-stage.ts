@@ -2,7 +2,7 @@ import { DEPART_EARLY_MS, MINUTE_MS, onTheWay, tripEndsAt, type Trip } from '@pl
 
 export type TripStage = 'published' | 'soon' | 'on_way' | 'over';
 export type TripStep = 'departed' | 'arrived';
-type Timed = Pick<Trip, 'departAt' | 'km' | 'status' | 'departedAt' | 'arrivedAt'>;
+type Timed = Pick<Trip, 'departAt' | 'departUntil' | 'km' | 'status' | 'departedAt' | 'arrivedAt'>;
 
 // Past for its driver (lead decision 08.10.2026): «Yetib keldik» went through or the server closed
 // the trip. The past trip opens at once; the deadlines after it still count from its end (docs/129).
@@ -12,7 +12,7 @@ export const tripPast = (trip: Pick<Trip, 'status' | 'arrivedAt'>) =>
 // Over: past, cancelled, or its time ended, when the server closes it by itself (docs/35): the page
 // never offers a step the server refuses, even before the list is fresh.
 const over = (trip: Timed, now: number) =>
-  tripPast(trip) || trip.status === 'cancelled' || now >= tripEndsAt(trip.departAt, trip.km);
+  tripPast(trip) || trip.status === 'cancelled' || now >= tripEndsAt(trip);
 // «Yoʻlga chiqdim» works from DEPART_EARLY_MS before the time of the trip, as on the server.
 const hourBefore = (trip: Timed, now: number) => now >= trip.departAt - DEPART_EARLY_MS;
 

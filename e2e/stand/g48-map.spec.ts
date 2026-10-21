@@ -83,7 +83,7 @@ test('D81. the driver of the accepted offer sees «Izoh» at the meeting', async
   const trip = seat?.trip;
   if (!trip) throw new Error('g48: the seat of the accepted offer is missing');
   const departAt = Date.now() + MEET_MINUTES * MINUTE;
-  moveTrip(trip.id, departAt, tripEndsAt(departAt, trip.km));
+  moveTrip(trip.id, departAt, tripEndsAt({ departAt, departUntil: null, km: trip.km }));
   await openAs(page, 'driver', DRIVER, { search: `?${MY_TRIP_LINK}=${trip.id}` });
   await page.getByText(t('driverTrip.tile.map')).click();
   await page.locator('.trip-map-stop').first().click();
