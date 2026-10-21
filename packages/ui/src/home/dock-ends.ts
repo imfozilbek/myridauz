@@ -14,7 +14,7 @@ import { useHomeEnds } from './home-route';
 // trip: the route of the last trip of a driver, after the last search (G79 В4, mockup g76/3 phone 5).
 // Standing at the end of the last route, «Qayerga» is the way back.
 export function useDockEnds(directory: PlaceDirectory | null, trip: Route | null = null) {
-  const { from: chosen, to: picked, choose } = useHomeEnds();
+  const { from: chosen, to: picked, last: chosenLast, choose } = useHomeEnds();
   const here = useHere(directory);
   const locateHere = useLocate(directory);
   // The district found by «Joylashuvim»: the note says so too.
@@ -23,9 +23,14 @@ export function useDockEnds(directory: PlaceDirectory | null, trip: Route | null
   const known = (id: string) => directory?.find(id) ?? null;
   const [ids] = kept.filter((route) => known(route.from) && known(route.to));
   const last = (ids ? { from: known(ids.from), to: known(ids.to) } : null) ?? trip;
-  const from: Location | null = chosen === undefined ? (here ?? last?.from ?? null) : chosen;
-  const toward = last && last.to?.id === from?.id ? last.from : (last?.to ?? null);
-  const to: Location | null = picked === undefined ? toward : picked;
+  const start: Location | null = chosen === undefined ? (here ?? last?.from ?? null) : chosen;
+  const toward = last && last.to?.id === start?.id ? last.from : (last?.to ?? null);
+  const end: Location | null = picked === undefined ? toward : picked;
+  // Never one place on both ends (G91 robot: ⇅ swapped a place with itself): the end chosen last
+  // stays, the other one is empty and asks again.
+  const one = start !== null && start.id === end?.id;
+  const from = one && chosenLast === 'to' ? null : start;
+  const to = one && chosenLast !== 'to' ? null : end;
   return {
     from,
     to,

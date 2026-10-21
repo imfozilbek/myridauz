@@ -76,8 +76,8 @@ function PeopleSearch({ people, onBack, onOpen }: SearchProps) {
 
 function PersonLoad({ id, onBack }: { readonly id: PersonId; readonly onBack: () => void }) {
   const { team } = useApiClients();
-  const { value, failed, reload } = useLoad(() => team.person(id));
-  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
+  const { value, failed, error, reload } = useLoad(() => team.person(id));
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} error={error} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   return <PersonView card={value} onBack={onBack} onChanged={reload} />;
 }

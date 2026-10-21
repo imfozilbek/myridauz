@@ -70,6 +70,26 @@ describe('the trip card of the driver bot (G68, docs/122, mockup g68/3)', () => 
     expect(buttons(shown)).toContain('Yetib keldik');
   });
 
+  // G91 DRV-12: the time alone does not put the car on the road, as in the app: no «Yoʻldasiz» and no
+  // «Yetib keldik» before «Yoʻlga chiqdim»; no more sharing either, the trip takes nobody now.
+  it('past its time but not departed: still before the road, without sharing', async () => {
+    const [madina, sardor] = await two();
+    const shown = card([madina, sardor], madina.trip.departAt + 10 * 60_000);
+    expect(shown.text.split('\n')[0]).toBe('<b>📣 Eʼlon qilindi · 1 / 3 joy band</b>');
+    expect(shown.text).not.toContain('🔕 Yoʻlda');
+    expect(buttons(shown)).not.toContain('Yetib keldik');
+    expect(buttons(shown)).toContain(`?mytrip=${madina.trip.id}`);
+    expect(buttons(shown)).not.toContain('t.me/share');
+    // 23:55 in Tashkent, the card edited after midnight: still the order of the road (G91 review).
+    const late = Date.parse('2026-10-20T18:55:00Z');
+    const night = (seat: Booking) => ({
+      ...seat,
+      trip: { ...seat.trip, departAt: late, firstDepartAt: late },
+    });
+    const after = card([night(madina), night(sardor)], late + 10 * 60_000);
+    expect(after.text).not.toContain('👥 Yoʻlovchilar');
+  });
+
   it('a cancelled or ended trip leaves the top of the chat', async () => {
     const [madina] = await two();
     const cancelled = card([], 0, { ...madina.trip, status: 'cancelled' });

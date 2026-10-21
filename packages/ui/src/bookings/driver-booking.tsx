@@ -1,4 +1,4 @@
-import type { Booking, DriverBookingAction } from '@platform/contracts';
+import { onTheWay, type Booking, type DriverBookingAction } from '@platform/contracts';
 import { useRef, useState } from 'react';
 import { useI18n } from '../context/i18n-context';
 import { confirm } from '../telegram/feedback';
@@ -81,10 +81,13 @@ export function DriverBooking({ booking, onClose, onStale }: Props) {
     missing > 0
       ? { label: t('wallet.topUp'), onClick: () => topUp(booking.passenger.firstName, missing), main: true }
       : { label: t('bookings.confirm'), onClick: () => answer('confirm'), main: true };
+  // A seat that rode or was missed, and every seat once the car left, stays: the server refuses a
+  // cancel (docs/35, G91 DRV-6).
+  const kept = booking.metAt !== null || booking.noShowAt !== null || onTheWay(booking.trip, Date.now());
   const actions: BookingAction[] =
     booking.status === 'requested'
       ? [confirmSeat, { label: t('bookings.decline'), onClick: () => answer('decline') }]
-      : booking.status === 'confirmed'
+      : booking.status === 'confirmed' && !kept
         ? [{ label: t('bookings.cancel'), onClick: () => void cancel() }]
         : [];
   return (

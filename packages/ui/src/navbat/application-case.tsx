@@ -17,13 +17,13 @@ import { Screen } from '../screen/screen';
 import { ActionFailure } from '../states/action-failure';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { useFailure } from '../states/use-failure';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { ApplicationDetails } from './application-details';
 import { CaseButtons } from './case-buttons';
 import { CaseHeader } from './case-header';
 import { CasePhotos } from './case-photos';
+import { NextCaseButton, useCaseFailure } from './case-gone';
 import type { CaseProps, Outcome } from './case-props';
 
 type Mode = 'view' | Decision | 'block' | CarPhotoKind;
@@ -34,23 +34,24 @@ const NO_TICKS: Record<ReasonsMode, readonly ModerationReason[]> = { reject: [],
 // the plate and the driver; «Tasdiqlash» after the plate check, «Tuzatish», «Rad etish», «Bloklash».
 export function ApplicationCase({ id, onBack, ...props }: CaseProps) {
   const { moderation } = useApiClients();
-  const { value, failed, reload } = useLoad(() => moderation.get(id));
-  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
+  const { value, failed, error, reload } = useLoad(() => moderation.get(id));
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} error={error} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   return <Application detail={value} onBack={onBack} {...props} />;
 }
 
 type ApplicationProps = Omit<CaseProps, 'id' | 'item'> & { readonly detail: ApplicationDetail };
 
-function Application({ detail, progress, onBack, onDone }: ApplicationProps) {
+function Application({ detail, progress, onBack, onDone, onGone }: ApplicationProps) {
   const { t } = useI18n();
   const { moderation } = useApiClients();
   const [mode, setMode] = useState<Mode>('view');
   const [fixedPlate, setFixedPlate] = useState<string | null>(null);
   // The ticks of «Tuzatish» and of «Rad etish» apart: one never sends the other's (G79 К10).
   const [ticked, setTicked] = useState<Record<ReasonsMode, readonly ModerationReason[]>>(NO_TICKS);
-  const { failure, fail, clear } = useFailure();
+  const { failure, fail, clear, gone } = useCaseFailure();
   const { userId } = detail;
+  const approvedOnce = detail.history.some((entry) => entry.status === 'approved');
   // One decision at a time: a second quick tap sends nothing (G89 M5).
   const busy = useRef(false);
   const act = async (work: () => Promise<unknown>, outcome: Outcome) => {
@@ -92,14 +93,29 @@ function Application({ detail, progress, onBack, onDone }: ApplicationProps) {
       <CasePhotos userId={userId} onOpen={setMode} />
       <ApplicationDetails detail={detail} />
       <ActionFailure error={failure} />
-      <CaseButtons
-        actions={[
-          { labelKey: 'moderation.requestChanges', onClick: () => setMode('request_changes') },
-          { labelKey: 'moderation.reject', danger: true, onClick: () => setMode('reject') },
-          { labelKey: 'moderation.block', danger: true, onClick: () => setMode('block') },
-        ]}
-      />
-      <MainButton text={t('moderation.approve')} onClick={() => setMode('approve')} />
+      {gone ? (
+        <NextCaseButton onClick={onGone} />
+      ) : (
+        <>
+          <CaseButtons
+            actions={[
+              { labelKey: 'moderation.requestChanges', onClick: () => setMode('request_changes') },
+              // A driver approved once: «Tuzatish» or a block, never «Rad etish» (G91 DRV-2).
+              ...(approvedOnce
+                ? []
+                : [
+                    {
+                      labelKey: 'moderation.reject' as const,
+                      danger: true,
+                      onClick: () => setMode('reject'),
+                    },
+                  ]),
+              { labelKey: 'moderation.block', danger: true, onClick: () => setMode('block') },
+            ]}
+          />
+          <MainButton text={t('moderation.approve')} onClick={() => setMode('approve')} />
+        </>
+      )}
       <ReasonsSheet
         open={mode === 'reject' || mode === 'request_changes'}
         picked={ticked[reasons]}

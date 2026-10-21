@@ -1,4 +1,4 @@
-import { REQUESTS_LINK, REQUESTS_LINK_VALUE } from '@platform/contracts';
+import { REQUESTS_LINK, REQUESTS_LINK_VALUE, tashkentDate } from '@platform/contracts';
 import { useState, type ReactNode } from 'react';
 import { useDirectory } from '../places/use-directory';
 import { ErrorScreen } from '../states/error-screen';
@@ -19,7 +19,9 @@ function linkedRequests(): Linked | null {
     ? start.slice(START.length)
     : launchParam(REQUESTS_LINK, REQUESTS_LINK_VALUE);
   const [, from, to, date] = REQUESTS_LINK_VALUE.exec(value ?? '') ?? [];
-  return from && to && date ? { from, to, date } : null;
+  // A day that is over has no requests: today instead (G91 PAS-3).
+  const today = tashkentDate(Date.now());
+  return from && to && date ? { from, to, date: date < today ? today : date } : null;
 }
 
 // "Ochish" under a bot message about a new request on a followed route opens the requests of that

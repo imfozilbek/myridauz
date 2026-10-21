@@ -25,8 +25,8 @@ test.afterEach(() => expect(outsideCalls()).toEqual([]));
 // A route of this goal only (lesson 95): Chilonzor → Termiz shahri, its own channel.
 const TERMIZ = '1722401';
 const TO_TERMIZ = { pickup: { lat: 41.2847, lng: 69.2152 }, dropoff: { lat: 37.2242, lng: 67.2783 } };
-const DRIVER: Person = { id: 900911, name: 'Farhod', phone: '998901110911' };
-const PASSENGER: Person = { id: 900912, name: 'Dildora', phone: '998901110912' };
+const DRIVER: Person = { id: 900951, name: 'Farhod', phone: '998901110951' };
+const PASSENGER: Person = { id: 900952, name: 'Dildora', phone: '998901110952' };
 const CHANNEL = channelOf(loadBrand(), TERMIZ);
 const DAY_ROW = new RegExp(`^(${t('market.day.today')}|${t('market.day.tomorrow')}), `, 'u');
 const WALK = { platform: 'android' } as const;

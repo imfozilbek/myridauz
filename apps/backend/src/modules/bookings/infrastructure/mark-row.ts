@@ -33,12 +33,12 @@ export const markOnceSql = (step: DriverMeetStep) =>
   `UPDATE bookings SET ${MARK[step].set}, updated_at = ?1
   WHERE id = ?2 AND status = 'confirmed' AND ${MARK[step].guard}`;
 
-// «Men keldim» and «Yetib keldim» of the passenger, once each, only on a seat still confirmed: a
-// copy read before the driver's cancel never brings the seat back (G89 B9).
+// «Men keldim» and «Yetib keldim» of the passenger, once each, only on a seat still confirmed and
+// not marked «Kelmadi»: a copy read before the driver's cancel or mark changes nothing (G89 B9, G91).
 const STEP = {
   came: { set: 'came_at = ?1', guard: 'came_at IS NULL' },
   arrived: { set: 'arrived_at = ?1, boarded_at = COALESCE(boarded_at, ?1)', guard: 'arrived_at IS NULL' },
 } as const;
 export const passengerStepSql = (step: keyof typeof STEP) =>
   `UPDATE bookings SET ${STEP[step].set}, updated_at = ?1
-  WHERE id = ?2 AND status = 'confirmed' AND ${STEP[step].guard}`;
+  WHERE id = ?2 AND status = 'confirmed' AND no_show_at IS NULL AND ${STEP[step].guard}`;

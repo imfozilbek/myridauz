@@ -8,10 +8,10 @@ import { Screen } from '../screen/screen';
 import { ActionFailure } from '../states/action-failure';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { useFailure } from '../states/use-failure';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { CaseHeader } from './case-header';
+import { NextCaseButton, useCaseFailure } from './case-gone';
 import type { CaseProps } from './case-props';
 
 // A question of support not answered for two days (G75, docs/158 К): the talk and the answer, which
@@ -26,11 +26,11 @@ export function SupportCase({ id, onBack, ...props }: CaseProps) {
 
 type QuestionProps = Omit<CaseProps, 'item'> & { readonly talk: Talk };
 
-function Question({ id, talk, progress, onBack, onDone }: QuestionProps) {
+function Question({ id, talk, progress, onBack, onDone, onGone }: QuestionProps) {
   const { t } = useI18n();
   const { team } = useApiClients();
   const [text, setText] = useState('');
-  const { failure, fail, clear } = useFailure();
+  const { failure, fail, clear, gone } = useCaseFailure();
   const send = async () => {
     clear();
     try {
@@ -72,7 +72,11 @@ function Question({ id, talk, progress, onBack, onDone }: QuestionProps) {
         />
       </div>
       <ActionFailure error={failure} />
-      {text.trim() ? <MainButton text={t('navbat.support.send')} onClick={send} /> : null}
+      {gone ? (
+        <NextCaseButton onClick={onGone} />
+      ) : text.trim() ? (
+        <MainButton text={t('navbat.support.send')} onClick={send} />
+      ) : null}
     </div>
   );
 }

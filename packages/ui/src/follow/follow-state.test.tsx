@@ -55,6 +55,8 @@ describe('the screen of the close people (G60, mockup g60/3)', () => {
     open({ ...TRIP, status: 'cancelled' });
     expect(await screen.findByText('Safar bekor qilindi')).toBeTruthy();
     expect(screen.queryByText(/da yetadi$/u)).toBeNull();
+    // Nothing is left to follow (G91 PAS-11).
+    expect(screen.queryByText('Xabar olish')).toBeNull();
   });
 
   it('says when the driver moved the time and shows no arrival before the trip (docs/124 И)', async () => {

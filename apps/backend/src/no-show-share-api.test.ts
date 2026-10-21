@@ -13,6 +13,8 @@ afterAll(() => {
 
 const DRIVER = 893;
 const PASSENGER = 894;
+const OTHER_DRIVER = 8931;
+const OTHER_PASSENGER = 8941;
 const HOUR = 3_600_000;
 const MINUTE = 60_000;
 // 09:00 in Tashkent: the trip stays inside the day of the bots (lesson 204).
@@ -52,5 +54,32 @@ describe('close people of a passenger marked «Kelmadi»', () => {
     vi.setSystemTime(departAt + 30 * MINUTE);
     const shared = await call(`/shared/${token}`, 0);
     expect([shared.status, await shared.json()]).toEqual([404, { error: 'shares.not_found' }]);
+  });
+
+  // G91 PAS-1: the passenger is not in the car, so no new link tells the family «Yoʻlda», and her
+  // «Men keldim» after «Kelmadi» does not wake the driver again.
+  it('get no new link, and «Men keldim» comes too late', async () => {
+    vi.setSystemTime(MORNING);
+    await approvedDriver(OTHER_DRIVER);
+    await registerUser(OTHER_PASSENGER);
+    const departAt = Date.now() + 5 * HOUR;
+    const way = { from: '1726273', to: '1718401', departAt, seats: 2, price: 90_000 };
+    const trip = await read<{ id: string }>(
+      call('/driver/trips', OTHER_DRIVER, {
+        app: 'driver',
+        ...json({ ...way, womanOnBoard: false, pickupMode: 'door', comment: '' }),
+      }),
+    );
+    const seat = await read<{ id: string }>(
+      call(`/trips/${trip.id}/bookings`, OTHER_PASSENGER, json(doorBooking(1))),
+    );
+    await call(`/driver/bookings/${seat.id}/confirm`, OTHER_DRIVER, asDriver);
+    vi.setSystemTime(departAt - 10 * MINUTE);
+    await call(driverMeetPath(seat.id, 'came'), OTHER_DRIVER, asDriver);
+    await call(driverMeetPath(seat.id, 'no_show'), OTHER_DRIVER, asDriver);
+    const again = await call(`/passenger/bookings/${seat.id}/share`, OTHER_PASSENGER, json({}));
+    expect([again.status, await again.json()]).toEqual([409, { error: 'shares.wrong_status' }]);
+    const came = await call(`/passenger/bookings/${seat.id}/came`, OTHER_PASSENGER, json({}));
+    expect([came.status, await came.json()]).toEqual([409, { error: 'bookings.wrong_status' }]);
   });
 });

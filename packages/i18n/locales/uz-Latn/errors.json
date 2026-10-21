@@ -65,5 +65,10 @@
   "trips.not_departed": "Avval «Yoʻlga chiqdim» tugmasini bosing.",
   "trips.already_arrived": "Yetib kelganingiz allaqachon belgilangan.",
   "trips.no_pitak": "Bu yoʻnalishda pitak yoʻq. «Uydan» usulini tanlang.",
-  "support.not_sent": "Javob odamga yetib bormadi. Birozdan keyin qayta yuboring."
+  "support.not_sent": "Javob odamga yetib bormadi. Birozdan keyin qayta yuboring.",
+  "trips.not_found": "Bu safar endi yoʻq.",
+  "users.not_found": "Odam topilmadi.",
+  "reviews.not_found": "Bu safarni baholab boʻlmaydi.",
+  "drivers.not_found": "Bu ariza endi yoʻq.",
+  "trips.request_open": "Sizda ochiq soʻrov bor. Yangisini qoldirish uchun avval uni bekor qiling."
 }

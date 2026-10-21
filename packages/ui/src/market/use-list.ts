@@ -6,6 +6,8 @@ import { keepValue, keptValue } from '../screen/list-memory';
 type LoadState<T> = {
   readonly value: T | null;
   readonly failed: boolean;
+  // Why it failed: the error screen says a reason that a retry never changes (G91 ERR-1).
+  readonly error: unknown;
   readonly reload: () => void;
   readonly refresh: () => Promise<void>;
 };
@@ -18,6 +20,7 @@ type LoadState<T> = {
 export function useLoad<T>(load: () => Promise<T>, memory?: string): LoadState<T> {
   const [value, setValue] = useState<T | null>(() => (memory ? (keptValue<T>(memory) ?? null) : null));
   const [failed, setFailed] = useState(false);
+  const [error, setError] = useState<unknown>(null);
   useEffect(() => {
     if (memory && value !== null) keepValue(memory, value);
   }, [memory, value]);
@@ -37,7 +40,10 @@ export function useLoad<T>(load: () => Promise<T>, memory?: string): LoadState<T
   // After a change the list stays on the screen until the fresh one comes (docs/94 F2).
   const reload = useCallback(() => {
     setFailed(false);
-    load().then(setValue, () => setFailed(true));
+    load().then(setValue, (caught: unknown) => {
+      setError(caught);
+      setFailed(true);
+    });
   }, []);
   useEffect(() => {
     if (value === null) reload();
@@ -45,5 +51,5 @@ export function useLoad<T>(load: () => Promise<T>, memory?: string): LoadState<T
     // Once, when the screen opens.
   }, []);
   useFeedChange(() => void refresh());
-  return { value, failed, reload, refresh };
+  return { value, failed, error, reload, refresh };
 }

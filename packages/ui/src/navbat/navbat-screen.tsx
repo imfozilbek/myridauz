@@ -86,7 +86,7 @@ export function NavbatScreen({ onBack, navbat: launched }: NavbatProps) {
       </>
     );
   const Case = CASES[open.kind];
-  const decided = (outcome: Outcome) => {
+  const next = (outcome: Outcome | null) => {
     setDone((list) => [...list, open]);
     setChosen(null);
     setTold(outcome);
@@ -100,7 +100,8 @@ export function NavbatScreen({ onBack, navbat: launched }: NavbatProps) {
         item={items.find((item) => item.kind === open.kind && item.id === open.id)}
         progress={progressOf(items, filter, done)}
         onBack={onBack}
-        onDone={decided}
+        onDone={next}
+        onGone={() => next(null)}
       />
       {notice}
     </div>

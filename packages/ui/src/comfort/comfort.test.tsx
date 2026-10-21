@@ -59,5 +59,24 @@ describe('"Sevimli haydovchilar" (docs/18)', () => {
       testClients({ comfort: { favorites: async () => ({ drivers: [], trips: [] }) } }),
     );
     expect(await screen.findByText('Hali sevimli haydovchi yoʻq')).toBeTruthy();
+    // How to save one: at the rating after the trip (G91 text 8, owner 20.10.2026).
+    expect(screen.getByText('Safar tugagach, baho berishda haydovchini sevimlilarga qoʻshing.')).toBeTruthy();
+  });
+
+  // G91 PAS-4 (decision 4, text 7): a saved driver opens a sheet that takes him out.
+  it('takes a driver out of the saved ones from his sheet', async () => {
+    const forget = vi.fn<ComfortClient['forget']>(async () => undefined);
+    const favorites = vi
+      .fn<ComfortClient['favorites']>()
+      .mockResolvedValueOnce({ drivers: [DRIVER], trips: [] })
+      .mockResolvedValue({ drivers: [], trips: [] });
+    renderMarket(
+      <FavoritesScreen onBack={() => undefined} />,
+      testClients({ comfort: { favorites, forget } }),
+    );
+    fireEvent.click(await screen.findByText('Jasur'));
+    fireEvent.click(await screen.findByText('Sevimlilardan olib tashlash'));
+    await vi.waitFor(() => expect(forget).toHaveBeenCalledWith(DRIVER.id));
+    expect(await screen.findByText('Hali sevimli haydovchi yoʻq')).toBeTruthy();
   });
 });

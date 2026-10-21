@@ -59,6 +59,31 @@ describe(
       expect(toLine()?.textContent).toContain('Chilonzor');
     });
 
+    // G91 (robot): two empty ends have nothing to swap: ⇅ is off, never a tap that does nothing.
+    it('has ⇅ off while both ends are empty', async () => {
+      home();
+      await screen.findByText(HERE);
+      fireEvent.click(screen.getByRole('button', { name: 'Joyni tozalash' }));
+      const swap = screen.getByRole('button', { name: 'Joylarni almashtirish' }) as HTMLButtonElement;
+      await waitFor(() => expect(swap.disabled).toBe(true));
+    });
+
+    // G91 (robot): ⇅ swapped a place with itself. The end chosen last stays, the other one empties.
+    it('never shows one place on both ends', async () => {
+      home();
+      await screen.findByText(HERE);
+      await tap('Qayerga borasiz?');
+      await tap('Fargʻona');
+      await waitFor(() => expect(document.querySelector('.week-day')).not.toBeNull());
+      await tap('Orqaga');
+      await screen.findByText('Bugun 1, ertaga 0 ta safar');
+      fireEvent.click(fromLine() as HTMLElement);
+      await tap('Fargʻona viloyati');
+      await tap('Butun viloyat');
+      await waitFor(() => expect(fromLine()?.textContent).toContain('Fargʻona'));
+      expect(toLine()?.textContent).toContain('Qayerga borasiz?');
+    });
+
     it('opens the trips of a direction of «Qayerga» at once and keeps it in the block (G78 П7)', async () => {
       const { tracked } = home();
       await screen.findByText(HERE);

@@ -10,14 +10,14 @@ const MINUTE = 60_000;
 const HOURS = { from: 8, to: 22 };
 const QUESTION: WaitingCase = { kind: 'support', id: 'p1', name: 'Ali', since: MORNING };
 
-function setup(assignee: number | undefined) {
+function setup(assignee: number | undefined, item: WaitingCase = QUESTION) {
   let now = MORNING;
   const heard: string[] = [];
   const store = createMemoryAssignments();
   const deps = {
     rules: { hours: HOURS, remindMinutes: 25, ownerMinutes: 30 },
     now: () => now,
-    cases: async () => [QUESTION],
+    cases: async () => [item],
     assigneeOf: async () => assignee,
     teamIds: async () => [1, 2, 3],
     mark: (item: WaitingCase, step: 'moderator' | 'owner', at: number) =>
@@ -46,6 +46,22 @@ describe('the reminders of a support question', () => {
     const { heard, run } = setup(9);
     await run(30);
     expect(heard).toEqual(['members 1,2,3', 'owners undefined']);
+  });
+});
+
+// G91 ADM-3: a complaint about a moderator is not theirs to decide: the reminder skips them.
+describe('the reminders of a complaint about a member of the team', () => {
+  it('ring the rest of the team', async () => {
+    const complaint: WaitingCase = {
+      kind: 'complaint',
+      id: 'c1',
+      name: 'Ali',
+      since: MORNING,
+      sides: [7, 2],
+    };
+    const { heard, run } = setup(undefined, complaint);
+    await run(25);
+    expect(heard).toEqual(['members 1,3']);
   });
 });
 

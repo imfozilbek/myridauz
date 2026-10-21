@@ -25,14 +25,14 @@ export function ReviewScreen(props: Props) {
 
 function Review({ bookingId, onBack, onComplain, onClose }: Props) {
   const { feedback, chat } = useApiClients();
-  const { value, failed, reload } = useLoad(async () => {
+  const { value, failed, error, reload } = useLoad(async () => {
     const [target, about] = await Promise.all([
       feedback.target(bookingId),
       chat.about(chatKeyOfBooking(bookingId)).catch(() => null),
     ]);
     return { target, booking: about?.booking ?? null };
   });
-  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} error={error} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   return (
     <ReviewForm

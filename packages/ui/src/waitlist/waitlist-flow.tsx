@@ -127,6 +127,7 @@ function Waitlist() {
         entry={entry}
         route={route(entry.region)}
         other={other ? { role: other.role, route: route(other.region) } : null}
+        listOpen={me.open}
         onPick={pick}
         onClose={() => setSheet(false)}
       />

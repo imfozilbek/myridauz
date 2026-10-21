@@ -23,6 +23,7 @@ describe('the block journal of a person', () => {
           entries: [{ until: null, reason: 'complaint', by: 'Owner', at: 2 * DAY }],
         }),
         unblock,
+        me: async () => ({ id: null, firstName: 'Ali', hasAvatar: false, role: 'owner' }),
       },
     });
     renderInShell(<BlockJournal userId={USER} />, false, true, undefined, clients);
@@ -33,5 +34,22 @@ describe('the block journal of a person', () => {
     await vi.waitFor(() => expect(unblock).toHaveBeenCalledWith(USER));
     // Blocked before, not now: the journal does not say "never blocked".
     expect(await screen.findByText('Hozir bloklanmagan')).toBeTruthy();
+  });
+
+  // G91 ADM-11: lifting a block is the owner's (ownerOnly): a moderator reads the journal only.
+  it('has no «Blokdan chiqarish» for a moderator', async () => {
+    const clients = testClients({
+      moderation: {
+        blocks: async () => ({
+          active: { until: null },
+          entries: [{ until: null, reason: 'complaint', by: 'Owner', at: 2 * DAY }],
+        }),
+        me: async () => ({ id: null, firstName: 'Nodir', hasAvatar: false, role: 'moderator' }),
+      },
+    });
+    renderInShell(<BlockJournal userId={USER} />, false, true, undefined, clients);
+    expect(await screen.findByText('Hozir butunlay bloklangan')).toBeTruthy();
+    await new Promise((settled) => setTimeout(settled, 50));
+    expect(screen.queryByText('Blokdan chiqarish')).toBeNull();
   });
 });

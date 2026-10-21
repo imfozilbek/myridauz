@@ -115,4 +115,16 @@ describe('an application in «Navbat»', () => {
     fireEvent.click(screen.getByText('Orqaga'));
     expect(await screen.findByText('Jasur · ariza')).toBeTruthy();
   });
+
+  // Decision 2 of the owner (20.10.2026, G91 DRV-2): the new car of a driver approved once gets
+  // «Tuzatish» or a block, never «Rad etish».
+  it('has no «Rad etish» for the new car of an approved driver', async () => {
+    const get = async () => ({
+      ...detailOf(JASUR),
+      history: [{ status: 'approved' as const, reasons: [], at: 1 }],
+    });
+    renderNavbat(open, [JASUR], { moderation: { get } });
+    expect(await screen.findByText('Tuzatish')).toBeTruthy();
+    expect(screen.queryByText('Rad etish')).toBeNull();
+  });
 });

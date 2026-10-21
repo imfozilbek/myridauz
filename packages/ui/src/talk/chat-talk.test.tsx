@@ -57,6 +57,17 @@ describe('the chat before a booking (G64, mockups g64/4, g64/5)', { timeout: 20_
     expect(screen.queryByText('Safarimga taklif qilish')).toBeNull();
   });
 
+  // G91 DRV-4: a live trip that the request does not fit: as on the board, a new offer waits until the
+  // trip is over; no button the server refuses with «Eskisini bekor qiling».
+  it('offers nothing while the driver has a live trip that the request does not fit', async () => {
+    await openTalk({
+      about: [talk('driver')],
+      market: { requestBoard: async () => board({ trip, busy: true, fits: [], others: [asked] }) },
+    });
+    expect(await screen.findByText('Yangi taklif shu safar tugagach')).toBeTruthy();
+    expect(screen.queryByText('Taklif yuborish')).toBeNull();
+  });
+
   // One way to offer a trip, as on the board (G77): counted, and a wallet short of the commission
   // opens the sheet of the sum short, not a line of error.
   it('counts the offer of the chat; a wallet short of the commission opens the sheet of the sum', async () => {

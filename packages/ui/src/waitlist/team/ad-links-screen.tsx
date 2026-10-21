@@ -10,6 +10,7 @@ import { AdDetail } from './ad-detail';
 import { AdForm } from './ad-form';
 import { AdReady } from './ad-ready';
 import { intoTrips, listedOf, useAdWords } from './ad-words';
+import { ErrorScreen } from '../../states/error-screen';
 
 type View =
   | { readonly kind: 'list' }
@@ -56,12 +57,14 @@ export function AdLinksScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenView('ads');
   const { t } = useI18n();
   const { waitlist } = useApiClients();
-  const { value, reload } = useLoad(() => waitlist.adLinks(), 'waitlist.ads');
+  const { value, failed, error, reload } = useLoad(() => waitlist.adLinks(), 'waitlist.ads');
   const [view, setView] = useState<View>({ kind: 'list' });
   const list = () => (reload(), setView({ kind: 'list' }));
   if (view.kind === 'new') return <AdForm onMade={(ad) => setView({ kind: 'ready', ad })} onBack={list} />;
   if (view.kind === 'ready') return <AdReady ad={view.ad} onBack={list} />;
   if (view.kind === 'one') return <AdDetail code={view.code} onBack={list} />;
+  // A failed list is never an empty one (G91 ADM-10).
+  if (failed && !value) return <ErrorScreen onRetry={reload} onBack={onBack} error={error} />;
   return (
     <ManagePage title={t('ads.title')} hint={t('ads.hint')} onBack={onBack}>
       <ManageGroup>

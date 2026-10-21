@@ -4,7 +4,13 @@ import { ManageGroup, ManageRow } from '../manage/manage-page';
 
 // The driver of a trip for the team: the car and the rating under the name, a tap opens the card of
 // the person (docs/24, G78 sheet 4).
-export function TripDriver({ trip, onOpen }: { readonly trip: Trip; readonly onOpen: () => void }) {
+export function TripDriver({
+  trip,
+  onOpen,
+}: {
+  readonly trip: Trip;
+  readonly onOpen: (() => void) | undefined;
+}) {
   const { t, formatRating } = useI18n();
   const { driver } = trip;
   const car = `${driver.car.make} ${driver.car.model}, ${t(`drivers.color.${driver.car.color}`)}`;

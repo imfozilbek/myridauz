@@ -65,6 +65,7 @@ describe('«Kutayotganlar» and the «gold» of «Statistika» (docs/181, docs/1
   it('shows the waiting people, opens a direction once, and tells the gold', async () => {
     const openDirection = vi.fn(async () => ({ at: 1, sent: 133 }));
     const clients = testClients({
+      moderation: { me: async () => ({ id: null, firstName: 'Ali', hasAvatar: false, role: 'owner' }) },
       stats: { get: async (period) => statsOf(period) },
       waitlist: {
         overview: async () => OVERVIEW,
@@ -85,5 +86,22 @@ describe('«Kutayotganlar» and the «gold» of «Statistika» (docs/181, docs/1
     press('Yoʻnalishni ochish');
     press(await screen.findByText('Ochish').then(() => 'Ochish'));
     await waitFor(() => expect(openDirection).toHaveBeenCalledWith('1718'));
+  });
+
+  // G91 ADM-1: opening a direction is the owner's (ownerOnly): a moderator reads it, no button.
+  it('a moderator reads a direction and cannot open it', async () => {
+    const clients = testClients({
+      moderation: { me: async () => ({ id: null, firstName: 'Nodir', hasAvatar: false, role: 'moderator' }) },
+      stats: { get: async (period) => statsOf(period) },
+      waitlist: { overview: async () => OVERVIEW, direction: async () => DIRECTION, stats: async () => GOLD },
+    });
+    renderInShell(<StatsScreen onBack={() => undefined} />, false, true, waitlistPlaces, clients);
+    press(
+      await screen
+        .findByText(/^Toshkent shahri ↔ Samarqand viloyati/u)
+        .then(() => /^Toshkent shahri ↔ Samarqand viloyati/u),
+    );
+    expect(await screen.findByText('Ariza tasdiqlangan')).toBeTruthy();
+    expect(screen.queryByText('Yoʻnalishni ochish')).toBeNull();
   });
 });

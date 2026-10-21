@@ -45,6 +45,31 @@ describe('«Boshqaruv»', () => {
     await sheetClosed();
   });
 
+  // G91 ADM-6: the block changes the whole card: «Bloklar tarixi» under it too.
+  it('a block shows in «Bloklar tarixi» at once', { timeout: 20_000 }, async () => {
+    const WEEK = Date.parse('2026-10-27T05:00:00Z');
+    const blocks = vi
+      .fn()
+      .mockResolvedValueOnce({ active: null, entries: [] })
+      .mockResolvedValue({
+        active: { until: WEEK },
+        entries: [{ until: WEEK, reason: 'admin', by: 'Ali', at: 1 }],
+      });
+    const block = vi.fn(async () => undefined);
+    const person = vi
+      .fn()
+      .mockResolvedValueOnce(CARD)
+      .mockResolvedValue({ ...CARD, blocked: true, blockedUntil: WEEK });
+    renderManagement({ moderation: { block, blocks }, team: { person } });
+    await tap('Odamlar');
+    fireEvent.change(screen.getByLabelText('ID raqami'), { target: { value: PERSON } });
+    await tap('Ochish');
+    expect(await screen.findByText('Hech qachon bloklanmagan')).toBeTruthy();
+    await tap('Bloklash');
+    await tap('7 kun');
+    expect(await screen.findByText(/^Hozir .+gacha bloklangan$/u)).toBeTruthy();
+  });
+
   it('adds a moderator by the public id in «Jamoa» and removes one', async () => {
     const add = vi.fn(async () => undefined);
     const remove = vi.fn(async () => undefined);

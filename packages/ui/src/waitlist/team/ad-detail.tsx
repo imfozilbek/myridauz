@@ -9,6 +9,7 @@ import { SecondaryButton } from '../../telegram/bottom-button';
 import { haptic } from '../../telegram/feedback';
 import { shareOf } from './share';
 import { intoTrips, listedOf, useAdWords } from './ad-words';
+import { ErrorScreen } from '../../states/error-screen';
 
 const PERCENT = 100;
 // The share that did not come from the step before: «30% ketdi».
@@ -21,7 +22,9 @@ export function AdDetail({ code, onBack }: { readonly code: string; readonly onB
   const { t, formatMoney, formatNumber } = useI18n();
   const { waitlist } = useApiClients();
   const words = useAdWords();
-  const { value } = useLoad(() => waitlist.adLink(code));
+  const { value, failed, error, reload } = useLoad(() => waitlist.adLink(code));
+  // A failure says so with «Qayta urinish», never an endless skeleton (G91 ADM-10).
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} error={error} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   const ad: AdLink = value;
   const { result } = ad;

@@ -18,9 +18,10 @@ describe('ride requests (docs/09, docs/35)', () => {
       error: 'trips.price_out_of_bounds',
     });
     expect((await publishRequest(deps, 1, request)).ok).toBe(true);
+    // The passenger hears her own reason, not the driver's limit of trips (G91 PAS-2).
     expect(await publishRequest(deps, 1, { ...request, date: '2026-10-02' })).toEqual({
       ok: false,
-      error: 'trips.too_many',
+      error: 'trips.request_open',
     });
   });
 
@@ -28,7 +29,7 @@ describe('ride requests (docs/09, docs/35)', () => {
   it('leaves no request while the passenger holds a seat', async () => {
     const { deps, request, holdSeat } = setup();
     holdSeat();
-    expect(await publishRequest(deps, 1, request)).toEqual({ ok: false, error: 'trips.too_many' });
+    expect(await publishRequest(deps, 1, request)).toEqual({ ok: false, error: 'bookings.has_seat' });
   });
 
   it('keeps one open request of a person on one route and day (G37, docs/101 R5)', async () => {

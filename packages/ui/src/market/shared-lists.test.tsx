@@ -1,8 +1,8 @@
-import { MY_TRIP_LINK } from '@platform/contracts';
+import { MY_TRIP_LINK, OFFER_LINK } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { useState, type ReactNode } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { confirmed, request } from '../bookings/booking-test-kit';
+import { confirmed, offer, request } from '../bookings/booking-test-kit';
 import { DriverData } from '../home/driver-data';
 import { PassengerData } from '../home/passenger-data';
 import { testClients } from '../test-shell';
@@ -115,3 +115,20 @@ function Later({ children }: { readonly children: ReactNode }) {
   const [shown, setShown] = useState(false);
   return shown ? children : <button onClick={() => setShown(true)}>open</button>;
 }
+
+// G91 DRV-10: «Ochish» under a declined or an expired offer opens «Oʻtgan», where its row is.
+describe('the link of an offer that ended', () => {
+  it('opens «Oʻtgan» with the offer', async () => {
+    renderMarket(
+      <MyTripsScreen onBack={() => undefined} link={{ name: OFFER_LINK, id: offer.id }} />,
+      testClients({
+        market: { myTrips: async () => [confirmed.trip] },
+        bookings: {
+          driverBookings: async () => [],
+          driverOffers: async () => [{ ...offer, status: 'declined' }],
+        },
+      }),
+    );
+    expect(await screen.findByText(/ · Rad etildi$/u)).toBeTruthy();
+  });
+});

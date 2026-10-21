@@ -76,6 +76,13 @@ const EXPLAINED: readonly string[] = [
   'bookings.has_seat',
   // G89 B5, U8: the driver of the offer is short of money for the commission.
   'bookings.offer_unavailable',
+  // G91 texts 1, 2, 3, 9 (owner, 20.10.2026): a trip, a person, a rating, an application gone for good.
+  'trips.not_found',
+  'users.not_found',
+  'reviews.not_found',
+  'drivers.not_found',
+  // G91 text 4: a second request of a passenger (PAS-2).
+  'trips.request_open',
 ];
 
 // Codes that mean the same for a person as an explained one.
@@ -102,6 +109,15 @@ export function errorKey(
 ): TranslationKey {
   const answered = error instanceof ApiError ? error.code : undefined;
   return (answered && codeKey(answered)) || fallback;
+}
+
+// An answer a retry never changes: the API said no to this person or about this thing (G91 ERR-1).
+// No answer, a lost launch (the gate signs again), too many taps or a busy server pass on a retry.
+const RETRIED = new Set([0, 401, 408, 429]);
+const SERVER = 500;
+export function finalKey(error: unknown): TranslationKey | null {
+  if (!(error instanceof ApiError) || RETRIED.has(error.status) || error.status >= SERVER) return null;
+  return error.code ? codeKey(error.code) : null;
 }
 
 // The seat or the request changed meanwhile (another tap, the other side, the Cron): the screen

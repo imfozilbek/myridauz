@@ -11,6 +11,7 @@ import type { DockWords } from './dock-words';
 import { markAgreed } from './passenger-marks';
 import type { SeatActions } from './seat-actions';
 import { useTalkTools } from './talk-tools';
+import { CallButton } from './call-button';
 
 type Kind = 'asked' | 'confirmed' | 'moved' | 'refused' | 'noShow' | 'ended';
 type Props = {
@@ -67,7 +68,7 @@ export function PassengerSeatCard({ kind, booking, words, act, go, directory }: 
             text={`${start}, ${route}`}
             who={who}
           />
-          <SecondaryButton beside text={t('sheet.meet.call')} onClick={act.call(booking)} />
+          <CallButton onClick={act.call(booking)} />
           <MainButton text={t('home.dock.openTrip')} onClick={act.open(booking)} />
         </>
       );

@@ -14,7 +14,8 @@ type TripScreenProps = {
   readonly trip: Trip;
   readonly onBack: () => void;
   // The card of the driver or of a passenger (G78 sheet 4).
-  readonly onPerson: (id: PersonId) => void;
+  // Null for a moderator: the card of a person is the owner's (G91 ADM-2).
+  readonly onPerson: ((id: PersonId) => void) | undefined;
   // The bookings of the trip for the team (G08).
   readonly children?: ReactNode;
 };
@@ -65,7 +66,7 @@ export function TripScreen({ trip, onBack, onPerson, children }: TripScreenProps
         ) : null}
         <ManageRow icon="state" title={t('market.review.status')} value={t(`market.status.${trip.status}`)} />
       </ManageGroup>
-      <TripDriver trip={trip} onOpen={() => onPerson(trip.driver.id)} />
+      <TripDriver trip={trip} onOpen={onPerson ? () => onPerson(trip.driver.id) : undefined} />
       {children}
       <PersonReviews key={trip.driver.id} userId={trip.driver.id} />
     </ManagePage>

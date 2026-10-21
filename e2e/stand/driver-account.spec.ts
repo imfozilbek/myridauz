@@ -37,13 +37,14 @@ async function approved(person: Person, plate: string) {
   await runCron();
 }
 
-test('D09, D10. a new face after the approval: back to the check, no publishing until then', async () => {
+// Decision 1 of the owner (20.10.2026, G91 DRV-1): a new face goes to the check of faces; the driver
+// stays a driver and publishes.
+test('D09, D10. a new face after the approval: the check of faces, still a driver', async () => {
   await approved(DAVRON, '01P345QR');
-  expect(await outcome(publishTrip(DAVRON, CHILONZOR, SAMARQAND, 'door'))).toBe('ok');
   await createUsersClient(await signedAs('driver', DAVRON)).uploadAvatar(PHOTO);
   const application = await createDriversClient(await signedAs('driver', DAVRON)).getApplication();
-  expect(application?.status).toBe('pending');
-  expect(await outcome(publishTrip(DAVRON, CHILONZOR, SAMARQAND, 'door'))).toBe('trips.not_driver');
+  expect(application?.status).toBe('approved');
+  expect(await outcome(publishTrip(DAVRON, CHILONZOR, SAMARQAND, 'door'))).toBe('ok');
 });
 
 test('D70, D71, V08. the bonus lives until its time; burnt, it no longer pays a commission', async () => {

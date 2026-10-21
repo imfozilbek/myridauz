@@ -90,7 +90,7 @@ export async function requestBoard(
     };
   const measured = ofDay.map((request) => ({
     request,
-    extra: tripFit(nearest.trip, nearest.stops, request, regionOf),
+    extra: tripFit(nearest.trip, nearest.stops, request, { regionOf, fits: deps.fits }),
   }));
   const fitting = measured
     .filter((item) => item.extra !== null)

@@ -20,8 +20,8 @@ export function sendCaseReminders(env: Bindings) {
     rules: { hours, remindMinutes, ownerMinutes },
     now: Date.now,
     cases: async () =>
-      (await waitingCases(env)).flatMap(({ kind, id, name, since }): WaitingCase[] =>
-        kind === 'application' ? [] : [{ kind, id, name, since }],
+      (await waitingCases(env)).flatMap(({ kind, id, name, since, sides }): WaitingCase[] =>
+        kind === 'application' ? [] : [{ kind, id, name, since, ...(sides ? { sides } : {}) }],
       ),
     // A support question is of the member it was given to on its day (docs/92).
     assigneeOf: async (item) => {

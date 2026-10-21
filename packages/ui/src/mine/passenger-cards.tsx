@@ -1,5 +1,6 @@
 import { tashkentDate, type Booking, type RideRequest } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
+import { shownStatus } from '../bookings/booking-status';
 import { useCardDay } from '../market/when';
 import { useTripTime } from '../trip/trip-time';
 import { MineCard } from './mine-card';
@@ -15,7 +16,10 @@ export function BookingMineCard({ booking, onOpen }: BookingProps) {
   const way = useWay();
   const { trip } = booking;
   const { car } = trip.driver;
-  const confirmed = booking.status === 'confirmed';
+  // The driver marked «Kelmadi»: the mark of the main screen, not «Joy tasdiqlandi» (G91 PAS-1).
+  const missed = booking.noShowAt !== null;
+  const status = shownStatus(booking);
+  const confirmed = status === 'confirmed' && !missed;
   return (
     <MineCard
       head={t('market.mine.when', {
@@ -34,7 +38,9 @@ export function BookingMineCard({ booking, onOpen }: BookingProps) {
         </>
       }
       chip={{
-        text: t(confirmed ? 'bookings.confirmed.title' : `bookings.status.${booking.status}`),
+        text: missed
+          ? t('home.dock.noShow')
+          : t(confirmed ? 'bookings.confirmed.title' : `bookings.status.${status}`),
         tone: confirmed ? 'good' : 'gray',
       }}
       onOpen={onOpen}

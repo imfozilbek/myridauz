@@ -6,12 +6,13 @@ import { useFreshLists } from '../home/fresh-lists';
 import { useSharedPassengerData } from '../home/passenger-data';
 
 // What «Joy band qilish» meets (G52, docs/112; one at a time, owner decision 12.10.2026, docs/172):
-// a seat of this trip is asked already; a seat held on another trip, so the button opens it; an open
-// request, which the seat closes, said above the button. While loading or on a failure the button
-// stays: the server checks again.
+// a seat of this trip is asked already; a seat held on another trip; the button opens either (G91
+// PAS-9); waiting: the seat waits for its driver, a cancel ends it (PAS-10). An open request, which
+// the seat closes, is said above the button. While loading or on a failure the button stays: the
+// server checks again.
 export type SeatBlock =
-  | { readonly kind: 'asked' }
-  | { readonly kind: 'held'; readonly bookingId: string }
+  | { readonly kind: 'asked'; readonly bookingId: string }
+  | { readonly kind: 'held'; readonly bookingId: string; readonly waiting: boolean }
   | { readonly kind: 'request' }
   | null;
 
@@ -45,8 +46,9 @@ function seatBlockOf(
   requests: readonly RideRequest[],
   now: number,
 ): SeatBlock {
-  if (mine.some((item) => item.trip.id === tripId && cancellable(item.status))) return { kind: 'asked' };
+  const asked = mine.find((item) => item.trip.id === tripId && cancellable(item.status));
+  if (asked) return { kind: 'asked', bookingId: asked.id };
   const held = mine.find((item) => seatHolds(item, tripHolds(item.trip, now), now));
-  if (held) return { kind: 'held', bookingId: held.id };
+  if (held) return { kind: 'held', bookingId: held.id, waiting: held.status === 'requested' };
   return requests.some((request) => request.status === 'open') ? { kind: 'request' } : null;
 }

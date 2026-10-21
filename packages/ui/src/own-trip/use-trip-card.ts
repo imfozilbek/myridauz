@@ -21,6 +21,8 @@ export function useTripCard(trip: Trip) {
   const done = useShareTrack('trip', 'market.own_trip');
   const [failure, setFailure] = useState<TranslationKey | null>(null);
   const running = useRef(false);
+  // The picture and the call take a moment: the button says it is busy meanwhile (G91 robot).
+  const [busy, setBusy] = useState(false);
   const pictureId = async () => {
     const picture = await drawTripCardPicture(texts(trip), colors, PICTURE_FONT);
     return picture ? growth.cardPicture(picture) : null;
@@ -28,6 +30,7 @@ export function useTripCard(trip: Trip) {
   const send = async () => {
     if (running.current) return;
     running.current = true;
+    setBusy(true);
     setFailure(null);
     try {
       const picture = await pictureId().catch(() => null);
@@ -39,7 +42,8 @@ export function useTripCard(trip: Trip) {
       setFailure(errorKey(caught));
     } finally {
       running.current = false;
+      setBusy(false);
     }
   };
-  return { send, failure };
+  return { send, failure, busy };
 }

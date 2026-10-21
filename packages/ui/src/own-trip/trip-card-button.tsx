@@ -11,11 +11,17 @@ const SEND = 18;
 // share_shown counts a button people see.
 export function TripCardButton({ trip }: { readonly trip: Trip }) {
   const { t } = useI18n();
-  const { send, failure } = useTripCard(trip);
+  const { send, failure, busy } = useTripCard(trip);
   return (
     <>
       <ActionFailure error={failure} />
-      <button type="button" className="own-channel-share" onClick={() => void send()}>
+      <button
+        type="button"
+        className="own-channel-share"
+        aria-busy={busy}
+        disabled={busy}
+        onClick={() => void send()}
+      >
         <Icon name="send" size={SEND} />
         <span>{t('driverTrip.channel.share')}</span>
       </button>

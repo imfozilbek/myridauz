@@ -6,7 +6,8 @@ import type { Result, SharesDeps, ShareUpdate } from './ports';
 
 type ShareError = 'shares.not_found' | 'shares.wrong_status';
 
-// "Yaqinlarimga yuborish" (docs/43): only the passenger of a confirmed booking shares it.
+// "Yaqinlarimga yuborish" (docs/43): only the passenger of a confirmed booking shares it, and not
+// after the driver's «Kelmadi»: she is not in the car, the family must not read «Yoʻlda» (G91 PAS-1).
 export async function createShare(
   deps: SharesDeps,
   passengerId: number,
@@ -14,7 +15,8 @@ export async function createShare(
 ): Promise<Result<Share, ShareError>> {
   const found = await deps.booking(bookingId);
   if (found?.passengerId !== passengerId) return { ok: false, error: 'shares.not_found' };
-  if (found.view.status !== 'confirmed') return { ok: false, error: 'shares.wrong_status' };
+  if (found.view.status !== 'confirmed' || found.view.noShowAt !== null)
+    return { ok: false, error: 'shares.wrong_status' };
   const text = await deps.texts.card(found.view);
   return { ok: true, value: await issueLink(deps, { kind: 'booking', id: bookingId }, passengerId, text) };
 }

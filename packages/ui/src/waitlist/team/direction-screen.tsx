@@ -2,6 +2,7 @@ import type { Cadence, Pain, WaitlistDirection } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { Fragment, useState } from 'react';
 import { useApiClients } from '../../context/api-clients';
+import { useTeamOwner } from '../../team/use-owner';
 import { useScreenView } from '../../context/analytics-context';
 import { useI18n } from '../../context/i18n-context';
 import { ManageGroup, ManagePage, ManageRow } from '../../manage/manage-page';
@@ -12,6 +13,7 @@ import { MainButton, SecondaryButton } from '../../telegram/bottom-button';
 import { painKey } from '../parts';
 import { useRouteName } from './waiting-block';
 import './team.css';
+import { ErrorScreen } from '../../states/error-screen';
 
 type Counted = { readonly label: string; readonly count: number };
 
@@ -38,8 +40,10 @@ export function DirectionScreen({ region, onBack }: Props) {
   const { t, formatDate } = useI18n();
   const { waitlist } = useApiClients();
   const route = useRouteName();
-  const { value, reload } = useLoad(() => waitlist.direction(region));
+  const { value, failed, error, reload } = useLoad(() => waitlist.direction(region));
   const [asking, setAsking] = useState(false);
+  const owner = useTeamOwner();
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} error={error} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   const cadences = (side: WaitlistDirection['passengers']) =>
     side.cadences.map(({ cadence, count }: { cadence: Cadence; count: number }) => ({
@@ -89,9 +93,10 @@ export function DirectionScreen({ region, onBack }: Props) {
           {t('waitlistTeam.opened', { date: formatDate(new Date(opened.at)) })} ·{' '}
           {t('waitlistTeam.sent', { n: opened.sent })}
         </p>
-      ) : (
+      ) : owner ? (
+        // Opening a direction is the owner's (ownerOnly): a moderator reads it (G91 ADM-1).
         <MainButton text={t('waitlistTeam.open')} onClick={() => setAsking(true)} />
-      )}
+      ) : null}
       <FormSheet
         open={asking}
         grouped

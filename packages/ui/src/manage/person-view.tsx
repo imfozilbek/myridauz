@@ -93,7 +93,8 @@ export function PersonView({ card, onBack, onChanged }: ViewProps) {
       <ActionFailure error={failure} />
       <PersonActivityGroups id={card.id} />
       <PersonSupport id={card.id} />
-      <BlockJournal userId={card.id} />
+      {/* A block or its lift changes the card and its journal together (G91 ADM-6). */}
+      <BlockJournal key={String(card.blockedUntil ?? card.blocked)} userId={card.id} onChanged={onChanged} />
       {card.blocked ? null : (
         <MainButton text={t('moderation.block')} destructive onClick={() => setBlocking(true)} />
       )}

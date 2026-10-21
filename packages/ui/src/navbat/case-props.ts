@@ -12,4 +12,6 @@ export type CaseProps = {
   readonly progress: Progress;
   readonly onBack: () => void;
   readonly onDone: (outcome: Outcome) => void;
+  // Decided by another member meanwhile: the next case, without an outcome (G91 ADM-8).
+  readonly onGone: () => void;
 };

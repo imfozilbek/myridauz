@@ -9,6 +9,8 @@ import { useCallsOn } from '../call/calls-on';
 type Props = {
   readonly booking: Booking;
   readonly onOpen: (screen: 'chat' | 'call' | 'complaint' | 'review') => void;
+  // The driver marked «Kelmadi»: the ride was not hers, no stars (G91 PAS-1).
+  readonly missed?: boolean;
 };
 
 // Whole days left, at least one while the deadline has not come (docs/129).
@@ -16,7 +18,7 @@ export const daysLeft = (until: number, now: number) => Math.max(1, Math.floor((
 
 // After the trip (owner decision 06.10.2026, docs/129, mockups g60/6 and g60/7): what Rida still
 // gives, and each thing with its deadline. The chat stays to read; the complaint goes to support.
-export function DoneTools({ booking, onOpen }: Props) {
+export function DoneTools({ booking, onOpen, missed = false }: Props) {
   const { t } = useI18n();
   const callsOn = useCallsOn();
   const brand = useBrand();
@@ -48,12 +50,16 @@ export function DoneTools({ booking, onOpen }: Props) {
           ? null
           : tile('chat', t('bookings.done.messages'), t('bookings.done.readOnly'), () => onOpen('chat'))}
         {talk && callsOn ? tile('phone', t('calls.call'), until(talkUntil), () => onOpen('call')) : null}
-        {tile(
-          'star',
-          t(rate ? 'bookings.done.rate' : 'bookings.done.rating'),
-          rate ? t('bookings.done.daysLeft', { days: daysLeft(rateUntil, now) }) : t('bookings.done.over'),
-          () => onOpen('review'),
-        )}
+        {missed
+          ? null
+          : tile(
+              'star',
+              t(rate ? 'bookings.done.rate' : 'bookings.done.rating'),
+              rate
+                ? t('bookings.done.daysLeft', { days: daysLeft(rateUntil, now) })
+                : t('bookings.done.over'),
+              () => onOpen('review'),
+            )}
       </div>
       <div className="booking-links">
         {now < complainUntil ? (

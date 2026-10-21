@@ -17,7 +17,7 @@ export function passengerTripsHint(
   requests: readonly RideRequest[],
   offers: readonly Offer[],
 ): TripsHint {
-  const confirmed = bookings.filter((booking) => booking.status === 'confirmed');
+  const confirmed = bookings.filter((booking) => booking.status === 'confirmed' && booking.noShowAt === null);
   const [only] = confirmed;
   if (confirmed.length > 1) return { key: 'home.tile.seats', count: confirmed.length };
   if (only) return { at: only.trip.departAt, until: only.trip.departUntil };

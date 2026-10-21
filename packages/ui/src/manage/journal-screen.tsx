@@ -10,6 +10,8 @@ import { ScreenSkeleton } from '../states/screen-skeleton';
 import { entrySign, useEntryWords } from './journal-words';
 import { ManageGroup, ManagePage, ManageRow } from './manage-page';
 import { PeopleScreen } from './people-screen';
+import { ActionFailure } from '../states/action-failure';
+import { useFailure } from '../states/use-failure';
 
 type Entry = Journal['entries'][number];
 
@@ -34,6 +36,7 @@ export function JournalScreen({ onBack }: { readonly onBack: () => void }) {
   const [end, setEnd] = useState(false);
   const [person, setPerson] = useState<PersonId | null>(null);
   const words = useEntryWords();
+  const { failure, fail, clear } = useFailure();
   const pastDay = usePastDay();
   if (person) return <PeopleScreen person={person} onBack={() => setPerson(null)} />;
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
@@ -42,7 +45,10 @@ export function JournalScreen({ onBack }: { readonly onBack: () => void }) {
   const more = async () => {
     const last = entries.at(-1);
     if (!last) return;
-    const next = await team.journal(last.at);
+    clear();
+    // «Yana» that failed says so (G91 ADM-10).
+    const next = await team.journal(last.at).catch(fail);
+    if (!next) return;
     setOlder((list) => [...list, ...next.entries]);
     if (next.entries.length === 0) setEnd(true);
   };
@@ -73,6 +79,7 @@ export function JournalScreen({ onBack }: { readonly onBack: () => void }) {
           <ManageRow icon="down" title={t('manage.journalMore')} onClick={() => void more()} />
         </ManageGroup>
       ) : null}
+      <ActionFailure error={failure} />
     </ManagePage>
   );
 }

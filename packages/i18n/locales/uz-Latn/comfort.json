@@ -2,8 +2,9 @@
   "favorite.added": "Uning yangi safarlari haqida xabar beramiz.",
   "favorites.title": "Sevimli haydovchilar",
   "favorites.empty": "Hali sevimli haydovchi yoʻq",
-  "favorites.emptyHint": "Safar sahifasida haydovchini sevimlilarga qoʻshing.",
+  "favorites.emptyHint": "Safar tugagach, baho berishda haydovchini sevimlilarga qoʻshing.",
   "favorites.drivers": "Haydovchilar",
   "favorites.trips": "Ularning safarlari",
-  "favorites.noTrips": "Hozircha yangi safar yoʻq. Chiqishi bilan xabar beramiz."
+  "favorites.noTrips": "Hozircha yangi safar yoʻq. Chiqishi bilan xabar beramiz.",
+  "favorites.remove": "Sevimlilardan olib tashlash"
 }

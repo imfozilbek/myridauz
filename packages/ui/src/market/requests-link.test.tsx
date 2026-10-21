@@ -37,6 +37,15 @@ const open = (link: string, enabled = true, address = `/?requests=${link}`) => {
 
 // Several screens in one test: the first one loads TelegramUI, slow under coverage in CI.
 describe('a new request on a followed route (docs/83 N08, G64)', { timeout: 20_000 }, () => {
+  // G91 PAS-3, BOT-3: the bot button tapped days later opens today, not a board of a day that is over.
+  it('opens today when the day of the button is over', async () => {
+    vi.setSystemTime(Date.parse('2026-10-05T06:00:00Z'));
+    const requestBoard = open('1726_1730_2026-10-02');
+    await vi.waitFor(() => expect(requestBoard).toHaveBeenCalled(), { timeout: 5000 });
+    expect(requestBoard.mock.calls[0]?.[0]).toMatchObject({ date: '2026-10-05' });
+    vi.useRealTimers();
+  });
+
   it('opens «Yoʻlovchilar soʻrovlari» of that route and day, back goes to the main screen', async () => {
     const requestBoard = open('1726_1730_2026-10-02');
     // The first screen of a file loads TelegramUI: under load it takes more than the default 1 s.

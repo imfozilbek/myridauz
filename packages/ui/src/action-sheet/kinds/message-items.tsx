@@ -1,3 +1,5 @@
+import { CHAT_KEY } from '@platform/contracts';
+import { useEffect } from 'react';
 import { otherSide } from '../../call/other-side';
 import { useOpenChat } from '../../chat/open-chat';
 import { useApiClients } from '../../context/api-clients';
@@ -6,6 +8,7 @@ import { wayOf } from '../../chats/chat-way';
 import { useUnreadLoad } from '../../chats/unread-chats';
 import type { PlaceDirectory } from '../../places/directory';
 import { itemKey, type ActionItem } from '../action-item';
+import { closeSheet, namedSheet } from '../action-queue';
 import { QuoteBlock } from '../sheet-parts';
 import { useSheetWords } from '../trip-line';
 
@@ -19,6 +22,13 @@ export function useMessageItems(directory: PlaceDirectory): ActionItem[] {
   const openChat = useOpenChat();
   const words = useSheetWords(directory);
   const { value, refresh } = useUnreadLoad();
+  // «Chatni ochish» of a message read since then: no sheet, its chat (G91 BOT-2).
+  useEffect(() => {
+    const named = namedSheet();
+    if (!value || named === null || !CHAT_KEY.test(named) || value.some(({ key }) => key === named)) return;
+    closeSheet();
+    openChat(named);
+  }, [value, openChat]);
   return (value ?? []).flatMap((one) => {
     const side = otherSide(one.about);
     if (!side) return [];

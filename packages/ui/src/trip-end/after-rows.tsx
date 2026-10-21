@@ -3,7 +3,7 @@ import { daysLeft } from '../bookings/done-tools';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 import { useUntilText } from '../trip/until-text';
-import { ridersOf, tripSums } from './trip-sums';
+import { ridersOf, taken, tripSums } from './trip-sums';
 import './after-rows.css';
 import { useBrand } from '../context/brand-context';
 
@@ -46,24 +46,29 @@ export function AfterRows({ trip, bookings, now, onRow }: Props) {
   // nothing (G78 В17).
   const riders = ridersOf(bookings);
   const rated = riders.length > 0 && riders.every((booking) => booking.rated === true);
-  const rows: readonly Row[] = [
-    rated
-      ? [null, t('driverAfter.past.rate'), t('driverAfter.tag.rated'), true]
-      : now >= rateUntil
-        ? [null, t('driverAfter.past.rate'), over]
-        : ['rate', t('driverAfter.past.rate'), left(rateUntil)],
-    now < talkUntil
-      ? [
-          'talk',
-          t('driverAfter.past.talk'),
-          t('driverAfter.past.talkUntil', { until: untilText(talkUntil, now) }),
-        ]
-      : ['talk', t('bookings.done.messages'), t('bookings.done.readOnly')],
-    now < complainUntil
-      ? ['complain', t('complaints.title'), left(complainUntil)]
-      : ['support', t('bookings.done.complainSupport'), over],
-    ['commission', t('wallet.kind.commission'), commission],
-  ];
+  // Nobody rode: nobody to rate, write or complain about, only what the trip cost (G91 DRV-11).
+  const people = bookings.some(taken);
+  const commissionRow: Row = ['commission', t('wallet.kind.commission'), commission];
+  const rows: readonly Row[] = people
+    ? [
+        rated
+          ? [null, t('driverAfter.past.rate'), t('driverAfter.tag.rated'), true]
+          : now >= rateUntil
+            ? [null, t('driverAfter.past.rate'), over]
+            : ['rate', t('driverAfter.past.rate'), left(rateUntil)],
+        now < talkUntil
+          ? [
+              'talk',
+              t('driverAfter.past.talk'),
+              t('driverAfter.past.talkUntil', { until: untilText(talkUntil, now) }),
+            ]
+          : ['talk', t('bookings.done.messages'), t('bookings.done.readOnly')],
+        now < complainUntil
+          ? ['complain', t('complaints.title'), left(complainUntil)]
+          : ['support', t('bookings.done.complainSupport'), over],
+        commissionRow,
+      ]
+    : [commissionRow];
   return (
     <div className="past-after">
       {rows.map(([row, title, sub, done]) => {

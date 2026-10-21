@@ -78,8 +78,12 @@ export function PassengerBooking({ booking: fresh, onClose, onStale, onHome, sta
       </PendingBooking>
     );
   // In the car, arrived or the driver left: nothing to cancel, the server refuses it (docs/35, G75).
+  // After the driver's «Kelmadi» the server refuses it too (metOrMissed, G91 PAS-1).
   const inCar =
-    booking.boardedAt !== null || booking.arrivedAt !== null || onTheWay(booking.trip, Date.now());
+    booking.boardedAt !== null ||
+    booking.arrivedAt !== null ||
+    booking.noShowAt !== null ||
+    onTheWay(booking.trip, Date.now());
   return (
     <ConfirmedBooking
       booking={booking}

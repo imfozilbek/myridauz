@@ -29,12 +29,12 @@ type Props = {
 // the link on top with the stars given in the bot; the others wait for their own question.
 export function RateLinkScreen({ bookingId, onBack, onSent }: Props) {
   const { bookings, feedback } = useApiClients();
-  const { value, failed, reload } = useLoad(async () => {
+  const { value, failed, error, reload } = useLoad(async () => {
     const [all, target] = await Promise.all([bookings.driverBookings(), feedback.target(bookingId)]);
     return { all, stars: target.mine?.stars ?? null };
   });
   const linked = value?.all.find((booking) => booking.id === bookingId);
-  if (failed || (value && !linked)) return <ErrorScreen onRetry={reload} onBack={onBack} />;
+  if (failed || (value && !linked)) return <ErrorScreen onRetry={reload} onBack={onBack} error={error} />;
   if (!value || !linked) return <ScreenSkeleton onBack={onBack} />;
   const others = ridersOf(value.all.filter((booking) => booking.trip.id === linked.trip.id)).filter(
     (booking) => booking.id !== linked.id && booking.rated !== true,

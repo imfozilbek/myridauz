@@ -75,6 +75,21 @@ describe('the board of requests of a driver (G64)', () => {
     expect(board.value.busy).toBe(true);
   });
 
+  // G91 DRV-5: a point outside the district of the trip, the server refuses the offer into it
+  // (bookings.outside_area): such a request is not «Safaringizga mos».
+  it('puts a request with a point outside the places of the trip below, as the server would refuse it', async () => {
+    const { deps, request, directions, boardTrip } = setup();
+    directions([{ from: '1726', to: '1718' }]);
+    boardTrip({ trip: TRIP, stops: { pickups: [NEAR], dropoffs: [] } });
+    await publishRequest(deps, 1, { ...request, date: '2026-10-02', pickup: NEAR });
+    // The pickup lies in its own district, not in the one of the trip (another district of the city).
+    Object.assign(deps, { fits: (_point: unknown, placeId: string) => placeId !== TRIP.from });
+    const board = await requestBoard(deps, 9, { date: '2026-10-02' });
+    if (!board.ok) throw new Error(board.error);
+    expect(board.value.fits).toEqual([]);
+    expect(board.value.others.map((item) => item.passenger.firstName)).toEqual(['P1']);
+  });
+
   it('shows one route asked by a bot link without the trip, the driver still busy with it', async () => {
     const { deps, request, boardTrip } = setup();
     boardTrip({ trip: TRIP, stops: { pickups: [], dropoffs: [] } });

@@ -5,6 +5,7 @@ import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { ManageGroup, ManageRow } from '../manage/manage-page';
 import { FormSheet } from '../sheet/form-sheet';
+import { useLoad } from './use-list';
 import { ActionFailure } from '../states/action-failure';
 import { useFailure } from '../states/use-failure';
 import { MainButton } from '../telegram/bottom-button';
@@ -12,7 +13,7 @@ import { confirm, haptic } from '../telegram/feedback';
 
 type Props = { readonly trip: Trip; readonly onCancelled: () => void };
 
-// «Safarni bekor qilish» of the team (Q5 of docs/111, G45): only a trip not on the road yet; the
+// «Safarni bekor qilish» of the team (Q5 of docs/111, G45): only a trip not on the road and not met yet; the
 // reason goes to the driver, the passengers hear the team cancelled it, the commission comes back.
 // Asked once more: it cannot be undone.
 export function TeamCancelTrip({ trip, onCancelled }: Props) {
@@ -21,7 +22,10 @@ export function TeamCancelTrip({ trip, onCancelled }: Props) {
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState('');
   const { failure, fail, clear } = useFailure();
-  const live = (trip.status === 'active' || trip.status === 'full') && trip.departedAt === null;
+  // After «Keldi» or «Kelmadi» at the point the ride has begun: the server refuses it (G63, G91 ADM-4).
+  const seats = useLoad(() => bookings.tripBookings(trip.id)).value;
+  const begun = seats?.some((seat) => seat.metAt !== null || seat.noShowAt !== null) ?? true;
+  const live = (trip.status === 'active' || trip.status === 'full') && trip.departedAt === null && !begun;
   if (!live) return null;
   const valid = teamCancelSchema.safeParse({ reason }).success;
   const cancel = async () => {

@@ -1,0 +1,5 @@
+/* Nothing to swap while both ends are empty (G91 robot). */
+.home-dock-swap:disabled {
+  opacity: 0.4;
+  cursor: default;
+}

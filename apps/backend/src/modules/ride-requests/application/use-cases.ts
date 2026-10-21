@@ -24,8 +24,9 @@ type PublishError =
   | 'trips.invalid_input'
   | 'trips.in_past'
   | 'trips.price_out_of_bounds'
-  | 'trips.too_many'
   | 'trips.request_exists'
+  | 'trips.request_open'
+  | 'bookings.has_seat'
   | 'locations.not_found'
   | 'locations.same_place'
   | 'locations.inside_city'
@@ -54,8 +55,10 @@ export async function publishRequest(
     (item) => item.from === input.from && item.to === input.to && item.date === input.date,
   );
   if (same) return { ok: false, error: 'trips.request_exists' };
-  // One at a time (owner decision 12.10.2026, docs/172): an open request or a seat, never both.
-  if (open.length > 0 || (await deps.seatHeld(passengerId))) return { ok: false, error: 'trips.too_many' };
+  // One at a time (owner decision 12.10.2026, docs/172): an open request or a seat, never both; each
+  // says its own reason to the passenger (G91 PAS-2).
+  if (open.length > 0) return { ok: false, error: 'trips.request_open' };
+  if (await deps.seatHeld(passengerId)) return { ok: false, error: 'bookings.has_seat' };
   const pointsError = await wayError(deps, input);
   if (pointsError) return { ok: false, error: pointsError };
   const passenger = await deps.people.find(passengerId);

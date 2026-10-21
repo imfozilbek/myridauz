@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { useDirectory } from '../places/use-directory';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { FIND_LINK, REQUESTS_LINK_VALUE } from '@platform/contracts';
+import { FIND_LINK, REQUESTS_LINK_VALUE, tashkentDate } from '@platform/contracts';
 import { freshStartParam, launchParam, useLinkOpened } from '../telegram/launch-param';
 import { FindTripFlow } from './find-trip-flow';
 import { ErrorBoundary } from '../states/error-boundary';
@@ -33,12 +33,15 @@ export function FindLink({ enabled, children }: { readonly enabled: boolean; rea
   );
 }
 
-// Unknown places start the search from the route, never with a wrong one.
+// Unknown places start the search from the route, never with a wrong one. A day that is over (a bot
+// button tapped days later, «Oʻxshash safarlar» of an old seat) has no trips: today instead (G91 PAS-3).
 export function LinkedSearch({ ids, onClose }: { readonly ids: RouteIds; readonly onClose: () => void }) {
   const [state, retry] = useDirectory();
+  const today = tashkentDate(Date.now());
+  const day = ids.day && ids.day < today ? today : ids.day;
   if (state.status === 'loading') return <ScreenSkeleton onBack={onClose} />;
   if (state.status === 'error') return <ErrorScreen onRetry={retry} onBack={onClose} />;
   const from = state.directory.find(ids.from);
   const to = state.directory.find(ids.to);
-  return <FindTripFlow onBack={onClose} initial={from && to ? { from, to } : undefined} day={ids.day} />;
+  return <FindTripFlow onBack={onClose} initial={from && to ? { from, to } : undefined} day={day} />;
 }

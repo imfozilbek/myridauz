@@ -3,6 +3,7 @@ import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { Icon, type IconName } from '../icons';
 import './route-dock.css';
+import './route-dock-swap.css';
 
 const SWAP = 16;
 const TOOL = 16;
@@ -31,7 +32,14 @@ export function RouteDock({ from, to, onSwap }: Props) {
     <div className="home-dock-route">
       <End end={from} label={t('places.from')} ring="home-dock-from" />
       <div className="home-dock-line">
-        <button type="button" className="home-dock-swap" aria-label={t('home.dock.swap')} onClick={onSwap}>
+        {/* Two empty ends have nothing to swap (G91 robot). */}
+        <button
+          type="button"
+          className="home-dock-swap"
+          aria-label={t('home.dock.swap')}
+          disabled={!from.value && !to.value}
+          onClick={onSwap}
+        >
           <Icon name="swap" size={SWAP} color={colors.routeSwap} />
         </button>
       </div>
