@@ -2,8 +2,9 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 // Every person of the stand is one Telegram ID with one name (lesson 211, G75): two files with the same
-// ID and different names see each other's trips when the whole stand runs.
-const PERSON = /\{ id: (\d{6,}), name: '([^']+)'/gu;
+// ID and different names see each other's trips when the whole stand runs. A person is written as
+// { id, name } or by a helper, person(id, name) or who(id, name) (G91: G90 took an ID of G49).
+const PERSON = /(?:\{ id: |\b(?:person|who)\()(\d{6,}),(?: name:)? '([^']+)'/gu;
 
 describe('the people of the stand', () => {
   it('never give one Telegram ID to two people', () => {

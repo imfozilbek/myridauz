@@ -9,18 +9,18 @@ import { runCron, standRows } from './stand-tools';
 
 // The people of the walk of the screens (G91), each in one state of the way: the robot opens the app
 // as each of them. Every file of the walk runs on its own stand and makes its people there.
-export const NEW: Person = { id: 900921, name: 'Yulduz', phone: '998901110921' };
-export const FRESH: Person = { id: 900922, name: 'Shirin', phone: '998901110922' };
-export const RIDER: Person = { id: 900923, name: 'Mohira', phone: '998901110923' };
-export const ASKER: Person = { id: 900924, name: 'Ozoda', phone: '998901110924' };
-export const DONE: Person = { id: 900925, name: 'Sabina', phone: '998901110925' };
-export const WAITER: Person = { id: 900926, name: 'Iroda', phone: '998901110926' };
-export const NEW_DRIVER: Person = { id: 900931, name: 'Botir', phone: '998901110931' };
-export const DRIVER: Person = { id: 900932, name: 'Davron', phone: '998901110932' };
-export const PAST_DRIVER: Person = { id: 900933, name: 'Ergash', phone: '998901110933' };
-const APPLICANT: Person = { id: 900934, name: 'Ilhom', phone: '998901110934' };
-export const MODERATOR: Person = { id: 900935, name: 'Nodir', phone: '998901110935' };
-const ASKING: Person = { id: 900927, name: 'Xurshida', phone: '998901110927' };
+export const NEW: Person = { id: 900961, name: 'Yulduz', phone: '998901110961' };
+export const FRESH: Person = { id: 900962, name: 'Shirin', phone: '998901110962' };
+export const RIDER: Person = { id: 900963, name: 'Mohira', phone: '998901110963' };
+export const ASKER: Person = { id: 900964, name: 'Ozoda', phone: '998901110964' };
+export const DONE: Person = { id: 900965, name: 'Sabina', phone: '998901110965' };
+export const WAITER: Person = { id: 900966, name: 'Iroda', phone: '998901110966' };
+export const NEW_DRIVER: Person = { id: 900971, name: 'Botir', phone: '998901110971' };
+export const DRIVER: Person = { id: 900972, name: 'Davron', phone: '998901110972' };
+export const PAST_DRIVER: Person = { id: 900973, name: 'Ergash', phone: '998901110973' };
+const APPLICANT: Person = { id: 900974, name: 'Ilhom', phone: '998901110974' };
+export const MODERATOR: Person = { id: 900975, name: 'Nodir', phone: '998901110975' };
+const ASKING: Person = { id: 900967, name: 'Xurshida', phone: '998901110967' };
 export { OWNER };
 const HOUR = 60 * MINUTE;
 
