@@ -69,8 +69,10 @@ test('Text 8. no saved driver yet: how to get one', async ({ page }) => {
 
 test('WALK-4. ⇅ is off while both ends are empty', async ({ page }) => {
   await openAs(page, 'passenger', NIGORA);
-  const clear = page.getByRole('button', { name: t('home.dock.clear') });
-  while ((await clear.count()) > 0) await clear.first().click();
+  // «Qayerdan» fills where the person stands; «x» empties it, «Qayerga» is empty already.
+  await expect(page.getByText(t('home.dock.here'))).toBeVisible();
+  await page.getByRole('button', { name: t('home.dock.clear') }).click();
+  await expect(page.getByText(t('way.fromEmpty'))).toBeVisible();
   await expect(page.getByRole('button', { name: t('home.dock.swap') })).toBeDisabled();
   await shot(page, '5-swap-off');
 });
