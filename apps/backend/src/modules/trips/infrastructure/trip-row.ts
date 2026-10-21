@@ -1,13 +1,14 @@
 import { BOOKING_RULES, CAR_COLORS, PICKUP_MODES, TRIP_STATUSES } from '@platform/contracts';
 import type { TripCar, TripRecord } from '../domain/trip';
 
-// A row of the table trips (migrations 0007, 0035, 0043, 0046, 0051, 0080) and the trip it holds.
+// A row of the table trips (migrations 0007, 0035, 0043, 0046, 0051, 0080, 0086) and the trip it holds.
 export type TripRow = {
   id: string;
   driver_id: number;
   from_id: string;
   to_id: string;
   depart_at: number;
+  depart_until: number | null;
   ends_at: number;
   km: number;
   seats: number;
@@ -43,6 +44,7 @@ export const toTrip = (row: TripRow): TripRecord => ({
   from: row.from_id,
   to: row.to_id,
   departAt: row.depart_at,
+  departUntil: row.depart_until,
   endsAt: row.ends_at,
   km: row.km,
   seats: row.seats,

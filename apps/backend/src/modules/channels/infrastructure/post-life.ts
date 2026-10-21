@@ -1,9 +1,9 @@
-import { arrivalAt, type Trip } from '@platform/contracts';
+import { tripArrival, type Trip } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Places } from '../../../shared/places/end-names';
 import { bold } from '../../../shared/telegram/html';
 import type { PostState } from '../domain/route-channels';
-import { dayLabel, peopleOf, shortRoute, timeOf, whenLine } from './post-parts';
+import { atLine as atText, peopleOf, shortRoute, timeOf, whenLine } from './post-parts';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
@@ -13,11 +13,10 @@ type Ended = Exclude<PostState, 'open' | 'lastSeat'>;
 const NO_BUTTONS = { inline_keyboard: [] };
 
 // «Bugun · 11:00»: the day and the time it leaves.
-const atLine = (trip: Trip, now: number) =>
-  bold(t('bot.channel.at', { day: dayLabel(trip.departAt, now), time: timeOf(trip.departAt) }));
+const atLine = (trip: Trip, now: number) => bold(atText(trip, now));
 
-// When the car came: «Yetib keldik» of the driver, or about when it was due.
-const cameAt = (trip: Trip) => timeOf(trip.arrivedAt ?? arrivalAt(trip.departAt, trip.km));
+// When the car came: «Yetib keldik» of the driver, or about when it was due (a range: from its end).
+const cameAt = (trip: Trip) => timeOf(trip.arrivedAt ?? tripArrival(trip));
 
 function arrivedLines(trip: Trip, route: string): string[] {
   const people = peopleOf(trip);

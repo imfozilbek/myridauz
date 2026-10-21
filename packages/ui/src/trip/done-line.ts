@@ -1,8 +1,8 @@
-import { afterTrip, arrivalAt, DAY_MS, type Trip } from '@platform/contracts';
+import { afterTrip, DAY_MS, tripArrival, type Trip } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { useBrand } from '../context/brand-context';
 
-type Ended = Pick<Trip, 'departAt' | 'km' | 'arrivedAt'>;
+type Ended = Pick<Trip, 'departAt' | 'departUntil' | 'km' | 'arrivedAt'>;
 
 // The plate of a trip that ended, for both sides (mockups g60/6, g60/7, g63/5 phone 5): when and
 // where it ended, by «Yetib keldik» of the driver when there was one; after the deadline of a
@@ -10,10 +10,9 @@ type Ended = Pick<Trip, 'departAt' | 'km' | 'arrivedAt'>;
 export function useDoneLine(trip: Ended, place: string): { readonly line: string; readonly old: boolean } {
   const { t, formatDate, formatTime } = useI18n();
   const brand = useBrand();
-  const { departAt, km } = trip;
-  const arrival = new Date(trip.arrivedAt ?? arrivalAt(departAt, km));
+  const arrival = new Date(trip.arrivedAt ?? tripArrival(trip));
   const now = Date.now();
-  const { complainUntil, pointsUntil } = afterTrip(brand, departAt, km);
+  const { complainUntil, pointsUntil } = afterTrip(brand, trip);
   const old = now >= pointsUntil;
   if (now < complainUntil)
     return {

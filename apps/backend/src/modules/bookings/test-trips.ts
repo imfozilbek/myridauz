@@ -29,6 +29,7 @@ export function fakeTrips(
       from: '1726273',
       to: '1718401',
       departAt: NOW + 30 * HOUR,
+      departUntil: null,
       departedAt: null,
       arrivedAt: null,
       endsAt: NOW + 37 * HOUR,

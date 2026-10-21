@@ -1,6 +1,7 @@
 import {
   DAY_MS,
   onTheWay,
+  rangeFits,
   tashkentDate,
   tashkentDayStart,
   tripEndsAt,
@@ -21,7 +22,9 @@ export type TripRecord = {
   readonly from: string;
   readonly to: string;
   readonly departAt: number;
-  // departAt + time on the road + 2 hours: then the trip is completed by itself (docs/35).
+  // The end of a range «08:00 dan 10:00 gacha» (G90, docs/216); null: one exact time.
+  readonly departUntil: number | null;
+  // The last departure + time on the road + 2 hours: then the trip is completed by itself (docs/35).
   readonly endsAt: number;
   readonly km: number;
   readonly seats: number;
@@ -50,7 +53,12 @@ export type TripRecord = {
   readonly pitakId: string | null;
 };
 
+// The end of a trip counts from its last departure: the end of its range, else its time (docs/216).
 export const endsAt = tripEndsAt;
+
+// A range of the time (G90, docs/216): whole hours, one to the brand's hours, on one day.
+export const rangeError = (departAt: number, departUntil: number | null, rangeMaxHours: number) =>
+  departUntil === null || rangeFits(departAt, departUntil, { rangeMaxHours }) ? null : 'trips.bad_range';
 
 // The time of a new trip: in the future and on a day of the row, the whole last day too (docs/35;
 // owner decision 12.10.2026, docs/172).

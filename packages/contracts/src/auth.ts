@@ -52,6 +52,8 @@ export const API_ERRORS = [
   'trips.price_out_of_bounds',
   'trips.in_past',
   'trips.too_soon',
+  // A range of the time that is not whole hours, longer than the brand's or over two days (G90, docs/216).
+  'trips.bad_range',
   'trips.wrong_status',
   // «Yoʻlga chiqdim» and «Yetib keldik» (G63, docs/35); a pitak way where the direction has none.
   'trips.too_early_to_depart',

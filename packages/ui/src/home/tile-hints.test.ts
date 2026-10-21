@@ -9,7 +9,7 @@ const done = { ...booking, status: 'completed' as const };
 
 describe('the words under «Mening safarlarim» of a passenger (G76, mockup g76/2)', () => {
   it('says the time of the only seat, else how many seats', () => {
-    expect(passengerTripsHint([seat], [], [])).toEqual({ at: trip.departAt });
+    expect(passengerTripsHint([seat], [], [])).toEqual({ at: trip.departAt, until: null });
     expect(passengerTripsHint([seat, { ...seat, id: 'b2' }], [], [])).toEqual({
       key: 'home.tile.seats',
       count: 2,
@@ -43,7 +43,7 @@ describe('the words under «Mening safarlarim» of a driver (G76, mockup g76/3)'
 
   it('counts the waiting requests first, then says the nearest trip', () => {
     expect(driverTripsHint([trip], [booking], before)).toEqual({ key: 'home.newRequests', count: 1 });
-    expect(driverTripsHint([trip], [seat], before)).toEqual({ at: trip.departAt });
+    expect(driverTripsHint([trip], [seat], before)).toEqual({ at: trip.departAt, until: null });
   });
 
   it('counts the trips of the week when none is ahead, or says there is none yet', () => {

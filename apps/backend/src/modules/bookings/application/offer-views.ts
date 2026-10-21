@@ -39,6 +39,7 @@ export async function offerViews(
         from: request.from,
         to: request.to,
         departAt: offer.departAt,
+        departUntil: trip?.departUntil ?? null,
         km: request.km,
         seats,
         wholeCar: request.wholeCar,

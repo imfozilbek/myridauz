@@ -4,7 +4,8 @@ import { useI18n } from '../context/i18n-context';
 type Props = {
   readonly kind: 'from' | 'to';
   readonly name: string;
-  readonly note: string;
+  // null: no line under the name, as the end of a range without its arrival (G90).
+  readonly note: string | null;
   // A point with its place opens it in a map (docs/70, docs/126); without one it is plain text.
   readonly place?: Point | null;
   readonly onPoint?: ((point: Point) => void) | undefined;
@@ -17,7 +18,7 @@ export function TripPoint({ kind, name, note, place = null, onPoint }: Props) {
       <span className="trip-card-dot" aria-hidden />
       <span className="trip-card-names">
         <span className="trip-card-name">{name}</span>
-        <span className="trip-card-note">{note}</span>
+        {note === null ? null : <span className="trip-card-note">{note}</span>}
       </span>
     </>
   );

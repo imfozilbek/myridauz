@@ -10,7 +10,7 @@ export function useCanComplain() {
   const brand = useBrand();
   return (booking: Booking) =>
     (booking.status === 'confirmed' || booking.status === 'completed') &&
-    Date.now() < afterTrip(brand, booking.trip.departAt, booking.trip.km).complainUntil;
+    Date.now() < afterTrip(brand, booking.trip).complainUntil;
 }
 
 // "Shikoyat qilish" under a booking, for its passenger and its driver.

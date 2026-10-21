@@ -8,19 +8,19 @@ import { approvedDriver, register } from './seed';
 import { openAs, outsideCalls, signedAs, type Person } from './stand-kit';
 import { runCron } from './stand-tools';
 
-// G91 (docs/217, docs/218) on the whole local Rida: the new looks of the screens, each shot for the
+// G91 (docs/220, docs/221) on the whole local Rida: the new looks of the screens, each shot for the
 // owner (docs/33) into screenshots/stand/g91/.
 test.describe.configure({ mode: 'serial' });
 test.use({ viewport: NARROW });
 test.afterEach(() => expect(outsideCalls()).toEqual([]));
 const OUT = 'screenshots/stand/g91';
-const DRIVER: Person = { id: 900911, name: 'Sardor', phone: '998901110911' };
-const LOLA: Person = { id: 900912, name: 'Lola', phone: '998901110912' };
-const ZARINA: Person = { id: 900913, name: 'Zarina', phone: '998901110913' };
-const KAMOL: Person = { id: 900914, name: 'Kamol', phone: '998901110914' };
-const NIGORA: Person = { id: 900915, name: 'Nigora', phone: '998901110915' };
+const DRIVER: Person = { id: 900941, name: 'Sardor', phone: '998901110941' };
+const LOLA: Person = { id: 900942, name: 'Lola', phone: '998901110942' };
+const ZARINA: Person = { id: 900943, name: 'Zarina', phone: '998901110943' };
+const KAMOL: Person = { id: 900944, name: 'Kamol', phone: '998901110944' };
+const NIGORA: Person = { id: 900945, name: 'Nigora', phone: '998901110945' };
 const HOUR = 60 * MINUTE;
-// A trip nobody has: its link is old (texts 1, docs/218).
+// A trip nobody has: its link is old (texts 1, docs/221).
 const GONE = '00000000-0000-4000-8000-000000000000';
 const shot = async (page: Page, name: string) => {
   await afterSplash(page);
@@ -31,7 +31,7 @@ let tripId = '';
 let driverId = '';
 
 test.beforeAll(async () => {
-  await approvedDriver(DRIVER, '01T911SR');
+  await approvedDriver(DRIVER, '01T941SR');
   await register('passenger', LOLA, 'female');
   const { trip } = await confirmedSeat(DRIVER, LOLA);
   tripId = trip.id;
@@ -78,7 +78,7 @@ test('WALK-4. ⇅ is off while both ends are empty', async ({ page }) => {
 });
 
 test('ADM-7. a complaint decided already: its state and «Davom etish»', async ({ page }) => {
-  await approvedDriver(KAMOL, '01T914KM');
+  await approvedDriver(KAMOL, '01T944KM');
   await register('passenger', ZARINA, 'female');
   const { trip, seat } = await confirmedSeat(KAMOL, ZARINA);
   moveTrip(trip.id, Date.now() - 6 * HOUR, Date.now() - HOUR);

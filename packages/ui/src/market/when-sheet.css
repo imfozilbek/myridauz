@@ -1,6 +1,6 @@
 /* «Qachon joʻnaysiz?» in its sheet (mockup g75/3 A phone 1): the row of the week (docs/172), the
-   whole hours or the half hours by a switch, only the free times six in a row (owner decisions
-   12.10.2026); the chosen ones in the main color of the app. */
+   whole hours, the half hours or a range by a switch, only the free times six in a row (owner
+   decisions 12.10.2026, 20.10.2026); the chosen ones in the main color of the app. */
 .time-kinds {
   padding: 0 16px 10px;
 }
@@ -9,6 +9,10 @@
   height: 38px;
   border-radius: 10px;
   background: var(--reg-off);
+}
+
+.time-kinds-three button {
+  padding: 6px 4px;
 }
 
 .time-kind-on {
@@ -37,6 +41,10 @@
   font: inherit;
   font-size: 14px;
   cursor: pointer;
+}
+
+.time-cell-inside {
+  background: var(--reg-line);
 }
 
 .time-cell[aria-pressed='true'] {

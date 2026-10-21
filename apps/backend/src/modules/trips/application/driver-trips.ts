@@ -10,7 +10,7 @@ export async function familyView(deps: TripsDeps, id: string) {
   if (!trip) return undefined;
   const [driver, car] = [await deps.people.find(trip.driverId), trip.car];
   if (!driver || !car) return undefined;
-  const { driverId, from, to, departAt, departedAt, arrivedAt, km } = trip;
+  const { driverId, from, to, departAt, departUntil, departedAt, arrivedAt, km } = trip;
   const rating = (await deps.ratings([driverId])).get(driverId) ?? NO_RATING;
   return {
     id,
@@ -24,6 +24,7 @@ export async function familyView(deps: TripsDeps, id: string) {
     from,
     to,
     departAt,
+    departUntil,
     departedAt,
     arrivedAt,
     km,

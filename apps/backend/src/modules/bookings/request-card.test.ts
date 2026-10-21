@@ -40,7 +40,13 @@ describe('the request card of the passenger bot (G68, docs/122)', () => {
   });
 
   it('the first offer rings under the card: who, when, the share; the button opens its sheet (G68)', () => {
-    const offer = { id: 'o1', departAt: NOW + 3_600_000, price: 95_000, driver: { firstName: 'Jasur' } };
+    const offer = {
+      id: 'o1',
+      departAt: NOW + 3_600_000,
+      departUntil: null,
+      price: 95_000,
+      driver: { firstName: 'Jasur' },
+    };
     const ring = firstOfferRing(loadBrand(), fakeRequest('r1'), offer as never, false);
     expect(ring.text).toMatch(/^📨 Soʻrovingizga taklif keldi: Jasur, \d\d:\d\d, 95\s000\ssoʻm$/u);
     expect(ring.card).toBe('request:r1');

@@ -42,6 +42,7 @@ type PostedTrip = {
   readonly status: Status;
   readonly seatsLeft: number;
   readonly departAt: number;
+  readonly departUntil: number | null;
   readonly departedAt: number | null;
   readonly arrivedAt: number | null;
 };

@@ -1,4 +1,4 @@
-import { arrivalAt, onTheWay, type Booking, type BookingInput } from '@platform/contracts';
+import { onTheWay, tripArrival, type Booking, type BookingInput } from '@platform/contracts';
 import { answerDeadline } from '../domain/answer-deadline';
 import { move, NO_MARKS, statusAt, type BookingRecord } from '../domain/booking';
 import { watchPairCancels } from './pair-cancels';
@@ -68,7 +68,7 @@ export async function requestBooking(
     price: facts.price,
     commission: deps.wallet.commission(facts.price, seats),
     status: 'requested',
-    expiresAt: answerDeadline(facts.departAt, now, deps.limits.bookings.answerHours),
+    expiresAt: answerDeadline(facts, now, deps.limits.bookings.answerHours),
     ...points.value,
     note: input.note ? deps.mask(input.note) : null,
     offerId: null,
@@ -124,8 +124,8 @@ export async function passengerBookings(deps: BookingsDeps, passengerId: number)
   ]);
   const seen = await bookingViews(deps, records, 'passenger');
   const views = seen.map((view) => ({ ...view, rated: rated.has(view.id) }));
-  // A live seat on the road stays on top until the arrival (docs/90 F-D3).
+  // A live seat on the road stays on top until the arrival (docs/90 F-D3), a range from its end.
   const arrival = ({ status, trip }: Booking) =>
-    status === 'requested' || status === 'confirmed' ? arrivalAt(trip.departAt, trip.km) : trip.departAt;
+    status === 'requested' || status === 'confirmed' ? tripArrival(trip) : trip.departAt;
   return upcomingFirst(views, (booking) => booking.trip.departAt, deps.now(), arrival);
 }

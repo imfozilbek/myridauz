@@ -25,12 +25,7 @@ export function DoneTools({ booking, onOpen, missed = false }: Props) {
   const { name } = brand;
   const support = useOpenSupport();
   const now = Date.now();
-  const { talkUntil, rateUntil, complainUntil, pointsUntil } = afterTrip(
-    brand,
-    booking.trip.departAt,
-    booking.trip.km,
-    booking.trip.arrivedAt,
-  );
+  const { talkUntil, rateUntil, complainUntil, pointsUntil } = afterTrip(brand, booking.trip);
   const untilText = useUntilText();
   const until = (ms: number) => untilText(ms, now);
   // A deleted driver has nobody to write or call (G89 M9).

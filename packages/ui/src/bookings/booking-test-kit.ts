@@ -61,6 +61,7 @@ export const offer: Offer = {
   from: trip.from,
   to: trip.to,
   departAt: trip.departAt,
+  departUntil: null,
   km: trip.km,
   seats: 2,
   wholeCar: false,

@@ -25,7 +25,7 @@ export function ChatCard({ row, directory, now, onOpen }: Props) {
   const cardDay = useCardDay();
   const role = useOtherRole();
   const route = useRegionRoute(directory)(row.from, row.to);
-  const day = row.day ? cardDay(tashkentDate(row.at), now) : when(row.at);
+  const day = row.day ? cardDay(tashkentDate(row.at), now) : when(row.at, row.until);
   const trip = [day, route, ...(row.day ? [t('chat.list.request')] : [])].join(' · ');
   const { unread } = row;
   // The time of the last words: today the time, yesterday «Kecha», else the day.

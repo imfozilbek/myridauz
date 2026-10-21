@@ -1,7 +1,8 @@
 import { DEPART_REMIND_MS, HOUR_MS } from '@platform/contracts';
 import { TICK_MINUTES } from '../../../shared/cron/tick';
 
-// A live trip without «Yoʻlga chiqdim» (G63): whom to ask and when it should have left.
+// A live trip without «Yoʻlga chiqdim» (G63): whom to ask and when it should have left, the end of
+// a range (docs/216).
 export type LateTrip = { readonly id: string; readonly driverId: number; readonly departAt: number };
 
 export type DepartureDeps = {

@@ -11,6 +11,8 @@ const EXPLAINED: readonly string[] = [
   'trips.in_past',
   // G38, docs/103.
   'trips.too_soon',
+  // G90, docs/216.
+  'trips.bad_range',
   'trips.not_driver',
   'locations.same_place',
   'locations.inside_city',

@@ -52,6 +52,8 @@ export const sharedTripSchema = z.object({
   from: locationIdSchema,
   to: locationIdSchema,
   departAt: z.number().int(),
+  // The end of a range (G90, docs/216); null: one time, also from an older server.
+  departUntil: z.number().int().nullable().default(null),
   // The time at the booking: a moved trip shows «Vaqt oʻzgardi» (docs/124 И).
   firstDepartAt: z.number().int(),
   km: z.number().int(),

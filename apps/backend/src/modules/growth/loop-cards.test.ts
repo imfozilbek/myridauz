@@ -12,6 +12,7 @@ const SEAT = {
   from: '1726273',
   to: '1718401',
   departAt: DEPART,
+  departUntil: null,
   seatsLeft: 2,
 };
 const TRIP = { ...SEAT, driverId: 9, price: 90_000 };

@@ -1,6 +1,7 @@
 import {
   DAY_MS,
   DEPART_REMIND_MS,
+  lastDepart,
   meetingStartsAt,
   tripEndsAt,
   type Booking,
@@ -83,7 +84,7 @@ const pointStates = (trip: Trip, people: readonly Booking[]): DriverState[] =>
 function tripStates(trip: Trip, lists: Lists, now: number, meet: number): DriverState[] {
   const people = own(trip, lists.bookings);
   if (tripPast(trip)) {
-    const fresh = now < tripEndsAt(trip.departAt, trip.km) + lists.rateDays * DAY_MS;
+    const fresh = now < tripEndsAt(trip) + lists.rateDays * DAY_MS;
     // «Yetib keldik» ends the ride at once: a seat still confirmed until the end time rode (G91 DRV-7).
     const rode = (one: Booking) => one.status === 'completed' || one.status === 'confirmed';
     const unrated = people.some((one) => rode(one) && one.rated !== true && one.noShowAt === null);
@@ -95,8 +96,9 @@ function tripStates(trip: Trip, lists: Lists, now: number, meet: number): Driver
   if (trip.departedAt !== null) return [...pointStates(trip, people), { kind: 'onRoad', trip }];
   const states: DriverState[] = [];
   if (now >= meetingStartsAt(trip.departAt, meet)) states.push(...pointStates(trip, people));
+  // A range asks an hour after its last hour, as the bot (docs/216).
   if (tripStep(trip, now) === 'departed')
-    states.push({ kind: now >= trip.departAt + DEPART_REMIND_MS ? 'departAsk' : 'depart', trip });
+    states.push({ kind: now >= lastDepart(trip) + DEPART_REMIND_MS ? 'departAsk' : 'depart', trip });
   const requests = people.filter((one) => answerable(one, now));
   if (requests.length > 0) states.push({ kind: 'requests', trip, requests });
   for (const booking of people.filter((one) => lists.unseen.has(one.id)))

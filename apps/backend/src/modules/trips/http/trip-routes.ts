@@ -34,6 +34,7 @@ const STATUS = {
   'trips.price_out_of_bounds': 422,
   'trips.in_past': 422,
   'trips.too_soon': 422,
+  'trips.bad_range': 422,
   'trips.wrong_status': 409,
   'trips.no_pitak': 400,
   'locations.not_found': 404,

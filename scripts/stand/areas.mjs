@@ -47,6 +47,7 @@ export const AREAS = {
     'trip-changes',
     'g63',
     'g49-driver',
+    'g90',
   ],
   team: ['team', 'team-moderation', 'screens-team', 'all-admin', 'g45-team', 'g45-screens'],
   bots: ['bots', 'bots-team', 'complaints-time', 'g68-bots', 'g83'],

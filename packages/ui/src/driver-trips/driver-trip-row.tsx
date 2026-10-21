@@ -2,6 +2,7 @@ import type { Trip } from '@platform/contracts';
 import type { ReactNode } from 'react';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
+import { useTripTime } from '../trip/trip-time';
 import './driver-trips.css';
 
 const CHEVRON = 10;
@@ -24,13 +25,12 @@ type Props = {
 // safarim» (path 6).
 export function DriverTripRow(props: Props) {
   const { trip, day, from, to, place, onOpen, children } = props;
-  const { t, formatTime, formatNumber } = useI18n();
+  const { t, formatNumber } = useI18n();
+  const tripTime = useTripTime();
   return (
     <button type="button" className="driver-trip" onClick={onOpen}>
       <span className="driver-trip-text">
-        <b className="driver-trip-when">
-          {t('driverTrip.row.when', { day, time: formatTime(new Date(trip.departAt)) })}
-        </b>
+        <b className="driver-trip-when">{t('driverTrip.row.when', { day, time: tripTime(trip) })}</b>
         <span className="driver-trip-route">{t('requests.card.route', { from, to })}</span>
         <span className="driver-trip-sub">
           {t('driverTrip.row.sub', { place, price: formatNumber(trip.price) })}

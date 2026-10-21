@@ -1,4 +1,4 @@
-import { arrivalAt, type Booking } from '@platform/contracts';
+import { roadArrival, type Booking } from '@platform/contracts';
 import { useSeatSteps } from '../../bookings/use-seat-steps';
 import { useI18n } from '../../context/i18n-context';
 import { DockFailure } from './dock-failure';
@@ -32,7 +32,7 @@ export function PassengerDayCard({ kind, booking, words, act, onTold }: Props) {
   const car = words.car(driver.car, booking.plate);
   const { tools } = useTalkTools(act.call(booking), act.talk(booking), (booking.unread ?? 0) > 0);
   const to = ends.regionName(trip.to);
-  const arrives = formatTime(new Date(arrivalAt(trip.departAt, trip.km)));
+  const arrives = formatTime(new Date(roadArrival(trip)));
   // «Men keldim» at the point, red while the driver waits there (mockup g76/2 state 10). After it the
   // driver's «Keldi» puts the passenger in the car (G76, docs/43): until then the map stays.
   const came = booking.cameAt !== null;

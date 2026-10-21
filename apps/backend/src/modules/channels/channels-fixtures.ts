@@ -26,6 +26,7 @@ export const TRIP: Trip = {
   from: '1726269',
   to: '1718401',
   departAt: Date.parse('2026-10-02T03:30:00Z'),
+  departUntil: null,
   km: 300,
   seats: 4,
   seatsLeft: 3,

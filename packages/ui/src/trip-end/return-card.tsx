@@ -24,7 +24,14 @@ export function ReturnCard({ trip, plan }: Props) {
           day: dayLabel(plan.day, plan.now),
         })}
       </p>
-      <RouteLine from={trip.to} to={trip.from} departAt={plan.departAt} km={trip.km} icon="carSide" />
+      <RouteLine
+        from={trip.to}
+        to={trip.from}
+        departAt={plan.departAt}
+        departUntil={null}
+        km={trip.km}
+        icon="carSide"
+      />
       {requests.count > 0 ? (
         <p className="trip-end-card trip-back-requests">
           <b>

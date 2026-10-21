@@ -12,6 +12,7 @@ const TRIP: SharedTrip = {
   from: '1726269',
   to: '1730401',
   departAt: Date.parse('2026-10-02T03:00:00Z'),
+  departUntil: null,
   firstDepartAt: Date.parse('2026-10-02T03:00:00Z'),
   km: 320,
   driver: {
@@ -61,6 +62,13 @@ describe('the screen of the close people (G60, mockup g60/3)', () => {
   it('says when the driver moved the time and shows no arrival before the trip (docs/124 И)', async () => {
     open({ ...TRIP, status: 'waiting', firstDepartAt: TRIP.departAt - 60 * 60 * 1000 });
     expect(await screen.findByText(/^Vaqt oʻzgardi: \d{2}:\d{2} → \d{2}:\d{2}$/u)).toBeTruthy();
+  });
+
+  // G90 (docs/216): a range moves whole; close people see both ranges.
+  it('says a moved range as ranges', async () => {
+    const departUntil = TRIP.departAt + 2 * 60 * 60 * 1000;
+    open({ ...TRIP, departUntil, status: 'waiting', firstDepartAt: TRIP.departAt - 60 * 60 * 1000 });
+    expect(await screen.findByText('Vaqt oʻzgardi: 07:00 … 09:00 → 08:00 … 10:00')).toBeTruthy();
   });
 
   it('once arrived, says where and when, and that the following ends (mockup g60/6)', async () => {

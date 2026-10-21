@@ -42,11 +42,27 @@ describe('«Yoʻlga chiqdim» and «Yetib keldik» in D1', () => {
 
   it('finds the live trips without a departure in the window, through an index', async () => {
     const { db, trips } = await seeded();
-    const ids = async () => (await trips.notDeparted(NOW - 2 * HOUR, NOW - HOUR)).map((found) => found.id);
+    const ids = async () =>
+      (await trips.notDeparted(NOW - 2 * HOUR, NOW - HOUR, 3 * HOUR)).map((found) => found.id);
     expect((await ids()).sort()).toEqual(['full', 'late']);
     await trips.depart('late', NOW);
     expect(await ids()).toEqual(['full']);
     await trips.leaving(NOW, NOW + HOUR, ['1726273']);
+    expect(fullScans(db)).toEqual([]);
+  });
+
+  // A range (G90, docs/216): the Cron counts from its end, the arrival takes the end as the departure.
+  it('takes a range by its end', async () => {
+    const { db, trips } = await seeded();
+    await db.exec(`INSERT INTO trips (id, driver_id, from_id, to_id, depart_at, depart_until, ends_at, km,
+      seats, price, status, created_at) VALUES ('range', 1, '1726273', '1718401', ${NOW - 4 * HOUR},
+      ${NOW - 90 * 60 * 1000}, ${NOW + 7 * HOUR}, 300, 3, 90000, 'active', 0), ('wide', 1, '1726273',
+      '1718401', ${NOW - 2 * HOUR}, ${NOW}, ${NOW + 7 * HOUR}, 300, 3, 90000, 'active', 0)`);
+    const ids = await trips.notDeparted(NOW - 2 * HOUR, NOW - HOUR, 3 * HOUR);
+    expect(ids.map((found) => found.id).sort()).toEqual(['full', 'late', 'range']);
+    expect(await trips.arrive('wide', NOW - HOUR)).toBe(false);
+    expect(await trips.arrive('range', NOW)).toBe(true);
+    expect(await trips.find('range')).toMatchObject({ departedAt: NOW - 90 * 60 * 1000 });
     expect(fullScans(db)).toEqual([]);
   });
 

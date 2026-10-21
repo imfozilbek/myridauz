@@ -54,9 +54,15 @@ export function TripChoice(props: Props) {
       <TripRow
         icon="day"
         label={
-          values.time
-            ? t('market.publish.day', { date: shortDay(values.date, now), time: values.time })
-            : t('market.when.title')
+          !values.time
+            ? t('market.when.title')
+            : values.until
+              ? t('market.publish.dayRange', {
+                  date: shortDay(values.date, now),
+                  from: values.time,
+                  to: values.until,
+                })
+              : t('market.publish.day', { date: shortDay(values.date, now), time: values.time })
         }
         onOpen={() => onOpen('when')}
       />

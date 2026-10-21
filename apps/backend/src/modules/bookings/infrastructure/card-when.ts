@@ -1,6 +1,7 @@
-import { arrivalAt, DAY_MS, tashkentDate, type Trip } from '@platform/contracts';
+import { DAY_MS, firstTimed, roadArrival, tashkentDate, type Trip } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { bold, italic } from '../../../shared/telegram/html';
+import { tripTimeText } from '../../../shared/telegram/trip-time';
 
 const { t, formatDate, formatTime } = createI18n(DEFAULT_LOCALE);
 
@@ -14,14 +15,15 @@ export function dayOf(at: number, now: number): string {
 }
 
 // When the trip goes, in bold, on both trip cards (mockups g68/2, g68/3); on the road: when it arrives.
+// A range shows its window, on the road its arrival from the departure (G90, docs/216).
 export function whenLines(trip: Trip, onWay: boolean, now: number): string[] {
-  const time = formatTime(new Date(trip.departAt));
+  const time = tripTimeText(trip);
   if (onWay) {
-    const arrival = formatTime(new Date(arrivalAt(trip.departAt, trip.km)));
+    const arrival = formatTime(new Date(roadArrival(trip)));
     return [bold(t('bot.card.arrival', { day: t('market.day.today'), time, arrival }))];
   }
   const when = bold(t('bot.card.when', { day: dayOf(trip.departAt, now), time }));
   // The driver moved the time: the old one stays under it (mockup g68/2 «08:00 edi»).
   if (trip.departAt === trip.firstDepartAt) return [when];
-  return [when, italic(t('bot.card.wasTime', { time: formatTime(new Date(trip.firstDepartAt)) }))];
+  return [when, italic(t('bot.card.wasTime', { time: tripTimeText(firstTimed(trip)) }))];
 }

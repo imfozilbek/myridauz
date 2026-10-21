@@ -1,9 +1,10 @@
-import type { Booking } from '@platform/contracts';
+import { firstTimed, type Booking } from '@platform/contracts';
 import { useI18n } from '../../context/i18n-context';
 import type { HomeGo } from '../../flow/start-action';
 import type { PlaceDirectory } from '../../places/directory';
 import { similarDay } from '../../bookings/similar-trips';
 import { useBookingEnds } from '../../trip/booking-ends';
+import { useTripTime } from '../../trip/trip-time';
 import { MainButton, SecondaryButton } from '../../telegram/bottom-button';
 import { DockCard } from './dock-card';
 import type { DockWords } from './dock-words';
@@ -24,7 +25,8 @@ type Props = {
 
 // A seat before and after its day (G76, mockup g76/2 states 6, 7, 8, 11, 14, 15).
 export function PassengerSeatCard({ kind, booking, words, act, go, directory }: Props) {
-  const { t, formatTime } = useI18n();
+  const { t } = useI18n();
+  const tripTime = useTripTime();
   const { trip } = booking;
   const driver = trip.driver;
   const { tools, chat } = useTalkTools(act.call(booking), act.talk(booking), (booking.unread ?? 0) > 0);
@@ -48,7 +50,7 @@ export function PassengerSeatCard({ kind, booking, words, act, go, directory }: 
             chip={t('bookings.status.requested')}
             chipTone="gray"
             timer={{ text: words.left(booking.expiresAt), now: false }}
-            title={words.when(trip.departAt)}
+            title={words.when(trip.departAt, trip.departUntil)}
             text={route}
             who={{ ...who, tools: [chat] }}
           />
@@ -62,7 +64,7 @@ export function PassengerSeatCard({ kind, booking, words, act, go, directory }: 
           <DockCard
             chip={t('bookings.confirmed.title')}
             chipTone="green"
-            title={words.when(trip.departAt)}
+            title={words.when(trip.departAt, trip.departUntil)}
             text={`${start}, ${route}`}
             who={who}
           />
@@ -71,7 +73,7 @@ export function PassengerSeatCard({ kind, booking, words, act, go, directory }: 
         </>
       );
     case 'moved': {
-      const times = `${formatTime(new Date(trip.firstDepartAt))} → ${formatTime(new Date(trip.departAt))}`;
+      const times = `${tripTime(firstTimed(trip))} → ${tripTime(trip)}`;
       return (
         <>
           <DockCard
@@ -93,7 +95,7 @@ export function PassengerSeatCard({ kind, booking, words, act, go, directory }: 
             chip={t('bookings.offer.status.declined')}
             chipTone="red"
             tone="off"
-            title={words.when(trip.departAt)}
+            title={words.when(trip.departAt, trip.departUntil)}
             text={t('home.dock.refusedHint')}
           />
           <SecondaryButton
@@ -117,7 +119,7 @@ export function PassengerSeatCard({ kind, booking, words, act, go, directory }: 
             chip={t('home.dock.noShow')}
             chipTone="red"
             tone="off"
-            title={words.when(trip.departAt)}
+            title={words.when(trip.departAt, trip.departUntil)}
             text={t('home.dock.noShowHint')}
           />
           <SecondaryButton beside text={t('chat.open')} onClick={act.chat(booking)} />

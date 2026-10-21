@@ -7,6 +7,8 @@ export type TripFacts = {
   readonly from: string;
   readonly to: string;
   readonly departAt: number;
+  // The end of a range of the time (docs/216); null: one exact time.
+  readonly departUntil: number | null;
   // «Yoʻlga chiqdim» of the driver (G63): the trip is on the road even before its time.
   readonly departedAt: number | null;
   // «Yetib keldik» of the driver (G63): the ride is over for the stars before the trip closes.
@@ -23,6 +25,7 @@ export type TripFacts = {
 };
 
 type Published = { ok: true; value: Trip } | { ok: false; error: string };
+type OfferTripInput = Omit<Required<TripInput>, 'pickupMode' | 'departUntil'>;
 
 // The trips of the driver as bookings use them (the trips module owns them).
 export type TripsPort = {
@@ -33,15 +36,16 @@ export type TripsPort = {
   // Its way is the trips module's: both where the direction has a pitak, else the door (docs/70).
   scheduleError(driverId: number, departAt: number): Promise<'trips.too_soon' | 'trips.too_many' | null>;
   views(ids: readonly string[]): Promise<Trip[]>;
-  // Quiet until the seat is taken: then opened or released (G89 T12).
-  publish(
-    driverId: number,
-    input: Omit<Required<TripInput>, 'pickupMode'>,
-    requestId: string,
-  ): Promise<Published>;
+  // Quiet until the seat is taken: then opened or released (G89 T12). An offer has one exact time,
+  // never a range (docs/216).
+  publish(driverId: number, input: OfferTripInput, requestId: string): Promise<Published>;
   // «Safar ochib taklif qilish» (G64): a trip only the passenger of the request sees; opened for
   // everybody by the driver, or released as an ordinary trip once the passenger takes it.
-  publishPrivate(driverId: number, input: Required<TripInput>, requestId: string): Promise<Published>;
+  publishPrivate(
+    driverId: number,
+    input: OfferTripInput & Pick<Required<TripInput>, 'pickupMode'>,
+    requestId: string,
+  ): Promise<Published>;
   open(driverId: number, tripId: string): Promise<Published>;
   release(tripId: string): Promise<void>;
   // False when the trip is already on its way or over (docs/35).

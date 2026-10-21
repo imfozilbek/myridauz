@@ -22,11 +22,11 @@ export async function tellTripRetimed(deps: BookingsDeps, tripId: string): Promi
 async function moveWaiting(
   deps: BookingsDeps,
   open: readonly BookingRecord[],
-  trip: { readonly id: string; readonly driverId: number; readonly departAt: number },
+  trip: Parameters<typeof answerDeadline>[0] & { readonly id: string; readonly driverId: number },
 ) {
   const hours = deps.limits.bookings.answerHours;
   for (const booking of open) {
-    const expiresAt = answerDeadline(trip.departAt, booking.createdAt, hours);
+    const expiresAt = answerDeadline(trip, booking.createdAt, hours);
     if (booking.status === 'requested' && expiresAt > booking.expiresAt)
       await deps.bookings.replace({ ...booking, expiresAt }, 'requested');
   }

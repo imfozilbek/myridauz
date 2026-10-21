@@ -4,7 +4,7 @@ export const TOKEN = 'a'.repeat(43);
 const DEPART = Date.parse('2026-10-02T03:00:00Z');
 export const TRIP: SharedTrip = {
   ...{ passengerName: 'Dilnoza', from: '1726269', to: '1730401' },
-  ...{ departAt: DEPART, firstDepartAt: DEPART },
+  ...{ departAt: DEPART, departUntil: null, firstDepartAt: DEPART },
   km: 320,
   driver: {
     ...{ id: 'd1', firstName: 'Jasur', hasAvatar: true, rating: { average: 4.9, count: 12 } },

@@ -61,7 +61,7 @@ export function CallTalk({ about, onChanged }: Props) {
           {t('requests.talk.callOffer', { name: live.driver.firstName })}
           {live.createdAt >= since ? ` · ${t('requests.talk.now')}` : null}
         </span>
-        <b className="talk-offer-when">{`${texts.when(live.departAt)} · ${texts.seats(live)}`}</b>
+        <b className="talk-offer-when">{`${texts.when(live)} · ${texts.seats(live)}`}</b>
         <span>
           {[
             t('requests.salon.sum', { seats: String(live.seats), price: formatNumber(live.price), sum }),

@@ -15,6 +15,7 @@ import { MainButton, SecondaryButton } from '../../telegram/bottom-button';
 import { DockCard } from './dock-card';
 import type { DockWords } from './dock-words';
 import { markSeen } from './passenger-marks';
+import { useTripTime } from '../../trip/trip-time';
 
 type Plan =
   | { readonly kind: 'request'; readonly request: RideRequest }
@@ -34,13 +35,14 @@ const requestEnds = (request: RideRequest) => tashkentDayStart(request.date) + D
 // What a passenger plans (G76, mockup g76/2 states 3, 4, 5): the trip of a saved driver once, the
 // open request, the offers of drivers on it.
 export function PassengerPlanCard({ plan, words, go, now, directory }: Props) {
-  const { t, formatTime, formatNumber } = useI18n();
+  const { t, formatNumber } = useI18n();
+  const tripTime = useTripTime();
   if (plan.kind === 'favorite') {
     const { trip } = plan;
     const driver = trip.driver;
     const title = t('home.favorites.trip', {
       name: driver.firstName,
-      when: words.when(trip.departAt).toLocaleLowerCase('uz'),
+      when: words.when(trip.departAt, trip.departUntil).toLocaleLowerCase('uz'),
     });
     // The sums of the block go without «soʻm», as on the mockup g76/2 (decision of the owner 10.10.2026).
     const price = t('bookings.request.perSeat', { price: formatNumber(trip.price) });
@@ -64,7 +66,7 @@ export function PassengerPlanCard({ plan, words, go, now, directory }: Props) {
   const open = () => go('my_trips', { link: { name: REQUEST_LINK, id: request.id } });
   if (plan.kind === 'offers') {
     const [first, second] = plan.offers;
-    const time = (offer: Offer) => formatTime(new Date(offer.departAt));
+    const time = (offer: Offer) => tripTime(offer);
     const times =
       first && second
         ? t('home.dock.offerTimes', { first: time(first), second: time(second) })

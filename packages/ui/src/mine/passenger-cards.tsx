@@ -2,6 +2,7 @@ import { tashkentDate, type Booking, type RideRequest } from '@platform/contract
 import { useI18n } from '../context/i18n-context';
 import { shownStatus } from '../bookings/booking-status';
 import { useCardDay } from '../market/when';
+import { useTripTime } from '../trip/trip-time';
 import { MineCard } from './mine-card';
 import { useWay } from './use-way';
 
@@ -9,7 +10,8 @@ type BookingProps = { readonly booking: Booking; readonly onOpen: () => void };
 
 // A seat: «Ertaga · 08:00», the way, the driver and the car, «Joy tasdiqlandi» (mockup g75/2 A).
 export function BookingMineCard({ booking, onOpen }: BookingProps) {
-  const { t, formatTime } = useI18n();
+  const { t } = useI18n();
+  const tripTime = useTripTime();
   const day = useCardDay();
   const way = useWay();
   const { trip } = booking;
@@ -22,7 +24,7 @@ export function BookingMineCard({ booking, onOpen }: BookingProps) {
     <MineCard
       head={t('market.mine.when', {
         day: day(tashkentDate(trip.departAt), Date.now()),
-        time: formatTime(new Date(trip.departAt)),
+        time: tripTime(trip),
       })}
       route={way(trip.from, trip.to)}
       meta={

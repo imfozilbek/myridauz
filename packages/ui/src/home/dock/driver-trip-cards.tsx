@@ -31,7 +31,7 @@ export function PublishedCard({ trip, words, act, go }: Props) {
   return (
     <>
       <DockCard
-        chip={words.when(trip.departAt)}
+        chip={words.when(trip.departAt, trip.departUntil)}
         title={seats}
         text={
           trip.views > 0
@@ -64,7 +64,7 @@ export function RequestsCard({ trip, people, words }: Props) {
         chip={t('home.newRequests', { count: String(waiting.length) })}
         tone="soon"
         {...(first ? { timer: { text: words.left(first.expiresAt), now: false } } : {})}
-        title={words.when(trip.departAt)}
+        title={words.when(trip.departAt, trip.departUntil)}
         text={who}
       />
       <MainButton text={t('sheet.call.answer')} onClick={() => openSheet('request', first?.id ?? null)} />
@@ -89,7 +89,7 @@ export function AcceptedCard({ booking, words, act }: Omit<Props, 'people'> & { 
       <DockCard
         chip={t('home.dock.accepted', { name: person.firstName })}
         chipTone="green"
-        title={words.when(booking.trip.departAt)}
+        title={words.when(booking.trip.departAt, booking.trip.departUntil)}
         text={`${ends.start}, ${words.route(booking.trip)}`}
         who={{ person, sub, tools: [{ icon: 'chat', label: t('chat.open'), onClick: chat }] }}
       />

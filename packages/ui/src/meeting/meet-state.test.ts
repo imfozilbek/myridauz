@@ -24,8 +24,8 @@ describe('the driver at the points (docs/126, G63)', () => {
     const opens = meetingStartsAt(trip.departAt, MEET);
     expect(meetingOpen(trip, opens - 1, MEET)).toBe(false);
     expect(meetingOpen(trip, opens, MEET)).toBe(true);
-    expect(meetingOpen(trip, tripEndsAt(trip.departAt, trip.km) - 1, MEET)).toBe(true);
-    expect(meetingOpen(trip, tripEndsAt(trip.departAt, trip.km), MEET)).toBe(false);
+    expect(meetingOpen(trip, tripEndsAt(trip) - 1, MEET)).toBe(true);
+    expect(meetingOpen(trip, tripEndsAt(trip), MEET)).toBe(false);
     expect(meetingOpen({ ...trip, status: 'completed' }, opens, MEET)).toBe(false);
     expect(meetingOpen({ ...trip, status: 'full' }, opens, MEET)).toBe(true);
   });

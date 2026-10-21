@@ -1,6 +1,7 @@
 import {
   arrivedAskAt,
   DAY_MS,
+  lastDepart,
   meetingStartsAt,
   tripEndsAt,
   type Booking,
@@ -74,24 +75,24 @@ function seatState(
 ): PassengerState | null {
   const { trip } = booking;
   const of = <K extends PassengerState['kind']>(kind: K) => ({ kind, booking }) as PassengerState;
-  const fresh = now < tripEndsAt(trip.departAt, trip.km) + rateDays * DAY_MS;
+  const fresh = now < tripEndsAt(trip) + rateDays * DAY_MS;
   const toRate = () => (fresh && booking.rated !== true && booking.noShowAt === null ? of('ended') : null);
   if (booking.status === 'completed') return toRate();
   if (endedBadly(booking.status))
-    return booking.status !== 'cancelled_by_passenger' && trip.departAt > now ? of('refused') : null;
-  if (booking.noShowAt !== null) return now < tripEndsAt(trip.departAt, trip.km) ? of('noShow') : null;
+    return booking.status !== 'cancelled_by_passenger' && lastDepart(trip) > now ? of('refused') : null;
+  if (booking.noShowAt !== null) return now < tripEndsAt(trip) ? of('noShow') : null;
   if (booking.status === 'requested') return of('asked');
   // Her own «Yetib keldim» ends the ride for her: the stars at once (G78 П6, docs/170).
   if (booking.arrivedAt !== null) return toRate();
   if (inCar(booking, now, meet)) {
-    const late = now >= arrivedAskAt(trip.departAt, trip.km);
+    const late = now >= arrivedAskAt(trip);
     return late && !marks.stillOnWay.has(booking.id) ? of('arrivedAsk') : of('onRoad');
   }
   if (trip.firstDepartAt !== trip.departAt && !marks.agreed.has(agreedTo(booking)) && now < trip.departAt)
     return of('moved');
   if (now >= meetingStartsAt(trip.departAt, meet) && atPoint(booking))
     return booking.driverCameAt !== null && booking.cameAt === null ? of('driverWaits') : of('meeting');
-  return now < tripEndsAt(trip.departAt, trip.km) ? of('confirmed') : null;
+  return now < tripEndsAt(trip) ? of('confirmed') : null;
 }
 
 const departureOf = (state: PassengerState) =>

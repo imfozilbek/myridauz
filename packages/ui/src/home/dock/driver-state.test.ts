@@ -78,7 +78,7 @@ describe('the block of a driver: one state by its level (G76, docs/165)', () => 
     expect(kinds({ trips: [done], bookings: [rider] }, at(DAY_MS))).toEqual(['ended']);
     expect(kinds({ trips: [done], bookings: [{ ...rider, rated: true }] }, at(DAY_MS))).toEqual(['idle']);
     // The days of the brand count from the end of the trip, as on the page of the trip (docs/129).
-    const end = tripEndsAt(trip.departAt, trip.km);
+    const end = tripEndsAt(trip);
     expect(kinds({ trips: [done], bookings: [rider] }, end + 7 * DAY_MS - MINUTE_MS)).toEqual(['ended']);
     expect(kinds({ trips: [done], bookings: [rider], rateDays: 3 }, end + 3 * DAY_MS)).toEqual(['idle']);
   });

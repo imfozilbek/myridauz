@@ -27,12 +27,13 @@ export async function stopDriverSharing(deps: SharesDeps, driverId: number, trip
 
 // What the family sees: the driver's first name, the car and the plate; never a phone (docs/07).
 export function driverShared(trip: DriverTrip, followers: number, now: number): SharedView | null {
-  if (now > openUntil(trip.departAt, trip.km)) return null;
+  if (now > openUntil(trip)) return null;
   return {
     passengerName: trip.driverName,
     from: trip.from,
     to: trip.to,
     departAt: trip.departAt,
+    departUntil: trip.departUntil,
     firstDepartAt: trip.departAt,
     km: trip.km,
     driver: {
@@ -61,6 +62,5 @@ export async function tellTripCancelled(deps: SharesDeps, tripId: string) {
 // The driver moved the time (G75, docs/158 И): the family hears the new one.
 export async function tellTripRetimed(deps: SharesDeps, tripId: string) {
   const trip = await deps.driverTrip(tripId);
-  if (trip)
-    await tellAll(deps, { kind: 'trip', id: tripId }, deps.texts.retimed(trip.driverName, trip.departAt));
+  if (trip) await tellAll(deps, { kind: 'trip', id: tripId }, deps.texts.retimed(trip.driverName, trip));
 }

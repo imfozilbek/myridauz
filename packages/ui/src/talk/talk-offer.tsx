@@ -44,7 +44,7 @@ export function TalkOffer({ offer, role, other, onAnswered, onSeat }: Props) {
     return (
       <div className="talk-offer">
         <span className="talk-offer-kicker">{t('requests.talk.sent')}</span>
-        <b className="talk-offer-when">{`${texts.when(offer.departAt)} · ${texts.seats(offer)}`}</b>
+        <b className="talk-offer-when">{`${texts.when(offer)} · ${texts.seats(offer)}`}</b>
         <span className="talk-offer-sub">
           {[
             ...(offer.pitak ? [offer.pitak] : []),
@@ -60,7 +60,7 @@ export function TalkOffer({ offer, role, other, onAnswered, onSeat }: Props) {
       <span className="talk-offer-kicker">
         {t('requests.talk.offered', { name: offer.driver.firstName })}
       </span>
-      <b className="talk-offer-when">{`${texts.when(offer.departAt)} · ${texts.seats(offer)}`}</b>
+      <b className="talk-offer-when">{`${texts.when(offer)} · ${texts.seats(offer)}`}</b>
       <span className="talk-offer-sub">
         {`${car.model}, ${t(`drivers.color.${car.color}`)} · `}
         {car.plate ? <UzPlate plate={car.plate} size="s" /> : null}

@@ -47,6 +47,8 @@ export const offerSchema = z.object({
   from: locationIdSchema,
   to: locationIdSchema,
   departAt: z.number().int(),
+  // The end of the range of the driver's trip (G90, docs/216): an offer of a new trip is one time.
+  departUntil: z.number().int().nullable().default(null),
   km: z.number().int(),
   seats: z.number().int(),
   // «Boʻsh salon kerak» (G61): the seats are all the seats of the car.

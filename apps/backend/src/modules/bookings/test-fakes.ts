@@ -109,7 +109,18 @@ export const fakeTripView = (facts: TripFacts, taken: number): Trip => {
     car: CAR,
     rating: NO_RATING,
   };
-  const base = { id: tripId, from, to, departAt, km, seats, price, comment: '', woman: false };
+  const base = {
+    id: tripId,
+    from,
+    to,
+    departAt,
+    departUntil: null,
+    km,
+    seats,
+    price,
+    comment: '',
+    woman: false,
+  };
   return {
     ...base,
     driver,

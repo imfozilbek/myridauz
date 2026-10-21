@@ -1,4 +1,4 @@
-import { arrivalAt, tashkentDate, type Booking, type ChatAbout } from '@platform/contracts';
+import { tashkentDate, tripArrival, type Booking, type ChatAbout } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { otherSide } from '../call/other-side';
 import { PersonBadge } from '../find/person-badge';
@@ -6,6 +6,7 @@ import { Icon } from '../icons';
 import { usePlaces } from '../market/places-gate';
 import { useRiderStars } from '../own-trip/rider-line';
 import { useBookingEnds } from '../trip/booking-ends';
+import { useTripTime } from '../trip/trip-time';
 import { today, tomorrow } from '../market/when';
 import './chat-head.css';
 import { UzPlate } from '../plate/uz-plate';
@@ -71,7 +72,8 @@ type LineProps = { readonly booking: Booking; readonly onTrip: (() => void) | un
 
 // «Ertaga, 16:00 · Chilonzor bozori yaqinida», under it «Toshkent shahri → Samarqand viloyati · 2 joy».
 function TripLine({ booking, onTrip }: LineProps) {
-  const { t, formatTime, formatDate } = useI18n();
+  const { t, formatDate } = useI18n();
+  const tripTime = useTripTime();
   const directory = usePlaces();
   const { start } = useBookingEnds(booking);
   const { trip } = booking;
@@ -93,8 +95,8 @@ function TripLine({ booking, onTrip }: LineProps) {
       <span className="chat-trip-text">
         <b>
           {ended
-            ? t('chat.trip.done', { date: formatDate(new Date(arrivalAt(trip.departAt, trip.km))) })
-            : t('chat.trip.when', { day, time: formatTime(new Date(trip.departAt)), place: start })}
+            ? t('chat.trip.done', { date: formatDate(new Date(tripArrival(trip))) })
+            : t('chat.trip.when', { day, time: tripTime(trip), place: start })}
         </b>
         <span>
           {t('chat.trip.way', { from: region(trip.from), to: region(trip.to), seats: String(booking.seats) })}

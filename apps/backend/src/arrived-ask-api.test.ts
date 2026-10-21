@@ -18,7 +18,11 @@ afterAll(() => {
 
 const press = botSender(telegram.fetch);
 const BOT = { ...testEnv, TELEGRAM_WEBHOOK_SECRET: 'hook' };
-type Seat = { id: string; arrivedAt: number | null; trip: { departAt: number; km: number } };
+type Seat = {
+  id: string;
+  arrivedAt: number | null;
+  trip: { departAt: number; departUntil: number | null; km: number };
+};
 
 // One live trip and one seat at a time (docs/172): each case takes its own people.
 async function rideOn(driver: number, passenger: number) {
@@ -73,8 +77,10 @@ describe('the bot asks a passenger who did not say she arrived', () => {
   it('asks once an hour after the arrival; «Ha» marks it and closes the link', async () => {
     const PASSENGER = 302;
     const seat = await rideOn(301, PASSENGER);
-    const { trip } = (await seatOf(PASSENGER, seat.id)) ?? { trip: { departAt: 0, km: 0 } };
-    vi.setSystemTime(arrivedAskAt(trip.departAt, trip.km) + MINUTE_MS);
+    const { trip } = (await seatOf(PASSENGER, seat.id)) ?? {
+      trip: { departAt: 0, departUntil: null, km: 0 },
+    };
+    vi.setSystemTime(arrivedAskAt(trip) + MINUTE_MS);
     await askArrived(testEnv, Date.now());
     await askArrived(testEnv, Date.now());
     const [question, ...more] = questions(PASSENGER);
@@ -93,8 +99,10 @@ describe('the bot asks a passenger who did not say she arrived', () => {
   it('«Hali yoʻldaman» changes nothing; the link stays', async () => {
     const PASSENGER = 304;
     const seat = await rideOn(303, PASSENGER);
-    const { trip } = (await seatOf(PASSENGER, seat.id)) ?? { trip: { departAt: 0, km: 0 } };
-    vi.setSystemTime(arrivedAskAt(trip.departAt, trip.km) + MINUTE_MS);
+    const { trip } = (await seatOf(PASSENGER, seat.id)) ?? {
+      trip: { departAt: 0, departUntil: null, km: 0 },
+    };
+    vi.setSystemTime(arrivedAskAt(trip) + MINUTE_MS);
     await askArrived(testEnv, Date.now());
     await answer(PASSENGER, seat.id, 'no');
     expect((await seatOf(PASSENGER, seat.id))?.arrivedAt).toBeNull();
@@ -105,8 +113,10 @@ describe('the bot asks a passenger who did not say she arrived', () => {
   it('«Ha» of a passenger blocked on the road marks the arrival', async () => {
     const PASSENGER = 306;
     const seat = await rideOn(305, PASSENGER);
-    const { trip } = (await seatOf(PASSENGER, seat.id)) ?? { trip: { departAt: 0, km: 0 } };
-    vi.setSystemTime(arrivedAskAt(trip.departAt, trip.km) + MINUTE_MS);
+    const { trip } = (await seatOf(PASSENGER, seat.id)) ?? {
+      trip: { departAt: 0, departUntil: null, km: 0 },
+    };
+    vi.setSystemTime(arrivedAskAt(trip) + MINUTE_MS);
     const block = { app: 'admin', ...json({ days: 7 }) };
     expect((await call(`/admin/users/${await pid(PASSENGER)}/block`, OWNER, block)).status).toBe(204);
     await answer(PASSENGER, seat.id, 'yes');

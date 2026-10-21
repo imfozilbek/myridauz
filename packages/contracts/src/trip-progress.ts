@@ -1,3 +1,4 @@
+import { lastDepart } from './depart-range';
 import { HOUR_MS } from './tashkent-time';
 import { DRIVER_TRIPS_PATH } from './trips';
 
@@ -10,8 +11,13 @@ export const DEPART_REMIND_MS = HOUR_MS;
 export const tripDepartPath = (id: string) => `${DRIVER_TRIPS_PATH}/${id}/depart`;
 export const tripArrivePath = (id: string) => `${DRIVER_TRIPS_PATH}/${id}/arrive`;
 
-type Departure = { readonly departAt: number; readonly departedAt: number | null };
+type Departure = {
+  readonly departAt: number;
+  readonly departUntil: number | null;
+  readonly departedAt: number | null;
+};
 
-// On the road: the driver pressed «Yoʻlga chiqdim», or the time of the trip came. Every rule of
-// «the trip left» reads this, so an early departure counts everywhere (docs/35).
-export const onTheWay = (trip: Departure, now: number) => trip.departedAt !== null || now >= trip.departAt;
+// On the road: the driver pressed «Yoʻlga chiqdim», or the time of the trip came; a range comes at
+// its end, people book until then (docs/216). Every rule of «the trip left» reads this, so an early
+// departure counts everywhere (docs/35).
+export const onTheWay = (trip: Departure, now: number) => trip.departedAt !== null || now >= lastDepart(trip);

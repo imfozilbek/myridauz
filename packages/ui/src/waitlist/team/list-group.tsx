@@ -24,7 +24,7 @@ export function ListGroup({ onAds }: { readonly onAds: () => void }) {
   // The group that did not load says so, never vanishes (G91 ADM-10).
   if (!value) return state.failed ? <ActionFailure error="errors.generic.description" /> : null;
   const waiting = (overview.value?.passengers ?? 0) + (overview.value?.drivers ?? 0);
-  const since = value.at === null ? '' : when(value.at);
+  const since = value.at === null ? '' : when(value.at, null);
   const change = async () => {
     clear();
     await waitlist.setSwitch(!value.open).catch(fail);

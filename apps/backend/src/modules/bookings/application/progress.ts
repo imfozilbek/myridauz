@@ -27,7 +27,7 @@ export async function markProgress(
   const allowed =
     step === 'came'
       ? record.boardedAt === null && now >= meetingStartsAt(trip.departAt, meetMinutes)
-      : inCarAt(record, trip.departAt, now, meetMinutes);
+      : inCarAt(record, trip, now, meetMinutes);
   if (!allowed) return { ok: false, error: 'bookings.wrong_status' };
   // One guarded write: a second tap, or a cancel of the driver that came first, writes nothing.
   const fresh = await deps.bookings.markStep(id, step, now);

@@ -42,7 +42,7 @@ export function DepartCard({
         <DockCard
           chip={t('home.dock.departAsk')}
           tone="soon"
-          title={t('home.dock.wasAt', { when: words.when(trip.departAt) })}
+          title={t('home.dock.wasAt', { when: words.when(trip.departAt, trip.departUntil) })}
           text={t('home.dock.departAskHint')}
         />
         <SecondaryButton beside text={t('home.dock.late')} onClick={act.late(people)} />
@@ -53,7 +53,7 @@ export function DepartCard({
   return (
     <>
       <DockCard
-        chip={words.when(trip.departAt)}
+        chip={words.when(trip.departAt, trip.departUntil)}
         tone="soon"
         timer={{ text: words.minutesTo(trip.departAt), now: false }}
         title={words.route(trip)}

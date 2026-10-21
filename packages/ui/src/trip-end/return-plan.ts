@@ -1,17 +1,17 @@
 import {
-  arrivalAt,
   DAY_MS,
   earliestDepart,
   MINUTE_MS,
   RETURN_REST_MS,
   SLOT_MINUTES,
+  slotAt,
   tashkentDate,
   tashkentDayStart,
   tashkentTime,
+  tripArrival,
   type ScheduleRules,
   type Trip,
 } from '@platform/contracts';
-import { departAtOf } from '../market/first-when';
 import type { TripAgain } from '../market/trip-draft';
 import type { PlaceDirectory } from '../places/directory';
 import type { Route } from '../places/route-screen';
@@ -28,18 +28,18 @@ type ReturnRules = Pick<ScheduleRules, 'leadMinutes' | 'defaultTime'> & { readon
 // leaves at returnUntil the latest, else the next morning; a time of the night is the morning too
 // (owner decision 12.10.2026, G78 В11). The driver confirms or changes it there.
 export function returnDepartAt(
-  trip: Pick<Trip, 'departAt' | 'km' | 'arrivedAt'>,
+  trip: Pick<Trip, 'departAt' | 'departUntil' | 'km' | 'arrivedAt'>,
   now: number,
   rules: ReturnRules,
 ) {
-  const arrived = trip.arrivedAt ?? arrivalAt(trip.departAt, trip.km);
+  const arrived = trip.arrivedAt ?? tripArrival(trip);
   const back = Math.max(arrived + RETURN_REST_MS, earliestDepart(now, rules));
   const date = tashkentDate(back);
   const at = tashkentDayStart(date) + Math.ceil((back - tashkentDayStart(date)) / SLOT_MS) * SLOT_MS;
   const time = tashkentTime(at);
   if (time > rules.returnUntil)
-    return departAtOf(tashkentDate(tashkentDayStart(date) + DAY_MS), rules.defaultTime);
-  return time < rules.defaultTime ? departAtOf(tashkentDate(at), rules.defaultTime) : at;
+    return slotAt(tashkentDate(tashkentDayStart(date) + DAY_MS), rules.defaultTime);
+  return time < rules.defaultTime ? slotAt(tashkentDate(at), rules.defaultTime) : at;
 }
 
 // «Qaytish» (docs/40, question 43): the route the other way with the same seats, price, the rule of
@@ -54,10 +54,19 @@ export const returnTrip = (trip: Trip, directory: PlaceDirectory, departAt: numb
 // same answers as the way back takes them.
 export function tomorrowTrip(trip: Trip, directory: PlaceDirectory): ReturnTrip | null {
   const inDay = trip.departAt - tashkentDayStart(tashkentDate(trip.departAt));
-  return tripPlan(trip, directory, tashkentDayStart(tashkentDate(Date.now() + DAY_MS)) + inDay, false);
+  const departAt = tashkentDayStart(tashkentDate(Date.now() + DAY_MS)) + inDay;
+  // A range comes again as a range (G90).
+  const until = trip.departUntil === null ? null : departAt + trip.departUntil - trip.departAt;
+  return tripPlan(trip, directory, departAt, false, until);
 }
 
-function tripPlan(trip: Trip, directory: PlaceDirectory, departAt: number, back: boolean): ReturnTrip | null {
+function tripPlan(
+  trip: Trip,
+  directory: PlaceDirectory,
+  departAt: number,
+  back: boolean,
+  until: number | null = null,
+): ReturnTrip | null {
   const from = directory.find(trip.from);
   const to = directory.find(trip.to);
   if (!from || !to) return null;
@@ -70,6 +79,7 @@ function tripPlan(trip: Trip, directory: PlaceDirectory, departAt: number, back:
     comment: '',
     date: tashkentDate(departAt),
     time: tashkentTime(departAt),
+    until: until === null ? null : tashkentTime(until),
   };
   return { route: back ? { from: to, to: from } : { from, to }, again };
 }

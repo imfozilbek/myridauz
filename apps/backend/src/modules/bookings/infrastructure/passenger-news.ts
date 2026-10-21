@@ -5,6 +5,7 @@ import type { Card, Ring } from '../../notifications';
 import type { Places } from '../../../shared/places/end-names';
 import { bold, escapeHtml } from '../../../shared/telegram/html';
 import { passengerTripCard } from '../../../shared/telegram/card-keys';
+import { tripTimeText } from '../../../shared/telegram/trip-time';
 import { arrivedButtons } from './arrived-buttons';
 import { chatRingButton, type ChatRing } from './chat-ring-button';
 import { passengerCard } from './passenger-card';
@@ -36,14 +37,19 @@ const at = (ms: number) => formatTime(new Date(ms));
 
 function ringText(booking: Booking, kind: PassengerRing): string {
   const name = escapeHtml(booking.trip.driver.firstName);
-  const { departAt } = booking.trip;
+  const { trip } = booking;
   switch (kind) {
     case 'retimed':
-      return t('bot.ring.retimed', { time: bold(at(departAt)) });
+      return t('bot.ring.retimed', { time: bold(tripTimeText(trip)) });
     case 'soon':
+      // A range: the window itself, no early minutes (G90, docs/216).
+      if (trip.departUntil !== null)
+        return t(booking.pitak ? 'bot.ring.soonPitakRange' : 'bot.ring.soonDoorRange', {
+          time: tripTimeText(trip),
+        });
       return booking.pitak
-        ? t('bot.ring.soonPitak', { time: at(departAt - AT_PITAK_EARLY_MINUTES * MINUTE_MS) })
-        : t('bot.ring.soonDoor', { time: at(departAt) });
+        ? t('bot.ring.soonPitak', { time: at(trip.departAt - AT_PITAK_EARLY_MINUTES * MINUTE_MS) })
+        : t('bot.ring.soonDoor', { time: at(trip.departAt) });
     case 'expired':
       return t('bot.ring.expired');
     default:

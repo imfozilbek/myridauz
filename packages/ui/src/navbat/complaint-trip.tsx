@@ -9,6 +9,7 @@ import { useShortDay } from '../market/when';
 import { usePlaceNames } from '../places/place-names';
 import { useDirectory } from '../places/use-directory';
 import type { PlaceDirectory } from '../places/directory';
+import { useTripTime } from '../trip/trip-time';
 
 const FACE = 38;
 const STATE: Record<Trip['status'], TranslationKey> = {
@@ -29,7 +30,8 @@ export function ComplaintTrip({ tripId }: { readonly tripId: string }) {
 }
 
 function TripCard({ trip, directory }: { readonly trip: Trip; readonly directory: PlaceDirectory }) {
-  const { t, formatTime } = useI18n();
+  const { t } = useI18n();
+  const tripTime = useTripTime();
   const names = usePlaceNames(directory);
   const shortDay = useShortDay();
   const [now] = useState(Date.now);
@@ -37,7 +39,7 @@ function TripCard({ trip, directory }: { readonly trip: Trip; readonly directory
   const to = directory.find(trip.to);
   const when = t('home.trip.when', {
     day: shortDay(tashkentDate(trip.departAt), now),
-    time: formatTime(new Date(trip.departAt)),
+    time: tripTime(trip),
   });
   const car = t('home.trip.car', { model: driver.car.model, color: t(`drivers.color.${driver.car.color}`) });
   return (

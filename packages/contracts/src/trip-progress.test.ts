@@ -7,9 +7,17 @@ const DEPART = Date.parse('2026-10-08T03:00:00Z');
 
 describe('the driver on the road (G63, docs/35)', () => {
   it('counts a trip on the road from «Yoʻlga chiqdim» or from its time', () => {
-    expect(onTheWay({ departAt: DEPART, departedAt: null }, DEPART - 1)).toBe(false);
-    expect(onTheWay({ departAt: DEPART, departedAt: DEPART - HOUR / 2 }, DEPART - 1)).toBe(true);
-    expect(onTheWay({ departAt: DEPART, departedAt: null }, DEPART)).toBe(true);
+    const trip = { departAt: DEPART, departUntil: null, departedAt: null };
+    expect(onTheWay(trip, DEPART - 1)).toBe(false);
+    expect(onTheWay({ ...trip, departedAt: DEPART - HOUR / 2 }, DEPART - 1)).toBe(true);
+    expect(onTheWay(trip, DEPART)).toBe(true);
+  });
+
+  it('counts a range on the road from «Yoʻlga chiqdim» or from its end (docs/216)', () => {
+    const range = { departAt: DEPART, departUntil: DEPART + 2 * HOUR, departedAt: null };
+    expect(onTheWay(range, DEPART + HOUR)).toBe(false);
+    expect(onTheWay({ ...range, departedAt: DEPART + HOUR / 2 }, DEPART + HOUR)).toBe(true);
+    expect(onTheWay(range, DEPART + 2 * HOUR)).toBe(true);
   });
 
   it('opens the button an hour before and reminds an hour after (the brand departs it later)', () => {
