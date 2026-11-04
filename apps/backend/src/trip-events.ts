@@ -82,6 +82,9 @@ export async function inNews(env: Bindings, publicId: string): Promise<boolean> 
 export const closeDepartedPosts = (env: Bindings) => tripChannels.departed(env);
 export const showChannelBoards = (env: Bindings) => boards.all(env);
 export const sendChannelSummaries = (env: Bindings) => boards.summaries(env);
+// The hourly Cron job: a group of a direction gets the open trips it still lacks (docs/222).
+export const fillDirectionGroups = (env: Bindings) =>
+  tripChannels.fill(env, (date) => tripsOfDate(env, date));
 
 // Once Telegram gave a message its id: a channel post is remembered to be edited later (docs/15).
 handleAfterSent((env, after, messageId) => tripChannels.remember(env, after, messageId));

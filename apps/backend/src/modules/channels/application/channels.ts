@@ -3,13 +3,18 @@ import { channelsOf, shownOf } from '../domain/route-channels';
 import type { ChannelPost, ChannelsDeps } from './ports';
 
 // A new trip goes to the channels of its regions through the queue; each post id is remembered
-// once Telegram gives it (docs/15). Only drivers' trips: passengers' requests never go there.
-export async function postTrip(deps: ChannelsDeps, tripId: string): Promise<void> {
+// once Telegram gives it (docs/15). Only drivers' trips: passengers' requests never go there. only:
+// just these chats of them (a group that still lacks the trip, docs/222).
+export async function postTrip(
+  deps: ChannelsDeps,
+  tripId: string,
+  only?: ReadonlySet<string>,
+): Promise<void> {
   if (!deps.enabled) return;
   const [trip, places, list] = await Promise.all([deps.trip(tripId), deps.places(), deps.channels()]);
   if (!trip || trip.status !== 'active') return;
   const shown = shownOf(trip);
-  const channels = channelsOf(trip.from, trip.to, places, list);
+  const channels = channelsOf(trip.from, trip.to, places, list).filter((chat) => !only || only.has(chat));
   // A post comes without sound: the board of the day is the one sound of a channel (docs/122).
   await deps.send(
     channels.map((channel) => {
