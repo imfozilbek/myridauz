@@ -1,4 +1,4 @@
-import { loadBrand, type BrandConfig } from '@platform/brands';
+import { channelsOnly, groupChats, loadBrand, type BrandConfig } from '@platform/brands';
 import { describe, expect, it } from 'vitest';
 import type { Bindings } from '../../env';
 import { looksDeps } from './looks-deps';
@@ -21,7 +21,9 @@ describe('the looks of an environment', () => {
       `channel:@${brand.mainChannel}`,
       `channel:${brand.channels[0]?.chat}`,
     ]);
-    expect(keys).toHaveLength(2 + brand.channels.length);
+    // The group of a direction keeps its own name, description and avatar (docs/222).
+    expect(keys).toHaveLength(2 + channelsOnly(brand).length);
+    expect(keys.some((key) => groupChats(brand).has(key.replace('channel:', '')))).toBe(false);
   });
 
   it('names every face with the name of its environment, the bot of its environment in the texts', () => {

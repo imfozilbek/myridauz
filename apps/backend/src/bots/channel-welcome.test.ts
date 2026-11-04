@@ -1,4 +1,4 @@
-import { loadBrand } from '@platform/brands';
+import { channelsOnly, groupChats, loadBrand } from '@platform/brands';
 import { botStartLink, channelVia, HOUR_MS } from '@platform/contracts';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Bindings } from '../env';
@@ -11,7 +11,8 @@ afterEach(() => vi.restoreAllMocks());
 const brand = loadBrand();
 const MAIN = `@${brand.mainChannel}`;
 const FIRST = brand.channels[0]?.chat ?? '';
-const ALL = 2 * (1 + brand.channels.length);
+// The group of a direction has its own welcome (docs/222).
+const ALL = 2 * (1 + channelsOnly(brand).length);
 const DAY = Date.UTC(2026, 9, 18, 6);
 
 type Post = {
@@ -76,7 +77,8 @@ describe('the welcomes of the bots in the channels (owner, 18.10.2026)', () => {
       sent.push(...next.where());
     }
     expect(sent).toHaveLength(ALL);
-    expect(new Set(sent)).toEqual(new Set([MAIN, ...brand.channels.map(({ chat }) => chat)]));
+    expect(new Set(sent)).toEqual(new Set([MAIN, ...channelsOnly(brand).map(({ chat }) => chat)]));
+    expect(sent.some((chat) => groupChats(brand).has(chat))).toBe(false);
     const after = telegram();
     await postChannelWelcomes(env, after.fetch, DAY + 2 * HOUR_MS);
     expect(after.posts).toEqual([]);

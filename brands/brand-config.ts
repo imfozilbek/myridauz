@@ -1,7 +1,9 @@
 // Everything that differs between brands (docs/22). Code reads brands only through these types.
+import type { BrandChannel } from './brand-channel';
 import type { AppName, BrandColors, BrandTheme } from './brand-theme';
 import type { PeopleRules } from './people-rules';
 
+export type { BrandChannel } from './brand-channel';
 export type { AppName, BrandColors, BrandTheme, HexColor } from './brand-theme';
 
 // How the recommended price is counted (docs/23): one strategy today.
@@ -72,24 +74,6 @@ type ScheduleRules = {
 
 // The party of the legal documents (docs/30): requisites from the admin Mini App (G34).
 type Company = { readonly email: string };
-
-// A channel of a direction (docs/63, docs/176): a private channel the bot posts to by its chat number,
-// the places of its name for the texts, the plate code of its region (docs/36) and the SOATO codes of
-// the districts and cities its posts are for.
-export type BrandChannel = {
-  readonly chat: string;
-  readonly title: string;
-  // The name the channel has in Telegram, as it is: the apps and the site show it (owner 13.10.2026).
-  readonly name: string;
-  readonly code: string;
-  readonly places: readonly string[];
-  // The big town that opens the name: the channel only passes it, its own channel is another one.
-  readonly hubs?: readonly string[];
-  // The invite link: a private channel has no public name.
-  readonly link: string;
-  // The page of the direction on the site: its picture shows above the board of the day (G68).
-  readonly page?: string;
-};
 
 // The pictures of the first message of the public bots (G34, G83): brand-kit/landing/bot.mjs makes them.
 export type BotWelcome = 'passenger' | 'driver' | 'support' | 'main' | 'main-open';
