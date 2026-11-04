@@ -1,3 +1,4 @@
+import { groupChats } from '@platform/brands';
 import { tashkentDate, type Trip } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { placesOf } from '../locations';
@@ -15,6 +16,13 @@ import { brandOf } from '../../shared/brand/brand-of';
 type TripOf = (env: Bindings, id: string) => Promise<Trip | undefined>;
 type TripsOfDate = (env: Bindings, date: string) => Promise<readonly Trip[]>;
 
+// The channels of the boards and the summaries: a group of a direction gets neither, it has its own
+// pin and posts (docs/222).
+export async function boardChannels(env: Bindings) {
+  const groups = groupChats(brandOf(env));
+  return (await allChannels(await teamDeps(env))).filter(({ chat }) => !groups.has(chat));
+}
+
 // The parts of the boards and the summaries: the channels, the trips, the site of the brand.
 function common(env: Bindings, tripsOf: TripsOfDate) {
   const brand = brandOf(env);
@@ -23,7 +31,7 @@ function common(env: Bindings, tripsOf: TripsOfDate) {
     site: { bot: brand.bots.passenger, domain: brand.domain, pageOf },
     deps: {
       enabled: env.CHANNEL_POSTS === 'on',
-      channels: async () => allChannels(await teamDeps(env)),
+      channels: () => boardChannels(env),
       places: () => placesOf(env),
       tripsOf: (date: string) => tripsOf(env, date),
       show: (cards: Parameters<typeof showCards>[1]) => showCards(env, cards, [], 'mass'),

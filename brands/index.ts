@@ -13,7 +13,7 @@ export type {
   HexColor,
   PromoRule,
 } from './brand-config';
-export { channelOf } from './channels.ts';
+export { channelOf, channelsOnly, groupChats } from './channels.ts';
 export { commissionFor } from './commission.ts';
 export { apiHost, appHost, mapHost } from './hosts.ts';
 

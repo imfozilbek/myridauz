@@ -1,3 +1,4 @@
+import { channelsOnly } from '@platform/brands';
 import type { Bindings } from '../../env';
 import { brandOf, siteOf } from '../../shared/brand/brand-of';
 import type { Fetch } from '../../shared/telegram/telegram-api';
@@ -9,7 +10,8 @@ import { directionLook, mainLook, posterLook } from './infrastructure/wanted';
 const localLooks = createMemoryLooks();
 
 // The channels of the environment and their bot with their looks (docs/180), once the owner has said
-// yes to their texts (CHANNEL_LOOKS, G84). Without the bot of the channels they wait.
+// yes to their texts (CHANNEL_LOOKS, G84). Without the bot of the channels they wait. A group of a
+// direction keeps its own name, description and avatar (docs/222).
 function facesOf(env: Bindings, call: Fetch): Face[] {
   const poster = env.POSTER_BOT_TOKEN;
   if (env.CHANNEL_LOOKS !== 'on' || !poster) return [];
@@ -18,7 +20,7 @@ function facesOf(env: Bindings, call: Fetch): Face[] {
   return [
     posterFace(call, poster, posterLook(brand)),
     channelFace(call, poster, `@${brand.mainChannel}`, mainLook(brand, site)),
-    ...brand.channels.map((channel) =>
+    ...channelsOnly(brand).map((channel) =>
       channelFace(call, poster, channel.chat, directionLook(brand, channel, site)),
     ),
   ];

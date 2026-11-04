@@ -1,4 +1,4 @@
-import type { BrandConfig } from '@platform/brands';
+import { channelsOnly, type BrandConfig } from '@platform/brands';
 import { botStartLink, channelVia, HOUR_MS } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../env';
@@ -11,7 +11,8 @@ const { t } = createI18n(DEFAULT_LOCALE);
 
 // The welcomes of the passenger and the driver bot in every channel of the brand, the main one first
 // (owner, 18.10.2026): the bot of the posts is an admin there already. The button opens the Mini App
-// of the bot with the mark of the channel, so «Statistika» shows who came from which channel.
+// of the bot with the mark of the channel, so «Statistika» shows who came from which channel. A group
+// of a direction has its own welcome (docs/222).
 const ROLES = ['passenger', 'driver'] as const;
 type Role = (typeof ROLES)[number];
 // A few posts a tick: the Cron run shares its requests with the other jobs (docs/117).
@@ -53,7 +54,7 @@ async function take(db: D1Database, chat: string, role: Role, now: number): Prom
 }
 
 const welcomesOf = (brand: BrandConfig) =>
-  [`@${brand.mainChannel}`, ...brand.channels.map(({ chat }) => chat)].flatMap((chat) =>
+  [`@${brand.mainChannel}`, ...channelsOnly(brand).map(({ chat }) => chat)].flatMap((chat) =>
     ROLES.map((role) => ({ chat, role })),
   );
 

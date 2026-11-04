@@ -40,7 +40,7 @@
     "@stryker-mutator/core": "10.0.0",
     "@stryker-mutator/vitest-runner": "10.0.0",
     "@types/node": "22.20.4",
-    "@vitest/coverage-v8": "5.0.2",
+    "@vitest/coverage-v8": "5.0.3",
     "eslint": "10.11.0",
     "jsdom": "30.1.1",
     "knip": "6.38.0",
@@ -48,16 +48,19 @@
     "pmtiles": "4.5.0",
     "prettier": "3.9.9",
     "typescript": "6.0.3",
-    "vitest": "5.0.2",
+    "vitest": "5.0.3",
     "wrangler": "4.142.0"
   },
   "pnpm": {
     "overrides": {
       "valibot": "1.4.2",
-      "undici@>=7.28.0 <7.29.1": "7.29.1",
+      "undici@>=7.0.0 <7.30.1": "7.30.1",
+      "undici@>=8.0.0 <8.12.2": "8.12.2",
       "source-map-js@<1.2.2": "1.2.2",
       "sharp@<0.35.5": "0.35.5",
-      "qs@<6.16.0": "6.16.0"
+      "qs@<6.16.1": "6.16.1",
+      "minimatch@>=10.0.0 <11.0.1": "11.0.1",
+      "zod@<4.6.6": "4.6.6"
     },
     "patchedDependencies": {
       "@stryker-mutator/vitest-runner@10.0.0": "patches/@stryker-mutator__vitest-runner@10.0.0.patch"

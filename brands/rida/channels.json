@@ -442,13 +442,14 @@
     "page": "/yonalish/toshkent-qarshi/"
   },
   {
-    "chat": "-1004392777443",
+    "chat": "-1004378709535",
     "title": "Kitob, Shahrisabz, Yakkabogʻ",
     "name": "Rida | Kitob | Shahrisabz | Yakkabogʻ",
     "code": "70",
     "places": ["1710232", "1710245", "1710250", "1710405"],
-    "link": "https://t.me/+9VAiZ4eoS3w2YTNi",
-    "page": "/yonalish/toshkent-qarshi/"
+    "link": "https://t.me/yakkabog_toshkent_rida",
+    "page": "/yonalish/toshkent-qarshi/",
+    "group": true
   },
   {
     "chat": "-1003973675378",

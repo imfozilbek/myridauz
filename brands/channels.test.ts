@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import locations from '../apps/backend/seed/locations.json' with { type: 'json' };
-import { channelOf } from './channels';
+import { channelOf, channelsOnly, groupChats } from './channels';
 import { loadBrand } from './index';
 
 const brand = loadBrand();
@@ -8,6 +8,7 @@ const TOSHKENT_SHAHRI = '1726';
 const SAMARQAND_SHAHRI = '1718401';
 const QOQON = '1730405';
 const SHEROBOD = '1722223';
+const YAKKABOG = '1710250';
 
 // 67 channels of directions (docs/176): every district and city outside Toshkent shahri is in one.
 describe('the channels of the brand', () => {
@@ -24,7 +25,20 @@ describe('the channels of the brand', () => {
     for (const key of ['chat', 'title', 'name', 'link'] as const)
       expect(new Set(brand.channels.map((channel) => channel[key])).size).toBe(67);
     expect(brand.channels.every((channel) => /^-100\d+$/u.test(channel.chat))).toBe(true);
-    expect(brand.channels.every((channel) => channel.link.startsWith('https://t.me/+'))).toBe(true);
+    // A private channel has only its invite link; the group of a direction is public (docs/222).
+    const links = brand.channels.map(({ group, link }) =>
+      group ? link.startsWith('https://t.me/') : link.startsWith('https://t.me/+'),
+    );
+    expect(links.every(Boolean)).toBe(true);
+  });
+
+  // Owner, 04.11.2026 (docs/222): Kitob, Shahrisabz and Yakkabogʻ keep their trips in the group of
+  // the direction, not in a channel; the other 66 stay channels.
+  it('keep one direction in a group: the trip posts go there, nothing else', () => {
+    expect([...groupChats(brand)]).toEqual(['-1004378709535']);
+    expect(channelOf(brand, YAKKABOG)?.link).toBe('https://t.me/yakkabog_toshkent_rida');
+    expect(channelsOnly(brand)).toHaveLength(66);
+    expect(channelsOnly(brand).some(({ chat }) => groupChats(brand).has(chat))).toBe(false);
   });
 
   // The name is copied from Telegram (owner 13.10.2026); the title says the same places for the texts.
