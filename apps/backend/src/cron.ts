@@ -3,7 +3,12 @@ import { setupBotsWhenChanged } from './bots/bot-setup-job';
 import { postChannelWelcomes } from './bots/channel-welcome';
 import type { Job } from './cron-jobs';
 import type { Bindings } from './env';
-import { closeDepartedPosts, sendChannelSummaries, showChannelBoards } from './module-events';
+import {
+  closeDepartedPosts,
+  fillDirectionGroups,
+  sendChannelSummaries,
+  showChannelBoards,
+} from './module-events';
 import { checkChannelHealth } from './modules/channels';
 import { keepTelegramLooks } from './modules/looks';
 import { erasePastPoints, expireBookings, settleSeats } from './modules/bookings';
@@ -57,7 +62,8 @@ const everyTick = (env: Bindings, now: number): Job[] => [
   ['refreshWaitlistCards', () => refreshWaitlistCards(env)],
 ];
 
-// Ends subscriptions whose time is over, sends the summaries of the channels (22:00, Monday), burns
+// Ends subscriptions whose time is over, sends the summaries of the channels (22:00, Monday), posts
+// to a group of a direction the open trips it still lacks (docs/222), burns
 // bonuses that are over, asks both sides of ended rides for a rating, checks the signals of the
 // dashboard, erases the points of rides 30 days after the trip, sends the summary of the day to the
 // owner at 21:00, reads a few channels again for «Kanallar», shows each bot without its key in
@@ -66,6 +72,7 @@ const everyTick = (env: Bindings, now: number): Job[] => [
 const everyHour = (env: Bindings, now: number): Job[] => [
   ['endSubscriptions', () => endSubscriptions(env)],
   ['sendChannelSummaries', () => sendChannelSummaries(env)],
+  ['fillDirectionGroups', () => fillDirectionGroups(env)],
   ['burnBonuses', () => burnBonuses(env)],
   ['askForRatings', () => askForRatings(env)],
   ['checkStatsAlerts', () => checkStatsAlerts(env)],

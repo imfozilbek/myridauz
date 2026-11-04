@@ -1,11 +1,13 @@
-import { channelOf, type BrandConfig } from '@platform/brands';
+import { channelOf, groupChats, type BrandConfig } from '@platform/brands';
 import { channelVia, TRIPS_PATH, type Trip } from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
 import { placesOf } from '../locations';
-import { notify, notifyMass } from '../notifications';
+import { notify } from '../notifications';
 import { claimZoneInvite } from '../users';
 import { closeDeparted, closePosts, postTrip, refreshPosts, rememberPost } from './application/channels';
+import { fillGroups } from './application/group-fill';
+import { channelsDeps, postsOf, type TripOf } from './channels-deps';
 import { inviteToZone, tellsHome, type ZoneInviteDeps } from './application/zone-invite';
 import { allChannels } from './application/team';
 import { channelRoutes } from './http/channel-routes';
@@ -19,10 +21,7 @@ export { wireKnownPeople } from './members-deps';
 import { heardDeps, membersOf, myChannelsDeps } from './members-deps';
 import { publicityRoutes } from './http/publicity-routes';
 import { createAppLink, inChannel } from './infrastructure/bot-admin';
-import type { ChannelsDeps } from './application/ports';
 import type { PublicityDeps, TripFacts } from './application/publicity';
-import { createMemoryChannelPosts, d1ChannelPosts } from './infrastructure/channel-posts';
-import { channelPost } from './infrastructure/post-text';
 import { createMemoryTripViews, d1TripViews } from './infrastructure/trip-views';
 import { zoneMessage } from './infrastructure/zone-message';
 import { teamDeps } from './team-deps';
@@ -34,28 +33,8 @@ import { brandOf } from '../../shared/brand/brand-of';
 type ChangeHandler = (env: Bindings, change: ChannelChange) => Promise<void>;
 let onChange: ChangeHandler = teamOnlyFirst(async () => undefined);
 export const wireChannelChanges = (handler: ChangeHandler) => void (onChange = teamOnlyFirst(handler));
-const localPosts = createMemoryChannelPosts();
 const localViews = createMemoryTripViews();
-const postsOf = (env: Bindings) => (env.DB ? d1ChannelPosts(env.DB) : localPosts);
 const viewsOf = (env: Bindings) => (env.DB ? d1TripViews(env.DB) : localViews);
-
-// The trip as the search shows it: set by the app, so channels does not depend on trips (app.ts).
-type TripOf = (env: Bindings, id: string) => Promise<Trip | undefined>;
-
-const channelsDeps = (env: Bindings, tripOf: TripOf): ChannelsDeps => {
-  const brand = brandOf(env);
-  return {
-    // Off until the owner approves the post (docs/33): "on" in brands/<brand>/wrangler.toml.
-    enabled: env.CHANNEL_POSTS === 'on',
-    channels: async () => allChannels(await teamDeps(env)),
-    places: () => placesOf(env),
-    trip: (id) => tripOf(env, id),
-    posts: postsOf(env),
-    render: channelPost(brand.bots.passenger),
-    send: (jobs) => notifyMass(env, jobs),
-    now: () => Date.now(),
-  };
-};
 
 export { channelBoards } from './boards';
 
@@ -69,6 +48,9 @@ export const channels = (tripOf: TripOf) => ({
   departed: (env: Bindings) => closeDeparted(channelsDeps(env, tripOf)),
   // «Yoʻlga chiqdim» of the driver: the posts of the trip stop offering seats at once (G63).
   left: (env: Bindings, tripId: string) => closePosts(channelsDeps(env, tripOf), tripId),
+  // The hourly Cron: a group of a direction gets the open trips it still lacks (docs/222).
+  fill: (env: Bindings, tripsOf: (date: string) => Promise<readonly Trip[]>) =>
+    fillGroups({ ...channelsDeps(env, tripOf), groups: groupChats(brandOf(env)), tripsOf }),
 });
 
 // The team's channels in the admin Mini App (docs/63) and «Kanallar» of a person (G65, docs/119).
