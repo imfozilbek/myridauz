@@ -10,7 +10,7 @@
     "@platform/contracts": "workspace:*",
     "@platform/i18n": "workspace:*",
     "hono": "4.13.11",
-    "zod": "4.6.5"
+    "zod": "4.6.6"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "5.20260928.1",
