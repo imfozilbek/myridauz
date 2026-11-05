@@ -10,6 +10,7 @@ export type {
   BrandConfig,
   CommissionRule,
   EnvironmentName,
+  GroupCards,
   HexColor,
   PromoRule,
 } from './brand-config';

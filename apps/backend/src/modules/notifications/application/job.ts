@@ -13,6 +13,9 @@ type ChannelPostSent = {
   readonly shown: string;
 };
 
+// The post of a passenger's request in a direction group (docs/223): deleted when the request closes.
+type RequestPostSent = { readonly type: 'requestPost'; readonly requestId: string; readonly chat: string };
+
 // A live card of a person (G68, docs/122 rule 1): its id is kept to edit it, pin it and answer it.
 export type CardSent = {
   readonly type: 'card';
@@ -35,7 +38,7 @@ export type NotificationJob = {
   // Set: the message with this id is edited instead of a new one sent (docs/15, G68).
   readonly edit?: number;
   readonly markup?: object;
-  readonly after?: ChannelPostSent | CardSent;
+  readonly after?: ChannelPostSent | RequestPostSent | CardSent;
   // No sound: a card update, the night, the road (G68, docs/122 rules 2, 3).
   readonly silent?: boolean;
   // The message this one answers: a short news under its live card (docs/122 rule 1).
@@ -56,4 +59,8 @@ export type TimedTask = {
 };
 export type QueueMessage = NotificationJob | TimedTask;
 
-export type AfterSentHandler<Env> = (env: Env, after: ChannelPostSent, messageId: number) => Promise<void>;
+export type AfterSentHandler<Env> = (
+  env: Env,
+  after: ChannelPostSent | RequestPostSent,
+  messageId: number,
+) => Promise<void>;

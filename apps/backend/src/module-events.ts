@@ -1,6 +1,7 @@
 import { NO_RATING } from '@platform/contracts';
-// «Navbat» of the team, wired apart (G68).
+// «Navbat» of the team, wired apart (G68); the requests of passengers too (docs/223).
 import './team-queue-wiring';
+import './request-events';
 import {
   cancelAllOf,
   chatRing,
@@ -13,8 +14,6 @@ import {
   rideTogetherOf,
   ridesOfTrips,
   ridingOf,
-  tellRequest,
-  tellRequestClosed,
   walletBookingsOf,
 } from './modules/bookings';
 import { wireChatRings } from './modules/chat';
@@ -23,14 +22,8 @@ import { assignTo } from './modules/assignments';
 import { inviteFromMark, tripViewCounts } from './modules/channels';
 import { appliedAsDriver, approvedCar, wireLiveTrips } from './modules/drivers';
 import { wireFavorites } from './modules/favorites';
-import {
-  handleRequestChanged,
-  handleRequestPublished,
-  requestViewOf,
-  wireHiddenRequesters,
-} from './modules/ride-requests';
+import { wireHiddenRequesters } from './modules/ride-requests';
 import { wireRealPrices } from './modules/pricing';
-import { requestPublished } from './modules/route-subscriptions';
 import { ratingsOfPeople, wireRatings } from './modules/ratings';
 import {
   driverTripIds,
@@ -59,7 +52,6 @@ export {
   sendChannelSummaries,
   showChannelBoards,
 } from './trip-events';
-import { inNews } from './trip-events';
 
 // A new face goes to the member who gets the person's application that day (docs/92, G51); a new
 // person who came by a channel post hears of the channel of that zone (docs/119).
@@ -94,16 +86,6 @@ wireFavorites({
   },
   upcoming: upcomingTripsOf,
 });
-
-// A published request reaches subscribed drivers (docs/24).
-handleRequestPublished(async (env, requestId) => {
-  // Its own card waits quietly on top of the passenger bot (G68, docs/122).
-  await tellRequest(env, requestId);
-  const request = await requestViewOf(env, requestId);
-  if (request && (await inNews(env, request.passenger.id))) await requestPublished(env, request);
-});
-// A request cancelled or burned: its card says so (G68), the drivers who offered hear it (G75).
-handleRequestChanged(tellRequestClosed);
 
 // The ratings ask about rides of ended trips and show first names only (docs/24); a passenger
 // who did not come is neither rated nor rates (docs/129, G63).

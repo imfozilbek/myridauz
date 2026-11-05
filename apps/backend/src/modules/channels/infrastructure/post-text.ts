@@ -5,6 +5,8 @@ import { serviceValue, withValue } from '../../../shared/share/value-lines';
 import { bold, escapeHtml as escape, quote } from '../../../shared/telegram/html';
 import { shareLink } from '../../../shared/telegram/share-link';
 import { postState, regionOf } from '../domain/route-channels';
+import { inScript, type GroupLook } from './group-look';
+import { groupTripPost } from './group-trip';
 import { lifePost, type Post } from './post-life';
 import { hashtagOf, whenLine } from './post-parts';
 
@@ -75,13 +77,18 @@ function openPost(trip: Trip, places: Places, now: number, book: string): Post {
 }
 
 // The channel post of a trip (docs/15, G68): url buttons only, web_app buttons do not work in
-// channels. Every link carries the mark of its channel (G55, docs/116).
+// channels. Every link carries the mark of its channel (G55, docs/116). A direction group with a
+// look of its own gets the trip as its own cards are (docs/223), its later states in its script.
 export const channelPost =
-  (passengerBot: string) =>
+  (passengerBot: string, group?: GroupLook) =>
   (trip: Trip, places: Places, now: number, channel: string): Post => {
     const state = postState(trip, now);
     const via = channelVia(channel);
-    if (state === 'open' || state === 'lastSeat')
-      return openPost(trip, places, now, tripBookLink(passengerBot, trip.id, via));
-    return lifePost(state, trip, places, now, routeFindLink(passengerBot, trip.from, trip.to, via));
+    const look = group?.chats.has(channel) ? group : undefined;
+    if (state === 'open' || state === 'lastSeat') {
+      const book = tripBookLink(passengerBot, trip.id, via);
+      return look ? groupTripPost(look, trip, places, now, book) : openPost(trip, places, now, book);
+    }
+    const post = lifePost(state, trip, places, now, routeFindLink(passengerBot, trip.from, trip.to, via));
+    return look ? inScript(look.cards, post, [trip.driver.car.model]) : post;
   };

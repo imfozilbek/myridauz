@@ -3,6 +3,8 @@ import bookings from '../locales/uz-Latn/bookings.json' with { type: 'json' };
 import bot from '../locales/uz-Latn/bot.json' with { type: 'json' };
 import botChannel from '../locales/uz-Latn/bot-channel.json' with { type: 'json' };
 import botCard from '../locales/uz-Latn/bot-card.json' with { type: 'json' };
+// The cards of a direction group, in its own look (G94, docs/223).
+import botGroup from '../locales/uz-Latn/bot-group.json' with { type: 'json' };
 import botDriver from '../locales/uz-Latn/bot-driver.json' with { type: 'json' };
 import botTeam from '../locales/uz-Latn/bot-team.json' with { type: 'json' };
 // The main bot of the waitlist (G83, docs/182).
@@ -56,7 +58,7 @@ const REFERENCE = {
   account,
   bookings,
   // One namespace in files of at most 150 lines (docs/11): the channel posts and the cards apart.
-  bot: { ...bot, ...botChannel, ...botCard, ...botDriver, ...botTeam, ...botMain },
+  bot: { ...bot, ...botChannel, ...botCard, ...botGroup, ...botDriver, ...botTeam, ...botMain },
   calls,
   comfort,
   channels,
