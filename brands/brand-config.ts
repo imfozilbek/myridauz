@@ -1,9 +1,9 @@
 // Everything that differs between brands (docs/22). Code reads brands only through these types.
-import type { BrandChannel } from './brand-channel';
+import type { BrandChannel, GroupCards } from './brand-channel';
 import type { AppName, BrandColors, BrandTheme } from './brand-theme';
 import type { PeopleRules } from './people-rules';
 
-export type { BrandChannel } from './brand-channel';
+export type { BrandChannel, GroupCards } from './brand-channel';
 export type { AppName, BrandColors, BrandTheme, HexColor } from './brand-theme';
 
 // How the recommended price is counted (docs/23): one strategy today.
@@ -111,6 +111,8 @@ export type BrandConfig = PeopleRules & {
   readonly teamOnly: BotNames | null;
   // Telegram channels of the directions (docs/15, docs/176): a trip goes to the channels of each end.
   readonly channels: readonly BrandChannel[];
+  // The look of the cards in a direction group (docs/223); none: a group gets the channel post.
+  readonly groupCards?: GroupCards;
   // The public main channel, without "@": a guide to every channel of the directions (docs/176).
   readonly mainChannel: string;
   // New trips go to the channels (docs/15): the deploy sets CHANNEL_POSTS of the Worker by it (docs/179).

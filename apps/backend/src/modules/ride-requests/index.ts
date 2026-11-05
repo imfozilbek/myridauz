@@ -29,6 +29,9 @@ export const handleRequestPublished = (handler: Published) => void (onPublished 
 // A request cancelled or burned: its card in the passenger bot says so (G68), set by the app too.
 let onChanged: Published = async () => undefined;
 export const handleRequestChanged = (handler: Published) => void (onChanged = handler);
+// A request matched by an accepted offer: its post in a direction group goes (docs/223).
+let onMatched: Published = async () => undefined;
+export const handleRequestMatched = (handler: Published) => void (onMatched = handler);
 // People hidden by complaints (docs/17): set by the app, the complaints module knows them.
 type Hidden = (env: Bindings, userIds: readonly number[]) => Promise<ReadonlySet<number>>;
 let hiddenOf: Hidden = async () => new Set();
@@ -119,8 +122,10 @@ export const passengerRequestFacts = async (env: Bindings, passengerId: number) 
 export const markMatched = async (env: Bindings, id: string) => {
   const { requests } = requestsDeps(env);
   const request = await requests.find(id);
+  if (!request) return;
   // The booking of the accepted offer took the points over (docs/69).
-  if (request) await requests.save(withoutPoints({ ...request, status: 'matched' }));
+  await requests.save(withoutPoints({ ...request, status: 'matched' }));
+  await onMatched(env, id);
 };
 
 // "Maʼlumotlarimni oʻchirish" (docs/30): the points of the person's requests go at once.

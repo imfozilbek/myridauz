@@ -1,0 +1,23 @@
+{
+  "group.empty": "🚗 BOʻSH {car} · {place}{end, select, k {ka} q {qa} other {ga}}",
+  "group.takes": "🚗 OLIB KETAMAN · {place}{end, select, k {ka} q {qa} other {ga}}",
+  "group.checked": "✅ Tekshirilgan · {rating}",
+  "group.from": "📍 {place}dan ({region}), {pickup}",
+  "group.fromAlone": "📍 {place}dan, {pickup}",
+  "group.door": "uyingizdan",
+  "group.pitak": "{pitak}dan",
+  "group.both": "{pitak}dan yoki uyingizdan",
+  "group.to": "🏁 {place}{end, select, k {kacha} q {qacha} other {gacha}}, uyingizgacha",
+  "group.when": "🕒 {day} {time} da yoʻlga chiqadi, ≈ {arrive} da yetadi",
+  "group.whenRange": "🕒 {day} {time} da yoʻlga chiqadi",
+  "group.seats": "💺 {seats} ta boʻsh joy · 💰 {price}",
+  "group.lastSeat": "🔥 1 ta joy qoldi · 💰 {price}",
+  "group.book": "💺 Joy band qilish",
+  "group.need": "🙋 MASHINA KERAK · {place}dan",
+  "group.needEmpty": "🙋 BOʻSH MASHINA KERAK · {place}dan",
+  "group.going": "🏁 {place}{end, select, k {ka} q {qa} other {ga}} ketaman",
+  "group.day": "🕒 {day}",
+  "group.people": "🧍 {people} kishi · 💰 {price}",
+  "group.take": "🚘 Yoʻlovchini olish",
+  "group.closed": "✅ Yoʻlovchi soʻrovi yopildi"
+}

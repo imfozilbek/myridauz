@@ -72,7 +72,7 @@ export async function deliverNow(env: Bindings, job: NotificationJob): Promise<D
     await cardSent(cardsOf(env), opsOf(env), sent, { after: card, messageId, replaced }, Date.now()).catch(
       warned('card_sent_failed'),
     );
-  else if (sent.after?.type === 'channelPost' && delivery.messageId !== null)
+  else if (sent.after && sent.after.type !== 'card' && delivery.messageId !== null)
     await afterSent(env, sent.after, delivery.messageId).catch(warned('post_sent_failed'));
   return delivery;
 }

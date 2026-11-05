@@ -9,7 +9,7 @@ const { t, formatDate, formatTime } = createI18n(DEFAULT_LOCALE);
 // The pieces of the channel posts (G68, docs/122, mockup g68/5).
 
 // «Bugun», «Ertaga, 8-oktabr», later «10-oktabr».
-function dayLabel(at: number, now: number): string {
+export function dayLabel(at: number, now: number): string {
   const day = tashkentDate(at);
   if (day === tashkentDate(now)) return t('market.day.today');
   const date = formatDate(new Date(at));

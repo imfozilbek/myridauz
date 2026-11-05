@@ -37,6 +37,7 @@ const localViews = createMemoryTripViews();
 const viewsOf = (env: Bindings) => (env.DB ? d1TripViews(env.DB) : localViews);
 
 export { channelBoards } from './boards';
+export { requestGroups } from './request-deps';
 
 // Channel posts of trips (docs/15): a new trip is posted, a changed trip edits its posts.
 export const channels = (tripOf: TripOf) => ({

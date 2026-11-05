@@ -6,14 +6,14 @@ import {
   tellTripPassengers,
 } from './modules/bookings';
 import { channelBoards, channels } from './modules/channels';
-import { hiddenByComplaints } from './modules/complaints';
-import { peopleOf } from './modules/users';
 import { tellFavoriteFans } from './modules/favorites';
 import { handleAfterSent } from './modules/notifications';
 import { tripCheaper, tripPublished } from './modules/route-subscriptions';
 import { tellTripFamily, tellTripFamilyRetimed } from './modules/shares';
 import { handleTripChange, tripForFamily, tripsOfDate, tripViewsOf } from './modules/trips';
 import type { Bindings } from './env';
+import { inNews } from './news-gate';
+import { requestGroups } from './request-events';
 
 // What follows a change of a trip in the other modules (module-events.ts sets the rest).
 const tripOf = async (env: Bindings, id: string) => (await tripViewsOf(env, [id]))[0];
@@ -70,13 +70,6 @@ handleTripChange(async (env, tripId, event) => {
     await tripCheaper(env, trip);
 });
 
-// A person hidden from search by complaints is in no news either: subscribers and fans hear nothing
-// of them until the moderator decides (docs/17, G89 B15).
-export async function inNews(env: Bindings, publicId: string): Promise<boolean> {
-  const userId = await peopleOf(env).idOf(publicId);
-  return userId !== undefined && !(await hiddenByComplaints(env, [userId])).has(userId);
-}
-
 // The Cron job: channel posts of trips that left say so (docs/15); the boards of the day follow the
 // clock too (G68, docs/122).
 export const closeDepartedPosts = (env: Bindings) => tripChannels.departed(env);
@@ -86,5 +79,10 @@ export const sendChannelSummaries = (env: Bindings) => boards.summaries(env);
 export const fillDirectionGroups = (env: Bindings) =>
   tripChannels.fill(env, (date) => tripsOfDate(env, date));
 
-// Once Telegram gave a message its id: a channel post is remembered to be edited later (docs/15).
-handleAfterSent((env, after, messageId) => tripChannels.remember(env, after, messageId));
+// Once Telegram gave a message its id: a channel post is remembered to be edited later (docs/15), the
+// post of a request in a group to be deleted (docs/223).
+handleAfterSent((env, after, messageId) =>
+  after.type === 'requestPost'
+    ? requestGroups.remember(env, after, messageId)
+    : tripChannels.remember(env, after, messageId),
+);

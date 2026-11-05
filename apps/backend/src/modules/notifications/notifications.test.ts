@@ -101,7 +101,9 @@ describe('bot messages through the queue (docs/03)', () => {
 
   it('remembers a channel post once it is sent, and reaches the whole team', async () => {
     const remembered: string[] = [];
-    handleAfterSent(async (_env, after, messageId) => void remembered.push(`${after.tripId} ${messageId}`));
+    handleAfterSent(async (_env, after, messageId) => {
+      if (after.type === 'channelPost') remembered.push(`${after.tripId} ${messageId}`);
+    });
     const chats: unknown[] = [];
     vi.stubGlobal('fetch', async (_input: string, init?: RequestInit) => {
       chats.push((JSON.parse(String(init?.body)) as { chat_id: number }).chat_id);
