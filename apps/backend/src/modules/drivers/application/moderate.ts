@@ -90,8 +90,8 @@ export async function decideApplication(
   if (!application) return { ok: false, error: 'drivers.not_found' };
   // «Rad etish» is the last word for a new application only: a driver approved once gets «Tuzatish»
   // or a block (owner decision 20.10.2026, G91 DRV-2).
-  if (decision.action === 'reject' && (await approvedOnce(deps, userId)))
-    return { ok: false, error: 'drivers.wrong_status' };
+  const before = await approvedOnce(deps, userId);
+  if (decision.action === 'reject' && before) return { ok: false, error: 'drivers.wrong_status' };
   const next = decide(application, decision, moderatorId, deps.now());
   if (typeof next === 'string') return { ok: false, error: next };
   if (!(await deps.applications.decide(next, application)))
@@ -100,9 +100,12 @@ export async function decideApplication(
   const car = next.status === 'approved' ? next.car : null;
   await deps.decisions.add({ userId, status: next.status, reasons, by: moderatorId, at: deps.now(), car });
   if (next.status === 'approved') await deps.people.approveFace(userId);
-  // A fix asked of an approved driver keeps the driver: the live trips and his face go on (G95, G91
-  // DRV-1); new trips wait for the approval of the car (approvedCar).
-  if (application.status === 'pending') await deps.people.setDriver(userId, next.status === 'approved');
+  // An approved car makes the driver. A driver approved once keeps the flag through a new check: the
+  // live trips and his face go on (G95, G91 DRV-1); new trips wait for the approval (approvedCar).
+  if (next.status === 'approved') await deps.people.setDriver(userId, true);
+  else if (!before) await deps.people.setDriver(userId, false);
+  // A car approved again reaches the live trips and the waiting offers: a fix asked while they went on.
+  if (next.status === 'approved' && before && next.car) await deps.carFixed(userId, next.car);
   const bonus = next.status === 'approved' ? await deps.driverApproved(userId) : null;
   const fixedPlate = next.car?.plate !== application.car?.plate ? (next.car?.plate ?? null) : null;
   await deps.notify.decided(next, fixedPlate, bonus);

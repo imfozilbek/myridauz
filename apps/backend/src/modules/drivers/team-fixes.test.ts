@@ -73,6 +73,23 @@ describe('«Tuzatishga qaytarish» of an approved driver', () => {
     expect(reject).toEqual({ ok: false, error: 'drivers.wrong_status' });
   });
 
+  // The check of a fixed photo: «Tuzatish» again never drops the driver of a live trip; the car
+  // approved again reaches the live trips.
+  it('keeps the driver through the new check and gives the trips the car approved again', async () => {
+    const { deps, drivers, log, onTrip } = await approved();
+    onTrip();
+    await decideApplication(deps, MODERATOR, 1, {
+      action: 'request_changes',
+      reasons: ['plate_not_readable'],
+    });
+    await submitApplication(deps, 1, SEEN);
+    await decideApplication(deps, MODERATOR, 1, { action: 'request_changes', reasons: ['front_unclear'] });
+    expect(drivers.has(1)).toBe(true);
+    await submitApplication(deps, 1, SEEN);
+    await decideApplication(deps, MODERATOR, 1, { action: 'approve' });
+    expect(log).toContain('trips:1:01A777BC');
+  });
+
   it('never approves an approved application twice', async () => {
     const { deps } = await approved();
     expect(await decideApplication(deps, MODERATOR, 1, { action: 'approve' })).toEqual({

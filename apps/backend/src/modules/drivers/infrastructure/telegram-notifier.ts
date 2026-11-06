@@ -71,8 +71,17 @@ function approvedParts(brand: BrandConfig) {
 
 export function telegramNotifier(wiring: Wiring): ModerationNotifier {
   const { brand, show } = wiring;
+  // The card of an approved driver keeps «Kanalga oʻtish» and «Safar eʼlon qilish» (G95).
   const notice = (application: Application, text: string) => {
-    const card = applicationCard({ brand, application, fixedPlate: null, details: [text] });
+    const approved = application.status === 'approved' ? approvedParts(brand) : null;
+    const details = [text];
+    const card = applicationCard({
+      brand,
+      application,
+      fixedPlate: null,
+      details,
+      ...(approved ? { buttons: approved.buttons } : {}),
+    });
     return quietly(show([card], noticeRing(application, text, isQuietTime(Date.now()))));
   };
   return {

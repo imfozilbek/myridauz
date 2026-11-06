@@ -1,4 +1,4 @@
-import type { Car } from '@platform/contracts';
+import { onTheWay, type Car } from '@platform/contracts';
 import { isLive } from '../domain/trip';
 import type { TripsDeps } from './ports';
 
@@ -9,7 +9,7 @@ export async function fixLiveCar(deps: TripsDeps, driverId: number, car: Car): P
   const now = deps.now();
   const kept = { make: car.make, model: car.model, color: car.color, plate: car.plate };
   for (const trip of await deps.trips.byDriver(driverId)) {
-    if (!isLive(trip, now) || trip.departedAt !== null) continue;
-    if (await deps.trips.save({ ...trip, car: kept })) await deps.changed(trip.id, 'updated');
+    if (!isLive(trip, now) || onTheWay(trip, now)) continue;
+    if (await deps.trips.fixCar(trip.id, kept, now)) await deps.changed(trip.id, 'updated');
   }
 }

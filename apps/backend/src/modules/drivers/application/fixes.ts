@@ -20,13 +20,17 @@ type FixError = 'drivers.not_found' | 'drivers.wrong_status';
 export async function myDecisions(deps: DriversDeps, memberId: number): Promise<MyDecision[]> {
   const since = deps.now() - MY_DECISIONS_DAYS * DAY_MS;
   const entries = await deps.decisions.by(memberId, since);
+  // One person and one application per driver, however many decisions were his (D1 reads, docs/117).
+  const drivers = new Map(
+    [...new Set(entries.map((entry) => entry.userId))].map((userId) => [
+      userId,
+      Promise.all([deps.people.find(userId), deps.applications.find(userId)]),
+    ]),
+  );
   const shown = await Promise.all(
     entries.map(async (entry): Promise<MyDecision | null> => {
       const status = oneOf(DECIDED_STATUSES, entry.status);
-      const [person, application] = await Promise.all([
-        deps.people.find(entry.userId),
-        deps.applications.find(entry.userId),
-      ]);
+      const [person, application] = (await drivers.get(entry.userId)) ?? [];
       const plate = entry.car?.plate ?? application?.car?.plate;
       if (!status || !person || !plate) return null;
       return { userId: person.publicId, firstName: person.firstName, status, plate, at: entry.at };

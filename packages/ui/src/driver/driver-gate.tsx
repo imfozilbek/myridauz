@@ -5,6 +5,7 @@ import { useFeedChange } from '../feed/feed-context';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { KeptBehind } from '../telegram/kept-behind';
+import { plainLaunch } from '../telegram/launch-param';
 import { ApplicationFlow } from './application-flow';
 import { DriverContext, type Driver } from './driver-context';
 import { StatusScreen } from './status-screen';
@@ -49,7 +50,9 @@ function Gate({ children }: { readonly children: ReactNode }) {
     drivers.getApplication().then(
       (application) => {
         setLoaded({ application });
-        if (application?.status === 'changes_requested') setEditing('self');
+        // A fix asked opens at once (G62); a link of a bot opens its own screen first: a live trip
+        // goes on while the team waits for the fix (G95).
+        if (application?.status === 'changes_requested' && plainLaunch()) setEditing('self');
       },
       () => setFailed(true),
     );

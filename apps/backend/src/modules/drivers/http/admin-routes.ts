@@ -61,12 +61,16 @@ export function adminRoutes(deps: (env: Bindings) => DriversDeps) {
         const decision = decisionSchema.safeParse(await context.req.json().catch(() => null));
         if (!decision.success) return fail(context, 'drivers.invalid_input');
         const moderator = context.get('session').user.id;
+        const env = deps(context.env);
         const userId = await userOf(context);
-        const result = await decideApplication(deps(context.env), moderator, userId, decision.data);
+        // A case of «Navbat» waited since it was sent; «Tuzatishga qaytarish» of an approved one did
+        // not wait: the numbers of the day never count it (G95).
+        const waited = (await env.applications.find(userId))?.status === 'pending';
+        const result = await decideApplication(env, moderator, userId, decision.data);
         if (!result.ok) return fail(context, result.error);
-        const { submittedAt } = result.value;
+        const since = waited ? result.value.submittedAt : null;
         const subject = context.req.param('id') ?? '';
-        const action = { memberId: moderator, kind: 'application' as const, subject, since: submittedAt };
+        const action = { memberId: moderator, kind: 'application' as const, subject, since };
         await recordAction(context.env, { ...action, action: decision.data.action });
         return context.json(result.value);
       })
