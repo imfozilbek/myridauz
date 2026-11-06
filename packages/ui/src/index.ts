@@ -17,6 +17,7 @@ export {
   ADS_SECTION,
   CHANNELS_SECTION,
   MANAGEMENT_SECTION,
+  MY_DECISIONS_SECTION,
   NAVBAT_SECTION,
   PEOPLE_SECTION,
   STATS_SECTION,
@@ -26,6 +27,7 @@ export {
 export { TeamWalletsScreen } from './wallet/team-wallets-screen';
 export { AdLinksScreen } from './waitlist/team/ad-links-screen';
 export { PeopleScreen } from './manage/people-screen';
+export { MyDecisionsScreen } from './navbat/my-decisions-screen';
 export { NavbatScreen } from './navbat/navbat-screen';
 export { linkedCase } from './navbat/linked-case';
 export { linkedPerson } from './manage/linked-person';

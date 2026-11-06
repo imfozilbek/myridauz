@@ -2,6 +2,9 @@ import {
   ADMIN_APPLICATIONS_PATH,
   ADMIN_FACES_PATH,
   ADMIN_ME_PATH,
+  ADMIN_MY_DECISIONS_PATH,
+  adminCarFixPath,
+  adminReopenPath,
   adminFaceDecisionPath,
   adminFacePhotoPath,
   adminTelegramPath,
@@ -15,16 +18,19 @@ import {
   applicationQueueSchema,
   applicationSummarySchema,
   blockJournalSchema,
+  myDecisionsSchema,
   faceQueueSchema,
   telegramAccountSchema,
   type ApplicationDetail,
   type ApplicationSummary,
   type BlockJournal,
   type BlockInput,
+  type CarInput,
   type CarPhotoKind,
   type DecisionInput,
   type FaceDecision,
   type FaceSummary,
+  type MyDecision,
   type PersonId,
   teamMeSchema,
   type TeamMe,
@@ -63,6 +69,14 @@ export function createModerationClient(options: SignedOptions) {
       telegramAccountSchema.parse(await (await request(adminTelegramPath(userId))).json()),
     decideFace: async (userId: PersonId, decision: FaceDecision): Promise<void> => {
       await post(adminFaceDecisionPath(userId), decision);
+    },
+    // «Mening qarorlarim», «Mashinani tuzatish» and «Rad etishni bekor qilish» (G95, docs/224).
+    myDecisions: async (): Promise<MyDecision[]> =>
+      myDecisionsSchema.parse(await (await request(ADMIN_MY_DECISIONS_PATH)).json()).decisions,
+    fixCar: async (userId: PersonId, car: CarInput): Promise<ApplicationSummary> =>
+      applicationSummarySchema.parse(await (await post(adminCarFixPath(userId), car)).json()),
+    reopen: async (userId: PersonId): Promise<void> => {
+      await post(adminReopenPath(userId), {});
     },
   };
 }

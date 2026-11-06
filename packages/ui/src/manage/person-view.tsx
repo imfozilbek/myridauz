@@ -4,6 +4,7 @@ import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { BlockJournal } from '../moderation/block-journal';
 import { BlockSheet } from '../moderation/block-sheet';
+import { DecidedCase } from '../navbat/decided-case';
 import { ActionFailure } from '../states/action-failure';
 import { useFailure } from '../states/use-failure';
 import { MainButton } from '../telegram/bottom-button';
@@ -25,6 +26,8 @@ export function PersonView({ card, onBack, onChanged }: ViewProps) {
   const [blocking, setBlocking] = useState(false);
   // The wallet of a driver opens right from the card (G79 К5).
   const [wallet, setWallet] = useState(false);
+  // The car row opens the application: the owner fixes a car the team approved by mistake (G95).
+  const [application, setApplication] = useState(false);
   const { failure, fail, clear } = useFailure();
   const block = async (days: BlockInput['days']) => {
     clear();
@@ -37,6 +40,7 @@ export function PersonView({ card, onBack, onChanged }: ViewProps) {
     }
     setBlocking(false);
   };
+  if (application) return <DecidedCase id={card.id} onBack={() => setApplication(false)} />;
   if (wallet)
     return (
       <DriverWallet
@@ -80,7 +84,12 @@ export function PersonView({ card, onBack, onChanged }: ViewProps) {
         />
         {car ? (
           <>
-            <ManageRow icon="carSide" title={`${car.make} ${car.model}`} value={formatPlate(car.plate)} />
+            <ManageRow
+              icon="carSide"
+              title={`${car.make} ${car.model}`}
+              value={formatPlate(car.plate)}
+              onClick={() => setApplication(true)}
+            />
             <ManageRow icon="wallet" title={t('wallet.title')} onClick={() => setWallet(true)} />
           </>
         ) : null}

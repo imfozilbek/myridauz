@@ -135,3 +135,9 @@
 .case-row-plate {
   min-height: 44px;
 }
+
+/* Why the team said no, under its decision in «Oldingi qarorlar» (G95). */
+.case-reason {
+  display: block;
+  font-size: 12.5px;
+}

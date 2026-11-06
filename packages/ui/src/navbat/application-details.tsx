@@ -54,7 +54,15 @@ export function ApplicationDetails({ detail }: { readonly detail: ApplicationDet
         <div className="case-card" role="group" aria-label={t('moderation.history.title')}>
           {detail.history.map((entry) => (
             <div key={entry.at} className="case-row">
-              <span>{t(`moderation.history.${entry.status}`)}</span>
+              <span>
+                {t(`moderation.history.${entry.status}`)}
+                {/* Why the team said no, for the one who fixes the decision (G95). */}
+                {entry.reasons.map((reason) => (
+                  <small key={reason} className="case-muted case-reason">
+                    {t(`drivers.reason.${reason}`)}
+                  </small>
+                ))}
+              </span>
               <span className="case-muted">{formatDate(new Date(entry.at))}</span>
             </div>
           ))}

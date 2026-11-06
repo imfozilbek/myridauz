@@ -7,6 +7,8 @@ import {
   linkedStats,
   MANAGEMENT_SECTION,
   ManagementScreen,
+  MY_DECISIONS_SECTION,
+  MyDecisionsScreen,
   NAVBAT_SECTION,
   NavbatScreen,
   PEOPLE_SECTION,
@@ -34,6 +36,14 @@ const SECTIONS: readonly StartAction[] = [
     labelKey: 'team.section.navbat',
     hintKey: 'team.empty',
     Screen: NavbatScreen,
+  },
+  {
+    id: MY_DECISIONS_SECTION,
+    icon: 'history',
+    tone: 'brand',
+    labelKey: 'moderation.mine.title',
+    hintKey: 'moderation.mine.title',
+    Screen: MyDecisionsScreen,
   },
   {
     id: PEOPLE_SECTION,

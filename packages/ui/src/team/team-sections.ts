@@ -11,3 +11,5 @@ export const CHANNELS_SECTION = 'channels';
 export const WALLETS_SECTION = 'wallets';
 // «Reklama havolalari»: the whole team makes the links of the ads (owner, 17.10.2026, docs/184).
 export const ADS_SECTION = 'ads';
+// «Mening qarorlarim»: «bugun qildingiz» of a moderator opens the own decisions (G95, docs/224).
+export const MY_DECISIONS_SECTION = 'decisions';

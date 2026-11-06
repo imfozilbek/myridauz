@@ -84,6 +84,8 @@ export {
   type TeamMe,
   type TeamRole,
 } from './moderation';
+// The team fixes its own decisions about driver applications (G95).
+export * from './team-fixes';
 export { HEALTH_PATH, healthResponseSchema, type HealthResponse } from './health';
 export * from './users';
 // The market of G07 and G08: prices, trips, requests, bookings, offers, the wallet, Tashkent time.
