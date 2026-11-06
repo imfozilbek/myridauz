@@ -77,6 +77,7 @@
 | поддержка | `@myrida_support_bot` | `@rida1uz_yordam_bot` | `SUPPORT_BOT_TOKEN` |
 | главный | `@myridauz_bot` | `@ridauz_bot` | `MAIN_BOT_TOKEN` |
 | каналы | `@myrida_poster_bot` | `@rida1uz_poster_bot` | `POSTER_BOT_TOKEN` |
+| бот группы направления (по желанию, только отправка, без webhook) | нет | `@elonchi_rida_bot` | `GROUP_BOT_TOKEN` (`223`) |
 
 - Ключ бота: BotFather → `/mybots` → бот → API Token → Copy. В Worker: Workers & Pages → `rida-backend` → Settings → Variables and Secrets → Add → Type: Secret → Deploy. Кладёт только владелец (`32`).
 - Ключа нет: бот молчит без единой ошибки (урок №331). Поэтому Cron раз в час пишет в «Statistika → Xatolar» ошибку `no_key` у каждого бота без ключа; у бота каналов только при включённых постах (`bots/bot-keys.ts`). Проверить без ключей: вебхук `api.<домен>/telegram/<бот>` отвечает 404 без ключа, 401 с ключом.

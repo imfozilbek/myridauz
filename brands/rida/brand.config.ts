@@ -15,7 +15,18 @@ export const brandConfig: BrandBase = {
   regionPhotos: true,
   welcomes,
   // docs/223 (owner, 05.11.2026: «Да, кириллица, Premium есть»): the R tiles «Mini App» of the set «Rida R».
-  groupCards: { cyrillic: true, marks: { trip: '5431649147008624716', request: '5434101246917126614' } },
+  groupCards: {
+    cyrillic: true,
+    marks: { trip: '5431649147008624716', request: '5434101246917126614' },
+    // The turquoise tiles of the group's own request cards (set «Rida», docs/223).
+    tiles: {
+      hand: '5400324550359557059',
+      finish: '5400349061737915818',
+      clock: '5402297104284558255',
+      people: '5402539190116197105',
+      money: '5400038020206344003',
+    },
+  },
   pricing: 'per-km',
   // docs/29: 3 times the usual hour and at least 10 errors; a step 20 points worse than the week
   // from at least 20 people; the same signal once in 6 hours.

@@ -58,7 +58,7 @@ describe('the cards of the Mini App in the direction group (G94, docs/223)', () 
     const request = await read<{ id: string }>(Promise.resolve(response));
     const [post] = inGroup();
     expect(post?.method).toBe('sendMessage');
-    expect(head(post)).toContain('🙋 МАШИНА КЕРАК · ');
+    expect(head(post)).toContain('🙋</tg-emoji> <b>МАШИНА КЕРАК</b> · ');
     expect(head(post)).toContain(`emoji-id="${brand.groupCards?.marks.request}"`);
     expect(post?.body.disable_notification).toBe(true);
     await call(`/passenger/requests/${request.id}/cancel`, PASSENGER, { method: 'POST' });

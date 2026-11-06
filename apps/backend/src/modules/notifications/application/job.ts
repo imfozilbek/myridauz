@@ -1,7 +1,8 @@
 // One bot message waiting in the queue (docs/03, docs/07). The text is ready: the queue only sends.
 // The poster is the bot of the channels: no Mini App, no people write to it (docs/176).
-// main: the bot of the waitlist (G83, docs/181).
-type BotName = 'passenger' | 'driver' | 'admin' | 'poster' | 'main';
+// main: the bot of the waitlist (G83, docs/181). group: the bot of the direction group, it only sends
+// the posts of requests there (docs/223).
+type BotName = 'passenger' | 'driver' | 'admin' | 'poster' | 'main' | 'group';
 
 // Something to remember once Telegram gave the message its id: a channel post is edited later
 // (docs/15).
@@ -13,8 +14,14 @@ type ChannelPostSent = {
   readonly shown: string;
 };
 
-// The post of a passenger's request in a direction group (docs/223): deleted when the request closes.
-type RequestPostSent = { readonly type: 'requestPost'; readonly requestId: string; readonly chat: string };
+// The post of a passenger's request in a direction group (docs/223): deleted when the request closes,
+// by the bot that sent it (a job queued before the group bot came has none: the poster).
+type RequestPostSent = {
+  readonly type: 'requestPost';
+  readonly requestId: string;
+  readonly chat: string;
+  readonly bot?: 'poster' | 'group';
+};
 
 // A live card of a person (G68, docs/122 rule 1): its id is kept to edit it, pin it and answer it.
 export type CardSent = {

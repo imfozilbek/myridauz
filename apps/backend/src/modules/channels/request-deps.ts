@@ -7,6 +7,7 @@ import {
   postRequest,
   rememberRequestPost,
   type GroupRequest,
+  type PostBot,
   type RequestPostsDeps,
 } from './application/request-posts';
 import { allChannels } from './application/team';
@@ -29,6 +30,8 @@ function withDeps(env: Bindings, requestOf: RequestOf, run: Run): Promise<void> 
   return run({
     enabled: env.CHANNEL_POSTS === 'on',
     groups: look.chats,
+    // The group's own bot once its key is on the Worker (owner, 06.11.2026: «элончи писал не постер»).
+    bot: env.GROUP_BOT_TOKEN ? 'group' : 'poster',
     channels: async () => allChannels(await teamDeps(env)),
     places: () => placesOf(env),
     request: (id) => requestOf(env, id),
@@ -44,6 +47,13 @@ function withDeps(env: Bindings, requestOf: RequestOf, run: Run): Promise<void> 
 export const requestGroups = (requestOf: RequestOf) => ({
   posted: (env: Bindings, id: string) => withDeps(env, requestOf, (deps) => postRequest(deps, id)),
   closed: (env: Bindings, id: string) => withDeps(env, requestOf, (deps) => closeRequestPosts(deps, id)),
-  remember: (env: Bindings, post: { requestId: string; chat: string }, messageId: number) =>
-    withDeps(env, requestOf, (deps) => rememberRequestPost(deps, { ...post, messageId })),
+  remember: (env: Bindings, post: { requestId: string; chat: string; bot?: PostBot }, messageId: number) =>
+    withDeps(env, requestOf, (deps) =>
+      rememberRequestPost(deps, {
+        requestId: post.requestId,
+        chat: post.chat,
+        messageId,
+        bot: post.bot ?? 'poster',
+      }),
+    ),
 });
