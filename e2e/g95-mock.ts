@@ -6,7 +6,9 @@ import { id } from './team-mock';
 const HOUR = 60 * 60_000;
 const json = (page: Page, path: string, body: unknown) =>
   page.route(path, (route) => route.fulfill({ json: body }));
-const at = (hours: number) => Date.now() - hours * HOUR;
+// The clock of the mockup (06.11.2026 10:48 in Tashkent): the shots of the code repeat it to the pixel.
+export const MOCKUP_NOW = Date.parse('2026-11-06T05:48:30Z');
+const at = (hours: number) => MOCKUP_NOW - hours * HOUR;
 const COBALT = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
 const REJECTED = ['plate_not_readable'];
 const NEXIA = { make: 'Chevrolet', model: 'Nexia', color: 'silver', plate: '30B456CA', seats: 4 };

@@ -3,7 +3,7 @@ import type { Page } from '@playwright/test';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
 import { expect, test } from './crash-guard';
-import { mockDecisions } from './g95-mock';
+import { mockDecisions, MOCKUP_NOW } from './g95-mock';
 import { mockTeam, type TeamRole } from './team-mock';
 import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
 
@@ -16,6 +16,7 @@ const OUT = 'screenshots/pixel-g95';
 test.use({ viewport: { width: 360, height: 760 }, deviceScaleFactor: 2 });
 
 async function openAs(page: Page, role: TeamRole) {
+  await page.clock.setFixedTime(MOCKUP_NOW);
   await mockApi(page, 'active');
   await mockTelegram(page);
   await mockTeam(page, role);
