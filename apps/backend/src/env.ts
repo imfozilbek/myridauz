@@ -28,6 +28,9 @@ export type Bindings = {
   readonly MAIN_BOT_TOKEN?: string;
   // The bot of the channels (docs/176): the admin of every channel, it posts, edits and counts there.
   readonly POSTER_BOT_TOKEN?: string;
+  // The bot of the direction group (docs/223): it only sends the posts of requests there, as the
+  // group's own cards; Rida never sets its webhook (the group's own board reads its updates).
+  readonly GROUP_BOT_TOKEN?: string;
   readonly TELEGRAM_WEBHOOK_SECRET?: string;
   // The Bot API of the local stand (docs/75); unset in production: Telegram itself.
   readonly TELEGRAM_API_URL?: string;

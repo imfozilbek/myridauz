@@ -1,13 +1,13 @@
-import type { RequestPost, RequestPostStore } from '../application/request-posts';
+import type { PostBot, RequestPost, RequestPostStore } from '../application/request-posts';
 
-type Row = { request_id: string; chat: string; message_id: number };
+type Row = { request_id: string; chat: string; message_id: number; bot: PostBot };
 
-// Table request_posts (migration 0087).
+// Table request_posts (migrations 0087, 0088).
 export const d1RequestPosts = (db: D1Database): RequestPostStore => ({
   save: async (post) => {
     await db
-      .prepare('INSERT OR REPLACE INTO request_posts (request_id, chat, message_id) VALUES (?, ?, ?)')
-      .bind(post.requestId, post.chat, post.messageId)
+      .prepare('INSERT OR REPLACE INTO request_posts (request_id, chat, message_id, bot) VALUES (?, ?, ?, ?)')
+      .bind(post.requestId, post.chat, post.messageId, post.bot)
       .run();
   },
   of: async (requestId) => {
@@ -15,7 +15,12 @@ export const d1RequestPosts = (db: D1Database): RequestPostStore => ({
       .prepare('SELECT * FROM request_posts WHERE request_id = ?')
       .bind(requestId)
       .all<Row>();
-    return results.map((row) => ({ requestId: row.request_id, chat: row.chat, messageId: row.message_id }));
+    return results.map((row) => ({
+      requestId: row.request_id,
+      chat: row.chat,
+      messageId: row.message_id,
+      bot: row.bot,
+    }));
   },
   forget: async (requestId) => {
     await db.prepare('DELETE FROM request_posts WHERE request_id = ?').bind(requestId).run();

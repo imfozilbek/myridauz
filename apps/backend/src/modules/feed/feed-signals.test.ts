@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { feedName, signalsOf } from './domain/feed-signals';
 
 describe('who hears "something changed" (docs/64)', () => {
-  it('is the person of every bot message, once per Mini App, never a channel', () => {
+  it('is the person of every bot message, once per Mini App, never a channel or a group post', () => {
     expect(
       signalsOf([
         { bot: 'passenger', chatId: 5 },
@@ -10,6 +10,7 @@ describe('who hears "something changed" (docs/64)', () => {
         { bot: 'driver', chatId: 5 },
         { bot: 'admin', chatId: 7 },
         { bot: 'passenger', chatId: '@ch_samarqand' },
+        { bot: 'group', chatId: -100700 },
       ]),
     ).toEqual([
       { userId: 5, app: 'passenger' },

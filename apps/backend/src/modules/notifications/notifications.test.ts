@@ -3,7 +3,7 @@ import { deliver } from './application/deliver';
 import type { NotificationJob } from './application/job';
 import { consumeNotifications, handleAfterSent, notify, notifyTeam } from '.';
 
-const TOKENS = { passenger: 'p', driver: 'd', admin: 'a', poster: 'c', main: 'm' };
+const TOKENS = { passenger: 'p', driver: 'd', admin: 'a', poster: 'c', main: 'm', group: 'g' };
 const JOB: NotificationJob = { bot: 'driver', chatId: 5, text: 'Yangi xabar' };
 const answer = (status: number, body: object) => async () => Response.json(body, { status });
 const TASKS = { reminder: async () => undefined };

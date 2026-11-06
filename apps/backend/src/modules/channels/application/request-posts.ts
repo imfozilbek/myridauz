@@ -12,7 +12,14 @@ export type GroupRequest = {
   readonly wholeCar: boolean;
   readonly open: boolean;
 };
-export type RequestPost = { readonly requestId: string; readonly chat: string; readonly messageId: number };
+// The bot that writes the posts of requests in the groups: the group's own bot, else the poster.
+export type PostBot = 'group' | 'poster';
+export type RequestPost = {
+  readonly requestId: string;
+  readonly chat: string;
+  readonly messageId: number;
+  readonly bot: PostBot;
+};
 export type RequestPostStore = {
   save(post: RequestPost): Promise<void>;
   of(requestId: string): Promise<RequestPost[]>;
@@ -27,6 +34,7 @@ export type RequestPostsDeps = {
   // Only when the posts of the trips are on (docs/33), only into the groups with a look of their own.
   readonly enabled: boolean;
   readonly groups: ReadonlySet<string>;
+  readonly bot: PostBot;
   readonly channels: () => Promise<readonly ChannelCoverage[]>;
   readonly places: () => Promise<Places>;
   readonly request: (id: string) => Promise<GroupRequest | undefined>;
@@ -50,18 +58,18 @@ export async function postRequest(deps: RequestPostsDeps, requestId: string): Pr
   const chats = channelsOf(request.from, request.to, places, list).filter((chat) => deps.groups.has(chat));
   await deps.send(
     chats.map((chat) => ({
-      bot: 'poster' as const,
+      bot: deps.bot,
       chatId: chat,
       html: true,
       silent: true,
       ...deps.render(request, places, deps.now(), chat),
-      after: { type: 'requestPost' as const, requestId, chat },
+      after: { type: 'requestPost' as const, requestId, chat, bot: deps.bot },
     })),
   );
 }
 
-// Matched, cancelled or over: each post says so and is deleted; Telegram keeps a post older than 48
-// hours, then it stays with the words that the request closed.
+// Matched, cancelled or over: each post says so and is deleted, by the bot that sent it; Telegram
+// keeps a post older than 48 hours, then it stays with the words that the request closed.
 export async function closeRequestPosts(deps: RequestPostsDeps, requestId: string): Promise<void> {
   const posts = await deps.posts.of(requestId);
   if (posts.length === 0) return;
@@ -69,7 +77,7 @@ export async function closeRequestPosts(deps: RequestPostsDeps, requestId: strin
   await deps.send(
     posts.flatMap((post) => {
       const shown = {
-        bot: 'poster' as const,
+        bot: post.bot,
         chatId: post.chat,
         html: true,
         edit: post.messageId,

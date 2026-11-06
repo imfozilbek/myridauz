@@ -13,11 +13,12 @@
   "group.seats": "💺 {seats} ta boʻsh joy · 💰 {price}",
   "group.lastSeat": "🔥 1 ta joy qoldi · 💰 {price}",
   "group.book": "💺 Joy band qilish",
-  "group.need": "🙋 MASHINA KERAK · {place}dan",
-  "group.needEmpty": "🙋 BOʻSH MASHINA KERAK · {place}dan",
-  "group.going": "🏁 {place}{end, select, k {ka} q {qa} other {ga}} ketaman",
-  "group.day": "🕒 {day}",
-  "group.people": "🧍 {people} kishi · 💰 {price}",
-  "group.take": "🚘 Yoʻlovchini olish",
+  "group.need": "MASHINA KERAK",
+  "group.needEmpty": "BOʻSH MASHINA KERAK",
+  "group.needFrom": "{place}dan",
+  "group.going": "{place}{end, select, k {ka} q {qa} other {ga}} ketaman.",
+  "group.day": "{day} kerak.",
+  "group.people": "{people} kishi bor.",
+  "group.take": "🙋 Yoʻlovchini olish",
   "group.closed": "✅ Yoʻlovchi soʻrovi yopildi"
 }

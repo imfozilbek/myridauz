@@ -1,37 +1,69 @@
-import { channelVia, requestsBoardLink, requestsLinkValue, tashkentDayStart } from '@platform/contracts';
+import type { GroupCards } from '@platform/brands';
+import {
+  channelVia,
+  DAY_MS,
+  requestsBoardLink,
+  requestsLinkValue,
+  tashkentDate,
+  tashkentDayStart,
+} from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Places } from '../../../shared/places/end-names';
-import { bold } from '../../../shared/telegram/html';
+import { bold, customEmoji } from '../../../shared/telegram/html';
 import type { GroupRequest } from '../application/request-posts';
 import { groupMark, inScript, placeOf, type GroupLook } from './group-look';
 import { EMPTY_SEATS } from './group-trip';
 import type { Post } from './post-life';
-import { dayLabel } from './post-parts';
 
-const { t, formatNumber } = createI18n(DEFAULT_LOCALE);
+const { t, formatNumber, formatDate } = createI18n(DEFAULT_LOCALE);
 
-// A passenger's request of the Mini App in a direction group, as the group's own cards (owner,
-// 05.11.2026, mockup of docs/223): «🙋 MASHINA KERAK · Yunusoboddan» with the turquoise R, where to,
-// the day, the people and the price. A request has a day, no hour. The button opens the requests of
-// the route and day in the driver bot (docs/83 N08). No name, no phone (docs/07).
+// The plain emoji of each tile, where the brand has no tiles or a phone cannot draw them.
+const SHOWN = { hand: '🙋', finish: '🏁', clock: '🕓', people: '🧍', money: '💵' } as const;
+type Tile = keyof typeof SHOWN;
+const tile = (cards: GroupCards, name: Tile) =>
+  cards.tiles ? customEmoji(cards.tiles[name], SHOWN[name]) : SHOWN[name];
+
+// «Bugun», «Ertaga», later «10-noyabr»: the day of a request, as the group's own request cards say it.
+function dayWord(at: number, now: number): string {
+  const day = tashkentDate(at);
+  if (day === tashkentDate(now)) return t('market.day.today');
+  if (day === tashkentDate(now + DAY_MS)) return t('market.day.tomorrow');
+  return formatDate(new Date(at));
+}
+
+// The button opens the requests of the route and day in the driver bot (docs/83 N08): the hand
+// tile is its icon, as the group's own buttons wear theirs, in place of the emoji of its words.
+// Telegram lets only a bot whose owner has Premium wear an icon: the group bot, never the poster.
+function takeButton(cards: GroupCards, url: string, icon: boolean) {
+  const text = t('bot.group.take');
+  if (!cards.tiles || !icon) return { text, url };
+  return { text: text.split(' ').slice(1).join(' '), url, icon_custom_emoji_id: cards.tiles.hand };
+}
+
+// A passenger's request of the Mini App in a direction group, as the group's own request cards
+// (owner, 06.11.2026: «максимально похож», docs/223): the turquoise tiles, the bold lines, the
+// turquoise R of the Mini App, the price. A request has a day, no hour. No name, no phone (docs/07).
 export const groupRequestPost =
-  (driverBot: string, look: GroupLook) =>
+  (driverBot: string, look: GroupLook, icon: boolean) =>
   (request: GroupRequest, places: Places, now: number, chat: string): Post => {
-    const from = placeOf(request.from, places);
+    const { cards } = look;
     const empty = request.wholeCar || request.seats >= EMPTY_SEATS;
-    const head = t(empty ? 'bot.group.needEmpty' : 'bot.group.need', from);
+    const head = bold(t(empty ? 'bot.group.needEmpty' : 'bot.group.need'));
+    const from = t('bot.group.needFrom', placeOf(request.from, places));
+    const day = dayWord(tashkentDayStart(request.date), now);
+    const people = bold(t('bot.group.people', { people: String(request.seats) }));
     const text = [
-      `${bold(head)} ${groupMark(look.cards, 'request')}`,
-      t('bot.group.going', placeOf(request.to, places)),
-      t('bot.group.day', { day: dayLabel(tashkentDayStart(request.date), now) }),
-      t('bot.group.people', { people: String(request.seats), price: formatNumber(request.price) }),
+      `${tile(cards, 'hand')} ${head} · ${from} ${groupMark(cards, 'request')}`,
+      `${tile(cards, 'finish')} ${bold(t('bot.group.going', placeOf(request.to, places)))}`,
+      `${tile(cards, 'clock')} ${bold(t('bot.group.day', { day }))}`,
+      `${tile(cards, 'people')} ${people} · ${tile(cards, 'money')} ${formatNumber(request.price)}`,
     ].join('\n');
-    const value = requestsLinkValue(request.from, request.to, request.date);
-    const take = requestsBoardLink(driverBot, value, channelVia(chat));
-    return inScript(look.cards, {
-      text,
-      markup: { inline_keyboard: [[{ text: t('bot.group.take'), url: take }]] },
-    });
+    const take = requestsBoardLink(
+      driverBot,
+      requestsLinkValue(request.from, request.to, request.date),
+      channelVia(chat),
+    );
+    return inScript(cards, { text, markup: { inline_keyboard: [[takeButton(cards, take, icon)]] } });
   };
 
 // The post of a request that closed: deleted, or these words where Telegram keeps it (docs/223).

@@ -22,8 +22,17 @@ export type BrandChannel = {
 // The cards of a direction group in the group's own look (owner, 05.11.2026, docs/223): the R of the
 // brand's emoji set beside the head, amber on a trip, turquoise on a request (ids of Telegram custom
 // emoji: the owner of the bot has Telegram Premium); cyrillic: the cards are in Uzbek Cyrillic, as the
-// group's own cards.
+// group's own cards. tiles: the turquoise emoji of a request card, as the group's own request cards
+// show them (owner, 06.11.2026: «максимально похож»); without them the plain emoji.
 export type GroupCards = {
   readonly cyrillic: boolean;
   readonly marks: { readonly trip: string; readonly request: string };
+  readonly tiles?: RequestTiles;
+};
+type RequestTiles = {
+  readonly hand: string;
+  readonly finish: string;
+  readonly clock: string;
+  readonly people: string;
+  readonly money: string;
 };

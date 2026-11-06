@@ -59,7 +59,7 @@
 
 | Секрет | Где | Кто кладёт |
 |---|---|---|
-| Токены 6 ботов своей среды (`PASSENGER_`, `DRIVER_`, `ADMIN_`, `SUPPORT_`, `POSTER_`, `MAIN_BOT_TOKEN`) | Секреты Worker своей среды | Владелец (BotFather → панель Cloudflare); Cron сам настраивает ботов |
+| Токены 6 ботов своей среды (`PASSENGER_`, `DRIVER_`, `ADMIN_`, `SUPPORT_`, `POSTER_`, `MAIN_BOT_TOKEN`); по желанию `GROUP_BOT_TOKEN` бота группы (`223`) | Секреты Worker своей среды | Владелец (BotFather → панель Cloudflare); Cron сам настраивает ботов |
 | `TELEGRAM_WEBHOOK_SECRET` (свой в каждой среде), `ADMIN_TELEGRAM_IDS`, `CF_ACCOUNT_ID` | Секреты Worker | Claude (`wrangler secret`) |
 | `ANALYTICS_API_TOKEN`: токен `rida-<среда>-analytics`, только Account Analytics: Read | Секреты Worker | Владелец |
 | `REALTIME_APP_ID`, `REALTIME_APP_SECRET`, `TURN_KEY_ID`, `TURN_KEY_TOKEN` (G13, `08`): свои у каждого аккаунта | Секреты Worker | Позже, со звонками |
