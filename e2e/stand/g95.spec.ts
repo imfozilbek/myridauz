@@ -83,7 +83,8 @@ test('T1 … T3. Aziz finds his decision and fixes the plate; the trip and the s
   await page.screenshot({ path: 'screenshots/stand/g95/4-driver-bot.png', fullPage: true });
 });
 
-test('T4. a bad photo goes back for a fix; the live trip goes on, a new trip waits', async () => {
+// A new trip waits for «Tasdiqlash»: publishing takes only an approved car (approvedCar, unit tests).
+test('T4. a bad photo goes back for a fix; the live trip goes on', async () => {
   await (await team(AZIZ)).decide(farhod, { action: 'request_changes', reasons: ['plate_not_readable'] });
   const mine = await createDriversClient(await signedAs('driver', FARHOD)).getApplication();
   expect(mine?.status).toBe('changes_requested');
