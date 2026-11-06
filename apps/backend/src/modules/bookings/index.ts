@@ -18,6 +18,7 @@ import { pastRides } from './application/past';
 import { passengerView } from './application/progress';
 import { filedRideOf, ratableRideOf, rideOf, ridesOf } from './application/rides';
 import { settleBookings } from './application/settle';
+import type { OfferCar } from './domain/offer';
 import { tellTripRetimed } from './application/trip-change';
 import { endSeatsOfTrip } from './application/trip-ended';
 import { bookingRoutes } from './http/booking-routes';
@@ -61,6 +62,9 @@ export const tellBookedOfRetime = (env: Bindings, tripId: string) =>
 
 // The hourly Cron job (G89 T2, M6): a cancel that broke halfway is finished, seats and money.
 export const settleSeats = (env: Bindings) => settleBookings(bookingsDeps(env));
+// The team fixed the car of the driver by its photo (G95): the waiting offers show the fixed one.
+export const fixOffersCar = (env: Bindings, driverId: number, car: OfferCar) =>
+  bookingsDeps(env).offers.fixCar(driverId, car);
 // The Cron job (docs/35): requests without an answer in time become expired, the passenger hears it.
 export const expireBookings = (env: Bindings, now: number) => expireRequests(bookingsDeps(env), now);
 // «Yoʻlga chiqdim» before the time (G63): the requests of the trip end, the passengers hear it.

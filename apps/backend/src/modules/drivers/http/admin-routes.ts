@@ -1,7 +1,9 @@
 import {
   ADMIN_APPLICATIONS_PATH,
   ADMIN_ME_PATH,
+  ADMIN_MY_DECISIONS_PATH,
   CAR_PHOTO_KINDS,
+  carFixSchema,
   decisionSchema,
   type CarPhotoKind,
 } from '@platform/contracts';
@@ -11,8 +13,11 @@ import { applicantPhoto, applicationFor, decideApplication, queue } from '../app
 import type { DriversDeps } from '../application/ports';
 import { fail, image } from './respond';
 import { recordAction } from '../../journal';
+import { ownerOnly } from '../../../shared/auth/owner-only';
+import { fixApprovedCar, myDecisions, reopenRejected } from '../application/fixes';
 
 const ONE = `${ADMIN_APPLICATIONS_PATH}/:id{[0-9a-f]+}`;
+const NO_CONTENT = 204;
 const isPhoto = (value: string): value is CarPhotoKind | 'avatar' =>
   value === 'avatar' || (CAR_PHOTO_KINDS as readonly string[]).includes(value);
 
@@ -64,6 +69,35 @@ export function adminRoutes(deps: (env: Bindings) => DriversDeps) {
         const action = { memberId: moderator, kind: 'application' as const, subject, since: submittedAt };
         await recordAction(context.env, { ...action, action: decision.data.action });
         return context.json(result.value);
+      })
+      // «Mening qarorlarim», «Mashinani tuzatish» and the owner's «Rad etishni bekor qilish» (G95).
+      .get(ADMIN_MY_DECISIONS_PATH, async (context) =>
+        context.json({ decisions: await myDecisions(deps(context.env), context.get('session').user.id) }),
+      )
+      .post(`${ONE}/car`, async (context) => {
+        const car = carFixSchema.safeParse(await context.req.json().catch(() => null));
+        if (!car.success) return fail(context, 'drivers.invalid_input');
+        const member = context.get('session').user.id;
+        const env = deps(context.env);
+        const userId = await userOf(context);
+        const was = (await env.applications.find(userId))?.car?.plate;
+        const result = await fixApprovedCar(env, member, userId, car.data);
+        if (!result.ok) return fail(context, result.error);
+        // «было → стало» of the plate in «Jurnal», when the plate is what changed.
+        const plates = was && was !== car.data.plate ? `:${was}:${car.data.plate}` : '';
+        const subject = context.req.param('id') ?? '';
+        const action = { memberId: member, kind: 'application' as const, subject, since: null };
+        await recordAction(context.env, { ...action, action: `car${plates}` });
+        return context.json(result.value);
+      })
+      .post(`${ONE}/reopen`, ownerOnly, async (context) => {
+        const owner = context.get('session').user.id;
+        const result = await reopenRejected(deps(context.env), owner, await userOf(context));
+        if (!result.ok) return fail(context, result.error);
+        const subject = context.req.param('id') ?? '';
+        const action = { memberId: owner, kind: 'application' as const, subject, since: null };
+        await recordAction(context.env, { ...action, action: 'reopen' });
+        return context.body(null, NO_CONTENT);
       })
   );
 }

@@ -104,6 +104,8 @@
   "entry.approved": "Ariza tasdiqlandi",
   "entry.rejected": "Ariza rad etildi",
   "entry.changes": "Arizaga tuzatish soʻraldi",
+  "entry.carFixed": "Mashina tuzatildi",
+  "entry.reopened": "Rad etish bekor qilindi",
   "entry.faceFits": "Rasm mos",
   "entry.faceNot": "Rasm mos emas",
   "entry.noViolation": "Shikoyat: buzilish yoʻq",

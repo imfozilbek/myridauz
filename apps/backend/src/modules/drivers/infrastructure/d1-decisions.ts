@@ -2,6 +2,8 @@ import { MODERATION_REASONS, type Car } from '@platform/contracts';
 import { oneOf } from '../../../shared/storage/one-of';
 import type { Decided, DecisionLog } from '../application/ports';
 
+const LIMIT = 100;
+
 type Row = {
   user_id: number;
   status: Decided['status'];
@@ -10,6 +12,16 @@ type Row = {
   decided_at: number;
   car: string | null;
 };
+
+const decidedOf = (row: Row): Decided => ({
+  userId: row.user_id,
+  status: row.status,
+  // A reason no longer asked is dropped: the photos of the side and the inside (18.10.2026).
+  reasons: (JSON.parse(row.reasons) as string[]).flatMap((code) => oneOf(MODERATION_REASONS, code) ?? []),
+  by: row.decided_by,
+  at: row.decided_at,
+  car: row.car ? (JSON.parse(row.car) as Car) : null,
+});
 
 // Table application_log (migrations/0021): every decision of the team, oldest first.
 export const d1Decisions = (db: D1Database): DecisionLog => ({
@@ -31,15 +43,16 @@ export const d1Decisions = (db: D1Database): DecisionLog => ({
   of: async (userId) =>
     (
       await db.prepare('SELECT * FROM application_log WHERE user_id = ? ORDER BY id').bind(userId).all<Row>()
-    ).results.map((row) => ({
-      userId: row.user_id,
-      status: row.status,
-      // A reason no longer asked is dropped: the photos of the side and the inside (18.10.2026).
-      reasons: (JSON.parse(row.reasons) as string[]).flatMap((code) => oneOf(MODERATION_REASONS, code) ?? []),
-      by: row.decided_by,
-      at: row.decided_at,
-      car: row.car ? (JSON.parse(row.car) as Car) : null,
-    })),
+    ).results.map(decidedOf),
+  by: async (memberId, since) =>
+    (
+      await db
+        .prepare(
+          'SELECT * FROM application_log WHERE decided_by = ? AND decided_at >= ? ORDER BY decided_at DESC LIMIT ?',
+        )
+        .bind(memberId, since, LIMIT)
+        .all<Row>()
+    ).results.map(decidedOf),
   countsBetween: async (from, to) => {
     const { results } = await db
       .prepare(

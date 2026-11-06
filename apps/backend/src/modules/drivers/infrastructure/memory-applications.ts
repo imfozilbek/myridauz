@@ -9,7 +9,7 @@ export function createMemoryApplications(): ApplicationRepository {
     save: async (application) => void applications.set(application.userId, application),
     decide: async (next, read) => {
       const now = applications.get(next.userId);
-      if (now?.status !== 'pending' || now.updatedAt !== read.updatedAt) return false;
+      if (now?.status !== read.status || now.updatedAt !== read.updatedAt) return false;
       applications.set(next.userId, next);
       return true;
     },
@@ -34,6 +34,8 @@ export function createMemoryDecisions(): DecisionLog {
   return {
     add: async (entry) => void log.push(entry),
     of: async (userId) => log.filter((entry) => entry.userId === userId),
+    by: async (memberId, since) =>
+      log.filter((entry) => entry.by === memberId && entry.at >= since).sort((a, b) => b.at - a.at),
     countsBetween: async (from, to) => {
       const counts = new Map<number, number>();
       for (const { by, at } of log) if (at >= from && at < to) counts.set(by, (counts.get(by) ?? 0) + 1);

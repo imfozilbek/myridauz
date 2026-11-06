@@ -15,18 +15,20 @@ import {
   ridesOfTrips,
   ridingOf,
   walletBookingsOf,
+  fixOffersCar,
 } from './modules/bookings';
 import { wireChatRings } from './modules/chat';
 import { hiddenByComplaints, wireComplaints } from './modules/complaints';
 import { assignTo } from './modules/assignments';
 import { inviteFromMark, tripViewCounts } from './modules/channels';
-import { appliedAsDriver, approvedCar, wireLiveTrips } from './modules/drivers';
+import { appliedAsDriver, approvedCar, wireCarFixed, wireLiveTrips } from './modules/drivers';
 import { wireFavorites } from './modules/favorites';
 import { wireHiddenRequesters } from './modules/ride-requests';
 import { wireRealPrices } from './modules/pricing';
 import { ratingsOfPeople, wireRatings } from './modules/ratings';
 import {
   driverTripIds,
+  fixDriverCar,
   hasLiveTrips,
   lastTripPrice,
   tripsEnded,
@@ -125,5 +127,10 @@ wireComplaints({
 
 // A car changes only without live trips; a person blocked on the road finishes the trip (docs/158).
 wireLiveTrips(hasLiveTrips);
+// The team fixed the car of a driver by its photo: live trips and waiting offers take it (G95).
+wireCarFixed(async (env, userId, car) => {
+  await fixDriverCar(env, userId, car);
+  await fixOffersCar(env, userId, car);
+});
 wireRiding(ridingOf);
 wireCoPassengers(rideTogetherOf);

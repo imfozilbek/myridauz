@@ -23,7 +23,10 @@ function viewOf(person: Person, application: Application): ApplicationSummary | 
   };
 }
 
-async function summary(deps: DriversDeps, application: Application): Promise<ApplicationSummary | undefined> {
+export async function summary(
+  deps: DriversDeps,
+  application: Application,
+): Promise<ApplicationSummary | undefined> {
   const person = await deps.people.find(application.userId);
   return person ? viewOf(person, application) : undefined;
 }
@@ -97,7 +100,9 @@ export async function decideApplication(
   const car = next.status === 'approved' ? next.car : null;
   await deps.decisions.add({ userId, status: next.status, reasons, by: moderatorId, at: deps.now(), car });
   if (next.status === 'approved') await deps.people.approveFace(userId);
-  await deps.people.setDriver(userId, next.status === 'approved');
+  // A fix asked of an approved driver keeps the driver: the live trips and his face go on (G95, G91
+  // DRV-1); new trips wait for the approval of the car (approvedCar).
+  if (application.status === 'pending') await deps.people.setDriver(userId, next.status === 'approved');
   const bonus = next.status === 'approved' ? await deps.driverApproved(userId) : null;
   const fixedPlate = next.car?.plate !== application.car?.plate ? (next.car?.plate ?? null) : null;
   await deps.notify.decided(next, fixedPlate, bonus);

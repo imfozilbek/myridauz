@@ -81,14 +81,18 @@ const DECIDED: Record<DecisionInput['action'], ApplicationStatus> = {
   request_changes: 'changes_requested',
 };
 
-// Only a waiting application gets a decision: two moderators never decide the same one twice.
+// A waiting application gets any decision; an approved one only «Tuzatishga qaytarish», when the team
+// approved a bad photo by mistake (G95, docs/224). Two moderators never decide the same one twice.
+const decidable = ({ status }: Application, { action }: DecisionInput) =>
+  status === 'pending' || (status === 'approved' && action === 'request_changes');
+
 export function decide(
   application: Application,
   decision: DecisionInput,
   moderatorId: number,
   now: number,
 ): Application | 'drivers.wrong_status' {
-  if (application.status !== 'pending') return 'drivers.wrong_status';
+  if (!decidable(application, decision)) return 'drivers.wrong_status';
   const reasons = decision.action === 'approve' ? [] : decision.reasons;
   // The team may fix the plate by the front photo before approving (docs/50).
   const plate = decision.action === 'approve' ? decision.plate : undefined;
@@ -104,4 +108,34 @@ export function afterAvatarChange(application: Application, now: number): Applic
   if (application.status === 'approved') return null;
   const reasons = fixed(application.reasons, 'avatar');
   return reasons.length === application.reasons.length ? null : { ...application, reasons, updatedAt: now };
+}
+
+// The team fixes its own decision about an application (G95, docs/224).
+
+// «Mashinani tuzatish»: an approved car takes what its front photo shows. The driver stays a driver:
+// the photo was checked, only the words were wrong.
+export function fixCar(
+  application: Application,
+  car: Car,
+  memberId: number,
+  now: number,
+): Application | 'drivers.wrong_status' {
+  if (application.status !== 'approved' || !application.car) return 'drivers.wrong_status';
+  // The status stays: only a later time tells a second fix of the same moment it came late (G89 M5).
+  const updatedAt = Math.max(now, application.updatedAt + 1);
+  return { ...application, car, decidedBy: memberId, updatedAt };
+}
+
+// «Rad etishni bekor qilish» of the owner: a rejected application waits in «Navbat» again, as if
+// sent now, without the reasons of the refusal.
+export function reopen(application: Application, now: number): Application | 'drivers.wrong_status' {
+  if (application.status !== 'rejected') return 'drivers.wrong_status';
+  return {
+    ...application,
+    status: 'pending',
+    reasons: [],
+    submittedAt: now,
+    decidedBy: null,
+    updatedAt: now,
+  };
 }

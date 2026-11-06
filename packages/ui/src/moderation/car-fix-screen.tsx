@@ -40,7 +40,9 @@ export function CarFixScreen({ application, onBack, onSave }: Props) {
     setOther(false);
     setCar((was) => ({ ...was, ...name, seats: seatsOf(name) }));
   };
-  const ready = carSchema.safeParse(car).success && !same(car, given);
+  // The plate as the server keeps it (01A777BC): the same car typed again is no change.
+  const parsed = carSchema.safeParse(car);
+  const fixed = parsed.success && !same(parsed.data, given) ? parsed.data : null;
   return (
     <div className="car-screen" style={brandVars(colors)}>
       <StepLayout icon="car" title={t('moderation.fixCar')} hint={t('moderation.fixCar.hint')}>
@@ -67,7 +69,11 @@ export function CarFixScreen({ application, onBack, onSave }: Props) {
           />
         </div>
         <OtherCarSheet open={other} onClose={() => setOther(false)} onPick={pick} />
-        <MainButton text={t('moderation.fixCar.save')} disabled={!ready} onClick={() => onSave(car)} />
+        <MainButton
+          text={t('moderation.fixCar.save')}
+          disabled={!fixed}
+          onClick={() => fixed && onSave(fixed)}
+        />
       </StepLayout>
     </div>
   );

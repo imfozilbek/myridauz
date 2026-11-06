@@ -1,4 +1,4 @@
-import type { OfferRecord } from '../domain/offer';
+import type { OfferCar, OfferRecord } from '../domain/offer';
 import type { TalkRecord } from '../domain/talk';
 
 export type OfferRepository = {
@@ -8,6 +8,8 @@ export type OfferRepository = {
   find(id: string): Promise<OfferRecord | undefined>;
   byRequests(requestIds: readonly string[]): Promise<OfferRecord[]>;
   byDriver(driverId: number): Promise<OfferRecord[]>;
+  // The team fixed the car of the driver by its photo (G95): the offers still waiting show the new one.
+  fixCar(driverId: number, car: OfferCar): Promise<void>;
 };
 
 // The talks about requests (G64): one per request and driver.

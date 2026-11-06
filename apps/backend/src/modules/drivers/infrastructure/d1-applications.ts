@@ -58,9 +58,10 @@ const UPSERT = `INSERT INTO driver_applications (user_id, status, car_make, car_
   submitted_at = excluded.submitted_at, decided_by = excluded.decided_by, updated_at = excluded.updated_at`;
 
 // A decision only on the application as the team read it (G89 M5): a second tap changes nothing.
+// Any status: a fix of the car or a reopened refusal is a decision too (G95).
 const DECIDE = `UPDATE driver_applications SET status = ?, car_make = ?, car_model = ?, car_color = ?,
-  car_plate = ?, seats = ?, reason = ?, decided_by = ?, updated_at = ?
-  WHERE user_id = ? AND status = 'pending' AND updated_at = ?`;
+  car_plate = ?, seats = ?, reason = ?, submitted_at = ?, decided_by = ?, updated_at = ?
+  WHERE user_id = ? AND status = ? AND updated_at = ?`;
 const carValues = ({ car }: Application) =>
   [
     car?.make ?? null,
@@ -98,8 +99,9 @@ export const d1Applications = (db: D1Database): ApplicationRepository => ({
       .run();
   },
   decide: async (next, read) => {
-    const { status, decidedBy, updatedAt, userId } = next;
-    const values = [status, ...carValues(next), reasonOf(next), decidedBy, updatedAt, userId, read.updatedAt];
+    const { status, submittedAt, decidedBy, updatedAt, userId } = next;
+    const set = [status, ...carValues(next), reasonOf(next), submittedAt, decidedBy, updatedAt];
+    const values = [...set, userId, read.status, read.updatedAt];
     return (
       (
         await db

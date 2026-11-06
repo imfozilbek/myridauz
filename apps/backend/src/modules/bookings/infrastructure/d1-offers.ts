@@ -46,6 +46,10 @@ const toOffer = (row: Row): OfferRecord => ({
 const all = async (statement: D1PreparedStatement) => (await statement.all<Row>()).results.map(toOffer);
 
 // Table offers (migrations/0008_bookings_wallet.sql, 0045_request_marks.sql, 0051_request_talks.sql).
+// The team fixed the car by its photo (G95): only the offers still waiting for the passenger change.
+const FIX_CAR = `UPDATE offers SET car_make = ?, car_model = ?, car_color = ?, car_plate = ?
+  WHERE driver_id = ? AND status = 'sent'`;
+
 export const d1Offers = (db: D1Database): OfferRepository => ({
   save: async (offer) => {
     await db
@@ -90,4 +94,7 @@ export const d1Offers = (db: D1Database): OfferRepository => ({
       toOffer,
     ),
   byDriver: async (driverId) => all(db.prepare('SELECT * FROM offers WHERE driver_id = ?').bind(driverId)),
+  fixCar: async (driverId, car) => {
+    await db.prepare(FIX_CAR).bind(car.make, car.model, car.color, car.plate, driverId).run();
+  },
 });
