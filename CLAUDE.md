@@ -240,6 +240,7 @@ Mini App, каналах, уведомлениях и лендинге. Код: 
 | `docs/220-g91-findings.md`, `docs/221-g91-findings-p3.md` | G91, интерфейс без тупиков: находки P1 и P2 со статусом (`220`); находки P3, робота обхода (`pnpm stand:walk`), решения и тексты на согласие владельца (`221`) |
 | `docs/222-direction-group.md` | Группа `@yakkabog_toshkent_rida` вместо канала направления Kitob, Shahrisabz, Yakkabogʻ (G92): только посты поездок, своё имя, закреп и приветствие; старые открытые поездки ставит Cron раз в час (G93) |
 | `docs/223-group-cards.md` | Карточки Mini App в группе направления (G94): вид группы, кириллица, знак R «Mini App» у поездки и заявки, заявки пассажиров в группе и их закрытие |
+| `docs/224-team-fixes.md` | Команда исправляет свои решения по заявкам водителей (G95): «Mening qarorlarim», «Mashinani tuzatish» по фото, «Tuzatishga qaytarish», отмена ошибочного отказа; вопросы владельцу |
 | `docs/197-blablacar-history.md` … `docs/201-carpooling-histories-summary.md` | Истории сервисов попутчиков и уроки для Rida: BlaBlaCar, inDrive (три попытки в Узбекистане), Zimride и Lyft, Didi Hitch и Dida; сводка: что общего, кто не дошёл, три числа после запуска |
 | `docs/187-g69-texts.md`, `docs/188-growth-loops.md` | G69: новые тексты петель роста на согласие владельца; петли роста как сделано: код автора в метке, моменты «Men Rida bilan», QR водителя, «Sizning taʼsiringiz», «Rost» |
 | `docs/goals/INDEX.md` | Цели по порядку (G01 … G20) и операционные цели владельца (OPS) |
