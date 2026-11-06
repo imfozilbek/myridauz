@@ -38,6 +38,16 @@ describe('the main screen of the team', () => {
     expect(go).toHaveBeenCalledWith('ads');
   });
 
+  // G95 (mockup g95 screen 1): the row and the tile «bugun qildingiz» open the own decisions.
+  it('opens «Mening qarorlarim» from its row and from «bugun qildingiz»', async () => {
+    const { go } = renderTeamHome('moderator');
+    fireEvent.click(await screen.findByText('Mening qarorlarim'));
+    expect(go).toHaveBeenLastCalledWith('decisions');
+    go.mockClear();
+    fireEvent.click(screen.getByText('bugun qildingiz'));
+    expect(go).toHaveBeenLastCalledWith('decisions');
+  });
+
   it('lists every case the oldest first, a late one red, who opened it', async () => {
     renderTeamHome('moderator');
     const late = await screen.findByText('2 soat');

@@ -117,6 +117,8 @@ describe('moderation signals (docs/64)', () => {
       {
         submitted: async () => void calls.push('submitted'),
         decided: async () => void calls.push('decided'),
+        carFixed: async () => void calls.push('carFixed'),
+        reopened: async () => void calls.push('reopened'),
       },
       async () => [900, 901],
     );

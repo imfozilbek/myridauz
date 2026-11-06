@@ -61,3 +61,12 @@
   font-size: 11px;
   line-height: 13px;
 }
+
+/* A tile that opens its list (G95): the same tile, only a button. */
+.number-tile-open {
+  margin: 0;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}

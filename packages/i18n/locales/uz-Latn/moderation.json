@@ -37,5 +37,14 @@
   "unblockAsk": "Blokdan chiqarasizmi? U yana safar qila oladi.",
   "faceReason.face_not_visible": "Yuz aniq koʻrinmaydi",
   "faceReason.not_one_person": "Rasmda bitta odam emas",
-  "faceReason.not_real_photo": "Haqiqiy rasm emas"
+  "faceReason.not_real_photo": "Haqiqiy rasm emas",
+  "mine.title": "Mening qarorlarim",
+  "mine.hint": "Oxirgi {days} kun",
+  "mine.empty": "Oxirgi {days} kunda qaror yoʻq",
+  "fixCar": "Mashinani tuzatish",
+  "fixCar.hint": "Rasmdagi mashinaga qarab tuzating",
+  "fixCar.save": "Saqlash",
+  "sendBack": "Tuzatishga qaytarish",
+  "reopen": "Rad etishni bekor qilish",
+  "reopenAsk": "Rad etishni bekor qilasizmi? Ariza yana navbatga tushadi."
 }

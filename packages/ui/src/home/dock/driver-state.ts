@@ -113,19 +113,38 @@ const lacks = (wallet: Wallet | null, requests: readonly Booking[]) => {
   return wallet && first ? Math.max(0, first.commission - wallet.bonus - wallet.main) : 0;
 };
 
+const byLevel = (a: DriverState, b: DriverState) => DRIVER_LEVEL[a.kind] - DRIVER_LEVEL[b.kind];
+type Step = 'draft' | 'fix' | 'pending';
+const stepOf = (status: Lists['status']): Step | null =>
+  status === 'approved'
+    ? null
+    : status === 'draft'
+      ? 'draft'
+      : status === 'changes_requested'
+        ? 'fix'
+        : 'pending';
+
+// An application not approved shows its step. The live trips of a car approved before go on: their
+// urgent steps («Yoʻlga chiqdim», the meeting, the requests) come first, the application after them
+// (G95 «Tuzatishga qaytarish», G91 DRV-1).
+function stepAfterUrgent(step: Step, trips: readonly DriverState[]): DriverState[] {
+  const sorted = [...trips].sort(byLevel);
+  const urgent = sorted.filter((state) => DRIVER_LEVEL[state.kind] <= DRIVER_LEVEL.onRoad);
+  return [...urgent, { kind: step }, ...sorted.filter((state) => !urgent.includes(state))];
+}
+
 // Every state there is, the most important first; the block shows the first one (docs/165).
 export function driverStates(lists: Lists, now: number, meet: number): DriverState[] {
-  if (lists.status === 'draft') return [{ kind: 'draft' }];
-  if (lists.status === 'changes_requested') return [{ kind: 'fix' }];
-  if (lists.status !== 'approved') return [{ kind: 'pending' }];
   const live = [...lists.trips].sort((a, b) => a.departAt - b.departAt);
   const states = live.flatMap((trip) => tripStates(trip, lists, now, meet));
+  const step = stepOf(lists.status);
+  if (step) return stepAfterUrgent(step, states);
   const requests = states.flatMap((state) => (state.kind === 'requests' ? state.requests : []));
   const missing = lacks(lists.wallet, requests);
   if (missing > 0) states.push({ kind: 'short', missing, requests });
   if (lists.welcome) states.push({ kind: 'welcome' });
   const seats = lists.wallet?.seatsLeft ?? null;
   if (seats !== null && seats < lists.fewSeats) states.push({ kind: 'low' });
-  const sorted = states.sort((a, b) => DRIVER_LEVEL[a.kind] - DRIVER_LEVEL[b.kind]);
+  const sorted = states.sort(byLevel);
   return sorted.length > 0 ? sorted : [{ kind: 'idle' }];
 }

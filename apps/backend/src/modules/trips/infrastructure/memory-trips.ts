@@ -56,6 +56,12 @@ export function createMemoryTrips(): TripRepository {
       return over.map((trip) => trip.id);
     },
     // The same conditions as the UPDATE of D1: a cancel or a second tap that came first wins.
+    fixCar: async (id, car, now) => {
+      const trip = trips.get(id);
+      if (!trip || !live(trip) || onTheWay(trip, now)) return false;
+      trips.set(id, { ...trip, car });
+      return true;
+    },
     depart: async (id, at) => {
       const trip = trips.get(id);
       if (!trip || !live(trip) || trip.departedAt !== null) return false;

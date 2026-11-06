@@ -93,5 +93,9 @@ export function createMemoryOffers(): OfferRepository {
     byRequests: async (requestIds) =>
       [...rows.values()].filter((offer) => requestIds.includes(offer.requestId)),
     byDriver: async (driverId) => [...rows.values()].filter((offer) => offer.driverId === driverId),
+    fixCar: async (driverId, car) => {
+      for (const offer of rows.values())
+        if (offer.driverId === driverId && offer.status === 'sent') rows.set(offer.id, { ...offer, car });
+    },
   };
 }

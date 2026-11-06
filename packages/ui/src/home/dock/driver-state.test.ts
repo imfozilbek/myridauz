@@ -28,6 +28,22 @@ describe('the block of a driver: one state by its level (G76, docs/165)', () => 
     expect(kinds({ status: 'changes_requested' }, at(0))).toEqual(['fix']);
   });
 
+  // G95 «Tuzatishga qaytarish» (G91 DRV-1): the live trip of the car approved before goes on.
+  it('keeps the urgent steps of a live trip above a fix asked or a new check', () => {
+    const day = { trips: [trip], bookings: [seat] };
+    expect(kinds({ ...day, status: 'changes_requested' }, at(-40 * MINUTE_MS))).toEqual([
+      'depart',
+      'fix',
+      'published',
+    ]);
+    expect(kinds({ ...day, status: 'pending' }, at(-40 * MINUTE_MS))).toEqual([
+      'depart',
+      'pending',
+      'published',
+    ]);
+    expect(kinds({ ...day, status: 'changes_requested' }, at(-DAY_MS))).toEqual(['fix', 'published']);
+  });
+
   it('is free, welcomes the first visit, warns of a low wallet', () => {
     expect(kinds({}, at(0))).toEqual(['idle']);
     expect(kinds({ welcome: true }, at(0))).toEqual(['welcome']);

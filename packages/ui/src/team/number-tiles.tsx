@@ -1,7 +1,14 @@
 import './number-tiles.css';
+import { haptic } from '../telegram/feedback';
 
-// change: how the number moved since the period before, «↑ 6» (G45, F-A12 of docs/90).
-type Tile = { readonly value: string | number; readonly label: string; readonly change?: string };
+// change: how the number moved since the period before, «↑ 6» (G45, F-A12 of docs/90). onClick: the
+// tile opens its list, «bugun qildingiz» opens «Mening qarorlarim» (G95).
+type Tile = {
+  readonly value: string | number;
+  readonly label: string;
+  readonly change?: string;
+  readonly onClick?: () => void;
+};
 
 type TilesProps = {
   readonly tiles: readonly Tile[];
@@ -13,13 +20,32 @@ type TilesProps = {
 export function NumberTiles({ tiles, kind }: TilesProps) {
   return (
     <div className={`number-tiles number-tiles-${kind}`}>
-      {tiles.map(({ value, label, change }) => (
-        <div key={label} className="number-tile">
-          <b>{value}</b>
-          <span>{label}</span>
-          {change ? <small>{change}</small> : null}
-        </div>
-      ))}
+      {tiles.map(({ value, label, change, onClick }) => {
+        const inside = (
+          <>
+            <b>{value}</b>
+            <span>{label}</span>
+            {change ? <small>{change}</small> : null}
+          </>
+        );
+        return onClick ? (
+          <button
+            key={label}
+            type="button"
+            className="number-tile number-tile-open"
+            onClick={() => {
+              haptic.tap();
+              onClick();
+            }}
+          >
+            {inside}
+          </button>
+        ) : (
+          <div key={label} className="number-tile">
+            {inside}
+          </div>
+        );
+      })}
     </div>
   );
 }

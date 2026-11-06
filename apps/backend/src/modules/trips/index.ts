@@ -1,4 +1,4 @@
-import { DAY_MS, type TripInput } from '@platform/contracts';
+import { DAY_MS, type Car, type TripInput } from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
 import { openTrip, publishPrivateTrip, releaseTrip } from './application/private-trip';
@@ -9,6 +9,7 @@ import { regionTrips } from './application/trip-counts';
 import { cancelTrip, MY_TRIPS_LIMIT, teamTrips } from './application/read';
 import { views } from './application/views-of';
 import { familyView, upcomingOf } from './application/driver-trips';
+import { fixLiveCar } from './application/fix-car';
 import { driverSchedule, scheduleError } from './application/schedule';
 import { tripsDeps } from './deps';
 import { progressRoutes } from './http/progress-routes';
@@ -16,6 +17,9 @@ import { tripRoutes } from './http/trip-routes';
 import { isLive, statusAt } from './domain/trip';
 
 export { handleTripChange, wireTripStanding } from './deps';
+// The team fixed the car of the driver (G95): live trips not on the way take it.
+export const fixDriverCar = (env: Bindings, driverId: number, car: Car) =>
+  fixLiveCar(tripsDeps(env), driverId, car);
 // A booking was confirmed or cancelled: the seats left changed (G08).
 export const tripChanged = (env: Bindings, tripId: string) => tripsDeps(env).changed(tripId, 'updated');
 

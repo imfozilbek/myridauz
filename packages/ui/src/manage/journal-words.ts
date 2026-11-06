@@ -1,4 +1,4 @@
-import { LIMIT_KEYS, type Journal, type JournalKind, type LimitKey } from '@platform/contracts';
+import { formatPlate, LIMIT_KEYS, type Journal, type JournalKind, type LimitKey } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { useI18n } from '../context/i18n-context';
 import type { IconName } from '../icons';
@@ -11,6 +11,9 @@ const ACTIONS: Readonly<Record<string, TranslationKey>> = {
   'application:approve': 'manage.entry.approved',
   'application:reject': 'manage.entry.rejected',
   'application:request_changes': 'manage.entry.changes',
+  // G95: the team fixed the car by its photo; the owner sent a refusal back to «Navbat».
+  'application:car': 'manage.entry.carFixed',
+  'application:reopen': 'manage.entry.reopened',
   'face:approve': 'manage.entry.faceFits',
   'face:reject': 'manage.entry.faceNot',
   'complaint:none': 'manage.entry.noViolation',
@@ -36,6 +39,11 @@ export function useEntryWords() {
     const [what = '', days = '', refund] = action.split(':');
     if (kind === 'limits' && isLimit(subject))
       return t('manage.entry.limit', { name: t(`manage.limit.${subject}`), value: action });
+    // «Mashina tuzatildi · 01 A 123 BC → 01 A 777 BC» when the plate changed (G95, «было → стало»).
+    if (kind === 'application' && what === 'car' && refund) {
+      const plates = `${formatPlate(days)} → ${formatPlate(refund)}`;
+      return t('home.meta', { when: t('manage.entry.carFixed'), more: plates });
+    }
     const key = ACTIONS[`${kind}:${what}`];
     const said =
       what === 'block'
@@ -63,7 +71,7 @@ const SIGNS: Readonly<Record<JournalKind, IconName>> = {
   waitlist: 'channel',
   trip: 'trip',
 };
-const GOOD: ReadonlySet<string> = new Set(['approve', 'none', 'unblock', 'confirm', 'add']);
+const GOOD: ReadonlySet<string> = new Set(['approve', 'none', 'unblock', 'confirm', 'add', 'reopen']);
 const BAD: ReadonlySet<string> = new Set(['reject', 'block', 'remove', 'cancel']);
 
 export function entrySign({ kind, action }: Entry): { readonly icon: IconName; readonly tone?: RowTone } {

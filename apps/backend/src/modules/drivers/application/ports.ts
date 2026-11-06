@@ -6,7 +6,7 @@ import type { Application } from '../domain/application';
 export type ApplicationRepository = {
   find(userId: number): Promise<Application | undefined>;
   save(application: Application): Promise<void>;
-  // The decision on a waiting application, written only if nobody decided it since `read` (G89 M5).
+  // A decision, written only if nobody changed the application since `read` (G89 M5, G95).
   decide(next: Application, read: Application): Promise<boolean>;
   // Applications waiting for the team, the oldest first.
   queue(): Promise<Application[]>;
@@ -31,6 +31,8 @@ export type DecisionLog = {
   of(userId: number): Promise<Decided[]>;
   // How many decisions each team member made in [from, to): the daily digest (docs/92).
   countsBetween(from: number, to: number): Promise<Map<number, number>>;
+  // «Mening qarorlarim» (G95): the decisions of one member since a time, the newest first.
+  by(memberId: number, since: number): Promise<Decided[]>;
 };
 
 // The users module, seen from here: a name and a face, never a phone (docs/07); the gender only
@@ -60,6 +62,9 @@ export type ModerationNotifier = {
   // fixedPlate: the plate the team fixed on approval, null when it stayed as the driver wrote it.
   // bonus: the welcome bonus the approval gave, null when none (docs/89 D4).
   decided(application: Application, fixedPlate: string | null, bonus: Bonus | null): Promise<void>;
+  // The team fixed the approved car by its photo; the owner sent a refusal back to the check (G95).
+  carFixed(application: Application): Promise<void>;
+  reopened(application: Application): Promise<void>;
 };
 
 export type DriversDeps = {
@@ -73,6 +78,8 @@ export type DriversDeps = {
   readonly driverApproved: (userId: number) => Promise<Bonus | null>;
   // A trip of the driver not over yet (G75): set by the app from the trips module.
   readonly liveTrips: (userId: number) => Promise<boolean>;
+  // The fixed car reaches the live trips, the waiting offers and their posts (G95, docs/224).
+  readonly carFixed: (userId: number, car: Car) => Promise<void>;
   readonly now: () => number;
   readonly newId: () => string;
 };

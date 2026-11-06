@@ -79,6 +79,15 @@ describe('ApplicationFlow: «Назад» of the application (docs/94 B4, F3, G6
     expect(screen.queryByText('Mashinangiz')).toBeNull();
   });
 
+  // G95: a link of a bot (a live trip, a booking) opens its own screen; the fix waits on the main screen.
+  it('opens no fix by itself when a link of a bot opened the app', async () => {
+    window.history.replaceState(null, '', '/?open=trip');
+    toFix();
+    expect(await screen.findByText('Tuzatish kerak')).toBeTruthy();
+    expect(screen.queryByText('Mashinangiz')).toBeNull();
+    window.history.replaceState(null, '', '/');
+  });
+
   it('F3: leaving with a changed car asks first and stays on «no»', async () => {
     toFix();
     asked.mockReturnValue(false);

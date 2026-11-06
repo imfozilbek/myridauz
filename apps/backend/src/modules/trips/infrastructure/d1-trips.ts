@@ -1,7 +1,7 @@
 import { allIn } from '../../../shared/storage/in-list';
 import type { TripRepository } from '../application/ports';
 import { toTrip, type TripRow as Row } from './trip-row';
-import { ARRIVE, CANCEL, DEPART, LIVE, NOT_DEPARTED, UPSERT } from './trip-sql';
+import { ARRIVE, CANCEL, DEPART, FIX_CAR, LIVE, NOT_DEPARTED, UPSERT } from './trip-sql';
 
 const changed = (result: D1Result) => result.meta.changes === 1;
 
@@ -114,6 +114,8 @@ export const d1Trips = (db: D1Database): TripRepository => ({
   depart: async (id, at) => changed(await db.prepare(DEPART).bind(at, id).run()),
   arrive: async (id, at) => changed(await db.prepare(ARRIVE).bind(at, id, at).run()),
   cancel: async (id) => changed(await db.prepare(CANCEL).bind(id).run()),
+  fixCar: async (id, car, now) =>
+    changed(await db.prepare(FIX_CAR).bind(car.make, car.model, car.color, car.plate, id, now).run()),
   // Through trips_search (status, depart_at): only the trips of the window (docs/117).
   notDeparted: async (from, to, longest) =>
     (

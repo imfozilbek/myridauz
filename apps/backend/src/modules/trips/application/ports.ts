@@ -8,7 +8,7 @@ import type {
   ScheduleRules,
 } from '@platform/contracts';
 import type { Person } from '../../users';
-import type { TripRecord } from '../domain/trip';
+import type { TripCar, TripRecord } from '../domain/trip';
 
 // Ports of the trips module: D1 in production, memory in tests.
 export type TripRepository = {
@@ -37,6 +37,8 @@ export type TripRepository = {
   arrive(id: string, at: number): Promise<boolean>;
   // The driver's cancel, also one conditional write: a «Yoʻlga chiqdim» that came first wins (G63).
   cancel(id: string): Promise<boolean>;
+  // The car the team fixed by its photo (G95): only into a live trip not on the way at `now`.
+  fixCar(id: string, car: TripCar, now: number): Promise<boolean>;
   // Live trips without «Yoʻlga chiqdim» whose last departure (the end of a range, docs/216) is in
   // [from, to]: the Cron reminds and departs. longest: the longest range, for the index of depart_at.
   notDeparted(from: number, to: number, longest: number): Promise<TripRecord[]>;

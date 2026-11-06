@@ -20,6 +20,8 @@
   "driver.approved": "Arizangiz tasdiqlandi. Endi safar eʼlon qila olasiz.",
   "driver.bonus": "Sizga {amount} bonus berdik. U {date}gacha komissiyaga ishlatiladi.",
   "driver.plateFixed": "Davlat raqami rasm boʻyicha tuzatildi: {plate}",
+  "driver.carFixed": "Mashina maʼlumotlari rasm boʻyicha tuzatildi: {car}",
+  "driver.reopened": "Arizangiz yana koʻrib chiqiladi. Javobni shu yerga yozamiz.",
   "driver.rejected": "Arizangiz rad etildi.\n{reasons}\nSavolingiz boʻlsa, yordam xizmatiga yozing.",
   "driver.changesRequested": "Arizangizda tuzatish kerak:\n{reasons}\nIlovada belgilangan joylarni tuzatib, qayta yuboring.",
   "driver.received": "Arizangiz qabul qilindi. Jamoamiz uni 1 soat ichida tekshiradi va natijani shu yerga yozadi.",

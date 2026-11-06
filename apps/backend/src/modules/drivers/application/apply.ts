@@ -62,7 +62,7 @@ export async function uploadCarPhoto(
 }
 
 // A model from the list has its seats, whatever the phone sends (docs/50); a typed model keeps the answer.
-const withCatalogSeats = (car: Car): Car => ({
+export const withCatalogSeats = (car: Car): Car => ({
   ...car,
   seats: catalogSeats(car.make, car.model) ?? car.seats,
 });

@@ -39,9 +39,12 @@ export function setup(avatarKey: string | null = 'avatars/1/a') {
       submitted: async (application) => void log.push(`submitted:${application.status}`),
       decided: async (application, fixedPlate) =>
         void log.push(`decided:${application.status}${fixedPlate ? `:${fixedPlate}` : ''}`),
+      carFixed: async (application) => void log.push(`carFixed:${application.car?.plate ?? ''}`),
+      reopened: async (application) => void log.push(`reopened:${application.status}`),
     },
     driverApproved: async (userId) => (log.push(`approved:${userId}`), null),
     liveTrips: async () => liveTrips,
+    carFixed: async (userId, car) => void log.push(`trips:${userId}:${car.plate}`),
     now: () => 1000,
     newId: () => `id${(id += 1)}`,
   };

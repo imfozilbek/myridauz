@@ -65,3 +65,8 @@ export function decisionRing(application: Application, quiet: boolean): Ring[] {
   const text = t(ANSWERS[application.status].ring);
   return [{ bot: 'driver', chatId: application.userId, text, card: cardKey(application.userId), quiet }];
 }
+
+// A fix of the team rings under the card with its own words (G95): the car fixed, a refusal reopened.
+export const noticeRing = (application: Application, text: string, quiet: boolean): Ring[] => [
+  { bot: 'driver', chatId: application.userId, text, card: cardKey(application.userId), quiet },
+];

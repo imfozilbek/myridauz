@@ -1,4 +1,4 @@
-import { MY_AVATAR_PATH } from '@platform/contracts';
+import { MY_AVATAR_PATH, type Car } from '@platform/contracts';
 import { Hono } from 'hono';
 import { assignTo } from '../assignments';
 import type { AppEnv, Bindings } from '../../env';
@@ -31,6 +31,11 @@ const NO_CONTENT = 204;
 type LiveTrips = (env: Bindings, userId: number) => Promise<boolean>;
 let liveTripsOf: LiveTrips = async () => false;
 export const wireLiveTrips = (live: LiveTrips) => void (liveTripsOf = live);
+// The car the team fixed by its photo reaches the live trips, the offers and their posts (G95): set
+// by the app (module-events.ts), the trips and the bookings modules know them.
+type CarFixed = (env: Bindings, userId: number, car: Car) => Promise<void>;
+let carFixedOf: CarFixed = async () => undefined;
+export const wireCarFixed = (fixed: CarFixed) => void (carFixedOf = fixed);
 
 const driversDeps = (env: Bindings): DriversDeps => {
   const people = peopleOf(env);
@@ -56,6 +61,7 @@ const driversDeps = (env: Bindings): DriversDeps => {
       return welcomeBonus(env, userId);
     },
     liveTrips: (userId) => liveTripsOf(env, userId),
+    carFixed: (userId, car) => carFixedOf(env, userId, car),
     now: Date.now,
     newId: () => crypto.randomUUID(),
   };

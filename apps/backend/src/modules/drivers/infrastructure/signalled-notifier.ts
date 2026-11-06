@@ -19,5 +19,13 @@ export function signalledNotifier(
       await notifier.decided(application, fixedPlate, bonus);
       await sendSignals(env, [{ userId: application.userId, app: 'driver' }, ...(await team())]);
     },
+    carFixed: async (application) => {
+      await notifier.carFixed(application);
+      await sendSignals(env, [{ userId: application.userId, app: 'driver' }, ...(await team())]);
+    },
+    reopened: async (application) => {
+      await notifier.reopened(application);
+      await sendSignals(env, [{ userId: application.userId, app: 'driver' }, ...(await team())]);
+    },
   };
 }

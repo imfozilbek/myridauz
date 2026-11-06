@@ -1,6 +1,14 @@
 import { BOT_VIA_PARAM, BOT_VIA_PREFIX, splitStart, VIA_PATTERN } from '@platform/contracts';
 import { useEffect } from 'react';
 
+// Opened without a link: no screen of a link waits (the moment of G69, the fix of an application, G95).
+// The mark of a bot button opens nothing (G87).
+export const plainLaunch = () =>
+  startParam() === null &&
+  [...new URLSearchParams(window.location.search).keys()].every(
+    (name) => name.startsWith('tgWebApp') || name === BOT_VIA_PARAM,
+  );
+
 // A bot button opens the Mini App with a parameter: a chat (docs/07) or a shared trip (docs/43).
 export function launchParam(name: string, pattern: RegExp): string | null {
   const value = new URLSearchParams(window.location.search).get(name);

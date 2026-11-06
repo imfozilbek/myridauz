@@ -13,7 +13,7 @@ import type { QueueNews } from '../../team-queue';
 import { botMessageUrl } from '../../../shared/telegram/open-button';
 import type { Application } from '../domain/application';
 import type { Bonus, ModerationNotifier } from '../application/ports';
-import { applicationCard, decisionRing } from './application-card';
+import { applicationCard, decisionRing, noticeRing } from './application-card';
 
 const { t, formatDate, formatMoney } = createI18n(DEFAULT_LOCALE);
 
@@ -71,6 +71,19 @@ function approvedParts(brand: BrandConfig) {
 
 export function telegramNotifier(wiring: Wiring): ModerationNotifier {
   const { brand, show } = wiring;
+  // The card of an approved driver keeps «Kanalga oʻtish» and «Safar eʼlon qilish» (G95).
+  const notice = (application: Application, text: string) => {
+    const approved = application.status === 'approved' ? approvedParts(brand) : null;
+    const details = [text];
+    const card = applicationCard({
+      brand,
+      application,
+      fixedPlate: null,
+      details,
+      ...(approved ? { buttons: approved.buttons } : {}),
+    });
+    return quietly(show([card], noticeRing(application, text, isQuietTime(Date.now()))));
+  };
   return {
     submitted: async (application: Application) => {
       const details = [receivedText(brand, application.submittedAt ?? application.updatedAt)];
@@ -98,6 +111,20 @@ export function telegramNotifier(wiring: Wiring): ModerationNotifier {
       });
       await quietly(show([card], decisionRing(application, isQuietTime(Date.now()))));
       await wiring.queue();
+    },
+    // The car fixed by its photo (G95): the card shows it, the words ring under it.
+    carFixed: async (application) => {
+      const { car } = application;
+      if (!car) return;
+      const paint = t(`drivers.color.${car.color}`).toLocaleLowerCase();
+      const named = `${car.make} ${car.model}, ${paint}, ${formatPlate(car.plate)}`;
+      await notice(application, t('bot.driver.carFixed', { car: named }));
+    },
+    // A refusal sent back to the check (G95): the driver waits again, the team gets the case.
+    reopened: async (application) => {
+      await notice(application, t('bot.driver.reopened'));
+      await wiring.assign(application.userId);
+      await wiring.queue({ kind: 'new' });
     },
   };
 }

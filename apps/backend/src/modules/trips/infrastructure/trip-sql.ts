@@ -20,4 +20,8 @@ export const ARRIVE = `UPDATE trips SET departed_at = COALESCE(departed_at, ${LA
 // The Cron of departures: the start bounds the index, the last departure the window (docs/216).
 export const NOT_DEPARTED = `SELECT * FROM trips WHERE ${LIVE} AND depart_at >= ? AND depart_at <= ?
   AND ${LAST_DEPART} >= ? AND ${LAST_DEPART} <= ? AND departed_at IS NULL`;
+// The team fixed the car by its photo (G95): a live trip not on the way takes it; save never writes
+// the car (docs/65 A1).
+export const FIX_CAR = `UPDATE trips SET car_make = ?, car_model = ?, car_color = ?, car_plate = ?
+  WHERE id = ? AND ${LIVE} AND departed_at IS NULL AND ${LAST_DEPART} > ?`;
 export const CANCEL = `UPDATE trips SET status = 'cancelled' WHERE id = ? AND ${LIVE} AND departed_at IS NULL`;

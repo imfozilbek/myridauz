@@ -1,5 +1,6 @@
 import './team.css';
 import './navbat.css';
+import { MY_DECISIONS_DAYS } from '@platform/contracts';
 import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
@@ -14,7 +15,13 @@ import { DiqqatSection } from './diqqat-section';
 import { NavbatSection } from './navbat-section';
 import { TeamProfile } from './team-profile';
 import { ManageGroup, ManageRow } from '../manage/manage-page';
-import { ADS_SECTION, CHANNELS_SECTION, MANAGEMENT_SECTION, STATS_SECTION } from './team-sections';
+import {
+  ADS_SECTION,
+  CHANNELS_SECTION,
+  MANAGEMENT_SECTION,
+  MY_DECISIONS_SECTION,
+  STATS_SECTION,
+} from './team-sections';
 import { WorkNumbers } from './work-numbers';
 
 const ICON = 20;
@@ -68,8 +75,16 @@ function ModeratorNumbers({ go }: GoProps) {
   const { value: work, failed } = useLoad(() => team.work(), 'team.work');
   return (
     <>
-      {work ? <WorkNumbers work={work} /> : null}
+      {work ? <WorkNumbers work={work} onDone={() => go(MY_DECISIONS_SECTION)} /> : null}
       {!work && failed ? <ActionFailure error="errors.generic.description" /> : null}
+      <ManageGroup>
+        <ManageRow
+          icon="history"
+          title={t('moderation.mine.title')}
+          hint={t('moderation.mine.hint', { days: MY_DECISIONS_DAYS })}
+          onClick={() => go(MY_DECISIONS_SECTION)}
+        />
+      </ManageGroup>
       <ManageGroup title={brand.name}>
         <ManageRow
           icon="statistics"
