@@ -49,7 +49,7 @@ export const AREAS = {
     'g49-driver',
     'g90',
   ],
-  team: ['team', 'team-moderation', 'screens-team', 'all-admin', 'g45-team', 'g45-screens'],
+  team: ['team', 'team-moderation', 'screens-team', 'all-admin', 'g45-team', 'g45-screens', 'g95'],
   bots: ['bots', 'bots-team', 'complaints-time', 'g68-bots', 'g83'],
   channels: ['system-channels', 'system-cron', 'system-cron-team', 'system-people'],
   // The walk of the screens (G91): only on its own fresh stand, pnpm stand:walk.

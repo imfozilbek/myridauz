@@ -44,9 +44,7 @@
   "fixCar": "Mashinani tuzatish",
   "fixCar.hint": "Rasmdagi mashinaga qarab tuzating",
   "fixCar.save": "Saqlash",
-  "fixCar.saved": "Mashina tuzatildi",
   "sendBack": "Tuzatishga qaytarish",
   "reopen": "Rad etishni bekor qilish",
-  "reopenAsk": "Rad etishni bekor qilasizmi? Ariza yana navbatga tushadi.",
-  "reopened": "Ariza navbatga qaytdi"
+  "reopenAsk": "Rad etishni bekor qilasizmi? Ariza yana navbatga tushadi."
 }
