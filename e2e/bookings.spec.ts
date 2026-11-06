@@ -23,7 +23,8 @@ test('a driver confirms a booking with the commission', async ({ page }) => {
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
   await confirmBooking(page);
-  expect(answered.at(-1)).toContain('/confirm');
+  // The request left the page; the mock writes it down a moment later (a race seen in CI, G95).
+  await expect.poll(() => answered.at(-1)).toContain('/confirm');
 });
 
 test('a passenger writes in the chat and a phone is hidden', async ({ page }) => {
