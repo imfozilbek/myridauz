@@ -6,12 +6,12 @@ import { GROUP, PLAIN, REQUEST, setup, TAKE, tile, TURQUOISE } from './request-p
 // docs/223).
 describe('the look of a request in a direction group (G94, docs/223)', () => {
   it('goes to the group of its route only, without sound, as the request cards of the group itself', async () => {
-    const { deps, sent } = setup();
+    const { deps, sent } = setup(REQUEST, true, 'group');
     await postRequest(deps, REQUEST.id);
     expect(sent).toHaveLength(1);
     const [job] = sent;
-    expect(job).toMatchObject({ bot: 'poster', chatId: GROUP, html: true, silent: true });
-    expect(job?.after).toEqual({ type: 'requestPost', requestId: 'req-1', chat: GROUP, bot: 'poster' });
+    expect(job).toMatchObject({ bot: 'group', chatId: GROUP, html: true, silent: true });
+    expect(job?.after).toEqual({ type: 'requestPost', requestId: 'req-1', chat: GROUP, bot: 'group' });
     // Owner, 06.11.2026: «максимально похож» on the mockup of the group's own request card.
     expect(job?.text.split('\n')).toEqual([
       `${tile('301', '🙋')} <b>МАШИНА КЕРАК</b> · Чилонзордан ${TURQUOISE}`,
@@ -24,6 +24,15 @@ describe('the look of a request in a direction group (G94, docs/223)', () => {
       inline_keyboard: [[{ text: 'Йўловчини олиш', url: TAKE, icon_custom_emoji_id: '301' }]],
     });
   });
+  it('the poster: the tiles in the text, the hand in the words of the button, no icon (Premium only)', async () => {
+    const { deps, sent } = setup();
+    await postRequest(deps, REQUEST.id);
+    expect(sent[0]?.text.split('\n')[0]).toBe(
+      `${tile('301', '🙋')} <b>МАШИНА КЕРАК</b> · Чилонзордан ${TURQUOISE}`,
+    );
+    expect(sent[0]?.markup).toEqual({ inline_keyboard: [[{ text: '🙋 Йўловчини олиш', url: TAKE }]] });
+  });
+
   it('a brand without tiles: the plain emoji, the hand in the words of the button', async () => {
     const { deps, sent } = setup(REQUEST, true, 'poster', PLAIN);
     await postRequest(deps, REQUEST.id);

@@ -27,16 +27,17 @@ function withDeps(env: Bindings, requestOf: RequestOf, run: Run): Promise<void> 
   const brand = brandOf(env);
   const look = groupLookOf(brand);
   if (!look) return Promise.resolve();
+  // The group's own bot once its key is on the Worker (owner, 06.11.2026: «элончи писал не постер»).
+  const bot = env.GROUP_BOT_TOKEN ? 'group' : 'poster';
   return run({
     enabled: env.CHANNEL_POSTS === 'on',
     groups: look.chats,
-    // The group's own bot once its key is on the Worker (owner, 06.11.2026: «элончи писал не постер»).
-    bot: env.GROUP_BOT_TOKEN ? 'group' : 'poster',
+    bot,
     channels: async () => allChannels(await teamDeps(env)),
     places: () => placesOf(env),
     request: (id) => requestOf(env, id),
     posts: env.DB ? d1RequestPosts(env.DB) : localPosts,
-    render: groupRequestPost(brand.bots.driver, look),
+    render: groupRequestPost(brand.bots.driver, look, bot === 'group'),
     closed: closedRequestPost(look),
     send: (jobs) => notifyMass(env, jobs),
     now: () => Date.now(),

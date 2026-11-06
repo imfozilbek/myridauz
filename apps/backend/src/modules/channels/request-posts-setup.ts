@@ -47,7 +47,7 @@ export function setup(
     places: async () => PLACES,
     request: async (id) => (id === now.id ? now : undefined),
     posts: createMemoryRequestPosts(),
-    render: groupRequestPost('driver_bot', look),
+    render: groupRequestPost('driver_bot', look, bot === 'group'),
     closed: closedRequestPost(LOOK),
     send: async (jobs) => void sent.push(...jobs),
     now: () => NOW,

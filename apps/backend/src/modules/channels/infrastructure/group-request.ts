@@ -33,9 +33,10 @@ function dayWord(at: number, now: number): string {
 
 // The button opens the requests of the route and day in the driver bot (docs/83 N08): the hand
 // tile is its icon, as the group's own buttons wear theirs, in place of the emoji of its words.
-function takeButton(cards: GroupCards, url: string) {
+// Telegram lets only a bot whose owner has Premium wear an icon: the group bot, never the poster.
+function takeButton(cards: GroupCards, url: string, icon: boolean) {
   const text = t('bot.group.take');
-  if (!cards.tiles) return { text, url };
+  if (!cards.tiles || !icon) return { text, url };
   return { text: text.split(' ').slice(1).join(' '), url, icon_custom_emoji_id: cards.tiles.hand };
 }
 
@@ -43,7 +44,7 @@ function takeButton(cards: GroupCards, url: string) {
 // (owner, 06.11.2026: «максимально похож», docs/223): the turquoise tiles, the bold lines, the
 // turquoise R of the Mini App, the price. A request has a day, no hour. No name, no phone (docs/07).
 export const groupRequestPost =
-  (driverBot: string, look: GroupLook) =>
+  (driverBot: string, look: GroupLook, icon: boolean) =>
   (request: GroupRequest, places: Places, now: number, chat: string): Post => {
     const { cards } = look;
     const empty = request.wholeCar || request.seats >= EMPTY_SEATS;
@@ -62,7 +63,7 @@ export const groupRequestPost =
       requestsLinkValue(request.from, request.to, request.date),
       channelVia(chat),
     );
-    return inScript(cards, { text, markup: { inline_keyboard: [[takeButton(cards, take)]] } });
+    return inScript(cards, { text, markup: { inline_keyboard: [[takeButton(cards, take, icon)]] } });
   };
 
 // The post of a request that closed: deleted, or these words where Telegram keeps it (docs/223).
