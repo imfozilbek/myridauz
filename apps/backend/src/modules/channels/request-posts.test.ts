@@ -67,7 +67,7 @@ describe('the requests of passengers in a direction group (G94, docs/223)', () =
       '🕒 Эртага, 2-октябр',
       '🧍 2 киши · 💰 90 000',
     ]);
-    expect(job?.markup).toEqual({ inline_keyboard: [[{ text: '🚘 Йўловчини олиш', url: TAKE }]] });
+    expect(job?.markup).toEqual({ inline_keyboard: [[{ text: '🙋 Йўловчини олиш', url: TAKE }]] });
   });
 
   it('4 people or the whole car: «BOʻSH MASHINA KERAK»', async () => {

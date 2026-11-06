@@ -18,6 +18,6 @@
   "group.going": "🏁 {place}{end, select, k {ka} q {qa} other {ga}} ketaman",
   "group.day": "🕒 {day}",
   "group.people": "🧍 {people} kishi · 💰 {price}",
-  "group.take": "🚘 Yoʻlovchini olish",
+  "group.take": "🙋 Yoʻlovchini olish",
   "group.closed": "✅ Yoʻlovchi soʻrovi yopildi"
 }
