@@ -114,4 +114,19 @@ describe('checkAlerts (docs/29)', () => {
     expect(await checkAlerts(deps)).toBe(0);
     expect(await checkAlerts(setup(null).deps)).toBe(0);
   });
+
+  it('counts no «no internet» of a phone: «Statistika» lists it, the signal does not (G96)', async () => {
+    const offline = [
+      ...Array.from({ length: 8 }, () => point('api_error', 'passenger', 's9', 'network.failed')),
+      point('api_error', 'passenger', 's9', 'network.timeout'),
+    ];
+    const events = memoryEvents(offline, () => NOW);
+    const { deps, told } = setup(events);
+    expect(await checkAlerts(deps)).toBe(0);
+    expect(told).toEqual([]);
+    expect((await events.topErrors(1)).map((row) => [row.code, row.count])).toEqual([
+      ['network.failed', 8],
+      ['network.timeout', 1],
+    ]);
+  });
 });
