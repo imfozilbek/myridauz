@@ -1,6 +1,6 @@
 import { HOUR_MS, type ErrorRow } from '@platform/contracts';
 import type { DataPoint } from '../../analytics';
-import { ERROR_EVENTS, type EventSource } from '../application/ports';
+import { ERROR_EVENTS, NETWORK_CODES, type EventSource } from '../application/ports';
 import type { BotRow } from '../domain/bot-load';
 import type { Counter } from '../domain/counters';
 import { toErrorRow } from './sql-rows';
@@ -12,6 +12,7 @@ const TOP_ERRORS = 10;
 export function memoryEvents(rows: readonly DataPoint[], now: () => number): EventSource {
   const recent = (ms: number) => rows.filter((row) => (row.doubles[1] ?? 0) > now() - ms);
   const isError = (row: DataPoint) => (ERROR_EVENTS as readonly string[]).includes(row.blobs[0] ?? '');
+  const isNetwork = (row: DataPoint) => (NETWORK_CODES as readonly string[]).includes(row.blobs[5] ?? '');
   const group = <T>(
     list: readonly DataPoint[],
     keyOf: (row: DataPoint) => string,
@@ -51,7 +52,8 @@ export function memoryEvents(rows: readonly DataPoint[], now: () => number): Eve
       )
         .sort((a, b) => b.count - a.count)
         .slice(0, TOP_ERRORS),
-    errorsSince: async (hours) => recent(hours * HOUR_MS).filter(isError).length,
+    errorsSince: async (hours) =>
+      recent(hours * HOUR_MS).filter((row) => isError(row) && !isNetwork(row)).length,
     marks: async (days) =>
       group(
         recent(days * DAY).filter((row) => row.blobs[0] === 'screen_open' && row.blobs[10]),

@@ -1,5 +1,5 @@
 import type { Fetch } from '../../../shared/telegram/telegram-api';
-import { ERROR_EVENTS, type EventSource } from '../application/ports';
+import { ERROR_EVENTS, NETWORK_CODES, type EventSource } from '../application/ports';
 import {
   botRow,
   counterRow,
@@ -25,6 +25,8 @@ const TOP_ERRORS = 15;
 // The marks of the first screens and the directions of «Rost»: enough rows for every author code.
 const TOP_MARKS = 2000;
 const list = (names: readonly string[]) => names.map((name) => `'${name}'`).join(', ');
+// The signal of errors skips «no internet» of a phone (G96): one code after another, plain SQL.
+const notNetwork = NETWORK_CODES.map((code) => `blob6 != '${code}'`).join(' AND ');
 const within = (unit: 'DAY' | 'HOUR', amount: number) =>
   `timestamp > NOW() - INTERVAL '${Math.trunc(amount)}' ${unit}`;
 
@@ -63,7 +65,7 @@ export function analyticsSql({ accountId, token, dataset, fetch }: Options): Eve
     errorsSince: async (hours) => {
       const sql =
         `SELECT SUM(_sample_interval) AS count FROM ${dataset} ` +
-        `WHERE ${within('HOUR', hours)} AND blob1 IN (${list(ERROR_EVENTS)})`;
+        `WHERE ${within('HOUR', hours)} AND blob1 IN (${list(ERROR_EVENTS)}) AND ${notNetwork}`;
       return sqlAnswerSchema(totalRow).parse(await query(sql)).data[0]?.count ?? 0;
     },
     // blob11: the mark of the first screen of a session (G55); one session counts once.

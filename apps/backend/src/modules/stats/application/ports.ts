@@ -8,6 +8,9 @@ import type { VoiceRows } from '../domain/voice';
 
 // Errors (docs/29): a crash of a screen, a failure of the server (G42) and an error answer of the API.
 export const ERROR_EVENTS = ['client_error', 'server_error', 'api_error'] as const;
+// No answer reached the phone (G43): the network of a person, not a failure of Rida. «Statistika» lists
+// them, the signal of «Diqqat» does not count them (G96, owner 07.11.2026).
+export const NETWORK_CODES = ['network.failed', 'network.timeout'] as const;
 
 // The events of Analytics Engine (docs/29); null while the analytics key is not set (docs/46).
 export type EventSource = {
