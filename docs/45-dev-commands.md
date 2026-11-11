@@ -57,6 +57,7 @@
 - gitleaks скачивается файлом и проверяется по SHA-256, чужой код не запускается.
 - Подготовка `.github/actions/setup`: Node 22, pnpm, `node_modules` из кэша по `pnpm-lock.yaml`.
   Chromium для e2e из кэша: `.github/actions/browser`.
+- Машина CI закреплена: `runs-on: ubuntu-24.04`, как SHA действий. `ubuntu-latest` 11.11.2026 стал Ubuntu 26.04, и Playwright 1.56.1 не поставил Chromium (урок №386). Новую систему берём отдельным PR вместе с Playwright, который её знает.
 - GitHub даёт 20 задач одновременно на аккаунт; прогон занимает 19, вместе с CodeQL 20.
 
 | Задача | Что делает |
