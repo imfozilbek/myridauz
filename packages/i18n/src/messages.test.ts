@@ -39,7 +39,7 @@ describe('messages', () => {
 
   it('shows every message in Cyrillic: Latin only in what stays as written (G98)', () => {
     const latin = KEYS.filter((key) =>
-      /[A-Za-zʻ]/u.test(messageOf('uz-Cyrl', key).replace(NOT_WORDS, '').replace(KEPT, '')),
+      /[A-Za-zʻ]/u.test(messageOf('uz-Cyrl', key).replace(NOT_WORDS, ' ').replace(KEPT, ' ')),
     );
     expect(latin).toEqual([]);
   });
