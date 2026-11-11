@@ -75,7 +75,7 @@ test('the driver: the card of the trip in the bot and the app, and the story', a
       .flatMap((message) => message.buttons)
       .findLast((button) => (button.url ?? '').includes(encodeURIComponent(`trip_${trip.id}__trip-`)));
     const words = new URL(shared?.url ?? 'https://t.me').searchParams.get('text') ?? '';
-    expect(words).toMatch(/^Safarimda \d ta boʻsh joy bor\n🟢 .+\n🔴 .+\n🗓 .+\n💰 Bir joy .+\n\n.+$/u);
+    expect(words).toMatch(/^Сафаримда \d та бўш жой бор\n🟢 .+\n🔴 .+\n🗓 .+\n💰 Бир жой .+\n\n.+$/u);
     keep(`1-bot-words-${platform}.txt`, words);
     const page = await phone(browser);
     await openAs(page, 'driver', driver, { platform, search: `?${MY_TRIP_LINK}=${trip.id}` });

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { openWallet } from './bookings';
 import { expect, test } from './crash-guard';
 import {
@@ -24,7 +25,7 @@ test('13: «Uchrashuv», Madina at the point (g63/4 screen 13)', async ({ page }
   await openTrip(page);
   await page.getByText(t('driverTrip.tile.map')).click();
   await page.locator('.trip-map-stop').first().click();
-  await expect(page.getByText('Madina keldi: uchrashuv joyida')).toBeVisible();
+  await expect(page.getByText(t('driverAfter.meet.came', { name: 'Madina' }))).toBeVisible();
   await expect(page.locator('.meeting-map-box[data-state="ready"]')).toBeVisible();
   await page.waitForTimeout(TILES_MS);
   await shot(page, 'journey-13');
@@ -38,7 +39,7 @@ test('5-1: «Kelmadi» on the own trip, after and before the mark (g63/5 phone 1
   const gone = akmal({ noShowAt: tashkent('2026-10-07T07:25') });
   await openDriver(page, '2026-10-07T07:30', { trips: [live], bookings: [met, gone] });
   await openTrip(page);
-  await expect(page.getByText('Akmal kelmadi')).toBeVisible();
+  await expect(page.getByText(t('driverAfter.noShow.title', { name: 'Akmal' }))).toBeVisible();
   await part(page.locator('.no-show-banner'), 'after-01-banner');
   const there = akmal({ driverCameAt: tashkent('2026-10-07T07:28') });
   await page.route('**/api/driver/bookings', (route) => route.fulfill({ json: { bookings: [met, there] } }));
@@ -55,10 +56,10 @@ test('5-2, 5-3: «Safar tugadi» and «Qaytish» (g63/4 screens 15, 16)', async 
   await openDriver(page, '2026-10-07T20:00', { trips: [trip], bookings: seats });
   await openTrip(page);
   await page.getByText(t('driverAfter.past.rate')).click();
-  await expect(page.getByText(/Qoldi ≈.11 joyga yetadi/u)).toBeVisible();
+  await expect(page.getByText(new RegExp(toCyrillic('Qoldi ≈.11 joyga yetadi'), 'u'))).toBeVisible();
   await shot(page, 'after-02');
   await page.locator('#tg-main-button').click();
-  await expect(page.getByText(/4 ta soʻrov bor/u)).toBeVisible();
+  await expect(page.getByText(new RegExp(toCyrillic('4 ta soʻrov bor'), 'u'))).toBeVisible();
   await shot(page, 'after-03');
 });
 
@@ -66,7 +67,7 @@ test('5-5: the past trip (g63/5 phone 5)', async ({ page }) => {
   await page.route('**/api/reviews/*', (route) => route.fulfill({ json: fiveStars }));
   await openDriver(page, '2026-10-07T20:00', { trips: [pastTrip], bookings: pastSeats });
   await openTrip(page);
-  await expect(page.getByText(/^Baho: ★★★★★/u)).toBeVisible();
+  await expect(page.getByText(new RegExp(toCyrillic('^Baho: ★★★★★'), 'u'))).toBeVisible();
   await shot(page, 'after-05');
 });
 
@@ -88,7 +89,7 @@ test('5-6: the refund in «Hamyon» (g63/5 phone 6)', async ({ page }) => {
   await openDriver(page, '2026-10-08T12:00', { trips: [], bookings: [], bonus: mockupWallet.bonus });
   await page.route('**/api/driver/wallet', (route) => route.fulfill({ json: mockupWallet }));
   await openWallet(page);
-  const refund = page.getByText('Qaytarildi · Akmal kelmadi');
+  const refund = page.getByText(t('driverAfter.wallet.refund', { name: 'Akmal' }));
   await expect(refund).toBeVisible();
   await shot(page, 'after-06');
   // «Hamyon» itself is redesigned by G65: the row of the refund alone.

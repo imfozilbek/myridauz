@@ -1,17 +1,21 @@
+import { toCyrillic } from '@platform/i18n';
+
+// The home of the passenger in Samarqand, named in Cyrillic as the API gives it (G98).
+export const REGISTON = toCyrillic('Registon maydoni');
 // Places of the search by name (G23) as the index has them: real names inside the piece of the map,
-// and the home of the passenger in Samarqand (G24).
+// and the home of the passenger in Samarqand (G24). The API names them in Cyrillic (G98).
 export const FOUND = [
   {
-    name: 'Mustaqillik maydoni',
+    name: toCyrillic('Mustaqillik maydoni'),
     kind: 'transport',
-    area: 'Yakkasaroy',
+    area: toCyrillic('Yakkasaroy'),
     district: '1726287',
     point: { lat: 41.31495, lng: 69.27107 },
   },
   {
-    name: 'Registon maydoni',
+    name: REGISTON,
     kind: 'place',
-    area: 'Samarqand shahri',
+    area: toCyrillic('Samarqand shahri'),
     district: '1718401',
     point: { lat: 39.6547, lng: 66.9758 },
   },

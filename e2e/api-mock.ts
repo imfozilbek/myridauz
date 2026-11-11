@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { toCyrillic } from '@platform/i18n';
 import locations from '../apps/backend/seed/locations.json' with { type: 'json' };
 import { mockDrivers, type DriverStart } from './drivers-mock';
 import { mockBookings } from './bookings-mock';
@@ -64,7 +65,7 @@ export async function mockApi(
     route.fulfill({ json: { hidden: false, warnedAt: null } }),
   );
   // The real directory of the seed (docs/48) in the order of the backend: regions as in docs/14,
-  // places inside a region by name.
+  // places inside a region by their Latin name; people read the names in Cyrillic (G98, docs/228).
   const directory = [...locations]
     .sort(
       (a, b) =>
@@ -72,7 +73,7 @@ export async function mockApi(
         a.position - b.position ||
         (a.name < b.name ? -1 : 1),
     )
-    .map((place) => ({ ...place, position: undefined }));
+    .map((place) => ({ ...place, name: toCyrillic(place.name), position: undefined }));
   await page.route('**/api/locations', (route) =>
     route.fulfill({ json: { version: '1', locations: directory } }),
   );

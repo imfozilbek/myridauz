@@ -1,9 +1,10 @@
 import { existsSync, readFileSync } from 'node:fs';
 import type { Page, Route } from '@playwright/test';
+import { toCyrillic } from '@platform/i18n';
 import BORDERS from '../apps/backend/seed/district-borders.json' with { type: 'json' };
 import { borderOf, districtAt } from '../apps/backend/src/modules/map/domain/borders';
 import { confirmed } from './bookings-mock';
-import { FOUND, pinOf } from './map-places';
+import { FOUND, pinOf, REGISTON } from './map-places';
 
 // The map of the pickup point (G22) as the Mini Apps see it: a small piece of Tashkent from the
 // real archive, read by parts like the API gives it, and the fonts of its labels.
@@ -19,17 +20,19 @@ export const mapState = (): MapState => ({ booked: null, searched: [], zones: []
 const DISTRICTS = Object.entries(BORDERS.places as Record<string, string[][]>).map(([id, lines]) =>
   borderOf(id, lines),
 );
-// The district by the real borders; the name: Registon in Samarqand, Qatortol in Tashkent.
+// The district by the real borders; the name: Registon in Samarqand, Qatortol in Tashkent, in Cyrillic
+// as the API gives it (G98).
+export const QATORTOL = toCyrillic('Qatortol');
 const whereOf = (lat: number, lng: number) => ({
   district: districtAt(DISTRICTS, { lat, lng }),
-  name: lat < 40.5 ? { step: 'landmark', name: 'Registon maydoni' } : { step: 'mahalla', name: 'Qatortol' },
+  name: lat < 40.5 ? { step: 'landmark', name: REGISTON } : { step: 'mahalla', name: QATORTOL },
   area: null,
 });
 const person = (id: string, firstName: string) => ({ id: id.padStart(32, '0'), firstName, hasAvatar: false });
 const at = (lat: number, lng: number, name: string) => ({
   point: { lat, lng },
-  name: { step: 'mahalla', name },
-  area: { step: 'mahalla', name },
+  name: { step: 'mahalla', name: toCyrillic(name) },
+  area: { step: 'mahalla', name: toCyrillic(name) },
 });
 // The bookings of the driver's trip (G24): two confirmed passengers with their points, one request
 // near the way, one far and asked first, and a cancelled booking whose points are erased.
@@ -101,7 +104,7 @@ export async function mockMap(page: Page, state: MapState) {
     const inZone = (place: (typeof FOUND)[number]) => place.district.startsWith(zone);
     return json(route, {
       places: FOUND.filter(
-        (place) => /Регистон/u.test(query) === place.name.startsWith('Reg') && inZone(place),
+        (place) => /Регистон/u.test(query) === place.name.startsWith('Рег') && inZone(place),
       ),
     });
   });

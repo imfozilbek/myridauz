@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '../crash-guard';
 import { createBookingsClient } from '@platform/api-client';
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { TEXT, publishButton } from '../apps';
 import { openEndMap } from '../bookings';
 import { mapFound, SLOW_MS } from '../map-wait';
@@ -11,7 +11,8 @@ import { searchTo } from './search-kit';
 import { outsideCalls, openAs, signedAs, type Person } from './stand-kit';
 
 const { t } = createI18n(DEFAULT_LOCALE);
-const PITAK = 'Toshkent avtovokzali';
+// The names people read are in Cyrillic (G98, docs/228).
+const PITAK = toCyrillic('Toshkent avtovokzali');
 const shot = (page: Page, name: string) =>
   page.screenshot({ path: `screenshots/stand/g26/${name}.png`, animations: 'disabled' });
 const mainButton = (page: Page) => page.locator('#tg-main-button');
@@ -29,11 +30,11 @@ test.afterEach(() => expect(outsideCalls()).toEqual([]));
 // From Chilonzor (Toshkent shahri) to Urgut (Samarqand viloyati), by lists.
 async function chooseRoute(page: Page) {
   await openFromList(page);
-  await page.getByAltText('Toshkent shahri').click();
-  await page.getByText('Chilonzor').click();
+  await page.getByAltText(toCyrillic('Toshkent shahri')).click();
+  await page.getByText(toCyrillic('Chilonzor')).click();
   // «Qayerga» opens by itself, both ends go on (G40, docs/106 K1).
-  await page.getByAltText('Samarqand viloyati').click();
-  await page.getByText('Urgut', { exact: true }).click();
+  await page.getByAltText(toCyrillic('Samarqand viloyati')).click();
+  await page.getByText(toCyrillic('Urgut'), { exact: true }).click();
 }
 
 // One screen (G63, mockup g63/2): the pitak of the direction on its card, «Xaritada» on the map.
@@ -104,10 +105,14 @@ test('2. a passenger from the pitak: the pitak is the first start, no point is a
   await expect(page.getByText(t('bookings.status.requested')).first()).toBeVisible();
 });
 
-// Every found place lies in the zone: its line ends with a district of the zone.
+// The districts of Toshkent shahri as the directory writes them.
+const TASHKENT =
+  'Yakkasaroy|Olmazor|Yunusobod|Chilonzor|Mirobod|Shayxontohur|Uchtepa|Yashnobod|Sergeli|Bektemir|Mirzo Ulugʻbek|Yangihayot';
+// Every found place lies in the zone: its line ends with a district of the zone. The query is typed in
+// Latin, the places are named in Cyrillic (G98).
 async function expectOnlyIn(page: Page, query: string, districts: RegExp) {
   await page.getByPlaceholder(t('way.point.search')).fill(query);
-  const found = page.getByRole('button').filter({ hasText: query });
+  const found = page.getByRole('button').filter({ hasText: toCyrillic(query) });
   await expect(found.first()).toBeVisible();
   for (const line of await found.allInnerTexts()) expect(line).toMatch(districts);
 }
@@ -117,18 +122,14 @@ test('4. the search of a place finds only inside the zone of the trip', async ({
   await findAndOpen(page, DILNOZA);
   await openEnd(page, 'pickup');
   // «Registon» of Toshkent (a cafe, streets) is found; the Registon square of Samarqand is not.
-  await expectOnlyIn(
-    page,
-    'Registon',
-    /(Yakkasaroy|Olmazor|Yunusobod|Chilonzor|Mirobod|Shayxontohur|Uchtepa|Yashnobod|Sergeli|Bektemir|Mirzo Ulugʻbek|Yangihayot)$/u,
-  );
-  await expect(page.getByText('Registon maydoni')).toHaveCount(0);
+  await expectOnlyIn(page, 'Registon', new RegExp(`(${toCyrillic(TASHKENT)})$`, 'u'));
+  await expect(page.getByText(toCyrillic('Registon maydoni'))).toHaveCount(0);
   await shot(page, '4-search-toshkent');
   await page.getByPlaceholder(t('way.point.search')).fill('');
   await mainButton(page).click();
   await openEnd(page, 'dropoff');
   // At the end of the trip «bozor» finds the markets of Urgut only, none of the many in Toshkent.
-  await expectOnlyIn(page, 'bozor', /Urgut$/u);
+  await expectOnlyIn(page, 'bozor', new RegExp(`${toCyrillic('Urgut')}$`, 'u'));
   await shot(page, '4-search-urgut');
 });
 

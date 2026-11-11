@@ -1,4 +1,5 @@
 import type { Page, Route } from '@playwright/test';
+import { toCyrillic } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
 import { confirmed, offer } from './bookings-mock';
@@ -66,7 +67,7 @@ export async function openPassengerHome(page: Page, state: PassengerState = 'qui
   await page.route('**/api/users/*/avatar', (route) => route.fulfill({ path: 'e2e/fixtures/face.jpg' }));
   // Madina stands in Chilonzor, as on the mockup.
   await page.route('**/api/passenger/map/where?*', (route) =>
-    json(route, { district: CHILONZOR, name: { step: 'mahalla', name: 'Qatortol' }, area: null }),
+    json(route, { district: CHILONZOR, name: { step: 'mahalla', name: toCyrillic('Qatortol') }, area: null }),
   );
   // «Bugun 3, ertaga 8 ta safar» of the mockup to Samarqand.
   await page.route('**/api/trips/days?*', (route) =>

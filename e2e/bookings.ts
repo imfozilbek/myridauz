@@ -2,6 +2,7 @@ import { expect, type Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { TEXT } from './apps';
 import { mapState, mockMap } from './map-mock';
+import { REGISTON } from './map-places';
 import { placeFound } from './map-wait';
 import { findTrips, openOwnTrip } from './market';
 import { pressBack, telegramEvents } from './telegram-mock';
@@ -41,7 +42,7 @@ export async function takeEnd(page: Page, end: 'pickup' | 'dropoff', search?: [s
   if (search) {
     await page.getByPlaceholder(t('way.point.search')).fill(search[0]);
     await page.getByText(search[1], { exact: true }).click();
-    await expect(page.getByRole('status')).toHaveText(`${search[1]} yaqinida`);
+    await expect(page.getByRole('status')).toHaveText(t('way.near', { name: search[1] }));
   } else await placeFound(page);
   await page
     .locator('#tg-main-button')
@@ -62,7 +63,7 @@ export async function bookSeats(page: Page, shot: Shot = none) {
   await shot('1-points');
   await takeEnd(page, 'pickup');
   await shot('1a-pickup');
-  await takeEnd(page, 'dropoff', ['Регистон', 'Registon maydoni']);
+  await takeEnd(page, 'dropoff', ['Регистон', REGISTON]);
   await shot('2-review');
   await mainButton.filter({ hasText: t('bookings.send') }).click();
   await expect(page.getByText(B.waiting).first()).toBeVisible();
@@ -81,7 +82,7 @@ export async function passengerTrips(page: Page, shot: Shot = none) {
   await pressBack(page);
   // The own request card shows no own name (G37, docs/101 R6): «… · Soʻrov» opens it (mockup g75/2 A).
   await page
-    .getByText(/ · Soʻrov$/u)
+    .getByText(new RegExp(`${t('market.mine.requestDay', { day: '' })}$`, 'u'))
     .first()
     .click();
   await expect(page.getByText(B.offers)).toBeVisible();
@@ -97,7 +98,7 @@ export async function confirmBooking(page: Page, shot: Shot = none, money = true
   await page.getByText(B.myTrips).click();
   await openOwnTrip(page);
   await expect(page.getByText('Madina')).toBeVisible();
-  await expect(page.getByText(/komissiya 18\s000/u)).toBeVisible();
+  await expect(page.getByText(t('driverTrip.commission', { amount: formatNumber(18_000) }))).toBeVisible();
   await shot('1-trip');
   if (money) {
     await Promise.all([

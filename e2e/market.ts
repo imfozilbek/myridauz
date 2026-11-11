@@ -1,5 +1,5 @@
 import { expect, type Page } from '@playwright/test';
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { openFindTrip, publishButton, TEXT } from './apps';
 import { pressBack } from './telegram-mock';
 
@@ -24,10 +24,12 @@ export async function openFromList(page: Page) {
 // «Qayerga» opens by itself, both ends go on without «Davom etish» (G40, docs/106 K1).
 export async function chooseRoute(page: Page, wholeRegion = false) {
   await openFromList(page);
-  await page.getByAltText('Toshkent shahri').click();
-  await page.getByText('Chilonzor').click();
-  await page.getByAltText('Samarqand viloyati').click();
-  await page.getByText(wholeRegion ? TEXT.wholeRegion : 'Samarqand shahri', { exact: true }).click();
+  await page.getByAltText(toCyrillic('Toshkent shahri')).click();
+  await page.getByText(toCyrillic('Chilonzor')).click();
+  await page.getByAltText(toCyrillic('Samarqand viloyati')).click();
+  await page
+    .getByText(wholeRegion ? TEXT.wholeRegion : toCyrillic('Samarqand shahri'), { exact: true })
+    .click();
 }
 
 // A driver publishes a trip on one screen (G63, docs/118 path 6): the route by lists, then «Safar
@@ -55,7 +57,7 @@ export async function fromIfAsked(page: Page) {
   const asked = page.getByText(TEXT.fromTitle);
   await expect(asked.or(page.getByText(TEXT.directions))).toBeVisible();
   if (!(await asked.isVisible())) return;
-  await page.getByAltText('Toshkent shahri').click();
+  await page.getByAltText(toCyrillic('Toshkent shahri')).click();
 }
 
 // Samarqand shahri by «Boshqa joy: tuman yoki shahar», then the trips of the nearest day with trips.
@@ -63,7 +65,7 @@ export async function searchRoute(page: Page) {
   await fromIfAsked(page);
   await page.getByText(TEXT.otherPlace).click();
   await page.getByPlaceholder(TEXT.otherPlace).fill('Samar');
-  await page.getByText('Samarqand shahri', { exact: true }).click();
+  await page.getByText(toCyrillic('Samarqand shahri'), { exact: true }).click();
 }
 
 // A passenger finds trips to Samarqand shahri: «Qayerga borasiz?», the trips of the nearest day; the

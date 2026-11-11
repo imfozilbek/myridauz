@@ -1,5 +1,6 @@
 import type { Page, Route } from '@playwright/test';
 import { DAY_MS, tashkentDate } from '@platform/contracts';
+import { toCyrillic } from '@platform/i18n';
 
 const CHILONZOR = '1726294';
 const KM = 300;
@@ -24,10 +25,11 @@ export async function mockCounts(page: Page, found: readonly { departAt: number 
       ],
     }),
   );
+  // The names as the API gives them: in Cyrillic (G98).
   const near = (name: string, kind: string, lat: number) => ({
-    name,
+    name: toCyrillic(name),
     kind,
-    area: 'Chilonzor',
+    area: toCyrillic('Chilonzor'),
     district: CHILONZOR,
     point: { lat, lng: 69.204 },
   });

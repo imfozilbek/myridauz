@@ -33,7 +33,8 @@ const shoot = shootIn('g95');
 const team = async (person: Person) => createModerationClient(await signedAs('admin', person));
 const idOf = async (person: Person) =>
   (await (await team(OWNER)).queue()).find((one) => one.firstName === person.name)?.userId ?? '';
-const fixedWords = t('bot.driver.carFixed', { car: `Chevrolet Cobalt, oq, ${formatPlate(ON_PHOTO)}` });
+const paint = t('drivers.color.white').toLocaleLowerCase();
+const fixedWords = t('bot.driver.carFixed', { car: `Chevrolet Cobalt, ${paint}, ${formatPlate(ON_PHOTO)}` });
 const told = async (person: Person) =>
   (await botMessages()).filter((message) => message.chatId === person.id).map((message) => message.text);
 

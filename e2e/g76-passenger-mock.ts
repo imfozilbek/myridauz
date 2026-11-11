@@ -1,4 +1,5 @@
 import type { Page, Route } from '@playwright/test';
+import { toCyrillic } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { confirmed } from './bookings-mock';
 import { appUrl, MINI_APPS } from './apps';
@@ -54,7 +55,7 @@ export async function openPassengerShot(page: Page, shot: number) {
   await page.route('**/api/chats/unread', (route) => json(route, { chats: lists.unread ? [words] : [] }));
   await page.route('**/api/users/*/avatar', (route) => route.fulfill({ path: 'e2e/fixtures/face.jpg' }));
   await page.route('**/api/passenger/map/where?*', (route) =>
-    json(route, { district: CHILONZOR, name: { step: 'mahalla', name: 'Qatortol' }, area: null }),
+    json(route, { district: CHILONZOR, name: { step: 'mahalla', name: toCyrillic('Qatortol') }, area: null }),
   );
   await page.route('**/api/trips/days?*', (route) =>
     json(route, {

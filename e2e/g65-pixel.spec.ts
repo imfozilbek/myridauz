@@ -27,7 +27,7 @@ test('1-wallet-2: fewer than 5 seats, red', async ({ page }) => {
 test('2-commission-1 and 2: a commission and its details', async ({ page }) => {
   await openMockupWallet(page);
   await shot(page, '2-commission-1');
-  await page.getByText('Komissiya · Sardor, 2 joy').click();
+  await page.getByText(t('wallet.row.commission', { name: 'Sardor', seats: '2' })).click();
   await expect(page.getByText(t('wallet.detail.open'))).toBeVisible();
   await shot(page, '2-commission-2');
 });

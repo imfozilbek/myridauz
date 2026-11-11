@@ -4,6 +4,7 @@ import { openFindTrip } from './apps';
 import { takeEnd } from './bookings';
 import { noSeatYet } from './bookings-mock';
 import { MAN } from './g59-pixel-mock';
+import { REGISTON } from './map-places';
 import { tripOf } from './market-mock';
 import { fromIfAsked, searchRoute } from './market';
 
@@ -34,7 +35,7 @@ export async function leaveRequest(page: Page, open: () => Promise<unknown>) {
   await page.getByRole('button', { name: t('market.request.publish') }).click();
   await expect(page.getByText(t('bookings.points.title'))).toBeVisible();
   await takeEnd(page, 'pickup');
-  await takeEnd(page, 'dropoff', ['Регистон', 'Registon maydoni']);
+  await takeEnd(page, 'dropoff', ['Регистон', REGISTON]);
   await page.getByLabel(t('market.price.more')).first().click();
   await page.getByText(t('find.withWoman')).click();
   await page.getByText(t('market.request.wholeCar')).click();
@@ -62,7 +63,7 @@ export async function bookWholeCar(page: Page, open: () => Promise<unknown>) {
     .filter({ hasText: t('find.bookCar') })
     .click();
   await takeEnd(page, 'pickup');
-  await takeEnd(page, 'dropoff', ['Регистон', 'Registon maydoni']);
+  await takeEnd(page, 'dropoff', ['Регистон', REGISTON]);
   await mainButton(page)
     .filter({ hasText: t('bookings.send') })
     .click();

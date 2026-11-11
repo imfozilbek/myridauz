@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { expect, test, type Page } from '../crash-guard';
 import { openFindTrip, TEXT } from '../apps';
 import { SLOW_MS } from '../map-wait';
@@ -5,7 +6,7 @@ import { CHILONZOR, declineWaiting, publishTrip } from './market-kit';
 import { ELYOR, FARRUX } from './people';
 import { searchTo } from './search-kit';
 import { mainButton, openHome, PLATFORMS, t, type Platform } from './screen-tour';
-import { mapReady } from './request-kit';
+import { FINDING, mapReady, NOT_THERE } from './request-kit';
 import { register } from './seed';
 import { backUntil } from './steps';
 import { outsideCalls, type Person } from './stand-kit';
@@ -23,7 +24,7 @@ const SEEKERS: Record<Platform, Person> = {
 };
 // A route of this scenario only (lesson 95).
 const GULISTON = '1724401';
-const PLACE = 'Bahor mahallasi';
+const PLACE = toCyrillic('Bahor mahallasi');
 
 test.beforeAll(async () => {
   await publishTrip(ELYOR, CHILONZOR, GULISTON, 'door');
@@ -35,7 +36,7 @@ const shooter = (page: Page, platform: Platform) => async (name: string) => {
   await page.waitForLoadState('networkidle');
   // A map moved to the person a moment ago: its new name came too (lesson 77).
   const pin = page.getByRole('status');
-  if ((await pin.count()) > 0) await expect(pin).not.toHaveText(/aniqlanmoqda/u, { timeout: SLOW_MS });
+  if ((await pin.count()) > 0) await expect(pin).not.toHaveText(FINDING, { timeout: SLOW_MS });
   await page.screenshot({
     path: `screenshots/stand/dropoff-screen/${platform}/${name}.png`,
     animations: 'disabled',
@@ -67,7 +68,7 @@ for (const platform of PLATFORMS)
     await place.click();
     // The map came to the place: its name under the pin is new (lesson 77).
     await expect(page.getByRole('status')).not.toHaveText(before ?? '', { timeout: SLOW_MS });
-    await expect(page.getByRole('status')).not.toHaveText(/aniqlanmoqda|hududida emas/u, {
+    await expect(page.getByRole('status')).not.toHaveText(NOT_THERE, {
       timeout: SLOW_MS,
     });
     await shot('04-dropoff-found');

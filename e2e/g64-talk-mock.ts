@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { chatSocket } from './chat-mock';
 import { openBoard, sardor, tashkent, TOMORROW, type Board } from './g64-requests-mock';
+import { PITAK } from './market-mock';
 
 // The talk of the driver Jasur and the passenger Sardor before a booking, as on the mockups g64/2,
 // g64/4 and g64/5: two messages, the request on top, the offer of tomorrow 08:00 from the pitak.
@@ -44,7 +45,7 @@ export const offerOf = (request: (typeof REQUESTS)[Talk]) => ({
   bookingId: null,
   chatKey: KEY,
   tripId: null,
-  pitak: 'Qoʻyliq pitagi',
+  pitak: PITAK.name,
   createdAt: tashkent(`${TODAY}T19:04`),
 });
 

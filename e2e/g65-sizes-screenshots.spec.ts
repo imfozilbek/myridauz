@@ -17,7 +17,7 @@ for (const width of WIDTHS) {
     await nothingCut(page);
     await oneSize(page, '.wallet-card-tile');
     await page.screenshot({ path: `${SHOTS}/g65-wallet-${width}.png`, fullPage: true });
-    await page.getByText('Komissiya · Sardor, 2 joy').click();
+    await page.getByText(t('wallet.row.commission', { name: 'Sardor', seats: '2' })).click();
     await expect(page.getByText(t('wallet.detail.open'))).toBeVisible();
     await nothingCut(page);
     await page.screenshot({ path: `${SHOTS}/g65-commission-${width}.png`, fullPage: true });

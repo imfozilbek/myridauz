@@ -1,4 +1,4 @@
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
 import { expect, test, type Page } from './crash-guard';
@@ -66,13 +66,13 @@ test('5-1: «Ommaviy oferta»', async ({ page }) => {
   await openMockupProfile(page, 'passenger');
   await page.getByText(t('account.profile.documents')).click();
   await page.getByText(t('legal.offer.title')).click();
-  await expect(page.getByText(/^Tahrir /u)).toBeVisible();
+  await expect(page.getByText(new RegExp(`^${toCyrillic('Tahrir')} `, 'u'))).toBeVisible();
   await shot(page, '5-1');
 });
 
 test('5-2: «Yoʻlovchilar sizni shunday koʻradi»', async ({ page }) => {
   await openMockupProfile(page, 'driver', [], jasur(page));
-  await page.getByText(/meni qanday koʻradi/u).click();
+  await page.getByText(t('account.profile.look.driver')).click();
   await expect(page.locator('.look-stats')).toHaveText(/24/u);
   await shot(page, '5-2');
 });

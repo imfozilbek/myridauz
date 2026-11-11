@@ -1,4 +1,5 @@
 import type { Page, Route } from '@playwright/test';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
 import { tashkent } from './g63-after-mock';
@@ -6,6 +7,7 @@ import { mapState, mockMap } from './map-mock';
 import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
 import { CHILONZOR, DAY, DRIVER_SHOTS, SAMARQAND, at, plenty, type Shot } from './g76-driver-data';
 
+const { t } = createI18n(DEFAULT_LOCALE);
 const [, DRIVER] = MINI_APPS;
 const dilnoza = {
   id: '00000000000000000000000000000001',
@@ -40,7 +42,7 @@ export async function openDriverShot(page: Page, shot: number) {
   );
   await page.route('**/api/users/*/avatar', (route) => route.fulfill({ path: 'e2e/fixtures/face.jpg' }));
   await page.route('**/api/passenger/map/where?*', (route) =>
-    json(route, { district: CHILONZOR, name: { step: 'mahalla', name: 'Qatortol' }, area: null }),
+    json(route, { district: CHILONZOR, name: { step: 'mahalla', name: toCyrillic('Qatortol') }, area: null }),
   );
   await page.route('**/api/driver/trips', (route) => json(route, { trips: lists.trips ?? [] }));
   await page.route('**/api/driver/bookings', (route) => json(route, { bookings: lists.bookings ?? [] }));
@@ -76,7 +78,7 @@ export async function openDriverShot(page: Page, shot: number) {
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
   // A fix opens the application first (G62); «Orqaga» leaves it for the main screen.
   if (status === 'changes_requested') {
-    await page.getByText('Bitta rasmni almashtiring').waitFor();
+    await page.getByText(t('drivers.fix.title', { count: 1 })).waitFor();
     await pressBack(page);
   }
   await page.locator('.home-dock').waitFor();

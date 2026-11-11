@@ -1,6 +1,7 @@
 import { createWaitlistClient } from '@platform/api-client';
 import { loadBrand } from '@platform/brands';
 import { expect, type Page } from '@playwright/test';
+import { toCyrillic } from '@platform/i18n';
 import { test } from '../crash-guard';
 import { showChat } from './bot-chat';
 import { say } from './bot-kit';
@@ -56,7 +57,7 @@ test('G83. both sides write their direction, the team opens it, the bot rings', 
   await page.getByRole('checkbox').first().click();
   await shot(page, 'android', 'g83-2-pains');
   await mainButton(page).click();
-  await tap(page, 'Samarqand viloyati');
+  await tap(page, toCyrillic('Samarqand viloyati'));
   await shot(page, 'android', 'g83-3-when');
   await tap(page, t('waitlist.cadence.weekly'));
   await expect(page.getByText(t('waitlist.channels.title'))).toBeVisible();
@@ -88,7 +89,7 @@ test('G83. both sides write their direction, the team opens it, the bot rings', 
   await expect(team.getByText(t('waitlistTeam.openAsk'))).toBeVisible();
   await expect(mainButton(team)).toHaveText(t('waitlistTeam.openYes'));
   await mainButton(team).click();
-  await expect(team.getByText(/^Ochildi/u)).toBeVisible();
+  await expect(team.getByText(new RegExp(`^${toCyrillic('Ochildi')}`, 'u'))).toBeVisible();
   await shot(team, 'android', 'g83-8-opened');
   await expect
     .poll(async () => (await chatShot(chat, AZIZ, '3-bot-opened')).some((one) => one.replyTo !== null), {
@@ -109,7 +110,7 @@ test('G83. the owner closes the list: a new person gets the bots of the trips', 
   await expect(page.getByText(t('waitlistTeam.closeAsk'))).toBeVisible();
   await expect(mainButton(page)).toHaveText(t('waitlistTeam.closeYes'));
   await mainButton(page).click();
-  await expect(page.getByText(/^Yopiq/u)).toBeVisible();
+  await expect(page.getByText(new RegExp(`^${toCyrillic('Yopiq')}`, 'u'))).toBeVisible();
   await shot(page, 'android', 'g83-9-closed');
   const welcome = await say('main', LATE, '/start');
   const buttons = (welcome.reply_markup?.inline_keyboard ?? []).flat().map((button) => button.text);

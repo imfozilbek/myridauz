@@ -4,7 +4,7 @@ import { appUrl, MINI_APPS } from './apps';
 import { expect, test } from './crash-guard';
 import { openBookingPoints } from './g63-note-mock';
 import { openTripAt } from './g63-pixel-mock';
-import { startPublish } from './g63-publish-mock';
+import { startPublish, WHEN } from './g63-publish-mock';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
 // Pixel Perfect of the form sheets (G75, lessons 141, 147, 160): the phones of g75/3 A at the size of
@@ -18,7 +18,7 @@ test('3-1: «Qachon joʻnaysiz?»', async ({ page }) => {
   // The day of the mockup: today 12 October, the trip tomorrow, «13-okt».
   await page.clock.setFixedTime(Date.parse('2026-10-12T10:00:00+05:00'));
   await startPublish(page);
-  await page.getByText(/^(Bugun|Ertaga), \d\d:\d\d$/u).click();
+  await page.getByText(WHEN).click();
   await page.locator('.week-day').nth(1).click();
   await expect(page.getByRole('button', { name: '08:00', pressed: true })).toBeVisible();
   await page.screenshot({ path: `${OUT}/3-1-code.png`, animations: 'disabled' });

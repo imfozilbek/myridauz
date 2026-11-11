@@ -7,6 +7,7 @@ import { apply } from './seed';
 import { signedAs, type Person } from './stand-kit';
 import { standSql } from './stand-tools';
 import type { Page } from '@playwright/test';
+import { toCyrillic } from '@platform/i18n';
 
 // Every screen of the team (docs/79, docs/83): an application waits, a complaint waits, and every
 // tool of «Boshqaruv» opens with real data. Nothing is decided: the walk only looks.
@@ -91,7 +92,7 @@ test('android: the hand price of one direction', async ({ page }) => {
   await page.getByText(t('pricing.title')).first().click();
   // The row names the places of the direction (G78 sheet 4).
   await page
-    .getByText(/→ Samarqand/u)
+    .getByText(new RegExp(`→ ${toCyrillic('Samarqand')}`, 'u'))
     .first()
     .click();
   await shot(page, 'android', 'ta46-direction');

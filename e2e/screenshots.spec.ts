@@ -1,9 +1,12 @@
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { expect, test } from './crash-guard';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, openFindTrip, TEXT } from './apps';
 import { fromIfAsked } from './market';
 import { register } from './registration';
 import { mockTelegram, telegramUrl } from './telegram-mock';
+
+const { t } = createI18n(DEFAULT_LOCALE);
 
 // Screenshots for the owner review (docs/33): registration, main screen and profile of each Mini App.
 for (const app of MINI_APPS) {
@@ -18,7 +21,7 @@ for (const app of MINI_APPS) {
     if (!app.welcome) return;
     await page.getByLabel(TEXT.profile).click();
     // A new person: «Yangi» on the rating and on «vaqtida» (G65, mockup g65/3).
-    await expect(page.getByText('Yangi', { exact: true })).toHaveCount(2);
+    await expect(page.getByText(t('reviews.new'), { exact: true })).toHaveCount(2);
     await shot('7-profile');
   });
 }
@@ -44,20 +47,20 @@ test('places: screenshots', async ({ page }) => {
   await openFindTrip(page);
   await fromIfAsked(page);
   await page.getByText(TEXT.change).click();
-  await expect(page.getByAltText('Xorazm viloyati')).toBeVisible();
+  await expect(page.getByAltText(toCyrillic('Xorazm viloyati'))).toBeVisible();
   await page.waitForLoadState('networkidle');
   await shot('2-regions');
   const search = page.getByPlaceholder(TEXT.search);
   await search.fill("g'ijduvon");
-  await expect(page.getByText('Gʻijduvon')).toBeVisible();
+  await expect(page.getByText(toCyrillic('Gʻijduvon'))).toBeVisible();
   await shot('4-search');
   await search.fill('');
   // Toshkent shahri is taken whole in one tap (G78 П9).
-  await page.getByAltText('Toshkent shahri').click();
+  await page.getByAltText(toCyrillic('Toshkent shahri')).click();
   // A place of the same city is refused under the search (docs/14).
   await page.getByText(TEXT.otherPlace).click();
   await page.getByPlaceholder(TEXT.otherPlace).fill('Chilon');
-  await page.getByText('Chilonzor', { exact: true }).click();
+  await page.getByText(toCyrillic('Chilonzor'), { exact: true }).click();
   await expect(page.getByText(TEXT.insideCity)).toBeVisible();
   await shot('6-inside-city');
 });

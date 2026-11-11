@@ -1,4 +1,5 @@
 import type { Page, Route } from '@playwright/test';
+import { toCyrillic } from '@platform/i18n';
 import { request, tripOf } from './market-mock';
 import { TEST_NOW } from './test-clock';
 
@@ -22,8 +23,8 @@ const booking = (id: string, status: string, extra: object = {}) => ({
   mode: 'door',
   pitak: null,
   // Until the confirmation the driver sees the area and the extra way only (docs/70).
-  pickup: { point: null, name: null, area: { step: 'mahalla', name: 'Qatortol' } },
-  dropoff: { point: null, name: null, area: { step: 'mahalla', name: 'Registon mahallasi' } },
+  pickup: { point: null, name: null, area: { step: 'mahalla', name: toCyrillic('Qatortol') } },
+  dropoff: { point: null, name: null, area: { step: 'mahalla', name: toCyrillic('Registon mahallasi') } },
   extraKm: 2,
   plate: null,
   chatKey: `b00000000-0000-4000-8000-0000000000b${id}`,
@@ -38,13 +39,13 @@ export const confirmed = booking('2', 'confirmed', {
   commission: 0,
   pickup: {
     point: { lat: 41.2856, lng: 69.2034 },
-    name: { step: 'landmark', name: 'Chilonzor bozori' },
-    area: { step: 'mahalla', name: 'Qatortol' },
+    name: { step: 'landmark', name: toCyrillic('Chilonzor bozori') },
+    area: { step: 'mahalla', name: toCyrillic('Qatortol') },
   },
   dropoff: {
     point: { lat: 39.6547, lng: 66.9758 },
-    name: { step: 'mahalla', name: 'Registon mahallasi' },
-    area: { step: 'mahalla', name: 'Registon mahallasi' },
+    name: { step: 'mahalla', name: toCyrillic('Registon mahallasi') },
+    area: { step: 'mahalla', name: toCyrillic('Registon mahallasi') },
   },
   extraKm: null,
   plate: '01A123BC',

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { expect, test, type Page } from './crash-guard';
 import { fiveStars, live, madina, pastSeats, pastTrip } from './g63-after-data';
 import { mockupTrip, openDriver, openTrip, seat, t, tashkent } from './g63-after-mock';
@@ -28,7 +29,7 @@ for (const width of WIDTHS) {
     await page.route('**/api/reviews/*', (route) => route.fulfill({ json: fiveStars }));
     await openDriver(page, '2026-10-07T20:00', { trips: [pastTrip], bookings: pastSeats });
     await openTrip(page);
-    await expect(page.getByText(/^Baho: ★★★★★/u)).toBeVisible();
+    await expect(page.getByText(new RegExp(toCyrillic('^Baho: ★★★★★'), 'u'))).toBeVisible();
     await nothingCut(page);
     await oneSize(page, '.rider-tool');
     await oneSize(page, '.past-after-row');

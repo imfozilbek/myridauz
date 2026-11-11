@@ -1,6 +1,7 @@
 import type { BrowserContext } from '@playwright/test';
 import { loadBrand } from '@platform/brands';
 import { MY_TRIP_LINK, tripEndsAt, type Trip } from '@platform/contracts';
+import { toCyrillic } from '@platform/i18n';
 import { expect, test, type Page } from '../crash-guard';
 import { pressBack } from '../telegram-mock';
 import { MINUTE, moveTrip, toldBy } from './g27-kit';
@@ -45,7 +46,7 @@ const WALKS: Record<Platform, Walk & { readonly plate: string }> = {
 const STARS = 4;
 // The trip goes to Samarqand: the channel of its zone posts it (docs/63), by its name in Telegram
 // without the brand (docs/176).
-const CHANNEL = 'Samarqand shahri | Samarqand tumani';
+const CHANNEL = toCyrillic('Samarqand shahri | Samarqand tumani');
 
 test.use({ viewport: NARROW });
 test.setTimeout(180_000);

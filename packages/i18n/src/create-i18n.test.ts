@@ -48,4 +48,10 @@ describe('createI18n', () => {
   it('keeps a link whole when a value ends it (G98)', () => {
     expect(i18n.t('bot.driver.channel', { username: 'kanal1uz' })).toContain('t.me/kanal1uz');
   });
+
+  it('reads the values a message asks for from any object (G98)', () => {
+    const anyValue = new Proxy({}, { has: () => true, get: () => 'Qarshi' });
+    expect(i18n.t('chat.newTripsOf', anyValue)).toBe('Qarshining янги сафарлари');
+    expect(i18n.t('sheet.meet.waitsIn', anyValue)).toContain('Қарши');
+  });
 });

@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
 import { PITAK, tripOf } from './market-mock';
@@ -44,7 +44,7 @@ const seat = (full: boolean, id: string, extra: object) => ({
   status: full ? 'confirmed' : 'requested',
   createdAt: tashkent('2026-10-06T13:00'),
   expiresAt: tashkent('2026-10-07T08:00'),
-  dropoff: { point: null, name: null, area: { step: 'district', name: 'Samarqand shahri' } },
+  dropoff: { point: null, name: null, area: { step: 'district', name: toCyrillic('Samarqand shahri') } },
   plate: null,
   chatKey: `b00000000-0000-4000-8000-0000000000d${id}`,
   confirmedAt: full ? tashkent('2026-10-06T14:00') : null,
@@ -58,10 +58,14 @@ const seat = (full: boolean, id: string, extra: object) => ({
 const noShow = { driverCameAt: tashkent('2026-10-07T07:40'), noShowAt: tashkent('2026-10-07T07:45') };
 
 // Madina from her door near Chilonzor bozori (+2 km), Akmal from the pitak.
-const SOBIR = { id: 'sobir', name: 'Sobir Rahimov avtostansiyasi', point: { lat: 41.2795, lng: 69.2042 } };
+const SOBIR = {
+  id: 'sobir',
+  name: toCyrillic('Sobir Rahimov avtostansiyasi'),
+  point: { lat: 41.2795, lng: 69.2042 },
+};
 const GRAND = {
   point: { lat: 41.2856, lng: 69.2034 },
-  name: { step: 'landmark', name: 'Grand' },
+  name: { step: 'landmark', name: toCyrillic('Grand') },
   area: null,
 };
 const stops = () => [
@@ -91,7 +95,7 @@ const seats = (full: boolean, moment: Moment) => [
     commission: 18000,
     mode: 'door',
     pitak: null,
-    pickup: { point: null, name: null, area: { step: 'mahalla', name: 'Chilonzor bozori' } },
+    pickup: { point: null, name: null, area: { step: 'mahalla', name: toCyrillic('Chilonzor bozori') } },
     extraKm: 2,
   }),
   seat(full, '2', {

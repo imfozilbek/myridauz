@@ -1,5 +1,5 @@
 import { expect, test, type Page } from './crash-guard';
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, openApplication, openFindTrip, TEXT } from './apps';
 import { confirmed } from './bookings-mock';
@@ -29,9 +29,9 @@ test('passenger: «Orqaga» keeps the filters and «Qayerdan», «Boshqa joy» f
   await fromIfAsked(page);
   await page.getByText(TEXT.otherPlace).click();
   await page.getByPlaceholder(TEXT.otherPlace).fill('Samarkand');
-  await expect(page.getByText('Samarqand shahri', { exact: true })).toBeVisible();
+  await expect(page.getByText(toCyrillic('Samarqand shahri'), { exact: true })).toBeVisible();
   await shot(page, 'fp3-samarkand');
-  await page.getByText('Samarqand shahri', { exact: true }).click();
+  await page.getByText(toCyrillic('Samarqand shahri'), { exact: true }).click();
   // The trips of the nearest day at once; «Orqaga» keeps «Qayerdan» (lesson 79).
   await expect(page.locator('.week-day').first()).toBeVisible();
   await pressBack(page);
@@ -130,7 +130,7 @@ test('moderation: after a decision the next application opens at once (S9)', asy
   await openApplication(page, 'Jasur');
   await page.locator('#tg-main-button', { hasText: TEXT.approve }).click();
   await page.locator('#tg-main-button', { hasText: TEXT.plateMatches }).click();
-  await expect(page.getByText('Vali · ariza')).toBeVisible();
+  await expect(page.getByText(t('navbat.application.title', { name: 'Vali' }))).toBeVisible();
   await expect(page.getByText(t('moderation.decided'))).toBeVisible();
   await shot(page, 's9-next');
 });

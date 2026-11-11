@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test';
 import { channelOf, loadBrand } from '@platform/brands';
 import { DAY_MS, tashkentDate } from '@platform/contracts';
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { expect } from './crash-guard';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, openFindTrip, TEXT } from './apps';
@@ -24,12 +24,12 @@ const WAY = [
     pickup: {
       place: YUNUSOBOD,
       point: { lat: 41.31, lng: 69.28 },
-      name: { step: 'street', name: 'Amir Temur xiyoboni' },
+      name: { step: 'street', name: toCyrillic('Amir Temur xiyoboni') },
     },
     dropoff: {
       place: URGANCH,
       point: { lat: 41.55, lng: 60.63 },
-      name: { step: 'district', name: 'Urganch shahri' },
+      name: { step: 'district', name: toCyrillic('Urganch shahri') },
     },
   },
 ];
@@ -109,7 +109,7 @@ export async function openRequestScreen(page: Page) {
   await openFindTrip(page);
   await page.getByText(TEXT.otherPlace).click();
   await page.getByPlaceholder(TEXT.otherPlace).fill('Urg');
-  await page.getByRole('dialog').getByText('Urganch', { exact: true }).click();
+  await page.getByRole('dialog').getByText(toCyrillic('Urganch'), { exact: true }).click();
   await page.getByRole('button', { name: t('market.request.publish') }).click();
   await expect(page.getByText(t('bookings.points.title'))).toBeVisible();
   await page.getByLabel(t('market.price.more')).first().click();

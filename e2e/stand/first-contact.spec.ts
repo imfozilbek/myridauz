@@ -1,4 +1,5 @@
 import { loadBrand } from '@platform/brands';
+import { toCyrillic } from '@platform/i18n';
 import { expect, test, type Page } from '../crash-guard';
 import { TEXT } from '../apps';
 import { addFace, passConsent } from '../registration';
@@ -15,7 +16,8 @@ test.use({ viewport: NARROW });
 test.afterEach(() => expect(outsideCalls()).toEqual([]));
 
 const MALE = t('account.gender.male');
-const RECEIVED = 'Arizangiz qabul qilindi.';
+// The same start of the bot's answer by day and by night (bot.driver.received, receivedNight).
+const RECEIVED = toCyrillic('Arizangiz qabul qilindi.');
 const NEWCOMERS: Record<Platform, Person> = {
   android: { id: 900791, name: 'Rustam', phone: '998901110791' },
   ios: { id: 900792, name: 'Jasur', phone: '998901110792' },

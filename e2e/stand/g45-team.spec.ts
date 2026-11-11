@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import {
   createModerationClient,
   createPitaksClient,
@@ -75,7 +76,7 @@ test('T48. the Cron of the signals runs without the analytics key and sends no f
   await runCron();
   expect((await createStatsClient(await admin(OWNER)).get('day')).events).toBe('off');
   const signals = (await botMessages()).filter(
-    (message) => message.chatId === OWNER.id && message.text.startsWith('⚠️ Xatolar'),
+    (message) => message.chatId === OWNER.id && message.text.startsWith(toCyrillic('⚠️ Xatolar')),
   );
   expect(signals).toEqual([]);
 });

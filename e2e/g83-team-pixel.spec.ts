@@ -1,4 +1,4 @@
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import type { Page } from '@playwright/test';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
@@ -50,7 +50,7 @@ test('«Statistika»: «Kutayotganlar», the funnels, the gold, a direction and 
   await page.getByText(t('waitlistTeam.waiting')).waitFor();
   await page.waitForLoadState('networkidle');
   await shot(page, 't5-1-stats');
-  await tap(page, 'Toshkent shahri ↔ Samarqand viloyati');
+  await tap(page, toCyrillic('Toshkent shahri ↔ Samarqand viloyati'));
   await page.getByText(t('waitlistTeam.approved')).waitFor();
   await shot(page, 't5-2-direction');
   await page.locator('#tg-main-button').click();

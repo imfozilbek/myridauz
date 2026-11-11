@@ -1,11 +1,11 @@
 import { expect, test, type Page } from './crash-guard';
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, openFindTrip, publishButton, TEXT } from './apps';
 import { openEndMap } from './bookings';
 import { noSeatYet } from './bookings-mock';
-import { mapState, mockMap, type MapState } from './map-mock';
-import { FOUND, landedOn } from './map-places';
+import { mapState, mockMap, QATORTOL, type MapState } from './map-mock';
+import { FOUND, landedOn, REGISTON } from './map-places';
 import { chooseRoute, openOwnTrip, searchRoute } from './market';
 import { PITAK } from './market-mock';
 import { mockTelegram, telegramEvents, telegramUrl } from './telegram-mock';
@@ -59,7 +59,7 @@ async function findPlace(page: Page, query: string, name: string, under: string)
 async function chooseHome(page: Page, state: MapState) {
   await openEndMap(page, 'dropoff');
   await drawn(page);
-  await findPlace(page, 'Регистон', 'Registon maydoni', 'Registon maydoni yaqinida');
+  await findPlace(page, 'Регистон', REGISTON, t('way.near', { name: REGISTON }));
   expect(state.zones[state.searched.indexOf('Регистон')]).toBe('1718401');
   await shot(page, '3-home');
   await press(page, 'way.point.takeTo');
@@ -79,7 +79,7 @@ test('the passenger books from the door to the home inside the zones of the trip
   for (let step = 0; step < 6; step += 1) await page.mouse.wheel(0, 600);
   await page.waitForTimeout(TILES_MS);
   await shot(page, '1-door-city');
-  await findPlace(page, 'Mustaqillik', 'Mustaqillik maydoni', 'Qatortol');
+  await findPlace(page, 'Mustaqillik', FOUND[0]?.name ?? '', QATORTOL);
   expect(state.zones[state.searched.indexOf('Mustaqillik')]).toBe('1726');
   await page.waitForTimeout(TILES_MS);
   await shot(page, '2-door-found');
@@ -135,11 +135,11 @@ test('the driver sees the requests near the way first and opens the route', asyn
     ['Bobur', 'Aziza'].map((name) => page.getByText(name).boundingBox()),
   );
   expect(first?.y ?? Infinity).toBeLessThan(later?.y ?? 0);
-  await expect(page.getByText(/\+3\skm/u)).toBeVisible();
+  await expect(page.getByText(t('way.driver.extra', { km: '3' }))).toBeVisible();
   await shot(page, '6-requests');
   await page.getByText(t('driverTrip.tile.map')).click();
   await drawn(page);
-  await expect(page.getByText('Chorsu')).toBeVisible();
+  await expect(page.getByText(toCyrillic('Chorsu'))).toBeVisible();
   await expect(page.getByText('Sardor')).toBeHidden();
   await shot(page, '7-trip-map');
   await page.locator('#tg-main-button', { hasText: t('way.map.go') }).click();

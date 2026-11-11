@@ -1,11 +1,13 @@
 import { expect, test } from './crash-guard';
 import { channelOf, loadBrand } from '@platform/brands';
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { appUrl, LANDING_PORT } from './apps';
 import { mockList, mockPrices } from './landing-mock';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 const brand = loadBrand();
+// The places of the site are named in Cyrillic (G98, docs/228).
+const BUXORO = toCyrillic('Buxoro');
 
 // The landing leads people into the two bots and explains itself (G15, docs/59); into the main bot
 // while the list of waiting is open (G83, docs/181).
@@ -41,9 +43,9 @@ test('landing: the steps, the switch and the map answer a tap', async ({ page })
     'src',
     '/art/phone-requests.webp',
   );
-  await page.getByLabel(t('places.to')).selectOption({ label: 'Buxoro' });
-  await expect(page.locator('[data-name=to]')).toHaveText('Buxoro');
-  await expect(page.locator('[data-km-value]')).toHaveText('≈ 570 km');
+  await page.getByLabel(t('places.to')).selectOption({ label: BUXORO });
+  await expect(page.locator('[data-name=to]')).toHaveText(BUXORO);
+  await expect(page.locator('[data-km-value]')).toHaveText(t('market.trip.km', { km: '570' }));
   await expect(page.locator('[data-price]')).toHaveText(/170\s000/u);
   await page.locator('.numbers').scrollIntoViewIfNeeded();
   await expect(page.locator('.numbers [data-count-up]').first()).toHaveText('14');
@@ -62,7 +64,7 @@ test('landing: the steps, the switch and the map answer a tap', async ({ page })
 test('landing: a direction page opens from the list with its route chosen', async ({ page }) => {
   await mockPrices(page);
   await page.goto(appUrl(LANDING_PORT));
-  await page.locator('.directions').getByRole('link', { name: 'Buxoro' }).first().click();
+  await page.locator('.directions').getByRole('link', { name: BUXORO }).first().click();
   await expect(page).toHaveURL(/\/yonalish\/toshkent-buxoro\/$/u);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     t('landing.direction.title', { from: 'Toshkent', to: 'Buxoro' }),

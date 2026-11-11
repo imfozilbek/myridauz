@@ -1,5 +1,6 @@
 import { createMarketClient } from '@platform/api-client';
 import { FIND_LINK, HOUR_MS, requestsLinkValue, tashkentDate, type Trip } from '@platform/contracts';
+import { toCyrillic } from '@platform/i18n';
 import { channelOf, loadBrand } from '../../brands/index';
 import { expect, test, type Page } from '../crash-guard';
 import { publishButton } from '../apps';
@@ -59,10 +60,10 @@ test('T3 … T6. the driver publishes 08:00 … 10:00 on the form; the passenger
   await openAs(page, 'driver', DRIVER);
   await publishButton(page).click();
   await openFromList(page);
-  await page.getByAltText('Toshkent shahri').click();
-  await page.getByText('Chilonzor').click();
-  await page.getByAltText('Surxondaryo viloyati').click();
-  await page.getByText('Termiz shahri', { exact: true }).click();
+  await page.getByAltText(toCyrillic('Toshkent shahri')).click();
+  await page.getByText(toCyrillic('Chilonzor')).click();
+  await page.getByAltText(toCyrillic('Surxondaryo viloyati')).click();
+  await page.getByText(toCyrillic('Termiz shahri'), { exact: true }).click();
   await expect(mainButton(page)).toHaveText(t('market.publish.send'));
   await page.getByText(t('way.trip.mode.door'), { exact: true }).click();
   await page.getByText(DAY_ROW).first().click();

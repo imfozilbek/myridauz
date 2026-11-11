@@ -41,13 +41,17 @@ const LATIN_STEM_ENDING = new RegExp(
 export const placeIn = (locale: Locale, name: string): string =>
   locale === 'uz-Latn' ? name : toCyrillic(name);
 
+// Read as the message asks for each value, not copied: the values may be any object that answers.
 export function shownValues(locale: Locale, values: MessageValues | undefined): MessageValues | undefined {
   if (locale === 'uz-Latn' || values === undefined) return values;
-  const entries = Object.entries(values).map(([name, value]) => [
-    name,
-    typeof value === 'string' && PLACE_VALUES.has(name) ? placeIn(locale, value) : value,
-  ]);
-  return Object.fromEntries(entries) as MessageValues;
+  return new Proxy(values, {
+    get: (target, name) => {
+      const value: unknown = Reflect.get(target, name);
+      return typeof name === 'string' && typeof value === 'string' && PLACE_VALUES.has(name)
+        ? placeIn(locale, value)
+        : value;
+    },
+  });
 }
 
 export const oneAlphabet = (locale: Locale, text: string): string =>
