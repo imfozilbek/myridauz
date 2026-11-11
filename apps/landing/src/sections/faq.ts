@@ -1,25 +1,29 @@
 import type { BrandConfig } from '@platform/brands';
-import type { I18n, TranslationKey } from '@platform/i18n';
+import { helpValues, type HelpQuestion } from '@platform/contracts';
+import type { I18n } from '@platform/i18n';
 import { escape } from '../html';
 import { icon } from '../icons';
 
 // A question and its answer as plain text: the page shows them and search engines read them (FAQPage).
 export type Question = { readonly q: string; readonly a: string };
 
-const QUESTIONS = ['taxi', 'price', 'check', 'phone', 'app', 'fee', 'help'] as const;
+// The questions of the site come from the help of the bots and the Mini Apps (G97, docs/226): one
+// text everywhere. «Muammo boʻlsa, kimga yozaman?» is the site's own: in the apps it is a button.
+const QUESTIONS: readonly HelpQuestion[] = [
+  'find.taxi',
+  'find.price',
+  'driver.check',
+  'account.phone',
+  'account.app',
+  'wallet.fee',
+];
 
 export function questions(brand: BrandConfig, { t, formatMoney }: I18n): Question[] {
-  const values = {
-    brand: brand.name,
-    supportBot: brand.bots.support,
-    bonus: formatMoney(brand.promo.amount),
-    percent: String(brand.commission.percent),
-    minPerSeat: formatMoney(brand.commission.minPerSeat),
-  };
-  return QUESTIONS.map((key) => ({
-    q: t(`landing.faq.${key}.q` as TranslationKey, values),
-    a: t(`landing.faq.${key}.a` as TranslationKey, values),
-  }));
+  const values = helpValues(brand, formatMoney);
+  return [
+    ...QUESTIONS.map((key) => ({ q: t(`help.${key}.q`, values), a: t(`help.${key}.a`, values) })),
+    { q: t('landing.faq.help.q', values), a: t('landing.faq.help.a', values) },
+  ];
 }
 
 // Answers open in place (details): no JavaScript needed, readable by search engines.

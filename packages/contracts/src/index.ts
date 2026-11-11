@@ -101,6 +101,7 @@ export * from './schedule';
 export * from './depart-range';
 export * from './tashkent-time';
 export * from './team-hours';
+export * from './help';
 export * from './trips';
 export * from './trip-counts';
 export * from './trip-changes';

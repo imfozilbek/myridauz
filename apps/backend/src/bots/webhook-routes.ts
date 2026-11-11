@@ -12,11 +12,13 @@ import { isAskButton, onAskCallback } from './ask-callbacks';
 import { isNewsOffButton, onNewsOffCallback } from './news-callbacks';
 import { onAdminMessage } from './admin-messages';
 import { onRatingCallback } from './rating-callbacks';
-import { onSupportMessage, SUPPORT_BOT, toSupportBot } from './support-bot';
+import { onSupportUpdate, SUPPORT_BOT, toSupportBot } from './support-bot';
 import type { BotContext } from './bot-context';
 import { botEventOf } from './bot-events';
 import { noteBotMember } from './bot-member';
 import { DOCUMENTS_COMMAND, documentsReply } from './documents-reply';
+import { helpReply, isHelpButton, onHelpCallback } from './help-callbacks';
+import { HELP_COMMAND } from './help-markup';
 import { isBotRole, type BotRole } from './bot-roles';
 import { noRepliesReply } from './no-replies';
 import { onMainUpdate } from './main-bot';
@@ -59,11 +61,12 @@ export function webhookRoutes(fetch: Fetch) {
 async function answer(bot: BotContext, role: BotRole | typeof SUPPORT_BOT, data: TelegramUpdate) {
   const moved = await movedReply(bot, role, data);
   if (moved) return moved;
-  if (role === SUPPORT_BOT) return data.message ? onSupportMessage(bot, data.message) : {};
+  if (role === SUPPORT_BOT) return onSupportUpdate(bot, data);
   if (role === 'main') return onMainUpdate(bot, data);
   const query = data.callback_query;
   if (query) {
     if (role === 'admin') return onAdminCallback(bot, query);
+    if (isHelpButton(query.data)) return onHelpCallback(bot, role, query);
     if (isNewsOffButton(query.data)) return onNewsOffCallback(bot, role, query);
     if (role === 'passenger' && isArrivedButton(query.data)) return onArrivedCallback(bot, query);
     return role === 'driver' && isAskButton(query.data)
@@ -85,6 +88,7 @@ async function answer(bot: BotContext, role: BotRole | typeof SUPPORT_BOT, data:
   if (blocked) return {};
   if (message.text === DOCUMENTS_COMMAND && role !== 'admin')
     return documentsReply(bot.brand, role, message.chat.id);
+  if (message.text === HELP_COMMAND && role !== 'admin') return helpReply(bot.brand, role, message.chat.id);
   if (role !== 'admin') return message.text ? noRepliesReply(bot.brand, role, message.chat.id) : {};
   return onAdminMessage(bot, message, team);
 }
