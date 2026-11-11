@@ -15,7 +15,7 @@ describe('the application not sent yet: the tile of the main screen and the draf
   it('invites to become a driver in 2 steps', async () => {
     renderGate(null);
     expect(await screen.findByText('Arizani toʻldirish')).toBeTruthy();
-    expect(screen.getByText('Mashina, raqam va 3 ta rasm · 3 daqiqa')).toBeTruthy();
+    expect(screen.getByText('Mashina, raqam va rasm · 3 daqiqa')).toBeTruthy();
   });
 
   it('keeps the answers after the app is closed and clears them once the application is sent', async () => {
