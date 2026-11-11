@@ -82,7 +82,7 @@ function HelpQuestions({ topic, onOpen, onBack }: QuestionsProps) {
         {helpQuestions(topic).map((question) => (
           <ProfileRow
             key={question}
-            icon={TOPIC_ICONS[topic]}
+            icon="help"
             title={t(`help.${question}.q`, values)}
             onClick={() => onOpen(question)}
           />

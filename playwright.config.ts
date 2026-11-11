@@ -97,6 +97,7 @@ export default defineConfig({
         'g83-team-pixel.spec.ts',
         'g90-pixel.spec.ts',
         'g95-pixel.spec.ts',
+        'g97-pixel.spec.ts',
         'g87-screenshots.spec.ts',
       ],
     },
