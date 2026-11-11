@@ -29,6 +29,7 @@
   водителем, одобрение заявки, «Mashinaga oʻtirdim».
 - Больше людей на следующем шаге (пришли из другой сессии): уход 0%, не минус.
 - Шаги и события: `apps/backend/src/modules/stats/domain/funnels.ts`, id шагов в `packages/contracts/src/stats.ts`.
+- «Yordam: koʻp ochilgan savollar» (G97, `226`): 10 вопросов помощи, которые открывают чаще всего, и под каждым «Javobdan keyin jamoaga yozdi: N». Много «yozdi»: ответ надо улучшить.
 
 | Воронка | Шаги |
 |---|---|
