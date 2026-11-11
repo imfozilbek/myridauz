@@ -87,6 +87,8 @@ describe('analyticsSql (docs/29)', () => {
     const total = setup({ data: [{ count: '5' }] });
     expect(await total.source.errorsSince(1)).toBe(5);
     expect(total.asked[0]?.body).toContain("INTERVAL '1' HOUR");
+    // «No internet» of a phone is no signal (G96).
+    expect(total.asked[0]?.body).toContain("AND blob6 != 'network.failed' AND blob6 != 'network.timeout'");
   });
 
   it('fails loudly on a refused key', async () => {
