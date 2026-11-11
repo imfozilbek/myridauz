@@ -102,13 +102,20 @@ describe(
   'the main screen of a driver before the application (G76, mockup g76/3 state 1)',
   { timeout: 20_000 },
   () => {
-    it('asks to fill the application in the block, «Mashina · Qoʻshing» on the head, «Yordam» opens the bot', async () => {
+    it('asks to fill the application in the block, «Mashina · Qoʻshing» on the head, «Yordam» opens the answers', async () => {
       const open = vi.spyOn(window, 'open').mockReturnValue(null);
       driver(as('draft'));
       expect(await screen.findByText('Arizani toʻldiring')).toBeTruthy();
       expect(screen.getByText('Qoʻshing')).toBeTruthy();
       expect(screen.queryByText('Qayerdan')).toBeNull();
       await tap('Yordam');
+      // G97 (docs/226): the topics of a driver first; the team is one tap further.
+      expect(await screen.findByText('Javobni shu yerdan toping yoki jamoamizga yozing.')).toBeTruthy();
+      const topics = screen.getAllByRole('button').map((one) => one.textContent ?? '');
+      expect(topics.findIndex((one) => one.includes('Haydovchi boʻlish'))).toBeLessThan(
+        topics.findIndex((one) => one.includes('Safar topish')),
+      );
+      await tap('Boshqa savolim bor');
       expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.support}`);
       open.mockRestore();
     });

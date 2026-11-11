@@ -1,4 +1,11 @@
-import type { AppLink, Location, NavbatKind, PersonId, RequestBoardQuery } from '@platform/contracts';
+import type {
+  AppLink,
+  HelpTopic,
+  Location,
+  NavbatKind,
+  PersonId,
+  RequestBoardQuery,
+} from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import type { ComponentType } from 'react';
 import type { IconName } from '../icons';
@@ -42,6 +49,8 @@ export type Launch = {
   // of them there (G79 К3).
   readonly person?: PersonId;
   readonly people?: readonly PersonName[];
+  // «Yordam» opened on the topic of the screen a person got stuck on (G97, docs/226).
+  readonly help?: HelpTopic;
 };
 // «Hammasi» or one kind of cases (docs/120).
 export type NavbatFilter = 'all' | NavbatKind;

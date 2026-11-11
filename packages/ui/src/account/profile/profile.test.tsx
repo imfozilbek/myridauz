@@ -60,11 +60,14 @@ describe('«Profil» (G65, mockup g65/3)', () => {
     expect(screen.getByText('Doim yoqilgan: bron, chat, safar xabarlari')).toBeTruthy();
   });
 
-  it('opens «Yordam», the support bot, from the profile', () => {
+  // G97 (docs/226): the answers first, «Boshqa savolim bor» opens the support bot.
+  it('opens «Yordam» from the profile: the answers, then the support bot', () => {
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
     renderProfile();
     fireEvent.click(screen.getByText('Dilnoza'));
     fireEvent.click(screen.getByRole('button', { name: 'Yordam' }));
+    expect(screen.getByText('Javobni shu yerdan toping yoki jamoamizga yozing.')).toBeTruthy();
+    fireEvent.click(screen.getByText('Boshqa savolim bor'));
     expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.support}`);
     open.mockRestore();
   });

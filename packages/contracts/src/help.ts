@@ -10,7 +10,7 @@ export const HELP_QUESTIONS = {
   find: ['how', 'none', 'price', 'taxi'],
   booking: ['how', 'wait', 'cancel', 'contact'],
   driver: ['need', 'check', 'when', 'returned'],
-  wallet: ['fee', 'topUp', 'noShow'],
+  wallet: ['fee', 'top_up', 'no_show'],
   account: ['phone', 'app', 'delete'],
 } as const satisfies Readonly<Record<HelpTopic, readonly string[]>>;
 export type HelpQuestion = { [T in HelpTopic]: `${T}.${(typeof HELP_QUESTIONS)[T][number]}` }[HelpTopic];

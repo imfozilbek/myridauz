@@ -1,0 +1,37 @@
+/* «Yordam» of the Mini Apps (G97, docs/226): the look of «Profil» (G65), the title of «Meni qanday koʻradi». */
+.help {
+  padding-bottom: 24px;
+}
+
+.help-title {
+  margin: 0;
+  padding: 6px 24px 8px;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 30px;
+}
+
+.help-lead {
+  margin: 0;
+  padding: 0 24px 4px;
+  color: var(--reg-muted);
+  font-size: 14px;
+  line-height: 19px;
+}
+
+.help-answer {
+  margin: 10px 12px 0;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--reg-card);
+  font-size: 15px;
+  line-height: 21px;
+}
+
+.help-answer p {
+  margin: 0;
+}
+
+.help-answer p + p {
+  margin-top: 8px;
+}

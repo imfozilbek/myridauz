@@ -7,7 +7,7 @@ import { useLoad } from '../market/use-list';
 import { useWhen } from './home-when';
 import { nextBookings } from './home-items';
 import { usePassengerData } from './passenger-data';
-import { CHATS_SECTION, ChatsTile, SupportTile, TripsTile } from './shared-tiles';
+import { CHATS_SECTION, ChatsTile, HELP_SECTION, SupportTile, TripsTile } from './shared-tiles';
 import { passengerTripsHint } from './tile-hints';
 import { useHomeTap } from './use-home-tap';
 import { useNow } from '../own-trip/use-now';
@@ -33,7 +33,7 @@ export function PassengerTiles({ go }: { readonly go: HomeGo }) {
       />
       <ChatsTile driver={false} onOpen={() => go(CHATS_SECTION)} />
       <FavoritesTile now={now} onOpen={() => go(FAVORITES_SECTION)} />
-      <SupportTile />
+      <SupportTile onOpen={() => go(HELP_SECTION)} />
     </>
   );
 }

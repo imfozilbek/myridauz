@@ -12,6 +12,7 @@ import { useScreenBackground } from '../../telegram/screen-background';
 import { brandVars } from '../../theme/brand-vars';
 import { useAccount } from '../account-context';
 import { DeleteAccountScreen } from './delete-account';
+import { HelpScreen } from '../../help/help-screen';
 import { DocumentsScreen } from './documents-screen';
 import { LookScreen } from './look-screen';
 import { MyReviewsScreen } from './my-reviews-screen';
@@ -62,6 +63,7 @@ export function ProfileScreen({ onBack, part }: Props) {
   if (open === 'impact') return <ImpactScreen onBack={back} />;
   if (open === 'qr') return <QrScreen onBack={back} />;
   if (open === 'documents') return <DocumentsScreen onBack={back} />;
+  if (open === 'help') return <HelpScreen onBack={back} />;
   if (open === 'delete') return <DeleteAccountScreen client={account.client} onBack={back} />;
   return (
     <div className="profile profile-page" style={brandVars(colors)}>

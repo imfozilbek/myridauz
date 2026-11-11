@@ -21,7 +21,7 @@ export function toDataPoint(event: AnalyticsEvent, receivedAt: number): DataPoin
           : 'source' in event && event.source
             ? event.source
             : 'code' in event
-              ? event.code
+              ? (event.code ?? '')
               : 'step' in event
                 ? event.step
                 : 'result' in event

@@ -9,7 +9,7 @@ import { useLoad } from '../market/use-list';
 import { useDriverData } from './driver-data';
 import { nextTrip } from './driver-day';
 import { answerable, waitingRequests } from './home-items';
-import { CHATS_SECTION, ChatsTile, SupportTile, TripsTile } from './shared-tiles';
+import { CHATS_SECTION, ChatsTile, HELP_SECTION, SupportTile, TripsTile } from './shared-tiles';
 import { driverTripsHint } from './tile-hints';
 import { useHomeTap } from './use-home-tap';
 import { useNow } from '../own-trip/use-now';
@@ -35,7 +35,7 @@ export function DriverTiles({ go }: { readonly go: HomeGo }) {
       />
       <ChatsTile driver onOpen={() => go(CHATS_SECTION)} />
       <WalletTile asked={bookings.filter((one) => answerable(one, now))} onOpen={() => go(WALLET_SECTION)} />
-      <SupportTile />
+      <SupportTile onOpen={() => go(HELP_SECTION)} />
     </>
   );
 }
