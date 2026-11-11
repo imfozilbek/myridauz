@@ -1,16 +1,14 @@
 import { loadBrand } from '@platform/brands';
-import { helpQuestions, helpTopicsFor, helpValues, type HelpQuestion } from '@platform/contracts';
+import { helpValues } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { expect, test, type Page } from './crash-guard';
 import { openMockupWallet } from './g65-wallet-mock';
 import { openDriverShot } from './g76-driver-mock';
 import { openPassengerShot } from './g76-passenger-mock';
-import { showChat } from './stand/bot-chat';
-import type { BotMessage } from './stand/stand-tools';
 
-// The mockup of G97 (docs/226): «Yordam» of the Mini Apps and the help of the bots, from the real
-// screens at the size of the phones of the mockups (360 × 760 at 2). The shots are the mockup and its
-// Pixel Perfect.
+// The mockup of G97 (docs/226): «Yordam» of the Mini Apps from the real screens at the size of the
+// phones of the mockups (360 × 760 at 2). The shots are the mockup and its Pixel Perfect. The chat of
+// the bot (6, 7) is shot on the stand (e2e/stand/g97.spec.ts): it needs the brand kit (lesson 388).
 const { t, formatMoney } = createI18n(DEFAULT_LOCALE);
 const values = helpValues(loadBrand(), formatMoney);
 const OUT = 'screenshots/pixel-g97';
@@ -48,36 +46,4 @@ test('5: «Hamyon» ends with the questions of its topic', async ({ page }) => {
   const link = page.getByText(t('help.link', { topic: t('help.topic.wallet') }));
   await link.scrollIntoViewIfNeeded();
   await shot(page, '5-wallet');
-});
-
-// The bot draws its buttons as Telegram does: the topics two in a row, the questions one in a row.
-const message = (text: string, rows: string[][]): BotMessage => ({
-  bot: 'passenger',
-  method: 'sendMessage',
-  chatId: 1,
-  chat: '1',
-  text,
-  buttons: [],
-  rows,
-  messageId: 1,
-  target: null,
-  replyTo: null,
-});
-const topics = helpTopicsFor('passenger').map((topic) => t(`help.bot.topic.${topic}`));
-const pairs = [0, 2, 4].map((start) => topics.slice(start, start + 2));
-const more = t('help.bot.more');
-const back = t('help.bot.back');
-
-// The chat is a page of its own without a viewport tag: drawn as a desktop page, at the width of a phone.
-test.describe('the bot', () => {
-  test.use({ isMobile: false, hasTouch: false });
-  test('6, 7: «/yordam» in the bot of a passenger, then an answer in the same message', async ({ page }) => {
-    await showChat(page, 'passenger', [message(t('help.bot.topics'), [...pairs, [more]])]);
-    await page.screenshot({ path: `${OUT}/6-bot-topics-code.png`, fullPage: true });
-    const question: HelpQuestion = 'booking.wait';
-    const answer = `<b>${t(`help.${question}.q`, values)}</b>\n\n${t(`help.${question}.a`, values)}`;
-    await showChat(page, 'passenger', [message(answer, [[back, more]])]);
-    await page.screenshot({ path: `${OUT}/7-bot-answer-code.png`, fullPage: true });
-    expect(helpQuestions('booking')).toContain(question);
-  });
 });
