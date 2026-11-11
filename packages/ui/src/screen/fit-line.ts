@@ -30,15 +30,21 @@ export function useFitLine<T extends HTMLElement>(words: string) {
     if (!line) return undefined;
     fit(line);
     if (typeof ResizeObserver === 'undefined') return undefined;
-    // Only a new width asks for a new size: the height follows the size, so it would loop.
+    // Only a new width asks for a new size, fitted in the next frame: a size changed while the browser
+    // tells of sizes would be a loop of the observers («ResizeObserver loop»).
     let width = line.clientWidth;
+    let frame = 0;
     const observer = new ResizeObserver(() => {
       if (line.clientWidth === width) return;
       width = line.clientWidth;
-      fit(line);
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => fit(line));
     });
     observer.observe(line);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+    };
   }, [words]);
   return ref;
 }
