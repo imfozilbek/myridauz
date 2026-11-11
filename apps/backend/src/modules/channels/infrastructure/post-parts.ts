@@ -1,4 +1,4 @@
-import { arrivalAt, DAY_MS, tashkentDate, type Trip } from '@platform/contracts';
+import { arrivalAt, DAY_MS, tashkentDate, toLatin, type Trip } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Places } from '../../../shared/places/end-names';
 import { escapeHtml } from '../../../shared/telegram/html';
@@ -44,9 +44,9 @@ export function peopleOf(trip: Trip): number {
 }
 
 // #Kattaqorgon: a tap shows every trip of the place in the channel. Only Latin letters and digits
-// make a hashtag in Telegram.
+// make a hashtag in Telegram; a name shown in Cyrillic gives the same hashtag as before (G98).
 export function hashtagOf(name: string): string {
-  const words = name
+  const words = toLatin(name)
     .split(/[\s-]+/u)
     .map((word) => word.replace(/[^A-Za-z0-9]/gu, ''))
     .filter(Boolean);

@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import { nearPlaces } from '../application/near-places';
 import type { MapCache, PlaceIndex } from '../application/ports';
+import { NAMES_ALPHABET, shownPlace } from '../../../shared/places/shown-names';
 import { parsePoint } from './point-query';
 
 // The known places around the pin (docs/126): three digits, about 110 m, one answer for a spot,
@@ -19,12 +20,12 @@ export function nearRoutes(
     const point = parsePoint(context.req.query('at'), POINT_DIGITS);
     if (!point) return context.json({ error: 'map.invalid_input' }, BAD_REQUEST);
     const { index, cache } = deps(context.env);
-    const key = `near/${point.lat},${point.lng}`;
+    const key = `near/${NAMES_ALPHABET}/${point.lat},${point.lng}`;
     const headers = { 'content-type': JSON_TYPE, 'cache-control': KEEP_ON_PHONE };
     const cached = await cache.match(key);
     if (cached) return context.body(cached.bytes, 200, headers);
     const bytes = await new Response(
-      JSON.stringify({ places: await nearPlaces(index, point) }),
+      JSON.stringify({ places: (await nearPlaces(index, point)).map(shownPlace) }),
     ).arrayBuffer();
     await cache.put(key, { bytes, offset: 0, size: bytes.byteLength, etag: '', type: JSON_TYPE });
     return context.body(bytes, 200, headers);

@@ -35,8 +35,8 @@ export const environments: Readonly<Record<EnvironmentName, BrandEnvironment>> =
     channels: [
       {
         chat: '-1004497717884',
-        title: 'Viloyatlar',
-        name: 'MyRida | Viloyatlar',
+        title: 'Вилоятлар',
+        name: 'MyRida | Вилоятлар',
         code: '10',
         places: [...new Set(channels.flatMap((channel) => channel.places))],
         link: 'https://t.me/+CcXbhDy1iD0yNmYy',

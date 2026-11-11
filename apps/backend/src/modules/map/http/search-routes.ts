@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import type { MapCache, PlaceIndex } from '../application/ports';
 import { searchPlaces } from '../application/search-places';
+import { NAMES_ALPHABET, shownPlace } from '../../../shared/places/shown-names';
 import { parsePoint } from './point-query';
 
 // The search of places by name (G23, docs/67): the same word near the same start is one answer,
@@ -33,11 +34,11 @@ export function searchRoutes(deps: (env: Bindings) => SearchDeps) {
     if (zone !== null && districts === null)
       return context.json({ error: 'locations.not_found' }, BAD_REQUEST);
     const where = near ? `${near.lat},${near.lng}` : '';
-    const key = `search/${encodeURIComponent(searchKey(query))}/${where}/${zone ?? ''}`;
+    const key = `search/${NAMES_ALPHABET}/${encodeURIComponent(searchKey(query))}/${where}/${zone ?? ''}`;
     const headers = { 'content-type': JSON_TYPE, 'cache-control': KEEP_ON_PHONE };
     const cached = await cache.match(key);
     if (cached) return context.body(cached.bytes, 200, headers);
-    const places = await searchPlaces(index, query, near, districts);
+    const places = (await searchPlaces(index, query, near, districts)).map(shownPlace);
     const bytes = await new Response(JSON.stringify({ places })).arrayBuffer();
     await cache.put(key, { bytes, offset: 0, size: bytes.byteLength, etag: '', type: JSON_TYPE });
     return context.body(bytes, 200, headers);

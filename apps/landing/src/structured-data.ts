@@ -16,7 +16,7 @@ export function organization(brand: BrandConfig, description: string) {
       logo: `${url}apple-touch-icon.png`,
       slogan: brand.slogan,
     }),
-    script({ '@type': 'WebSite', name: brand.name, url, description, inLanguage: 'uz' }),
+    script({ '@type': 'WebSite', name: brand.name, url, description, inLanguage: 'uz-Cyrl' }),
   ].join('');
 }
 
