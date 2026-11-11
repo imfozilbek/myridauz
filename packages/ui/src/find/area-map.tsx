@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { MapRetry } from '../map/map-retry';
+import { useFitLine } from '../screen/fit-line';
 import { useMapView } from '../map/use-map-view';
 import '../map/pickup-map.css';
 
@@ -15,6 +16,8 @@ export function AreaMap({ place }: { readonly place: Location }) {
   const { t } = useI18n();
   const center = { lat: place.lat, lng: place.lng };
   const { box, view, failed, retry } = useMapView(map, center, true);
+  const note = t('find.areaNote');
+  const fitted = useFitLine<HTMLParagraphElement>(note);
   useEffect(() => {
     view?.area(center, AREA_KM);
     // The view draws the circle once it is ready.
@@ -23,7 +26,9 @@ export function AreaMap({ place }: { readonly place: Location }) {
     <div className="area-map">
       {failed ? <MapRetry onRetry={retry} /> : null}
       <div ref={box} className="area-map-box" hidden={failed} data-state={view ? 'ready' : 'loading'} />
-      <p className="area-map-note">{t('find.areaNote')}</p>
+      <p ref={fitted} className="area-map-note">
+        {note}
+      </p>
     </div>
   );
 }

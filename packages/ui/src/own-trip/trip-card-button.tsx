@@ -1,6 +1,7 @@
 import type { Trip } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
+import { useFitLine } from '../screen/fit-line';
 import { ActionFailure } from '../states/action-failure';
 import { useTripCard } from './use-trip-card';
 
@@ -12,6 +13,8 @@ const SEND = 18;
 export function TripCardButton({ trip }: { readonly trip: Trip }) {
   const { t } = useI18n();
   const { send, failure, busy } = useTripCard(trip);
+  const words = t('driverTrip.channel.share');
+  const fitted = useFitLine<HTMLSpanElement>(words);
   return (
     <>
       <ActionFailure error={failure} />
@@ -23,7 +26,7 @@ export function TripCardButton({ trip }: { readonly trip: Trip }) {
         onClick={() => void send()}
       >
         <Icon name="send" size={SEND} />
-        <span>{t('driverTrip.channel.share')}</span>
+        <span ref={fitted}>{words}</span>
       </button>
     </>
   );
