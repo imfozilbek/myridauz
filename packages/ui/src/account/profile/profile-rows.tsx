@@ -1,5 +1,4 @@
 import type { Standing } from '@platform/contracts';
-import { useOpenSupport } from '../../telegram/support-link';
 import { useBrand } from '../../context/brand-context';
 import { useI18n } from '../../context/i18n-context';
 import { useDriver } from '../../driver/driver-context';
@@ -13,7 +12,8 @@ import { HomeScreenRow } from './home-screen-row';
 import { NavigatorRow } from './navigator-row';
 import { ProfileGroup, ProfileRow } from './profile-row';
 
-export type ProfileOpen = 'reviews' | 'channels' | 'subscriptions' | 'impact' | 'qr' | 'documents' | 'delete';
+export type ProfileOpen =
+  'reviews' | 'channels' | 'subscriptions' | 'impact' | 'qr' | 'documents' | 'delete' | 'help';
 // What the head of the main screen opens straight away (G76): the ratings, how the drivers see one.
 export type ProfilePart = 'reviews' | 'look' | 'photo';
 
@@ -28,7 +28,6 @@ export function ProfileRows({ standing, onOpen }: Props) {
   const { t } = useI18n();
   const brand = useBrand();
   const { bots } = brand;
-  const support = useOpenSupport();
   const account = useAccount();
   const driver = useDriver();
   const car = driver?.application.status === 'approved' ? driver.application.car : null;
@@ -102,7 +101,8 @@ export function ProfileRows({ standing, onOpen }: Props) {
         <HomeScreenRow />
       </ProfileGroup>
       <ProfileGroup header={t('home.support')}>
-        <ProfileRow icon="help" title={t('home.support')} onClick={() => support()} />
+        {/* The answers first, the team one tap further (G97, docs/226). */}
+        <ProfileRow icon="help" title={t('home.support')} onClick={() => onOpen('help')} />
         <ProfileRow
           icon="file"
           title={t('account.profile.documents')}

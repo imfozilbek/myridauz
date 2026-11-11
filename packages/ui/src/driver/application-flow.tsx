@@ -15,6 +15,7 @@ import { errorKey } from '../market/error-text';
 import { useUnsavedGuard } from '../screen/unsaved-guard';
 import { haptic } from '../telegram/feedback';
 import { useCarAnswers } from './car-answers';
+import { HelpScreen } from '../help/help-screen';
 import { CarScreen } from './car-form/car-screen';
 import { hasProblem, photosReady } from './problem-note';
 import { PhotosStep } from './steps/photos-step';
@@ -46,6 +47,8 @@ export function ApplicationFlow({ initial, onSubmitted, onClose, tapped = false 
   // DRV-3): said before the first photo; after it, leaving without «Yuborish» asks.
   const approved = initial?.status === 'approved';
   const [reshot, setReshot] = useState(false);
+  // «Yordam» on the topic of a driver, opened from the car screen (T6 of G97).
+  const [help, setHelp] = useState(false);
   // A new application is a draft and is not lost; a sent one being changed asks before leaving.
   const guard = useUnsavedGuard(
     known !== undefined && (dirty || reshot),
@@ -110,6 +113,7 @@ export function ApplicationFlow({ initial, onSubmitted, onClose, tapped = false 
       fixed('plate');
     if (['make', 'model', 'color', 'seats'].some((field) => field in patch)) fixed('car');
   };
+  if (help) return <HelpScreen help="driver" onBack={() => setHelp(false)} />;
   return (
     <>
       <CarScreen
@@ -117,6 +121,7 @@ export function ApplicationFlow({ initial, onSubmitted, onClose, tapped = false 
         reasons={reasons}
         onChange={edit}
         onBack={leave}
+        onHelp={() => setHelp(true)}
         onDone={async () => {
           track({ name: 'driver_application_step', screen: 'driver', step: 'car' });
           // A fix of the car data only: the photos are as the team wants, it is sent at once (G79 В15).

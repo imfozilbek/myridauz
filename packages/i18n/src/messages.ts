@@ -19,6 +19,7 @@ import drivers from '../locales/uz-Latn/drivers.json' with { type: 'json' };
 import driverTrip from '../locales/uz-Latn/driver-trip.json' with { type: 'json' };
 import find from '../locales/uz-Latn/find.json' with { type: 'json' };
 // The loops of growth and the cards «Men Rida bilan» (G69, docs/123).
+import help from '../locales/uz-Latn/help.json' with { type: 'json' };
 import growth from '../locales/uz-Latn/growth.json' with { type: 'json' };
 import errors from '../locales/uz-Latn/errors.json' with { type: 'json' };
 import home from '../locales/uz-Latn/home.json' with { type: 'json' };
@@ -69,6 +70,8 @@ const REFERENCE = {
   driverTrip,
   find,
   growth,
+  // The help of the bots, the Mini Apps and the site from one list (G97, docs/226).
+  help,
   errors,
   home,
   landing,

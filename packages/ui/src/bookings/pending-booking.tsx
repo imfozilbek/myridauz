@@ -6,6 +6,7 @@ import { useI18n } from '../context/i18n-context';
 import { useGoHome } from '../flow/home-context';
 import { PersonBadge } from '../find/person-badge';
 import { Icon } from '../icons';
+import { HelpLink } from '../help/help-link';
 import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { useScreenBackground } from '../telegram/screen-background';
@@ -87,6 +88,7 @@ export function PendingBooking({ booking, onBack, onCancel, onHome, children }: 
       <button type="button" className="pending-cancel" onClick={onCancel}>
         {t('market.request.cancel')}
       </button>
+      <HelpLink topic="booking" />
       <MainButton text={t('bookings.pending.home')} onClick={home} />
     </div>
   );

@@ -6,7 +6,9 @@ import { forwardToTeam, recordSupport, supportDeps, supportTalk, type Content } 
 import type { BotContext } from './bot-context';
 import { sendMessage } from './bot-context';
 import { adminIds } from '../shared/telegram/bot-config';
-import { isStartCommand, type BotMessage } from './telegram-update';
+import { isStartCommand, type BotMessage, type TelegramUpdate } from './telegram-update';
+import { isHelpButton, onHelpCallback } from './help-callbacks';
+import { HELP_COMMAND, topicRows } from './help-markup';
 import { mediaOf } from './media';
 import { welcomePicture } from './start-reply';
 import { askerOf } from './support-asker';
@@ -14,7 +16,7 @@ import { supportButtons, supportCard } from './support-card';
 import { supportUrl } from './support-link';
 
 const { t } = createI18n(DEFAULT_LOCALE);
-export const SUPPORT_BOT = 'support';
+export const SUPPORT_BOT = 'support' as const;
 // At most this many messages of one person a minute reach the team; the rest stay in the talk (G42).
 export const SUPPORT_PER_MINUTE = 10;
 
@@ -71,7 +73,8 @@ async function toSupport(context: BotContext, message: BotMessage) {
   return sendMessage(chatId, t('bot.support.received'));
 }
 
-// The welcome: a picture with the words and the team hours under it (owner approval 03.10.2026).
+// The welcome: a picture with the words and the team hours under it (owner approval 03.10.2026), the
+// topics of the help under it (G97, docs/226): the answer first, then the team.
 function supportWelcome(brand: BrandConfig, chatId: number) {
   const { from, to } = brand.moderation.hours;
   return {
@@ -79,11 +82,19 @@ function supportWelcome(brand: BrandConfig, chatId: number) {
     chat_id: chatId,
     photo: welcomePicture(brand, 'support'),
     caption: t('bot.support.welcome', { brand: brand.name, from: hourLabel(from), to: hourLabel(to) }),
+    reply_markup: { inline_keyboard: topicRows(brand, SUPPORT_BOT) },
   };
 }
 
 // The support bot answers everyone, a blocked person too: support is where a block is asked about.
-export function onSupportMessage(context: BotContext, message: BotMessage) {
-  if (isStartCommand(message.text)) return supportWelcome(context.brand, message.chat.id);
+function onSupportMessage(context: BotContext, message: BotMessage) {
+  if (isStartCommand(message.text) || message.text === HELP_COMMAND)
+    return supportWelcome(context.brand, message.chat.id);
   return toSupport(context, message);
+}
+
+export function onSupportUpdate(context: BotContext, data: TelegramUpdate) {
+  const query = data.callback_query;
+  if (query && isHelpButton(query.data)) return onHelpCallback(context, SUPPORT_BOT, query);
+  return data.message ? onSupportMessage(context, data.message) : {};
 }

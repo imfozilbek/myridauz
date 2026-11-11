@@ -8,6 +8,7 @@ import { Icon } from '../icons';
 import { useLoad } from '../market/use-list';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
+import { HelpLink } from '../help/help-link';
 import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { brandVars } from '../theme/brand-vars';
@@ -61,6 +62,7 @@ export function WalletScreen({ onBack, onOpen }: Props) {
       </button>
       <h2 className="wallet-head">{t('wallet.history')}</h2>
       <WalletRows operations={value.operations} onOpen={setOpened} />
+      <HelpLink topic="wallet" />
     </div>
   );
 }

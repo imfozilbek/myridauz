@@ -6,6 +6,7 @@ import { NumberTiles } from '../team/number-tiles';
 import { ArrivalsSections } from './stats-arrivals';
 import { BlocksSection, BotsSection } from './stats-bots';
 import { ErrorsSections } from './stats-errors';
+import { HelpSection } from './stats-help';
 import { LeavingSections, RatingsSections } from './stats-voice';
 
 // A drop from this share is where people get stuck: it is marked (docs/29).
@@ -52,6 +53,7 @@ export function StatsSections({ stats, gold }: { readonly stats: Stats; readonly
       <ArrivalsSections arrivals={stats.arrivals} />
       <RatingsSections ratings={stats.ratings} complaintReasons={stats.complaintReasons} />
       {stats.events === 'on' ? <LeavingSections leaving={stats.leaving} opens={stats.opens} /> : null}
+      {stats.events === 'on' ? <HelpSection help={stats.help} /> : null}
       {funnels.slice(listFunnels).map((funnel, index) => (
         <FunnelSection key={funnel.id} funnel={funnel} hint={listFunnels === 0 && index === 0} />
       ))}

@@ -25,6 +25,7 @@
 | Главный экран (G25, G76) | `home_tap` (место нажатия: плитка, шапка, кнопка блока, чат и звонок поездки), `dock_state` (состояние нижнего блока, когда оно сменилось: 1 или 2 за открытие, `165`) |
 | Бот (G12) | `bot_command` (id команды), `bot_button` (вид кнопки, без id), `bot_member` (G87: человек заблокировал бота `blocked` или вернулся `unblocked`, по боту, без ID, `191`) |
 | Голос людей (G87) | `leave_reason`: вид (`booking`, `trip`, `account`) и id причины после отмены места, поездки или удаления данных; одно нажатие, можно пропустить (`191`) |
+| Помощь (G97) | `help_open`: тема или вопрос (Mini App и боты: `source` бот); `help_more`: «Boshqa savolim bor» и вопрос перед ним (`226`) |
 | Сервер | `driver_approved` |
 | Близкие (`43`) | `trip_shared`, `share_opened`, `share_follow`, `share_join`, `boarded` («Keldi» водителя, G76), `arrived` |
 | Петли роста (G69, G88) | `share_shown` (кнопка «поделиться» на экране) и `share_done` (карточка ушла): кнопка = петля (`qr`, `req-share`, `seats`, `follow`, `share-join` у «Yana ulashish», `share-driver` у момента нового водителя, `trip`, `story`), куда `chat` или `story`; у QR куда нет (скачивание); у «Yaqinlarimga» только `share_done` (`193`) |

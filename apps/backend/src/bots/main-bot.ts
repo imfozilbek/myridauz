@@ -7,6 +7,8 @@ import { bold, escapeHtml, quote } from '../shared/telegram/html';
 import { startButton } from '../shared/telegram/open-button';
 import type { BotContext } from './bot-context';
 import { DOCUMENTS_COMMAND, documentsReply } from './documents-reply';
+import { helpReply, isHelpButton, onHelpCallback } from './help-callbacks';
+import { HELP_COMMAND } from './help-markup';
 import { noRepliesReply } from './no-replies';
 import { welcomePicture } from './start-reply';
 import { isStartCommand, type BotMessage, type TelegramUpdate } from './telegram-update';
@@ -64,9 +66,14 @@ async function onMessage(bot: BotContext, message: BotMessage) {
     return mainWelcome(bot.brand, chatId, message.from?.first_name ?? '', open);
   }
   if (message.text === DOCUMENTS_COMMAND) return documentsReply(bot.brand, 'main', chatId);
+  if (message.text === HELP_COMMAND) return helpReply(bot.brand, 'main', chatId);
   return message.text ? noRepliesReply(bot.brand, 'main', chatId) : {};
 }
 
-// The main bot reads only messages: its buttons open the questionnaire or a link (docs/181).
-export const onMainUpdate = (bot: BotContext, data: TelegramUpdate) =>
-  data.message ? onMessage(bot, data.message) : {};
+// The main bot reads messages; its buttons open the questionnaire or a link (docs/181), and the
+// buttons of the help change their message in place (G97, docs/226).
+export function onMainUpdate(bot: BotContext, data: TelegramUpdate) {
+  const query = data.callback_query;
+  if (query && isHelpButton(query.data)) return onHelpCallback(bot, 'main', query);
+  return data.message ? onMessage(bot, data.message) : {};
+}

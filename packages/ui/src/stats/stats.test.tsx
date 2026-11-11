@@ -41,6 +41,10 @@ describe('Statistika of the team (docs/29)', () => {
     expect(passenger.className).toContain('manage-danger');
     expect(screen.getByText('429: 0 · yoʻqoldi: 0 · soniyada: 6').className).not.toContain('manage-danger');
     expect(screen.getByText('Navbat amallari, kuniga')).toBeTruthy();
+    // G97 (docs/226): the questions of the help opened most; after which people still wrote.
+    expect(screen.getByText('Yordam: koʻp ochilgan savollar')).toBeTruthy();
+    expect(screen.getByText('Hamyonni qanday toʻldiraman?')).toBeTruthy();
+    expect(screen.getByText('Javobdan keyin jamoaga yozdi: 9')).toBeTruthy();
     await tap('7 kun');
     expect(await screen.findByText('158')).toBeTruthy();
     expect(get.mock.calls.map(([period]) => period)).toEqual(['day', 'week']);
@@ -54,5 +58,6 @@ describe('Statistika of the team (docs/29)', () => {
     ).toBeTruthy();
     expect(screen.queryByText('Ilova buzilishlari')).toBeNull();
     expect(screen.queryByText('Botlar xabarlari')).toBeNull();
+    expect(screen.queryByText('Yordam: koʻp ochilgan savollar')).toBeNull();
   });
 });

@@ -1,4 +1,3 @@
-import { useOpenSupport } from '../telegram/support-link';
 import { useI18n } from '../context/i18n-context';
 import { useUnreadChats } from '../chats/unread-chats';
 import { HomeTile } from '../flow/home-tile';
@@ -9,6 +8,7 @@ import { useHomeTap } from './use-home-tap';
 // The tiles both roles have in the same places (G76, docs/165, mockup g76/1): 1 «Mening
 // safarlarim», 2 «Suhbatlar», 4 «Yordam»; the third is the own tile of the role.
 export const CHATS_SECTION = 'chats';
+export { HELP_SECTION } from '../help/help-link';
 
 type TripsProps = {
   readonly hint: TripsHint;
@@ -60,10 +60,9 @@ export function ChatsTile({ driver, onOpen }: { readonly driver: boolean; readon
   );
 }
 
-// «Yordam» opens the support bot of the brand (docs/50): an answer in Telegram itself.
-export function SupportTile() {
+// «Yordam» opens the answers (G97, docs/226); «Boshqa savolim bor» there leads to the support bot (docs/50).
+export function SupportTile({ onOpen }: { readonly onOpen: () => void }) {
   const { t } = useI18n();
-  const support = useOpenSupport();
   const tap = useHomeTap();
   return (
     <HomeTile
@@ -72,7 +71,7 @@ export function SupportTile() {
       tone="brand"
       title={t('home.support')}
       hint={t('home.supportHint')}
-      onClick={tap('support', () => support())}
+      onClick={tap('support', onOpen)}
     />
   );
 }

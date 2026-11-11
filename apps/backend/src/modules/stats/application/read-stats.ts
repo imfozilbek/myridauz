@@ -2,6 +2,7 @@ import { FUNNELS, type Funnel, type Stats, type StatsPeriod } from '@platform/co
 import { arrivalsOf } from '../domain/arrivals';
 import { botBlocksOf, botLoadOf } from '../domain/bot-load';
 import { FUNNEL_EVENTS, funnelOf } from '../domain/funnels';
+import { HELP_MORE, HELP_OPEN, helpOf } from '../domain/help';
 import {
   complaintReasonCountsOf,
   FIRST_SCREEN,
@@ -39,11 +40,21 @@ export const funnelsOf = (deps: StatsDeps, period: StatsPeriod): Promise<Funnel[
 
 type EventsPart = Pick<
   Stats,
-  'events' | 'funnels' | 'errors' | 'bots' | 'queueOps' | 'blocks' | 'leaving' | 'opens'
+  'events' | 'funnels' | 'errors' | 'bots' | 'queueOps' | 'blocks' | 'leaving' | 'opens' | 'help'
 >;
-const NO_EVENTS = { funnels: [], errors: [], bots: [], queueOps: 0, blocks: [], leaving: [], opens: [] };
-// G87 (docs/191): the reasons of leaving and the first screens of the sessions, in one query.
-const FEEL_EVENTS = [LEAVE_EVENT, FIRST_SCREEN];
+const NO_EVENTS = {
+  funnels: [],
+  errors: [],
+  bots: [],
+  queueOps: 0,
+  blocks: [],
+  leaving: [],
+  opens: [],
+  help: [],
+};
+// G87 (docs/191): the reasons of leaving and the first screens of the sessions, in one query; the
+// questions of the help (G97, docs/226) in the same one.
+const FEEL_EVENTS = [LEAVE_EVENT, FIRST_SCREEN, HELP_OPEN, HELP_MORE];
 
 // Funnels and errors need Analytics Engine; if it fails, the main numbers still show (docs/29).
 async function eventsPart(deps: StatsDeps, period: StatsPeriod, at: number): Promise<EventsPart> {
@@ -62,7 +73,7 @@ async function eventsPart(deps: StatsDeps, period: StatsPeriod, at: number): Pro
       }),
       cached(deps.cache, `feel:${period}`, at, async () => {
         const counters = await events.counters(days, FEEL_EVENTS);
-        return { leaving: leavingOf(counters), opens: opensOf(counters) };
+        return { leaving: leavingOf(counters), opens: opensOf(counters), help: helpOf(counters) };
       }),
     ]);
     return { events: 'on', funnels, errors, ...bots, ...feel };

@@ -66,7 +66,7 @@
   "done.title": "Safar tugadi",
   "done.when": "{date}, {time} · {place}",
   "done.ago": "{date} · {days} kun oldin",
-  "done.why": "{brand} orqali: yaqinlaringiz kuzatadi, shikoyat qilish mumkin, kelmasa pul qaytadi.",
+  "done.why": "{brand} orqali: yaqinlaringiz kuzatadi, muammo boʻlsa shikoyat qilasiz, raqamingiz yashirin qoladi.",
   "done.untilToday": "bugun {time} gacha",
   "done.untilTomorrow": "ertaga {time} gacha",
   "done.until": "{date} {time} gacha",

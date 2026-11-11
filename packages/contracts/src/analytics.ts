@@ -126,6 +126,9 @@ export const analyticsEventSchema = z.discriminatedUnion('name', [
   // G69: a share button shown and used, by loop and place (docs/123).
   z.object({ name: z.literal('share_shown'), ...shareFields, ...context }),
   z.object({ name: z.literal('share_done'), ...shareFields, ...context }),
+  // G97: a topic or a question of the help, and «Boshqa savolim bor» after the question last read (docs/226).
+  z.object({ name: z.literal('help_open'), code: id, ...context }),
+  z.object({ name: z.literal('help_more'), code: id.optional(), ...context }),
   // G87: why a seat, a trip or the account went, one tap after it (docs/191).
   z.object({
     name: z.literal('leave_reason'),
