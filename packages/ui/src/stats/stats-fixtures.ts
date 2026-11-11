@@ -122,5 +122,13 @@ export const statsOf = (period: StatsPeriod, events: Stats['events'] = 'on'): St
           { kind: 'link', count: 22 },
         ]
       : [],
+  // G97 (docs/226): the questions of the help opened most, and the people who still wrote.
+  help:
+    events === 'on'
+      ? [
+          { code: 'wallet.top_up', opened: 31, more: 9 },
+          { code: 'booking.wait', opened: 18, more: 2 },
+        ]
+      : [],
   at: Date.parse('2026-10-05T09:30:00Z'),
 });

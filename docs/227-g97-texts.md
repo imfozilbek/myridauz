@@ -21,6 +21,8 @@
 | `bot.help.back` | ⬅️ Mavzular |
 | `bot.help.more` | ✍️ Boshqa savolim bor |
 | `bot.commands.help` | Savollar va javoblar |
+| `stats.help.title` (команде, «Statistika») | Yordam: koʻp ochilgan savollar |
+| `stats.help.more` (команде, «Statistika») | Javobdan keyin jamoaga yozdi: {count} |
 | `bot.support.ask` | Savolingizni shu yerga yozing. 🎤 Ovozli xabar yoki 🖼 rasm ham yuborsa boʻladi. |
 
 `bot.support.welcome`, было: «…Bu yerga yozing: 💬 Safar, bron, hamyon yoki hisob boʻyicha savolingiz…». Стало:

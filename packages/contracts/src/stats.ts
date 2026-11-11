@@ -109,6 +109,11 @@ export const BLOCK_BOTS = ['passenger', 'driver', 'admin', 'support', 'main'] as
 export const botBlockSchema = z.object({ bot: z.enum(BLOCK_BOTS), blocked: count, unblocked: count });
 export type BotBlock = z.infer<typeof botBlockSchema>;
 
+// G97 (docs/226): how often a question of the help was opened, and how often people still wrote to
+// the team after it. An answer of before G97: none.
+export const helpCountSchema = z.object({ code: z.string(), opened: count, more: count });
+export type HelpCount = z.infer<typeof helpCountSchema>;
+
 export const statsSchema = z.object({
   period: z.enum(STATS_PERIODS),
   numbers: z.record(z.enum(MAIN_NUMBERS), count),
@@ -130,6 +135,7 @@ export const statsSchema = z.object({
   complaintReasons: z.array(complaintReasonCountSchema).default([]),
   leaving: z.array(leaveCountSchema).default([]),
   opens: z.array(openCountSchema).default([]),
+  help: z.array(helpCountSchema).default([]),
   at: z.number().int(),
 });
 export type Stats = z.infer<typeof statsSchema>;

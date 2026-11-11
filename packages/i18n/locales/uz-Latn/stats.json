@@ -97,5 +97,7 @@
   "opens.title": "Ilova qanday ochildi",
   "opens.bot": "Bot xabaridan",
   "opens.direct": "Toʻgʻridan toʻgʻri",
-  "opens.link": "Havola orqali"
+  "opens.link": "Havola orqali",
+  "help.title": "Yordam: koʻp ochilgan savollar",
+  "help.more": "Javobdan keyin jamoaga yozdi: {count}"
 }
