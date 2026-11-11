@@ -10,6 +10,7 @@
 | `help.lead` | Javobni shu yerdan toping yoki jamoamizga yozing. |
 | `help.more` | Boshqa savolim bor |
 | `help.moreHint` | Jamoamiz har kuni soat {from} dan {to} gacha javob beradi |
+| `help.link` | {topic} boʻyicha savollar (например: «Hamyon va komissiya boʻyicha savollar») |
 | `help.topic.find` | Safar topish |
 | `help.topic.booking` | Joy band qilish |
 | `help.topic.driver` | Haydovchi boʻlish |

@@ -4,6 +4,7 @@ import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { CoRiders } from './co-riders';
+import { HelpLink } from '../help/help-link';
 import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { openExternal } from '../telegram/feedback';
@@ -97,6 +98,7 @@ export function ConfirmedBooking(props: Props) {
           {children}
         </LiveSeatTools>
       )}
+      <HelpLink topic="booking" />
     </div>
   );
 }

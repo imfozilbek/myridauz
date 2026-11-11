@@ -8,8 +8,7 @@ import { useHomeTap } from './use-home-tap';
 // The tiles both roles have in the same places (G76, docs/165, mockup g76/1): 1 «Mening
 // safarlarim», 2 «Suhbatlar», 4 «Yordam»; the third is the own tile of the role.
 export const CHATS_SECTION = 'chats';
-// «Yordam»: the answers of G97 (docs/226), the support bot one tap further.
-export const HELP_SECTION = 'help';
+export { HELP_SECTION } from '../help/help-link';
 
 type TripsProps = {
   readonly hint: TripsHint;

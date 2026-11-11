@@ -35,3 +35,19 @@
 .help-answer p + p {
   margin-top: 8px;
 }
+
+/* «… boʻyicha savollar» under a screen (T6 of G97): quiet, as «Soʻrovni bekor qilish». */
+.help-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 12px auto 0;
+  padding: 10px;
+  border: 0;
+  background: none;
+  color: var(--reg-muted);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}

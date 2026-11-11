@@ -2,6 +2,7 @@
   "title": "Yordam",
   "lead": "Javobni shu yerdan toping yoki jamoamizga yozing.",
   "more": "Boshqa savolim bor",
+  "link": "{topic} boʻyicha savollar",
   "moreHint": "Jamoamiz har kuni soat {from} dan {to} gacha javob beradi",
   "topic.find": "Safar topish",
   "topic.booking": "Joy band qilish",

@@ -1,6 +1,7 @@
 import { carSchema, formatPlate, type CarInput, type ModerationReason } from '@platform/contracts';
 import { useState } from 'react';
 import { StepLayout } from '../../account/step-layout';
+import { HelpLink } from '../../help/help-link';
 import { useScreenView } from '../../context/analytics-context';
 import { useBrand } from '../../context/brand-context';
 import { useI18n } from '../../context/i18n-context';
@@ -24,11 +25,13 @@ type Props = {
   readonly onChange: (patch: Partial<CarInput>) => void;
   readonly onBack: () => void;
   readonly onDone: () => void;
+  // «Haydovchi boʻlish boʻyicha savollar» (T6 of G97): the application opens «Yordam» itself.
+  readonly onHelp: () => void;
 };
 
 // «Mashinangiz» (G62, mockup g62/1 screen 2, variant A): the model, the color, the plate and the seats
 // on one screen; «Davom etish» waits for the whole car.
-export function CarScreen({ car, reasons, onChange, onBack, onDone }: Props) {
+export function CarScreen({ car, reasons, onChange, onBack, onDone, onHelp }: Props) {
   useScreenView('driver.car');
   const { t } = useI18n();
   const { colors } = useBrand().theme;
@@ -77,6 +80,7 @@ export function CarScreen({ car, reasons, onChange, onBack, onDone }: Props) {
             </div>
           ) : null}
         </div>
+        <HelpLink topic="driver" onOpen={onHelp} />
         <OtherCarSheet open={other} onClose={() => setOther(false)} onPick={pick} />
         <MainButton
           text={t('common.continue')}
