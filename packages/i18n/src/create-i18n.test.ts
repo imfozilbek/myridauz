@@ -26,6 +26,8 @@ describe('createI18n', () => {
     expect(i18n.formatDate(TASHKENT_AFTERNOON)).toBe('27-сентябр');
     expect(i18n.formatTime(TASHKENT_AFTERNOON)).toBe('14:30');
     expect(i18n.formatWeekday(TASHKENT_AFTERNOON)).toBe('якшанба');
+    expect(i18n.formatShortDate(new Date('2026-11-13T09:30:00Z'))).toBe('13-ноя');
+    expect(i18n.formatShortDate(new Date('2026-06-13T09:30:00Z'))).toBe('13-июн');
   });
 
   it('takes the Tashkent day, not the UTC day', () => {
