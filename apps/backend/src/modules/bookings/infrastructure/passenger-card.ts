@@ -16,7 +16,7 @@ import { appButton } from '../../../shared/telegram/open-button';
 import { whenLines } from './card-when';
 import { backButton, findOtherButton } from './find-other';
 
-const { t, formatMoney, formatTime, formatNumber } = createI18n(DEFAULT_LOCALE);
+const { t, formatMoney, formatTime, formatNumber, placeName } = createI18n(DEFAULT_LOCALE);
 
 // The live card of a seat in the passenger bot: one per booking (G68, docs/122, mockup g68/2).
 
@@ -58,8 +58,8 @@ function endBlocks(booking: Booking, places: Places): string[] {
   const names = endNames(booking.trip.from, booking.trip.to, places);
   const pickup = booking.pitak
     ? `🚏 ${escapeHtml(booking.pitak.name)}`
-    : booking.pickup?.name && `🏠 ${escapeHtml(booking.pickup.name.name)}`;
-  const dropoff = booking.dropoff?.name && `🏠 ${escapeHtml(booking.dropoff.name.name)}`;
+    : booking.pickup?.name && `🏠 ${escapeHtml(placeName(booking.pickup.name.name))}`;
+  const dropoff = booking.dropoff?.name && `🏠 ${escapeHtml(placeName(booking.dropoff.name.name))}`;
   return [
     quote([`🟢 ${names.from}`, ...(pickup ? [pickup] : [])]),
     quote([`🔴 ${names.to}`, ...(dropoff ? [dropoff] : [])]),

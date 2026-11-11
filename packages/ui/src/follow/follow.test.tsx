@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError, type ChatClient } from '@platform/api-client';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -18,14 +19,14 @@ describe('close people follow a shared trip (docs/43)', () => {
       <FollowScreen token={TOKEN} onJoin={() => undefined} />,
       testClients({ chat: { sharedTrip: async () => TRIP, follow } }),
     );
-    expect(await screen.findByText(/^Dilnozaning safari · /u)).toBeTruthy();
-    expect(screen.getByText('Mashinaga chiqdi')).toBeTruthy();
+    expect(await screen.findByText(/^Dilnozaнинг сафари · /u)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Mashinaga chiqdi'))).toBeTruthy();
     expect(screen.getByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
     // Where the passenger boards and gets off (the owner, docs/111 Q1).
-    expect(screen.getByText('Uchrashuv joyi')).toBeTruthy();
-    expect(screen.getByText('Tushirish joyi')).toBeTruthy();
-    await tap('Xabar olish');
-    expect(await screen.findByText('Xabarlar yoqildi')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Uchrashuv joyi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Tushirish joyi'))).toBeTruthy();
+    await tap(toCyrillic('Xabar olish'));
+    expect(await screen.findByText(toCyrillic('Xabarlar yoqildi'))).toBeTruthy();
     expect(follow).toHaveBeenCalledWith(TOKEN);
     expect(tracked.map((event) => event.name)).toEqual(
       expect.arrayContaining(['share_opened', 'share_follow']),
@@ -42,10 +43,10 @@ describe('close people follow a shared trip (docs/43)', () => {
       <FollowScreen token={TOKEN} onJoin={() => undefined} />,
       testClients({ chat: { sharedTrip: async () => TRIP, follow } }),
     );
-    await tap('Xabar olish');
+    await tap(toCyrillic('Xabar olish'));
     expect((await screen.findByRole('alert')).textContent).not.toBe('');
-    await tap('Xabar olish');
-    expect(await screen.findByText('Bu safarni allaqachon 5 kishi kuzatmoqda.')).toBeTruthy();
+    await tap(toCyrillic('Xabar olish'));
+    expect(await screen.findByText(toCyrillic('Bu safarni allaqachon 5 kishi kuzatmoqda.'))).toBeTruthy();
     cleanup();
     const closed = vi.fn<ChatClient['sharedTrip']>(async () => {
       throw new ApiError(404, 'shares.not_found');
@@ -54,7 +55,7 @@ describe('close people follow a shared trip (docs/43)', () => {
       <FollowScreen token={TOKEN} onJoin={() => undefined} />,
       testClients({ chat: { sharedTrip: closed } }),
     );
-    expect(await screen.findByText('Bu safar endi koʻrinmaydi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Bu safar endi koʻrinmaydi'))).toBeTruthy();
   });
 
   // G89 U6: a weak network is not a closed link: the close person can try again.
@@ -67,8 +68,8 @@ describe('close people follow a shared trip (docs/43)', () => {
       <FollowScreen token={TOKEN} onJoin={() => undefined} />,
       testClients({ chat: { sharedTrip } }),
     );
-    await tap('Qayta urinish');
-    expect(screen.queryByText('Bu safar endi koʻrinmaydi')).toBeNull();
+    await tap(toCyrillic('Qayta urinish'));
+    expect(screen.queryByText(toCyrillic('Bu safar endi koʻrinmaydi'))).toBeNull();
     await waitFor(() => expect(sharedTrip).toHaveBeenCalledTimes(2));
   });
 });
@@ -94,21 +95,21 @@ describe('the passenger shares the trip; in the car by the driver «Keldi» (doc
       }),
     );
     await tap('Jasur');
-    await tap('Yaqinlarimga');
+    await tap(toCyrillic('Yaqinlarimga'));
     expect(share).toHaveBeenCalledWith(confirmed.id);
     await vi.waitFor(() => expect(open.mock.calls[0]?.[0]).toContain('t.me/share/url'));
     // The words of the card for an old Telegram (G88, docs/193).
     expect(open.mock.calls[0]?.[0]).toContain(encodeURIComponent('Ali yoʻlga chiqadi'));
-    await tap('Yetib keldim');
-    expect(await screen.findByText('Yaqinlaringizga xabar berildi')).toBeTruthy();
-    expect(screen.queryByText('Yetib keldim')).toBeNull();
-    await tap('Ulashishni toʻxtatish');
-    expect(await screen.findByText('Ulashish toʻxtatildi')).toBeTruthy();
+    await tap(toCyrillic('Yetib keldim'));
+    expect(await screen.findByText(toCyrillic('Yaqinlaringizga xabar berildi'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Yetib keldim'))).toBeNull();
+    await tap(toCyrillic('Ulashishni toʻxtatish'));
+    expect(await screen.findByText(toCyrillic('Ulashish toʻxtatildi'))).toBeTruthy();
     expect(stopSharing).toHaveBeenCalledWith(confirmed.id);
-    expect(screen.queryByText('Ulashishni toʻxtatish')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Ulashishni toʻxtatish'))).toBeNull();
     // After the arrival the ride is over: the page after the trip, nothing to share again (G91 PAS-7).
-    expect(screen.getByText('Safar tugadi')).toBeTruthy();
-    expect(screen.queryByText('Yaqinlarimga')).toBeNull();
+    expect(screen.getByText(toCyrillic('Safar tugadi'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Yaqinlarimga'))).toBeNull();
   });
 
   // G46 (docs/43): the face and the stars of the driver; close people get no signals of a trip that
@@ -125,7 +126,7 @@ describe('the passenger shares the trip; in the car by the driver «Keldi» (doc
     );
     expect(await screen.findByText(/★ 4,9/u)).toBeTruthy();
     vi.advanceTimersByTime(60_000);
-    expect(await screen.findByText('Dilnoza yoʻlda')).toBeTruthy();
+    expect(await screen.findByText(`Dilnoza ${toCyrillic('yoʻlda')}`)).toBeTruthy();
     vi.useRealTimers();
   });
 

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { channelOf, loadBrand } from '@platform/brands';
 import type { ChannelsClient, GrowthClient } from '@platform/api-client';
 import type { Trip, TripPublicity } from '@platform/contracts';
@@ -18,12 +19,11 @@ const TEAM = {
   posted: true,
 };
 
-afterEach(() => {
-  cleanup();
-  vi.restoreAllMocks();
-});
+afterEach(cleanup);
+afterEach(() => vi.restoreAllMocks());
 
 const MINUTE = 60 * 1000;
+const SEND = toCyrillic('Havolani yoʻlovchilarga yuborish');
 const CARD = {
   prepared: null,
   link: 'https://t.me/test_bot?startapp=trip_t1__trip-a1b2c3',
@@ -67,14 +67,14 @@ describe('the trip in the channel on «Mening safarim» (owner decision 08.10.20
     });
     open(trip, tripPublicity);
     await openTrip();
-    expect(await screen.findByText('Safaringiz kanalda chiqdi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Safaringiz kanalda chiqdi'))).toBeTruthy();
     expect(tripPublicity).toHaveBeenCalledWith('t1');
     expect(busy).toEqual([0]);
-    expect(screen.getByText('Margʻilon | Fargʻona shahri · 12 koʻrdi')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Margʻilon | Fargʻona shahri · 12 koʻrdi'))).toBeTruthy();
     const card = document.querySelector('.own-channel') as HTMLElement;
     expect(card.previousElementSibling?.classList.contains('own-banner')).toBe(true);
     const opened = vi.spyOn(window, 'open').mockReturnValue(null);
-    fireEvent.click(screen.getByText('Safaringiz kanalda chiqdi'));
+    fireEvent.click(screen.getByText(toCyrillic('Safaringiz kanalda chiqdi')));
     expect(opened.mock.calls[0]?.[0]).toBe('https://t.me/+fargona');
   });
 
@@ -83,7 +83,7 @@ describe('the trip in the channel on «Mening safarim» (owner decision 08.10.20
     const { tracked } = open(trip, async () => publicity, loopCard);
     await openTrip();
     const opened = vi.spyOn(window, 'open').mockReturnValue(null);
-    fireEvent.click(await screen.findByText('Havolani yoʻlovchilarga yuborish'));
+    fireEvent.click(await screen.findByText(SEND));
     await vi.waitFor(() => expect(opened).toHaveBeenCalled());
     // No canvas here: the card goes as text, an old Telegram gets its words.
     expect(loopCard).toHaveBeenCalledWith({ loop: 'trip', tripId: 't1' });
@@ -98,15 +98,15 @@ describe('the trip in the channel on «Mening safarim» (owner decision 08.10.20
     cleanup();
     open({ ...trip, seatsLeft: 0 }, async () => publicity);
     await openTrip();
-    expect(await screen.findByText('Safaringiz kanalda chiqdi')).toBeTruthy();
-    expect(screen.queryByText('Havolani yoʻlovchilarga yuborish')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Safaringiz kanalda chiqdi'))).toBeTruthy();
+    expect(screen.queryByText(SEND)).toBeNull();
   });
 
   it('shows only the channel while nobody opened the trip yet, a channel of the team by its title', async () => {
     open(trip, async () => ({ ...publicity, channels: [TEAM], views: 0 }));
     await openTrip();
     expect(await screen.findByText('Fargʻona yoʻli')).toBeTruthy();
-    expect(screen.queryByText(/koʻrdi/u)).toBeNull();
+    expect(screen.queryByText(/кўрди/u)).toBeNull();
   });
 
   // G91 (robot): the card takes a moment; the button says it is busy, a tap never looks like nothing.
@@ -116,7 +116,7 @@ describe('the trip in the channel on «Mening safarim» (owner decision 08.10.20
     open(trip, async () => publicity, loopCard);
     await openTrip();
     vi.spyOn(window, 'open').mockReturnValue(null);
-    const button = (await screen.findByText('Havolani yoʻlovchilarga yuborish')).closest('button');
+    const button = (await screen.findByText(SEND)).closest('button');
     fireEvent.click(button as HTMLElement);
     await vi.waitFor(() => expect(loopCard).toHaveBeenCalled());
     expect(button?.getAttribute('aria-busy')).toBe('true');
@@ -127,8 +127,8 @@ describe('the trip in the channel on «Mening safarim» (owner decision 08.10.20
   it('keeps the link button before any channel posted the trip', async () => {
     open(trip, async () => ({ ...publicity, channels: [] }));
     await openTrip();
-    expect(await screen.findByText('Havolani yoʻlovchilarga yuborish')).toBeTruthy();
-    expect(screen.queryByText('Safaringiz kanalda chiqdi')).toBeNull();
+    expect(await screen.findByText(SEND)).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Safaringiz kanalda chiqdi'))).toBeNull();
   });
 
   it('hides on an error and once the trip is on the way', async () => {
@@ -136,14 +136,14 @@ describe('the trip in the channel on «Mening safarim» (owner decision 08.10.20
       throw new Error('network.failed');
     });
     await openTrip();
-    expect(await screen.findByText('Safar eʼlon qilindi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Safar eʼlon qilindi'))).toBeTruthy();
     expect(document.querySelector('.own-channel')).toBeNull();
     cleanup();
     vi.setSystemTime(trip.departAt + 10 * MINUTE);
     const tripPublicity = vi.fn(async () => publicity);
     open(trip, tripPublicity);
     await openTrip();
-    expect(await screen.findByText('Yoʻldasiz')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Yoʻldasiz'))).toBeTruthy();
     expect(document.querySelector('.own-channel')).toBeNull();
     expect(tripPublicity).not.toHaveBeenCalled();
   });

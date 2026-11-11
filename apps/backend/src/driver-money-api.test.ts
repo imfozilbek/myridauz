@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { adminWalletAdjustPath, WALLET_PATH } from '@platform/contracts';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { botSender, fakeTelegram } from './bots/test-bot';
@@ -56,8 +57,10 @@ describe('a request answered in the bot without money', () => {
       call(`/trips/${trip.id}/bookings`, PASSENGER, json(doorBooking(1))),
     );
     const notice = await send('driver', press(`ask:${booking.id}:yes`));
-    expect(((await notice.json()) as { text?: string }).text).toContain('yetmaydi');
-    const told = telegram.sentTo(DRIVER).find((sent) => String(sent.body.text).includes('yetmaydi:'));
+    expect(((await notice.json()) as { text?: string }).text).toContain(toCyrillic('yetmaydi'));
+    const told = telegram
+      .sentTo(DRIVER)
+      .find((sent) => String(sent.body.text).includes(toCyrillic('yetmaydi:')));
     // The commission of one seat at 90 000 is 9 000: 4 000 is missing.
     expect(String(told?.body.text)).toMatch(/4\s000/u);
     expect(JSON.stringify(told?.body.reply_markup)).toContain('open=wallet');

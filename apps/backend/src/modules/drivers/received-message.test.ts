@@ -1,4 +1,5 @@
 import { loadBrand } from '@platform/brands';
+import { toCyrillic } from '@platform/i18n';
 import type { Card } from '../notifications';
 import { tashkentDayStart } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
@@ -32,19 +33,21 @@ describe('the driver bot after an application is sent', () => {
     const [card] = await sent(10);
     expect(card).toMatchObject({ bot: 'driver', chatId: 31, key: 'application:31' });
     expect(card?.text.split('\n').slice(0, 2)).toEqual([
-      '<b>🪪 Haydovchi arizangiz</b>',
-      '✅ Yuborildi · ⏳ Tekshirilmoqda · Javob',
+      toCyrillic('<b>🪪 Haydovchi arizangiz</b>'),
+      toCyrillic('✅ Yuborildi · ⏳ Tekshirilmoqda · Javob'),
     ]);
     expect(card?.text).toContain(
-      'Arizangiz qabul qilindi. Jamoamiz uni 1 soat ichida tekshiradi va natijani shu yerga yozadi.',
+      toCyrillic(
+        'Arizangiz qabul qilindi. Jamoamiz uni 1 soat ichida tekshiradi va natijani shu yerga yozadi.',
+      ),
     );
   });
 
   it('at night and before 7:00: the answer comes in the morning, with the team hours', async () => {
     for (const hour of [2, 6, 23]) {
       const text = (await sent(hour))[0]?.text;
-      expect(text).toContain('soat 7:00 dan 23:00 gacha tekshiramiz');
-      expect(text).toContain('ertalab javob beramiz');
+      expect(text).toContain(toCyrillic('soat 7:00 dan 23:00 gacha tekshiramiz'));
+      expect(text).toContain(toCyrillic('ertalab javob beramiz'));
     }
   });
 });

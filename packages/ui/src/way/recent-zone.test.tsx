@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { FindTripFlow } from '../market/find-trip-flow';
@@ -35,11 +36,11 @@ describe('«Oxirgi joylar» of a booking (docs/90 F-P5)', { timeout: 20_000 }, (
     );
     await findRoute();
     await tap(/^Jasur ★/u);
-    await tap('1 ta joy band qilish');
-    await tap('Tushirish joyi');
+    await tap(toCyrillic('1 ta joy band qilish'));
+    await tap(toCyrillic('Tushirish joyi'));
     // The end is in Fargʻona shahri: a place of Chilonzor is not offered there.
-    expect(await screen.findByText('Oxirgi joylar')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Oxirgi joylar'))).toBeTruthy();
     expect(screen.getByText(/Uzoq joy/u)).toBeTruthy();
-    expect(screen.queryByText(/Yaqin joy/u)).toBeNull();
+    expect(screen.queryByText(/Яқин жой/u)).toBeNull();
   });
 });

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError, type BookingsClient } from '@platform/api-client';
 import { booking } from './booking-test-kit';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
@@ -23,20 +24,20 @@ describe('the cancel of a request just sent', { timeout: 20_000 }, () => {
     // The driver answered meanwhile: the page of the seat comes as it is now (G52, docs/112).
     const myBookings = vi.fn<BookingsClient['myBookings']>(async () => [{ ...booking, status: 'declined' }]);
     const { onClose } = openBook('both', {}, undefined, { cancelMine, myBookings });
-    expect(await screen.findByText('Qayerdan, qayerga?')).toBeTruthy();
-    fireEvent.click(row('Tushirish joyi'));
-    await screen.findByText('Yangi Margʻilon', {}, { timeout: 3000 });
-    await tap('Shu yerda tushaman');
-    await tap('Soʻrov yuborish');
-    expect(await screen.findByText('Javob kutilmoqda')).toBeTruthy();
-    await tap(/bekor qilish$/u);
+    expect(await screen.findByText(toCyrillic('Qayerdan, qayerga?'))).toBeTruthy();
+    fireEvent.click(row(toCyrillic('Tushirish joyi')));
+    await screen.findByText(toCyrillic('Yangi Margʻilon'), {}, { timeout: 3000 });
+    await tap(toCyrillic('Shu yerda tushaman'));
+    await tap(toCyrillic('Soʻrov yuborish'));
+    expect(await screen.findByText(toCyrillic('Javob kutilmoqda'))).toBeTruthy();
+    await tap(/бекор қилиш$/u);
     await waitFor(() => expect(cancelMine).toHaveBeenCalledWith(booking.id));
     expect(asked.confirm).toHaveBeenCalledWith(
-      'Joyni bekor qilasizmi? Haydovchi bu haqda xabar oladi.',
-      'Joyni bekor qilish',
+      toCyrillic('Joyni bekor qilasizmi? Haydovchi bu haqda xabar oladi.'),
+      toCyrillic('Joyni bekor qilish'),
     );
     await waitFor(() => expect(myBookings).toHaveBeenCalled());
-    expect(await screen.findByText('Haydovchi joy bera olmadi.')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Haydovchi joy bera olmadi.'))).toBeTruthy();
     expect(onClose).not.toHaveBeenCalled();
   });
 
@@ -44,14 +45,14 @@ describe('the cancel of a request just sent', { timeout: 20_000 }, () => {
   it('shows the confirmed seat once the driver answers', async () => {
     const myBookings = vi.fn<BookingsClient['myBookings']>(async () => [{ ...booking, status: 'confirmed' }]);
     const { fire } = openBook('both', {}, undefined, { myBookings });
-    expect(await screen.findByText('Qayerdan, qayerga?')).toBeTruthy();
-    fireEvent.click(row('Tushirish joyi'));
-    await screen.findByText('Yangi Margʻilon', {}, { timeout: 3000 });
-    await tap('Shu yerda tushaman');
-    await tap('Soʻrov yuborish');
-    expect(await screen.findByText('Javob kutilmoqda')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Qayerdan, qayerga?'))).toBeTruthy();
+    fireEvent.click(row(toCyrillic('Tushirish joyi')));
+    await screen.findByText(toCyrillic('Yangi Margʻilon'), {}, { timeout: 3000 });
+    await tap(toCyrillic('Shu yerda tushaman'));
+    await tap(toCyrillic('Soʻrov yuborish'));
+    expect(await screen.findByText(toCyrillic('Javob kutilmoqda'))).toBeTruthy();
     fire();
     await waitFor(() => expect(myBookings).toHaveBeenCalled());
-    expect(await screen.findByText('Joy tasdiqlandi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Joy tasdiqlandi'))).toBeTruthy();
   });
 });

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { actionsOf } from '../modules/journal';
 import { peopleOf } from '../modules/users';
@@ -27,22 +28,26 @@ describe('admin bot: the card of a new face photo (docs/120, G51)', () => {
     await call('/me/avatar', PERSON, photo);
     await send('admin', press(`face:${PERSON}:no`));
     const reasons = JSON.stringify(telegram.calls.at(-1)?.body);
-    expect(reasons).toContain('Rasmda bitta odam emas');
+    expect(reasons).toContain(toCyrillic('Rasmda bitta odam emas'));
     expect(reasons).toContain(`face:${PERSON}:no:1`);
     await send('admin', press(`face:${PERSON}:menu`));
-    expect(JSON.stringify(telegram.calls.at(-1)?.body)).toContain('Mos emas');
+    expect(JSON.stringify(telegram.calls.at(-1)?.body)).toContain(toCyrillic('Mos emas'));
     const decided = await reply(await send('admin', press(`face:${PERSON}:no:1`)));
-    expect(decided.text).toBe('Rad etildi: Rasmda bitta odam emas');
+    expect(decided.text).toBe(toCyrillic('Rad etildi: Rasmda bitta odam emas'));
     const edited = telegram.calls.find((sent) => sent.method === 'editMessageCaption');
-    expect(edited?.body.caption).toContain('Rad etildi: Rasmda bitta odam emas (Owner)');
-    expect(telegram.sentTo(PERSON).at(-1)?.body.text).toContain('Sababi: Rasmda bitta odam emas.');
+    expect(edited?.body.caption).toContain(`${toCyrillic('Rad etildi: Rasmda bitta odam emas')} (Owner)`);
+    expect(telegram.sentTo(PERSON).at(-1)?.body.text).toContain(
+      toCyrillic('Sababi: Rasmda bitta odam emas.'),
+    );
     const again = await reply(await send('admin', press(`face:${PERSON}:ok`)));
-    expect(again.text).toBe('Bu rasmga javob berilgan.');
+    expect(again.text).toBe(toCyrillic('Bu rasmga javob berilgan.'));
   });
 
   it('approves a new photo with «Rasm mos», and «Jurnal» keeps it as from the app (G89 M14)', async () => {
     await call('/me/avatar', PERSON, photo);
-    expect((await reply(await send('admin', press(`face:${PERSON}:ok`)))).text).toBe('Tasdiqlandi');
+    expect((await reply(await send('admin', press(`face:${PERSON}:ok`)))).text).toBe(
+      toCyrillic('Tasdiqlandi'),
+    );
     const done = await actionsOf(botEnv as never, OWNER, 0, Date.now() + 1);
     expect(done.filter((action) => action.kind === 'face').map((action) => action.action)).toEqual([
       'reject',
@@ -81,8 +86,8 @@ describe('admin bot: the card of a new face photo (docs/120, G51)', () => {
     vi.useRealTimers();
     expect(older).not.toBe(newer);
     expect((await reply(await send('admin', press(older)))).text).toBe(
-      'Rasm almashdi: yangisi keyingi kartochkada.',
+      toCyrillic('Rasm almashdi: yangisi keyingi kartochkada.'),
     );
-    expect((await reply(await send('admin', press(newer)))).text).toBe('Tasdiqlandi');
+    expect((await reply(await send('admin', press(newer)))).text).toBe(toCyrillic('Tasdiqlandi'));
   });
 });

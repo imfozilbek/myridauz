@@ -1,5 +1,5 @@
 import { loadBrand } from '@platform/brands';
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import { localUsers } from '../modules/users';
 import { botEnv, botSender, fakeTelegram } from './test-bot';
@@ -24,10 +24,10 @@ describe('POST /telegram/:role', () => {
     expect(reply.photo).toBe(
       `https://${brand.domain}/bot/passenger-welcome.png?v=${brand.welcomes.passenger}`,
     );
-    expect(reply.caption.startsWith(`Assalomu alaykum! ${brand.name}: `)).toBe(true);
-    expect(reply.caption).toContain('Yoʻlovchi sifatida siz:');
+    expect(reply.caption.startsWith(`${toCyrillic('Assalomu alaykum!')} ${brand.name}: `)).toBe(true);
+    expect(reply.caption).toContain(toCyrillic('Yoʻlovchi sifatida siz:'));
     expect(reply.reply_markup.inline_keyboard[0]?.[0]).toEqual({
-      text: 'Ochish',
+      text: toCyrillic('Ochish'),
       web_app: { url: `https://passenger.${brand.domain}` },
     });
   });
@@ -46,7 +46,7 @@ describe('POST /telegram/:role', () => {
     const team = (await (await send('admin', start(7))).json()) as Reply;
     expect(team.reply_markup.inline_keyboard[0]?.[0]?.web_app.url).toBe(`https://admin.${brand.domain}`);
     const stranger = (await (await send('admin', start(9))).json()) as LinkReply;
-    expect(stranger.text).toContain('yordam xizmatiga yozing');
+    expect(stranger.text).toContain(toCyrillic('yordam xizmatiga yozing'));
     expect(stranger.reply_markup.inline_keyboard[0]?.[0]?.url).toBe(`https://t.me/${brand.bots.support}`);
   });
 
@@ -55,7 +55,7 @@ describe('POST /telegram/:role', () => {
       reply_markup: { inline_keyboard: { text: string; url?: string }[][] };
     };
     expect(reply.reply_markup.inline_keyboard[1]?.[0]).toEqual({
-      text: 'Haydovchi boʻlish',
+      text: toCyrillic('Haydovchi boʻlish'),
       url: `https://t.me/${brand.bots.driver}?start=from_passenger`,
     });
   });
@@ -81,7 +81,7 @@ describe('POST /telegram/:role', () => {
       expect(await (await send(role, start(66))).json()).toEqual({
         method: 'sendMessage',
         chat_id: 42,
-        text: 'Hisobingiz bloklangan.',
+        text: toCyrillic('Hisobingiz bloklangan.'),
       });
     }
   });
@@ -95,34 +95,34 @@ describe('POST /telegram/:role', () => {
       expect(urls).toEqual(['offer', 'privacy', 'consent'].map(url));
     }
     const admin = (await (await send('admin', start(9, '/hujjatlar'))).json()) as { text?: string };
-    expect(admin.text).not.toContain('Ommaviy oferta');
+    expect(admin.text).not.toContain(toCyrillic('Ommaviy oferta'));
   });
 
   it('greets a driver with the picture, what the brand gives and the bonus of the brand (G34)', async () => {
     const reply = (await (await send('driver', start())).json()) as PhotoReply;
     expect(reply).toMatchObject({ method: 'sendPhoto', chat_id: 42 });
     expect(reply.photo).toBe(`https://${brand.domain}/bot/driver-welcome.png?v=${brand.welcomes.driver}`);
-    expect(reply.caption.startsWith(`Assalomu alaykum! ${brand.name}: `)).toBe(true);
-    expect(reply.caption).toContain(`Boshlash uchun ${bonus}gacha bonus.`);
+    expect(reply.caption.startsWith(`${toCyrillic('Assalomu alaykum!')} ${brand.name}: `)).toBe(true);
+    expect(reply.caption).toContain(`${toCyrillic('Boshlash uchun')} ${bonus}${toCyrillic('gacha bonus.')}`);
     expect(reply.reply_markup.inline_keyboard).toEqual([
-      [{ text: 'Ochish', web_app: { url: `https://driver.${brand.domain}` } }],
+      [{ text: toCyrillic('Ochish'), web_app: { url: `https://driver.${brand.domain}` } }],
     ]);
     const fromPassenger = (await (await send('driver', start(1, '/start from_passenger'))).json()) as {
       caption: string;
     };
-    expect(fromPassenger.caption).toMatch(/^Assalomu alaykum! Endi .+ bilan haydovchi sifatida/u);
-    expect(fromPassenger.caption).not.toContain('Bu taksi emas');
-    expect(fromPassenger.caption).toContain('Haydovchi sifatida siz:');
+    expect(fromPassenger.caption).toMatch(/^Ассалому алайкум! Энди .+ билан ҳайдовчи сифатида/u);
+    expect(fromPassenger.caption).not.toContain(toCyrillic('Bu taksi emas'));
+    expect(fromPassenger.caption).toContain(toCyrillic('Haydovchi sifatida siz:'));
   });
 
   it('answers any other text with the way to the app and to support, in both public bots (G34)', async () => {
     for (const role of ['passenger', 'driver'] as const) {
       const reply = (await (await send(role, start(1, 'salom'))).json()) as Reply;
-      expect(reply.text).toContain(`@${brand.bots.support} ga yozing`);
+      expect(reply.text).toContain(`@${brand.bots.support} ${toCyrillic('ga yozing')}`);
       expect(reply.reply_markup.inline_keyboard).toEqual([
         [
-          { text: 'Ochish', web_app: { url: `https://${role}.${brand.domain}` } },
-          { text: 'Yordam', url: `https://t.me/${brand.bots.support}` },
+          { text: toCyrillic('Ochish'), web_app: { url: `https://${role}.${brand.domain}` } },
+          { text: toCyrillic('Yordam'), url: `https://t.me/${brand.bots.support}` },
         ],
       ]);
     }

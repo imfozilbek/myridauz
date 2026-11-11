@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { closeSheet } from '../home/sheet-closed';
@@ -12,14 +13,14 @@ URL.revokeObjectURL = vi.fn();
 describe('the ticks of «Tuzatish» and «Rad etish»', { timeout: 20_000 }, () => {
   it('stay apart', async () => {
     renderNavbat({ filter: 'application', kind: 'application', id: JASUR.id }, [JASUR]);
-    fireEvent.click(await screen.findByText('Tuzatish'));
-    fireEvent.click(screen.getByText('Old tomondan olingan rasm tiniq emas'));
+    fireEvent.click(await screen.findByText(toCyrillic('Tuzatish')));
+    fireEvent.click(screen.getByText(toCyrillic('Old tomondan olingan rasm tiniq emas')));
     await closeSheet();
-    fireEvent.click(await screen.findByText('Rad etish'));
-    expect(screen.queryByText('Yuborish')).toBeNull();
+    fireEvent.click(await screen.findByText(toCyrillic('Rad etish')));
+    expect(screen.queryByText(toCyrillic('Yuborish'))).toBeNull();
     await closeSheet();
-    fireEvent.click(await screen.findByText('Tuzatish'));
-    expect(screen.getByText('Yuborish')).toBeTruthy();
+    fireEvent.click(await screen.findByText(toCyrillic('Tuzatish')));
+    expect(screen.getByText(toCyrillic('Yuborish'))).toBeTruthy();
     await closeSheet();
   });
 });

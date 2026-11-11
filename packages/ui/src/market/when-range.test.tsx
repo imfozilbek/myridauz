@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { tashkentDayStart, type Schedule } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -44,13 +45,13 @@ const hours = (from: number, to: number) =>
 describe('a range of whole hours in «Qachon joʻnaysiz?»', () => {
   it('step 1: the starts with an end only; step 2: the start and its ends up to 3 hours', async () => {
     const onDone = open();
-    await tap('Oraliqda');
+    await tap(toCyrillic('Oraliqda'));
     await tap('2');
-    expect(hint()).toBe('Qaysi soatdan? Toshkent vaqti bilan');
+    expect(hint()).toBe(toCyrillic('Qaysi soatdan? Toshkent vaqti bilan'));
     // 23:00 has no end on its day: not shown (lesson 248).
     expect(times()).toEqual(hours(0, 22));
     await tap('08:00');
-    expect(hint()).toBe('08:00 dan qaysi soatgacha? Eng koʻpi 3 soat');
+    expect(hint()).toBe(toCyrillic('08:00 dan qaysi soatgacha? Eng koʻpi 3 soat'));
     expect(times()).toEqual(hours(8, 11));
     expect(pressed()).toEqual(['08:00']);
     await tap('10:00');
@@ -65,11 +66,11 @@ describe('a range of whole hours in «Qachon joʻnaysiz?»', () => {
 
   it('the start again goes back to step 1; late in the day fewer ends', async () => {
     open();
-    await tap('Oraliqda');
+    await tap(toCyrillic('Oraliqda'));
     await tap('2');
     await tap('08:00');
     await tap('08:00');
-    expect(hint()).toBe('Qaysi soatdan? Toshkent vaqti bilan');
+    expect(hint()).toBe(toCyrillic('Qaysi soatdan? Toshkent vaqti bilan'));
     expect(times()).toEqual(hours(0, 22));
     await tap('21:00');
     expect(times()).toEqual(hours(21, 23));
@@ -77,7 +78,7 @@ describe('a range of whole hours in «Qachon joʻnaysiz?»', () => {
 
   it('opens again on the range: its start and ends, the edges in the main color, inside lighter', async () => {
     open({ date: DAY, time: '08:00', until: '10:00' });
-    expect(hint()).toBe('Qaysi soatdan? Toshkent vaqti bilan');
+    expect(hint()).toBe(toCyrillic('Qaysi soatdan? Toshkent vaqti bilan'));
     expect(times()).toEqual(hours(8, 11));
     expect(pressed()).toEqual(['08:00', '10:00']);
     expect(inside()).toEqual(['09:00']);
@@ -98,8 +99,8 @@ describe('a range of whole hours in «Qachon joʻnaysiz?»', () => {
 
   it('«Soat boshida» gives one exact time back', async () => {
     const onDone = open({ date: DAY, time: '08:00', until: '10:00' });
-    await tap('Soat boshida');
-    expect(hint()).toBe('Toshkent vaqti bilan');
+    await tap(toCyrillic('Soat boshida'));
+    expect(hint()).toBe(toCyrillic('Toshkent vaqti bilan'));
     await tap('09:00');
     expect(onDone).toHaveBeenCalledWith({
       date: DAY,
@@ -108,6 +109,6 @@ describe('a range of whole hours in «Qachon joʻnaysiz?»', () => {
       until: null,
       departUntil: null,
     });
-    expect(screen.queryByText('Qaysi soatdan? Toshkent vaqti bilan')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Qaysi soatdan? Toshkent vaqti bilan'))).toBeNull();
   });
 });

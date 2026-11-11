@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { DAY_MS } from '@platform/contracts';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -16,10 +17,10 @@ describe('the main screen shown again', { timeout: 20_000 }, () => {
     const seat = { ...booking, trip: { ...trip, departAt: Date.now() + DAY_MS } };
     const myBookings = vi.fn().mockResolvedValueOnce([seat]).mockResolvedValue([]);
     renderHome((go) => <PassengerHome go={go} />, PASSENGER_ACTIONS, { bookings: myBookings });
-    expect(await screen.findByText('Bekor qilish')).toBeTruthy();
-    await tap('Rasm qoʻshing');
-    await tap('Orqaga');
+    expect(await screen.findByText(toCyrillic('Bekor qilish'))).toBeTruthy();
+    await tap(toCyrillic('Rasm qoʻshing'));
+    await tap(toCyrillic('Orqaga'));
     await waitFor(() => expect(myBookings).toHaveBeenCalledTimes(2));
-    await waitFor(() => expect(screen.queryByText('Bekor qilish')).toBeNull());
+    await waitFor(() => expect(screen.queryByText(toCyrillic('Bekor qilish'))).toBeNull());
   });
 });

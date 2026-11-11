@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { LocationsClient } from '@platform/api-client';
 import {
   WAITLIST_REGIONS,
@@ -8,9 +9,9 @@ import {
 import { testClients } from '../test-clients';
 
 const NAMES: Readonly<Record<string, string>> = {
-  '1726': 'Toshkent shahri',
-  '1718': 'Samarqand viloyati',
-  '1703': 'Andijon viloyati',
+  '1726': toCyrillic('Toshkent shahri'),
+  '1718': toCyrillic('Samarqand viloyati'),
+  '1703': toCyrillic('Andijon viloyati'),
 };
 // The 14 regions of the directory: the tests read three of them by their names.
 export const waitlistPlaces: LocationsClient = {

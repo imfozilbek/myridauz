@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { DAY_MS, tashkentDate } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -22,10 +23,10 @@ const open = (initial?: string) => {
 describe('«Qaysi kuni?» of a request', () => {
   it('takes any of the 7 days from today in one tap', () => {
     const onDone = open();
-    expect(screen.getByText('Qaysi kuni?').tagName).toBe('H1');
+    expect(screen.getByText(toCyrillic('Qaysi kuni?')).tagName).toBe('H1');
     expect(document.querySelectorAll('.week-day')).toHaveLength(7);
     expect(document.querySelector('.week-day[aria-pressed="true"]')).toBeNull();
-    expect(screen.queryByText('Boshqa')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Boshqa'))).toBeNull();
     expect(document.querySelector('input[type="date"]')).toBeNull();
     fireEvent.click(screen.getByText('18'));
     expect(onDone).toHaveBeenCalledWith(tashkentDate(NOW + 6 * DAY_MS));

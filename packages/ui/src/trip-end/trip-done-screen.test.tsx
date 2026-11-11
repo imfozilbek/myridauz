@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { FeedbackClient, MarketClient } from '@platform/api-client';
 import { ApiError } from '@platform/api-client';
 import { HOUR_MS } from '@platform/contracts';
@@ -44,32 +45,34 @@ function open(
 describe('«Safar tugadi» of the driver with the way back', () => {
   it('shows the trip in numbers and the wallet', async () => {
     open(vi.fn(), async () => []);
-    expect(await screen.findByText('Safar tugadi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Safar tugadi'))).toBeTruthy();
     // Madina 2, Sardor 1 and Bobur 1 rode; Akmal did not come but his seat was charged.
-    expect(screen.getByText(/^4 yoʻlovchi · 380.000 soʻm yoʻl xarajati$/u)).toBeTruthy();
-    expect(screen.getByText(/^Hamyon: 47.500 yechildi$/u)).toBeTruthy();
-    expect(await screen.findByText(/^Qoldi ≈.50 joyga yetadi$/u)).toBeTruthy();
+    expect(screen.getByText(/^4 йўловчи · 380.000 сўм йўл харажати$/u)).toBeTruthy();
+    expect(screen.getByText(/^Ҳамён: 47.500 ечилди$/u)).toBeTruthy();
+    expect(await screen.findByText(/^Қолди ≈.50 жойга етади$/u)).toBeTruthy();
   });
 
   it('shows the way back under the stars at once, with the requests waiting', async () => {
     open(vi.fn(), async () => [request, request]);
-    expect(await screen.findByText('Yoʻlovchilarni baholang')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Yoʻlovchilarni baholang'))).toBeTruthy();
     // Back at 13:20, two hours of rest: the way back leaves today at 15:30 (G78 В11).
-    expect(screen.getByText(/^Qaytishga yoʻlovchi olasizmi\? · Bugun, /u)).toBeTruthy();
-    expect(await screen.findByText('Fargʻona viloyati → Toshkent shahri: 2 ta soʻrov bor')).toBeTruthy();
-    expect(screen.getByText('Hammasi tayyor: faqat vaqtni tasdiqlang.')).toBeTruthy();
+    expect(screen.getByText(/^Қайтишга йўловчи оласизми\? · Бугун, /u)).toBeTruthy();
+    expect(
+      await screen.findByText(toCyrillic('Fargʻona viloyati → Toshkent shahri: 2 ta soʻrov bor')),
+    ).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Hammasi tayyor: faqat vaqtni tasdiqlang.'))).toBeTruthy();
   });
 
   it('«Yuborish» sends the stars not given yet, five unless lowered, and closes', async () => {
     const review = vi.fn<FeedbackClient['review']>(async () => undefined);
     const onRated = vi.fn();
     const { onPublish, onClose } = open(review, async () => [], vi.fn(), vi.fn(), onRated);
-    expect(await screen.findByText('Yoʻlovchilarni baholang')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Yoʻlovchilarni baholang'))).toBeTruthy();
     expect(screen.queryByText('Akmal')).toBeNull();
     expect(screen.queryByText('Bobur')).toBeNull();
     await tap('Madina');
     screen.getByLabelText('Sardor 3').click();
-    await tap('Yuborish');
+    await tap(toCyrillic('Yuborish'));
     expect(review.mock.calls).toEqual([[{ bookingId: 'm1', stars: 5 }], [{ bookingId: 's1', stars: 3 }]]);
     // The list brings the seats marked rated: the past trip does not offer the stars again.
     await vi.waitFor(() => expect(onClose).toHaveBeenCalledOnce());
@@ -80,8 +83,8 @@ describe('«Safar tugadi» of the driver with the way back', () => {
   it('«Qaytish safari» sends the stars, then publishes the way back', async () => {
     const review = vi.fn<FeedbackClient['review']>(async () => undefined);
     const { onPublish, onClose } = open(review, async () => []);
-    expect(await screen.findByText('Yoʻlovchilarni baholang')).toBeTruthy();
-    await tap('Qaytish safari');
+    expect(await screen.findByText(toCyrillic('Yoʻlovchilarni baholang'))).toBeTruthy();
+    await tap(toCyrillic('Qaytish safari'));
     await vi.waitFor(() => expect(onPublish).toHaveBeenCalledOnce());
     expect(review).toHaveBeenCalledTimes(2);
     expect(onClose).not.toHaveBeenCalled();
@@ -99,23 +102,23 @@ describe('«Safar tugadi» of the driver with the way back', () => {
       },
       async () => [],
     );
-    await tap('Yuborish');
+    await tap(toCyrillic('Yuborish'));
     expect(await screen.findByRole('alert')).toBeTruthy();
-    expect(screen.getByText('Safar tugadi')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Safar tugadi'))).toBeTruthy();
   });
 
   it('«Назад» leaves at once, without the stars', async () => {
     const review = vi.fn<FeedbackClient['review']>();
     const { onClose } = open(review, async () => []);
-    expect(await screen.findByText('Safar tugadi')).toBeTruthy();
-    await tap('Orqaga');
+    expect(await screen.findByText(toCyrillic('Safar tugadi'))).toBeTruthy();
+    await tap(toCyrillic('Orqaga'));
     expect(onClose).toHaveBeenCalledOnce();
     expect(review).not.toHaveBeenCalled();
   });
 
   it('hides the line of the requests when nobody asks the way back', async () => {
     open(vi.fn(), async () => []);
-    expect(await screen.findByText(/^Qaytishga yoʻlovchi olasizmi\? · /u)).toBeTruthy();
-    expect(screen.queryByText(/soʻrov bor/u)).toBeNull();
+    expect(await screen.findByText(/^Қайтишга йўловчи оласизми\? · /u)).toBeTruthy();
+    expect(screen.queryByText(/сўров бор/u)).toBeNull();
   });
 });

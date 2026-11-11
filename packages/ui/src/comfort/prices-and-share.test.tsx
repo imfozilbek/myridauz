@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, screen } from '@testing-library/react';
 import type { Trip } from '@platform/contracts';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -18,8 +19,8 @@ describe('prices next to each other (docs/40, question 44)', () => {
       </PlacesGate>,
       testClients({}),
     );
-    expect(await screen.findByText('Tavsiya etilgan narx')).toBeTruthy();
-    expect(screen.getByText('95 000 soʻm')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Tavsiya etilgan narx'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('95 000 soʻm'))).toBeTruthy();
   });
 
   it('gives the team the median only as a hint while editing a direction (docs/09)', async () => {
@@ -36,10 +37,10 @@ describe('prices next to each other (docs/40, question 44)', () => {
       </PlacesGate>
     );
     renderMarket(edit(90000, 12), testClients({}));
-    expect(await screen.findByText('Haqiqiy narxlar medianasi')).toBeTruthy();
-    expect(screen.getByText('90 000 soʻm')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Haqiqiy narxlar medianasi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('90 000 soʻm'))).toBeTruthy();
     cleanup();
     renderMarket(edit(null, 4), testClients({}));
-    expect(await screen.findByText(/kamida 10 ta safar kerak\. Hozir: 4 ta/u)).toBeTruthy();
+    expect(await screen.findByText(/камида 10 та сафар керак\. Ҳозир: 4 та/u)).toBeTruthy();
   });
 });

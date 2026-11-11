@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { loadBrand } from '@platform/brands';
 import type { Channel } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
@@ -51,8 +52,10 @@ describe('the week of a channel in «Kanallar» of the owner', () => {
       testClients({ channels, team }),
     );
     expect(
-      await screen.findByText('Asosiy kanal · 7 kunda: 14 kirdi, 3 chiqdi · 37 reaksiya, eng koʻpi 12'),
+      await screen.findByText(
+        toCyrillic('Asosiy kanal · 7 kunda: 14 kirdi, 3 chiqdi · 37 reaksiya, eng koʻpi 12'),
+      ),
     ).toBeTruthy();
-    expect(screen.getByText('@ch_kitob · 1 ta joy')).toBeTruthy();
+    expect(screen.getByText(`@ch_kitob · ${toCyrillic('1 ta joy')}`)).toBeTruthy();
   });
 });

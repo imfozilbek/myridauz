@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { NAVBAT, renderTeamHome, WORK } from './team-test-kit';
@@ -8,56 +9,56 @@ afterEach(cleanup);
 describe('the main screen of the team', () => {
   it('gives the owner «Diqqat», «Navbat» and «Boshqaruv», no numbers of the day', async () => {
     renderTeamHome('owner');
-    expect(await screen.findByText('2 ta xato bugun')).toBeTruthy();
-    expect(screen.getByText('Statistika → Xatolar')).toBeTruthy();
-    expect(screen.getByText('3 haydovchida pul kam')).toBeTruthy();
-    expect(screen.getByText('5 joydan kam qoldi')).toBeTruthy();
-    expect(await screen.findByText('Shikoyat: Madina → Jasur')).toBeTruthy();
-    expect(screen.getByText('Boshqaruv')).toBeTruthy();
-    expect(screen.queryByText('bugun qildingiz')).toBeNull();
+    expect(await screen.findByText(toCyrillic('2 ta xato bugun'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Statistika → Xatolar'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('3 haydovchida pul kam'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('5 joydan kam qoldi'))).toBeTruthy();
+    expect(await screen.findByText(`${toCyrillic('Shikoyat')}: Madina → Jasur`)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Boshqaruv'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('bugun qildingiz'))).toBeNull();
   });
 
   it('gives a moderator «Navbat» and the own numbers, no «Diqqat» and no «Boshqaruv»', async () => {
     renderTeamHome('moderator');
-    const done = await screen.findByText('bugun qildingiz');
-    expect(done.parentElement?.textContent).toBe('14bugun qildingiz');
-    expect(screen.getByText('kutmoqda').parentElement?.textContent).toBe('4kutmoqda');
-    expect(screen.getByText('30 daqdan oshgan')).toBeTruthy();
-    expect(screen.queryByText('Diqqat')).toBeNull();
-    expect(screen.queryByText('Boshqaruv')).toBeNull();
+    const done = await screen.findByText(toCyrillic('bugun qildingiz'));
+    expect(done.parentElement?.textContent).toBe(toCyrillic('14bugun qildingiz'));
+    expect(screen.getByText(toCyrillic('kutmoqda')).parentElement?.textContent).toBe(toCyrillic('4kutmoqda'));
+    expect(screen.getByText(toCyrillic('30 daqdan oshgan'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Diqqat'))).toBeNull();
+    expect(screen.queryByText(toCyrillic('Boshqaruv'))).toBeNull();
   });
 
   it('lets a moderator read «Statistika» and «Kanallar» (owner decision 06.10.2026)', async () => {
     const { go } = renderTeamHome('moderator');
-    fireEvent.click(await screen.findByText('Statistika'));
+    fireEvent.click(await screen.findByText(toCyrillic('Statistika')));
     expect(go).toHaveBeenCalledWith('statistics');
-    fireEvent.click(screen.getByText('Kanallar'));
+    fireEvent.click(screen.getByText(toCyrillic('Kanallar')));
     expect(go).toHaveBeenCalledWith('channels');
     // The links of the ads: the whole team makes them (owner, 17.10.2026, docs/184).
-    fireEvent.click(screen.getByText('Reklama havolalari'));
+    fireEvent.click(screen.getByText(toCyrillic('Reklama havolalari')));
     expect(go).toHaveBeenCalledWith('ads');
   });
 
   // G95 (mockup g95 screen 1): the row and the tile «bugun qildingiz» open the own decisions.
   it('opens «Mening qarorlarim» from its row and from «bugun qildingiz»', async () => {
     const { go } = renderTeamHome('moderator');
-    fireEvent.click(await screen.findByText('Mening qarorlarim'));
+    fireEvent.click(await screen.findByText(toCyrillic('Mening qarorlarim')));
     expect(go).toHaveBeenLastCalledWith('decisions');
     go.mockClear();
-    fireEvent.click(screen.getByText('bugun qildingiz'));
+    fireEvent.click(screen.getByText(toCyrillic('bugun qildingiz')));
     expect(go).toHaveBeenLastCalledWith('decisions');
   });
 
   it('lists every case the oldest first, a late one red, who opened it', async () => {
     renderTeamHome('moderator');
-    const late = await screen.findByText('2 soat');
+    const late = await screen.findByText(toCyrillic('2 soat'));
     expect(late.className).toContain('navbat-late');
-    expect(screen.getByText('Ariza: Jasur')).toBeTruthy();
+    expect(screen.getByText(`${toCyrillic('Ariza')}: Jasur`)).toBeTruthy();
     expect(screen.getByText('Cobalt · 01 A 123 BC')).toBeTruthy();
-    expect(screen.getByText('Kelmadi')).toBeTruthy();
-    expect(screen.getByText('Aziz koʻrmoqda')).toBeTruthy();
-    expect(screen.getByText('Yoʻlovchi')).toBeTruthy();
-    expect(screen.getByText('25 daq').className).not.toContain('navbat-late');
+    expect(screen.getByText(toCyrillic('Kelmadi'))).toBeTruthy();
+    expect(screen.getByText(`Aziz ${toCyrillic('koʻrmoqda')}`)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Yoʻlovchi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('25 daq')).className).not.toContain('navbat-late');
   });
 
   it('filters by kind with the numbers, and opens a case in its filter', async () => {
@@ -65,12 +66,12 @@ describe('the main screen of the team', () => {
     const chips = await screen.findByRole('radiogroup');
     expect(
       within(chips)
-        .getByRole('radio', { name: /Hammasi 4/u })
+        .getByRole('radio', { name: /Ҳаммаси 4/u })
         .getAttribute('aria-checked'),
     ).toBe('true');
-    fireEvent.click(within(chips).getByRole('radio', { name: /Arizalar 2/u }));
-    expect(screen.queryByText('Shikoyat: Madina → Jasur')).toBeNull();
-    fireEvent.click(screen.getByText('Ariza: Bobur'));
+    fireEvent.click(within(chips).getByRole('radio', { name: /Аризалар 2/u }));
+    expect(screen.queryByText(`${toCyrillic('Shikoyat')}: Madina → Jasur`)).toBeNull();
+    fireEvent.click(screen.getByText(`${toCyrillic('Ariza')}: Bobur`));
     expect(go).toHaveBeenCalledWith('navbat', {
       navbat: { filter: 'application', kind: 'application', id: NAVBAT.items[2]?.id },
     });
@@ -80,10 +81,10 @@ describe('the main screen of the team', () => {
     const again = await screen.findByRole('radiogroup');
     expect(
       within(again)
-        .getByRole('radio', { name: /Arizalar 2/u })
+        .getByRole('radio', { name: /Аризалар 2/u })
         .getAttribute('aria-checked'),
     ).toBe('true');
-    expect(screen.queryByText('Shikoyat: Madina → Jasur')).toBeNull();
+    expect(screen.queryByText(`${toCyrillic('Shikoyat')}: Madina → Jasur`)).toBeNull();
   });
 
   it('shows the oldest cases that fit one screen: 4 to the owner, 6 to a moderator', async () => {
@@ -96,12 +97,12 @@ describe('the main screen of the team', () => {
     }));
     const navbat = { items: many, counts: { application: 0, complaint: 0, face: 9, support: 0 } };
     renderTeamHome('owner', { team: { navbat: async () => navbat, attention: async () => ({ signs: [] }) } });
-    expect(await screen.findByText('Rasm: Odam 3')).toBeTruthy();
-    expect(screen.queryByText('Rasm: Odam 4')).toBeNull();
+    expect(await screen.findByText(`${toCyrillic('Rasm')}: Odam 3`)).toBeTruthy();
+    expect(screen.queryByText(`${toCyrillic('Rasm')}: Odam 4`)).toBeNull();
     cleanup();
     renderTeamHome('moderator', { team: { navbat: async () => navbat, work: async () => WORK } });
-    expect(await screen.findByText('Rasm: Odam 5')).toBeTruthy();
-    expect(screen.queryByText('Rasm: Odam 6')).toBeNull();
+    expect(await screen.findByText(`${toCyrillic('Rasm')}: Odam 5`)).toBeTruthy();
+    expect(screen.queryByText(`${toCyrillic('Rasm')}: Odam 6`)).toBeNull();
   });
 
   it('shows the photo of the member, loaded with the signature of the admin app', async () => {
@@ -128,7 +129,7 @@ describe('the main screen of the team', () => {
     const { go } = renderTeamHome('owner', {
       team: { navbat: async () => NAVBAT, attention: async () => ({ signs }) },
     });
-    fireEvent.click(await screen.findByText('1 kishida reyting past'));
+    fireEvent.click(await screen.findByText(toCyrillic('1 kishida reyting past')));
     expect(go).toHaveBeenCalledWith('people', { person });
   });
 
@@ -140,6 +141,6 @@ describe('the main screen of the team', () => {
         work: async () => ({ done: 0, waiting: 0, averageMinutes: 0, over: 0 }),
       },
     });
-    expect(await screen.findByText('Hammasi koʻrildi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Hammasi koʻrildi'))).toBeTruthy();
   });
 });

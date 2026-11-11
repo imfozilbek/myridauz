@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { MINUTE_MS } from '@platform/contracts';
 import { cleanup } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -33,8 +34,8 @@ describe('the answer of a driver in the sheet, one way (G77 C3)', { timeout: 20_
       sheet: true,
       wallet: async () => ({ ...wallet, bonus: 100_000, main: 0 }),
     });
-    await tap('Javob berish');
-    await tap('Tasdiqlash');
+    await tap(toCyrillic('Javob berish'));
+    await tap(toCyrillic('Tasdiqlash'));
     expect(answered).toHaveBeenCalledWith('sheet', 'b8', 'confirm');
     await sheetClosed();
   });

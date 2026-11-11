@@ -1,4 +1,5 @@
 import type { Trip } from '@platform/contracts';
+import { toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import type { Card } from '../notifications';
 import { showBoards, type BoardDeps } from './application/board';
@@ -44,17 +45,19 @@ const book = (n: number) =>
 describe('the board of the day in a channel (G68)', () => {
   it('lists the trips of today by direction: the time opens the trip, a full one is struck', () => {
     const card = render(SAMARQAND, TRIPS, PLACES, MORNING);
-    expect(card?.text.split('\n').map((line) => line.replace(/\s/gu, ' '))).toEqual([
-      '<b>📋 Bugun, 2-oktabr: 3 ta safar</b>',
-      '',
-      `<b>➡️ ${TASHKENT}dan</b>`,
-      `<a href="${book(1)}">08:30</a> Chilonzor → <b>Samarqand shahri</b> · 3 joy · 85 000`,
-      '<s>11:00 Chilonzor → Samarqand shahri · joy yoʻq</s>',
-      '',
-      '<b>⬅️ Toshkent shahriga</b>',
-      `<a href="${book(3)}">15:30</a> <b>Samarqand shahri</b> → Chilonzor · 🔥 1 joy · 85 000`,
-    ]);
-    expect(card?.footer).toContain('vaqtni bossangiz, safar ochiladi');
+    expect(card?.text.split('\n').map((line) => line.replace(/\s/gu, ' '))).toEqual(
+      [
+        '<b>📋 Bugun, 2-oktabr: 3 ta safar</b>',
+        '',
+        `<b>➡️ ${TASHKENT}dan</b>`,
+        `<a href="${book(1)}">08:30</a> Chilonzor → <b>Samarqand shahri</b> · 3 joy · 85 000`,
+        '<s>11:00 Chilonzor → Samarqand shahri · joy yoʻq</s>',
+        '',
+        '<b>⬅️ Toshkent shahriga</b>',
+        `<a href="${book(3)}">15:30</a> <b>Samarqand shahri</b> → Chilonzor · 🔥 1 joy · 85 000`,
+      ].map((line) => toCyrillic(line)),
+    );
+    expect(card?.footer).toContain(toCyrillic('vaqtni bossangiz, safar ochiladi'));
     expect(card).toMatchObject({
       bot: 'poster',
       chatId: '@ch_samarqand',
@@ -64,20 +67,20 @@ describe('the board of the day in a channel (G68)', () => {
       preview: 'https://site.test/yonalish/toshkent-samarqand/',
     });
     const buttons = JSON.stringify(card?.markup);
-    expect(buttons).toContain('🔎 Safar topish');
+    expect(buttons).toContain(toCyrillic('🔎 Safar topish'));
     expect(buttons).toContain('startapp=sub_1726_1718_2026-10-02__ch-ch-samarqand');
-    expect(buttons).toContain('📤 Doʻstga');
+    expect(buttons).toContain(toCyrillic('📤 Doʻstga'));
     // The words under the shared link end with why the brand (G88, docs/193).
     expect(decodeURIComponent(buttons)).toContain(
-      'ta safar\n\nTekshirilgan haydovchilar. Raqamingiz yashirin.',
+      toCyrillic('ta safar\n\nTekshirilgan haydovchilar. Raqamingiz yashirin.'),
     );
   });
 
   it('a trip on the road or arrived is struck too; no trip of the channel: no board', () => {
     const road = render(SAMARQAND, [{ ...FIRST, departedAt: at(0) }], PLACES, at(0.5));
-    expect(road?.text).toContain('<s>08:30 Chilonzor → Samarqand shahri · yoʻlga chiqdi</s>');
+    expect(road?.text).toContain(toCyrillic('<s>08:30 Chilonzor → Samarqand shahri · yoʻlga chiqdi</s>'));
     const came = render(SAMARQAND, [{ ...FIRST, status: 'completed' }], PLACES, at(6));
-    expect(came?.text).toContain('· yetib bordi</s>');
+    expect(came?.text).toContain(toCyrillic('· yetib bordi</s>'));
     expect(render(BUXORO, [], PLACES, MORNING)).toBeNull();
   });
 });

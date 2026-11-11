@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { Schedule } from '@platform/contracts';
 import { tashkentDayStart } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
@@ -46,7 +47,7 @@ describe('WhenSheet', () => {
     expect(await time()).toBe('15:30');
     // It opens on the kind of the chosen time: the half hours from 15:30.
     expect(times()).toEqual(halves(15));
-    expect(screen.queryByText('Tayyor')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Tayyor'))).toBeNull();
     await tap('15:30');
     const departAt = tashkentDayStart('2026-10-01') + 15.5 * HOUR;
     expect(onDone).toHaveBeenCalledWith(exact('15:30', departAt));
@@ -54,12 +55,12 @@ describe('WhenSheet', () => {
 
   it('switches to the whole hours and back: only the free ones', async () => {
     const onDone = open();
-    await tap('Soat boshida');
+    await tap(toCyrillic('Soat boshida'));
     expect(times()).toEqual(wholes(16));
     await tap('16:00');
     const departAt = tashkentDayStart('2026-10-01') + 16 * HOUR;
     expect(onDone).toHaveBeenCalledWith(exact('16:00', departAt));
-    await tap('Soat yarimida');
+    await tap(toCyrillic('Soat yarimida'));
     expect(times()).toEqual(halves(15));
   });
 
@@ -68,19 +69,19 @@ describe('WhenSheet', () => {
     open(FREE, Date.parse('2026-10-01T17:20:00Z'));
     expect(await time()).toBe('23:30');
     expect(times()).toEqual(['23:30']);
-    expect(screen.queryByText('Soat boshida')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Soat boshida'))).toBeNull();
   });
 
   it('takes the day from the row of the week: 7 days from today (docs/172)', () => {
     open();
     expect(document.querySelectorAll('.week-day')).toHaveLength(7);
-    expect(screen.queryByText('Boshqa kun')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Boshqa kun'))).toBeNull();
     expect(document.querySelector('input[type="date"]')).toBeNull();
   });
 
   it('another day opens at 08:00 on the whole hours, every time of it free', async () => {
     open();
-    await tap('Soat yarimida');
+    await tap(toCyrillic('Soat yarimida'));
     await tap('2');
     expect(await time()).toBe('08:00');
     expect(times()).toEqual(wholes(0));
@@ -88,7 +89,7 @@ describe('WhenSheet', () => {
 
   it('at the limit of trips: the reason and no way on', async () => {
     const onDone = open({ full: true });
-    expect(await screen.findByText(/Faol eʼlonlar soni chegaraga yetdi/u)).toBeTruthy();
+    expect(await screen.findByText(/Фаол эълонлар сони чегарага етди/u)).toBeTruthy();
     await tap('15:30');
     expect(onDone).not.toHaveBeenCalled();
   });

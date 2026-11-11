@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { app } from './app';
 import { approvedDriver, json, read } from './bookings-test-api';
@@ -84,7 +85,9 @@ describe('«Yoʻlga chiqdim» and «Yetib keldik» through the API (G63, docs/35
       `u${DRIVER} driver`,
       `u${PASSENGER} passenger`,
     ]);
-    expect(telegram.some((sent) => sent.chat === OTHER && sent.text.includes('javob bermadi'))).toBe(true);
+    expect(
+      telegram.some((sent) => sent.chat === OTHER && sent.text.includes(toCyrillic('javob bermadi'))),
+    ).toBe(true);
     const answer = await call(`/driver/bookings/${waiting.id}/confirm`, DRIVER, {
       method: 'POST',
       app: 'driver',
@@ -107,7 +110,7 @@ describe('«Yoʻlga chiqdim» and «Yetib keldik» through the API (G63, docs/35
     await watchLateDepartures(testEnv, Date.now());
     await watchLateDepartures(testEnv, Date.now() + 15 * 60_000);
     expect(telegram.map((sent) => sent.chat)).toEqual([OTHER]);
-    expect(telegram[0]?.text).toContain('«Yoʻlga chiqdim»');
+    expect(telegram[0]?.text).toContain(toCyrillic('«Yoʻlga chiqdim»'));
     expect(telegram[0]?.markup).toContain(`?mytrip=${published.id}`);
     vi.setSystemTime(departAt + 2 * HOUR);
     await watchLateDepartures(testEnv, Date.now());

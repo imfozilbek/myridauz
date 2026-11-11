@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError } from '@platform/api-client';
 import { loadBrand } from '@platform/brands';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
@@ -15,7 +16,7 @@ vi.mock('../../telegram/permissions', () => permissions);
 vi.mock('../profile/compress-image', () => ({ compressImage: async (file: Blob) => file }));
 
 const welcome = { logo: 'logo.svg', points: [] } as const;
-const SEND = 'Raqamni yuborish';
+const SEND = toCyrillic('Raqamni yuborish');
 const sendReady = () => !screen.getByRole('button', { name: SEND }).hasAttribute('disabled');
 async function openAbout(app: 'passenger' | 'driver' = 'passenger') {
   const client = fakeClient({ state: 'unregistered', suggestedName: 'Dilnoza' });
@@ -36,11 +37,11 @@ describe('Registration, screen 2: «Siz haqingizda» (G58)', () => {
     const container = await openAbout();
     expect(container.querySelectorAll('.about-steps i')).toHaveLength(2);
     // A passenger may go without a photo (owner decision 19.10.2026, G51).
-    expect(screen.getByRole('button', { name: 'Rasm (ixtiyoriy)' })).toBeTruthy();
-    expect(screen.getByText('Ism')).toBeTruthy();
+    expect(screen.getByRole('button', { name: toCyrillic('Rasm (ixtiyoriy)') })).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Ism'))).toBeTruthy();
     expect(screen.getByDisplayValue('Dilnoza')).toBeTruthy();
     expect(screen.getAllByRole('radio')).toHaveLength(2);
-    expect(screen.getByText('Raqamingiz hech kimga koʻrinmaydi.')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Raqamingiz hech kimga koʻrinmaydi.'))).toBeTruthy();
     expect(sendReady()).toBe(false);
   });
 
@@ -48,40 +49,40 @@ describe('Registration, screen 2: «Siz haqingizda» (G58)', () => {
     const container = await openAbout();
     await addFace(container);
     expect(container.querySelector('.face-circle-photo')?.getAttribute('src')).toBe('blob:face');
-    expect(screen.getByRole('button', { name: 'Rasmni almashtirish' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: toCyrillic('Rasmni almashtirish') })).toBeTruthy();
     // Only the front camera, never the gallery (owner, 17.10.2026).
     expect(container.querySelector('.face-circle input')?.getAttribute('capture')).toBe('user');
   });
 
   it('a driver: «Raqamni yuborish» works only with the photo, the name and the gender', async () => {
     const container = await openAbout('driver');
-    expect(screen.getByRole('button', { name: 'Rasm qoʻshish' })).toBeTruthy();
-    fireEvent.click(screen.getByText('Ayol'));
-    expect(chosen('Ayol')).toBe('true');
+    expect(screen.getByRole('button', { name: toCyrillic('Rasm qoʻshish') })).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Ayol')));
+    expect(chosen(toCyrillic('Ayol'))).toBe('true');
     expect(sendReady()).toBe(false);
     await addFace(container);
     expect(sendReady()).toBe(true);
-    fireEvent.click(screen.getByText('Erkak'));
-    expect(chosen('Erkak')).toBe('true');
-    expect(chosen('Ayol')).toBe('false');
+    fireEvent.click(screen.getByText(toCyrillic('Erkak')));
+    expect(chosen(toCyrillic('Erkak'))).toBe('true');
+    expect(chosen(toCyrillic('Ayol'))).toBe('false');
     expect(permissions.requestSignedContact).not.toHaveBeenCalled();
   });
 
   it('a name that is not a name says why and hides the button until it is fixed', async () => {
     const container = await openAbout();
     await addFace(container);
-    fireEvent.click(screen.getByText('Ayol'));
+    fireEvent.click(screen.getByText(toCyrillic('Ayol')));
     fireEvent.change(screen.getByDisplayValue('Dilnoza'), { target: { value: 'Ali 998' } });
-    expect(screen.getByText(/Faqat harflardan/)).toBeTruthy();
+    expect(screen.getByText(/Фақат ҳарфлардан/)).toBeTruthy();
     expect(sendReady()).toBe(false);
     fireEvent.change(screen.getByDisplayValue('Ali 998'), { target: { value: 'Ali' } });
-    expect(screen.queryByText(/Faqat harflardan/)).toBeNull();
+    expect(screen.queryByText(/Фақат ҳарфлардан/)).toBeNull();
     expect(sendReady()).toBe(true);
   });
 
   it('a passenger: registered with the name and the gender, no photo is sent (G51)', async () => {
     const { client } = await openAbout();
-    fireEvent.click(screen.getByText('Ayol'));
+    fireEvent.click(screen.getByText(toCyrillic('Ayol')));
     expect(sendReady()).toBe(true);
     fireEvent.click(screen.getByText(SEND));
     expect(await screen.findByText('inside')).toBeTruthy();
@@ -92,11 +93,11 @@ describe('Registration, screen 2: «Siz haqingizda» (G58)', () => {
   // G89 U4: a lost network is not a refused number; a lost answer of a saved registration lets in.
   it('says the network failed, and lets in after an answer lost on the way', async () => {
     const { client } = await openAbout();
-    fireEvent.click(screen.getByText('Ayol'));
+    fireEvent.click(screen.getByText(toCyrillic('Ayol')));
     client.register.mockRejectedValueOnce(new ApiError(0, 'network.timeout'));
     fireEvent.click(screen.getByText(SEND));
-    expect(await screen.findByText(/^Internet bilan aloqa yoʻq/u)).toBeTruthy();
-    expect(screen.queryByText(/^Raqamsiz/u)).toBeNull();
+    expect(await screen.findByText(/^Интернет билан алоқа йўқ/u)).toBeTruthy();
+    expect(screen.queryByText(/^Рақамсиз/u)).toBeNull();
     client.register.mockRejectedValueOnce(new ApiError(409, 'users.already_registered'));
     client.getMe.mockResolvedValueOnce(active);
     fireEvent.click(screen.getByText(SEND));
@@ -107,7 +108,7 @@ describe('Registration, screen 2: «Siz haqingizda» (G58)', () => {
   it('sends the photo once more when the first upload fails', async () => {
     const container = await openAbout();
     await addFace(container);
-    fireEvent.click(screen.getByText('Ayol'));
+    fireEvent.click(screen.getByText(toCyrillic('Ayol')));
     container.client.uploadAvatar.mockRejectedValueOnce(new ApiError(0, 'network.timeout'));
     fireEvent.click(screen.getByText(SEND));
     expect(await screen.findByText('inside')).toBeTruthy();
@@ -116,7 +117,7 @@ describe('Registration, screen 2: «Siz haqingizda» (G58)', () => {
 
   it('«Orqaga» returns to the welcome', async () => {
     await openAbout();
-    fireEvent.click(screen.getByText('Orqaga'));
-    expect(await screen.findByText(`Nima uchun ${loadBrand().name}`)).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Orqaga')));
+    expect(await screen.findByText(`${toCyrillic('Nima uchun')} ${loadBrand().name}`)).toBeTruthy();
   });
 });

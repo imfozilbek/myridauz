@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { FeedbackClient } from '@platform/api-client';
 import { cleanup, renderHook, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -20,19 +21,21 @@ describe('«Shikoyat» (G75, mockup g75/5 A, docs/17)', () => {
       <ComplaintScreen bookingId="b1" onBack={() => undefined} onSent={onSent} />,
       testClients({ feedback: { complain } }),
     );
-    expect(screen.getByText('Nima boʻldi? Bir nechtasini tanlash mumkin.')).toBeTruthy();
-    expect(screen.queryByText('Batafsil')).toBeNull();
+    expect(screen.getByText(toCyrillic('Nima boʻldi? Bir nechtasini tanlash mumkin.'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Batafsil'))).toBeNull();
     const card = document.querySelector('.complaint-card');
-    expect(card?.textContent).toContain('Xavfli haydash');
-    expect(card?.textContent).toContain('Kelmadi');
+    expect(card?.textContent).toContain(toCyrillic('Xavfli haydash'));
+    expect(card?.textContent).toContain(toCyrillic('Kelmadi'));
     // All 8 reasons (owner decision 10.10.2026, docs/163 dispute 9).
     expect(card?.querySelectorAll('.tick-row')).toHaveLength(8);
-    expect(card?.textContent).toContain('Spam yoki firibgarlik');
-    expect(screen.getByText('Kim shikoyat qilganini u koʻrmaydi.').className).toBe('complaint-note');
-    expect(screen.queryByText('Yuborish')).toBeNull();
-    await tap('Kelishilgandan koʻp pul soʻradi');
-    await tap('Xavfli haydash');
-    await tap('Yuborish');
+    expect(card?.textContent).toContain(toCyrillic('Spam yoki firibgarlik'));
+    expect(screen.getByText(toCyrillic('Kim shikoyat qilganini u koʻrmaydi.')).className).toBe(
+      'complaint-note',
+    );
+    expect(screen.queryByText(toCyrillic('Yuborish'))).toBeNull();
+    await tap(toCyrillic('Kelishilgandan koʻp pul soʻradi'));
+    await tap(toCyrillic('Xavfli haydash'));
+    await tap(toCyrillic('Yuborish'));
     await waitFor(() =>
       expect(complain).toHaveBeenCalledWith({
         bookingId: 'b1',
@@ -42,7 +45,7 @@ describe('«Shikoyat» (G75, mockup g75/5 A, docs/17)', () => {
     );
     // Sent, it closes by itself: back to where it came from, the plaque says so (G78 П16).
     await waitFor(() => expect(onSent).toHaveBeenCalledOnce());
-    expect(plaque.current).toBe('Shikoyatingiz yuborildi. Moderator koʻrib chiqadi.');
+    expect(plaque.current).toBe(toCyrillic('Shikoyatingiz yuborildi. Moderator koʻrib chiqadi.'));
     showPlaque(null);
   });
 
@@ -59,11 +62,11 @@ describe('«Shikoyat» (G75, mockup g75/5 A, docs/17)', () => {
       />,
       testClients({ feedback: { complain }, bookings: { riders } }),
     );
-    expect(await screen.findByText('Kimdan shikoyat qilasiz?')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Kimdan shikoyat qilasiz?'))).toBeTruthy();
     expect(screen.getByText('Jasur')).toBeTruthy();
     await tap('Bobur');
-    await tap('Kelmadi');
-    await tap('Yuborish');
+    await tap(toCyrillic('Kelmadi'));
+    await tap(toCyrillic('Yuborish'));
     await waitFor(() =>
       expect(complain).toHaveBeenCalledWith({
         bookingId: 'b1',

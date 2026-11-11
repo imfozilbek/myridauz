@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { tashkentDayStart, type Booking, type Trip } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -26,6 +27,7 @@ afterEach(() => {
 });
 
 const HOUR = 60 * 60 * 1000;
+const ONE = toCyrillic('1 joy');
 const at = (lat: number, lng: number) => ({ lat, lng });
 const passenger = (id: string, name: string, pickup: [number, number], place: string): Booking => ({
   ...confirmed,
@@ -34,9 +36,9 @@ const passenger = (id: string, name: string, pickup: [number, number], place: st
   passenger: { ...confirmed.passenger, firstName: name },
   pickup: { point: at(...pickup), name: { step: 'landmark', name: place }, area: null },
 });
-const FAR = passenger('b1', 'Dilnoza', [41.36, 69.3], 'Yunusobod');
-const NEAR = passenger('b2', 'Aziz', [41.29, 69.21], 'Grand');
-const PITAK = { id: 'qoyliq', name: 'Qoʻyliq pitagi', point: at(41.2438, 69.3394), hint: null };
+const FAR = passenger('b1', 'Dilnoza', [41.36, 69.3], toCyrillic('Yunusobod'));
+const NEAR = passenger('b2', 'Aziz', [41.29, 69.21], toCyrillic('Grand'));
+const PITAK = { id: 'qoyliq', name: toCyrillic('Qoʻyliq pitagi'), point: at(41.2438, 69.3394), hint: null };
 const HERE = at(41.285, 69.2);
 // The day of the tests (1 October, dom-test-setup) at 08:00 in Tashkent: «Bugun 08:00».
 const today: Trip = { ...trip, departAt: tashkentDayStart('2026-10-01') + 8 * HOUR };
@@ -74,20 +76,20 @@ describe('«Safar xaritasi» of the driver (mockup g63/4 screen 12, docs/126)', 
   it('shows the day, the passengers and the points in order, each with its pin', async () => {
     vi.mocked(requestPosition).mockResolvedValue(HERE);
     const map = open();
-    expect(await screen.findByText('Bugun 08:00 · 2 yoʻlovchi')).toBeTruthy();
-    const names = () => screen.getAllByText(/ · 1 joy$/u).map((cell) => cell.textContent);
-    await vi.waitFor(() => expect(names()).toEqual(['Aziz · 1 joy', 'Dilnoza · 1 joy']), { timeout: 5000 });
-    expect(screen.getByText('Grand yaqinida, Chilonzor')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Bugun 08:00 · 2 yoʻlovchi'))).toBeTruthy();
+    const names = () => screen.getAllByText(/ · 1 жой$/u).map((cell) => cell.textContent);
+    await vi.waitFor(() => expect(names()).toEqual([`Aziz · ${ONE}`, `Dilnoza · ${ONE}`]), { timeout: 5000 });
+    expect(screen.getByText(toCyrillic('Grand yaqinida, Chilonzor'))).toBeTruthy();
     await vi.waitFor(() => expect(map.pins()).toHaveLength(2));
     // Nothing more than on the mockup: no tabs, no arrows of the order.
-    expect(screen.queryByText('Tushirish')).toBeNull();
-    expect(screen.queryByLabelText('Pastga')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Tushirish'))).toBeNull();
+    expect(screen.queryByLabelText(toCyrillic('Pastga'))).toBeNull();
   });
 
   it('opens the meeting of a point while the meeting is open (screen 13)', async () => {
     const onPoint = vi.fn();
     open({ onPoint });
-    fireEvent.click(await screen.findByText('Aziz · 1 joy'));
+    fireEvent.click(await screen.findByText(`Aziz · ${ONE}`));
     expect(onPoint).toHaveBeenCalledWith(expect.objectContaining({ who: 'Aziz' }));
   });
 
@@ -96,22 +98,22 @@ describe('«Safar xaritasi» of the driver (mockup g63/4 screen 12, docs/126)', 
     const left = { ...today, departedAt: today.departAt };
     // Aziz is in the car, Dilnoza still waits: her point opens the meeting (G77, docs/170 О1).
     open({ trip: left, onPoint, bookings: [FAR, { ...NEAR, boardedAt: today.departAt }] });
-    fireEvent.click(await screen.findByText('Dilnoza · 1 joy'));
+    fireEvent.click(await screen.findByText(`Dilnoza · ${ONE}`));
     expect(onPoint).toHaveBeenCalledWith(expect.objectContaining({ who: 'Dilnoza' }));
     cleanup();
     const inCar = (one: Booking) => ({ ...one, boardedAt: today.departAt });
     open({ trip: left, bookings: [inCar(FAR), inCar(NEAR)] });
     // Both passengers get out at the same place in the fixture: one card each.
-    expect(await screen.findAllByText('Registon mahallasi, Fargʻona shahri')).toHaveLength(2);
+    expect(await screen.findAllByText(toCyrillic('Registon mahallasi, Fargʻona shahri'))).toHaveLength(2);
   });
 
   it('opens the points in the chosen navigator and remembers it', async () => {
     open();
-    await tap('Yoʻl koʻrsatish');
+    await tap(toCyrillic('Yoʻl koʻrsatish'));
     // The choice opens as a sheet over the map: the points stay in their place (docs/88 L13).
     expect(await screen.findByRole('dialog')).toBeTruthy();
     // Always the sheet of the app, the choice is kept (G75, mockup g75/6 A).
-    expect(screen.getByText('Tanlov eslab qolinadi. «Sozlamalar»da oʻzgartirasiz.')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Tanlov eslab qolinadi. «Sozlamalar»da oʻzgartirasiz.'))).toBeTruthy();
     // Apple Maps only on an iPhone: Yandex and Google here, each with its tile.
     expect(document.querySelectorAll('.navigator-row .navigator-tile')).toHaveLength(2);
     await tap('Yandex');
@@ -119,7 +121,7 @@ describe('«Safar xaritasi» of the driver (mockup g63/4 screen 12, docs/126)', 
       'https://yandex.uz/maps/?rtext=~41.36,69.3~41.29,69.21&rtt=auto',
     );
     await vi.waitFor(() => expect(screen.queryByRole('dialog')).toBeNull(), { timeout: 2000 });
-    await tap('Yoʻl koʻrsatish');
+    await tap(toCyrillic('Yoʻl koʻrsatish'));
     expect(openExternal).toHaveBeenCalledTimes(2);
   });
 
@@ -139,10 +141,10 @@ describe('«Safar xaritasi» of the driver (mockup g63/4 screen 12, docs/126)', 
       </MapEngineContext.Provider>,
       testClients({}),
     );
-    expect(await screen.findByText('Xarita yuklanmadi')).toBeTruthy();
-    expect(screen.getByText('Aziz · 1 joy')).toBeTruthy();
-    await tap('Xarita yuklanmadi');
-    await vi.waitFor(() => expect(screen.queryByText('Xarita yuklanmadi')).toBeNull());
+    expect(await screen.findByText(toCyrillic('Xarita yuklanmadi'))).toBeTruthy();
+    expect(screen.getByText(`Aziz · ${ONE}`)).toBeTruthy();
+    await tap(toCyrillic('Xarita yuklanmadi'));
+    await vi.waitFor(() => expect(screen.queryByText(toCyrillic('Xarita yuklanmadi'))).toBeNull());
     expect(map.engine).toHaveBeenCalledTimes(2);
   });
 });

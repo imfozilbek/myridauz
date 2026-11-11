@@ -1,4 +1,5 @@
 import { loadBrand } from '@platform/brands';
+import { toCyrillic } from '@platform/i18n';
 import type { Card, Ring } from '../notifications';
 import { describe, expect, it } from 'vitest';
 import { emptyApplication } from './domain/application';
@@ -31,18 +32,21 @@ describe('the approval in the driver bot', () => {
   it('edits the card of the application and rings under it: approved, the car and its plate', async () => {
     const { card, rings } = await message(null);
     expect(card?.key).toBe('application:7');
-    expect(card?.text).toContain('✅ Tasdiqlandi');
+    expect(card?.text).toContain(toCyrillic('✅ Tasdiqlandi'));
     expect(card?.text).toContain('<code>30 A 123 BC</code>');
-    expect(rings[0]).toMatchObject({ card: 'application:7', text: '✅ Haydovchi arizangiz tasdiqlandi' });
+    expect(rings[0]).toMatchObject({
+      card: 'application:7',
+      text: toCyrillic('✅ Haydovchi arizangiz tasdiqlandi'),
+    });
   });
 
   it('names the amount and the last day of the bonus', async () => {
     const text = await sent({ amount: 500_000, expiresAt: Date.parse('2026-11-01T07:00:00Z') });
-    expect(text).toMatch(/Sizga 500\s000\ssoʻm bonus berdik\. U 1-noyabrgacha komissiyaga ishlatiladi\./u);
+    expect(text).toMatch(/Сизга 500\s000\sсўм бонус бердик\. У 1-ноябргача комиссияга ишлатилади\./u);
   });
 
   it('says nothing about a bonus when none was given', async () => {
-    expect(await sent(null)).not.toContain('bonus');
+    expect(await sent(null)).not.toContain(toCyrillic('bonus'));
   });
 
   // The main channel with the channels of every direction and two buttons (docs/176, docs/119).
@@ -51,7 +55,10 @@ describe('the approval in the driver bot', () => {
     async (plate) => {
       const { card, buttons } = await message(null, plate);
       expect(card?.text).toContain(`t.me/${brand.mainChannel}`);
-      expect(buttons.map((button) => button.text)).toEqual(['Kanalga oʻtish', 'Safar eʼlon qilish']);
+      expect(buttons.map((button) => button.text)).toEqual([
+        toCyrillic('Kanalga oʻtish'),
+        toCyrillic('Safar eʼlon qilish'),
+      ]);
       expect(buttons[0]?.url).toBe(`https://t.me/${brand.mainChannel}`);
       expect(buttons[1]?.web_app?.url).toMatch(/\?open=new_trip&via=bot-new-trip$/u);
     },

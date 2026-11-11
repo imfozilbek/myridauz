@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { testClients } from '../test-shell';
@@ -18,36 +19,36 @@ const open = () => {
 describe('«Qanday band qilinadi?» as the mockup 2-whole-car screen 1 (G61)', () => {
   it('names the car, the seats and the price of a seat under the title', async () => {
     open();
-    expect(await screen.findByText(/^Cobalt · 4 ta joy · bir joy 90.000/)).toBeTruthy();
+    expect(await screen.findByText(/^Cobalt · 4 та жой · бир жой 90.000/)).toBeTruthy();
   });
 
   it('has the bar of the steps of the newer mockup on top: three of four (g63/4 screen 4)', async () => {
     open();
-    await screen.findByText('Faqat joylar');
+    await screen.findByText(toCyrillic('Faqat joylar'));
     const bars = screen.getAllByRole('progressbar').map((bar) => bar.getAttribute('aria-valuenow'));
     expect(bars).toEqual(['100', '100', '100', '0']);
   });
 
   it('shows the three rules as cards with a radio, seats only chosen first', async () => {
     const { container } = open();
-    await screen.findByText('Faqat joylar');
+    await screen.findByText(toCyrillic('Faqat joylar'));
     const radios = screen.getAllByRole('radio');
     expect(radios).toHaveLength(3);
     expect(container.querySelectorAll('.rule-card')).toHaveLength(3);
     expect((radios[0] as HTMLInputElement).checked).toBe(true);
-    expect(container.querySelector('.rule-card-on')?.textContent).toContain('Faqat joylar');
+    expect(container.querySelector('.rule-card-on')?.textContent).toContain(toCyrillic('Faqat joylar'));
   });
 
   it('a tap anywhere on a card chooses it and comes back, no «Davom etish» (G78 В14)', async () => {
     const { onDone } = open();
-    fireEvent.click(await screen.findByText('Joylar yoki butun salon'));
+    fireEvent.click(await screen.findByText(toCyrillic('Joylar yoki butun salon')));
     expect(onDone).toHaveBeenCalledWith('seats_or_car');
-    expect(screen.queryByText('Davom etish')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Davom etish'))).toBeNull();
   });
 
   it('shows the price of the whole car under the cards', async () => {
     open();
     // «soʻm» may go to the next line alone, as on the mockup (g63/4 screen 4): a plain space before it.
-    expect(await screen.findByText(/^Butun salon narxi: 4 joy × 90.000 = 360.000 soʻm\.$/u)).toBeTruthy();
+    expect(await screen.findByText(/^Бутун салон нархи: 4 жой × 90.000 = 360.000 сўм\.$/u)).toBeTruthy();
   });
 });

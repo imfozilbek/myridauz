@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { tap } from '../market/market-test-kit';
@@ -16,12 +17,16 @@ describe('the bookings of a trip for the team (G24, docs/70, G78 sheet 4)', () =
       false,
       true,
     );
-    const headers = (await screen.findAllByText(/Bu safarga mos|Boshqa soʻrovlar|Yoʻlovchilar/u)).map(
+    const headers = (await screen.findAllByText(/Бу сафарга мос|Бошқа сўровлар|Йўловчилар/u)).map(
       (header) => header.textContent,
     );
-    expect(headers).toEqual(['Bu safarga mos', 'Boshqa soʻrovlar', 'Yoʻlovchilar']);
-    expect(screen.getByText(/\+2 km/u)).toBeTruthy();
-    expect(screen.getByText(/\+24 km/u)).toBeTruthy();
+    expect(headers).toEqual([
+      toCyrillic('Bu safarga mos'),
+      toCyrillic('Boshqa soʻrovlar'),
+      toCyrillic('Yoʻlovchilar'),
+    ]);
+    expect(screen.getByText(/\+2 км/u)).toBeTruthy();
+    expect(screen.getByText(/\+24 км/u)).toBeTruthy();
   });
 
   it('opens the card of the passenger', async () => {
@@ -33,7 +38,7 @@ describe('the bookings of a trip for the team (G24, docs/70, G78 sheet 4)', () =
 
   it('says there are no passengers yet', async () => {
     renderInShell(<TripBookings bookings={[]} onPerson={() => undefined} />, false, true);
-    expect(await screen.findByText('Yoʻlovchilar')).toBeTruthy();
-    expect(screen.getByText('Hali soʻrov yoʻq')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Yoʻlovchilar'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Hali soʻrov yoʻq'))).toBeTruthy();
   });
 });

@@ -1,5 +1,6 @@
 import { loadBrand } from '@platform/brands';
 import { tashkentDate } from '@platform/contracts';
+import { toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import type { Card, Ring } from '../notifications';
 import { requestBooking } from './application/request';
@@ -27,7 +28,9 @@ describe('«Boshqa safar topish» under a booking that ended', () => {
       await tell({ ...asked.value, status }, status === 'cancelled_by_driver' ? 'cancelledByDriver' : status);
     const urls = shown.map(({ cards }) => JSON.stringify(cards[0]?.markup));
     expect(urls).toHaveLength(3);
-    expect(urls.every((url) => url.includes(find) && url.includes('Boshqa safar topish'))).toBe(true);
+    expect(urls.every((url) => url.includes(find) && url.includes(toCyrillic('Boshqa safar topish')))).toBe(
+      true,
+    );
     // The seat is over: the card leaves the top of the chat (docs/122 rule 6).
     expect(shown.every(({ cards }) => cards[0]?.pin === false)).toBe(true);
   });

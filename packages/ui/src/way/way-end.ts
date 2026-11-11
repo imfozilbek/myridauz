@@ -13,12 +13,11 @@ export type PointEnd = WayEnd & { readonly point: Point };
 
 // «Chorsu bozori yaqinida», «Qatortol mahallasi», or the district (or any text) when nothing is known.
 export function useNameText() {
-  const { t } = useI18n();
+  const { t, placeName } = useI18n();
   return (name: PlaceName | null, place: Location | string) => {
     if (!name) return typeof place === 'string' ? place : place.name;
-    return name.step === 'landmark' || name.step === 'settlement'
-      ? t('way.near', { name: name.name })
-      : name.name;
+    const shown = placeName(name.name);
+    return name.step === 'landmark' || name.step === 'settlement' ? t('way.near', { name: shown }) : shown;
   };
 }
 

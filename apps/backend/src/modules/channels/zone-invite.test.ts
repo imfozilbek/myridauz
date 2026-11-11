@@ -1,4 +1,5 @@
 import { loadBrand } from '@platform/brands';
+import { toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import { inviteToZone, tellsHome, type ZoneInviteDeps } from './application/zone-invite';
 import { zoneMessage } from './infrastructure/zone-message';
@@ -29,8 +30,8 @@ describe('the channel of the zone after the registration (docs/119 row 6)', () =
     expect(sent[0]).toMatchObject({ bot: 'passenger', chatId: 5 });
     const markup = JSON.stringify(sent[0]);
     expect(markup).toContain(`"url":"${zone?.link ?? ''}"`);
-    expect(markup).toContain('Kanalga oʻtish');
-    expect(markup).toContain('Safar topish');
+    expect(markup).toContain(toCyrillic('Kanalga oʻtish'));
+    expect(markup).toContain(toCyrillic('Safar topish'));
   });
 
   it('spends the one chance on a place without a channel, like Toshkent', async () => {

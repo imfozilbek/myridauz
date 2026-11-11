@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { RideRequest } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -34,7 +35,7 @@ describe('Mening safarlarim (docs/35)', () => {
         bookings: { driverBookings: async () => [], driverOffers: async () => [] },
       }),
     );
-    expect(await screen.findByText(/Faol/)).toBeTruthy();
+    expect(await screen.findByText(/Фаол/)).toBeTruthy();
     expect(screen.queryByText('Jasur')).toBeNull();
   });
 
@@ -48,10 +49,10 @@ describe('Mening safarlarim (docs/35)', () => {
         bookings: { driverBookings: async () => [], driverOffers: async () => [] },
       }),
     );
-    expect(await screen.findByText(/Faol/)).toBeTruthy();
+    expect(await screen.findByText(/Фаол/)).toBeTruthy();
     await openOwnTrip();
     vi.stubGlobal('confirm', () => true);
-    await tap('Safarni bekor qilish');
+    await tap(toCyrillic('Safarni bekor qilish'));
     vi.unstubAllGlobals();
     expect(cancelTrip).toHaveBeenCalledWith('t1');
     await vi.waitFor(() => expect(myTrips).toHaveBeenCalledTimes(2));
@@ -67,7 +68,7 @@ describe('Mening safarlarim (docs/35)', () => {
       }),
     );
     await openOwnTrip();
-    expect(screen.queryByText('Safarni bekor qilish')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Safarni bekor qilish'))).toBeNull();
   });
 
   it('lets a passenger cancel an open request', async () => {
@@ -80,9 +81,9 @@ describe('Mening safarlarim (docs/35)', () => {
         bookings: { myBookings: async () => [], myOffers: async () => [] },
       }),
     );
-    await tap(/· Soʻrov$/u);
+    await tap(/· Сўров$/u);
     const asked = vi.spyOn(window, 'confirm').mockReturnValue(true);
-    await tap('Soʻrovni bekor qilish');
+    await tap(toCyrillic('Soʻrovni bekor qilish'));
     await vi.waitFor(() => expect(cancelRequest).toHaveBeenCalledWith('r1'));
     asked.mockRestore();
   });

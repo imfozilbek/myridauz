@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { MyRequestsScreen } from '../market/my-requests-screen';
@@ -21,7 +22,7 @@ describe('a seat after «Yoʻlga chiqdim» and after a cancel of the driver', ()
       }),
     );
     await tap('Jasur');
-    expect(screen.queryByText('Joyni bekor qilish')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Joyni bekor qilish'))).toBeNull();
   });
 
   it('says the seat was cancelled when the trip still goes, the trip when it does not', async () => {
@@ -34,9 +35,9 @@ describe('a seat after «Yoʻlga chiqdim» and after a cancel of the driver', ()
         testClients({}),
       );
     banner(seat);
-    expect(await screen.findByText('Haydovchi joyingizni bekor qildi.')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Haydovchi joyingizni bekor qildi.'))).toBeTruthy();
     cleanup();
     banner({ ...seat, trip: { ...seat.trip, status: 'cancelled' } });
-    expect(await screen.findByText('Haydovchi safarni bekor qildi.')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Haydovchi safarni bekor qildi.'))).toBeTruthy();
   });
 });

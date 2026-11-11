@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket, tap } from '../market/market-test-kit';
@@ -19,9 +20,9 @@ describe('"Hamyonlar" by pages', () => {
     renderMarket(<TeamWalletsScreen onBack={() => undefined} />, testClients({ wallet: { all } }));
     expect(await screen.findByText('Jasur')).toBeTruthy();
     expect(screen.queryByText('Bobur')).toBeNull();
-    await tap('Yana koʻrsatish');
+    await tap(toCyrillic('Yana koʻrsatish'));
     expect(await screen.findByText('Bobur')).toBeTruthy();
-    expect(screen.queryByText('Yana koʻrsatish')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Yana koʻrsatish'))).toBeNull();
     expect(all).toHaveBeenLastCalledWith(1);
   });
 });

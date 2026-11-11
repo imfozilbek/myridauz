@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError } from '@platform/api-client';
 import { DAY_MS } from '@platform/contracts';
 import { cleanup, screen, waitFor } from '@testing-library/react';
@@ -30,12 +31,12 @@ describe('a complaint after its days', () => {
       );
     const page = () => document.body.textContent ?? '';
     open(1);
-    await waitFor(() => expect(page()).toContain('Xabar yozish'));
-    expect(page()).toContain('Shikoyat qilish');
+    await waitFor(() => expect(page()).toContain(toCyrillic('Xabar yozish')));
+    expect(page()).toContain(toCyrillic('Shikoyat qilish'));
     cleanup();
     open(30);
-    await waitFor(() => expect(page()).toContain('Xabar yozish'));
-    expect(page()).not.toContain('Shikoyat qilish');
+    await waitFor(() => expect(page()).toContain(toCyrillic('Xabar yozish')));
+    expect(page()).not.toContain(toCyrillic('Shikoyat qilish'));
   });
 
   it('says the days are over', async () => {
@@ -44,8 +45,10 @@ describe('a complaint after its days', () => {
       <ComplaintScreen bookingId="b1" onBack={() => undefined} onSent={() => undefined} />,
       testClients({ feedback: { complain } }),
     );
-    await tap('Xavfli haydash');
-    await tap('Yuborish');
-    expect(await screen.findByText('Shikoyat muddati tugagan. Yordam orqali yozing.')).toBeTruthy();
+    await tap(toCyrillic('Xavfli haydash'));
+    await tap(toCyrillic('Yuborish'));
+    expect(
+      await screen.findByText(toCyrillic('Shikoyat muddati tugagan. Yordam orqali yozing.')),
+    ).toBeTruthy();
   });
 });

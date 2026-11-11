@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MADINA, renderNavbat } from './navbat-test-kit';
@@ -17,8 +18,8 @@ describe('the last case of «Navbat»', { timeout: 20_000 }, () => {
       { moderation: { facePhoto: async () => new Blob(['x']), decideFace: vi.fn(async () => undefined) } },
       onBack,
     );
-    fireEvent.click((await screen.findAllByText('Mos emas')).at(0) as HTMLElement);
-    expect(await screen.findByText('Hammasi koʻrildi')).toBeTruthy();
+    fireEvent.click((await screen.findAllByText(toCyrillic('Mos emas'))).at(0) as HTMLElement);
+    expect(await screen.findByText(toCyrillic('Hammasi koʻrildi'))).toBeTruthy();
     expect(onBack).not.toHaveBeenCalled();
     await waitFor(() => expect(onBack).toHaveBeenCalledOnce(), { timeout: 4000 });
   });

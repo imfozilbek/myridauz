@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { fakeTelegram } from './bots/test-bot';
 import { approvedDriver, json, read } from './bookings-test-api';
@@ -52,7 +53,7 @@ describe('the chat of a seat in the bots (G68, docs/122 rule 5)', () => {
     const passenger = { userId: PASSENGER, role: 'passenger' as const, from: DRIVER };
     await signals.newMessage(passenger, seat.chatKey);
     const ring = lastTo(PASSENGER);
-    expect(ring?.body.text).toMatch(/^💬 .+ sizga xabar yozdi$/u);
+    expect(ring?.body.text).toMatch(/^💬 .+ сизга хабар ёзди$/u);
     expect(ring?.body.reply_parameters).toMatchObject({ message_id: card?.id });
     expect(ring?.body).not.toHaveProperty('disable_notification');
     expect(JSON.stringify(ring?.body.reply_markup)).toContain(`sheet=${seat.chatKey}`);
@@ -66,14 +67,14 @@ describe('the chat of a seat in the bots (G68, docs/122 rule 5)', () => {
     const signals = botSignals(testEnv);
     const driver = { userId: OTHER_DRIVER, role: 'driver' as const, from: OTHER_PASSENGER };
     await signals.newMessage(driver, seat.chatKey);
-    expect(lastTo(OTHER_DRIVER)?.body.text).toMatch(/^💬 .+ sizga xabar yozdi$/u);
+    expect(lastTo(OTHER_DRIVER)?.body.text).toMatch(/^💬 .+ сизга хабар ёзди$/u);
     expect(lastTo(OTHER_DRIVER)?.body.reply_parameters).toBeDefined();
     // 23:00 in Tashkent: a missed call waits quietly, a call that rings now has sound.
     vi.setSystemTime(START + 13 * HOUR);
     await signals.missedCall(driver, seat.chatKey);
     expect(lastTo(OTHER_DRIVER)?.body).toMatchObject({ disable_notification: true });
     await signals.incomingCall(driver, seat.chatKey);
-    expect(lastTo(OTHER_DRIVER)?.body.text).toMatch(/^📞 .+ sizga qoʻngʻiroq qilyapti$/u);
+    expect(lastTo(OTHER_DRIVER)?.body.text).toMatch(/^📞 .+ сизга қўнғироқ қиляпти$/u);
     // «Javob berish» takes the call at once (G79).
     expect(JSON.stringify(lastTo(OTHER_DRIVER)?.body.reply_markup)).toContain(`answer=${seat.chatKey}`);
     expect(lastTo(OTHER_DRIVER)?.body).not.toHaveProperty('disable_notification');
@@ -92,7 +93,9 @@ describe('the chat of a seat in the bots (G68, docs/122 rule 5)', () => {
     const passenger = { userId: PASSENGER, role: 'passenger' as const, from: DRIVER };
     await botSignals(testEnv).newMessage(passenger, 'tnone');
     expect(lastTo(PASSENGER)?.body.reply_parameters).toBeUndefined();
-    expect(lastTo(PASSENGER)?.body.text).toBe('Sizga yangi xabar keldi. Javob berish uchun chatni oching.');
+    expect(lastTo(PASSENGER)?.body.text).toBe(
+      toCyrillic('Sizga yangi xabar keldi. Javob berish uchun chatni oching.'),
+    );
     expect(JSON.stringify(lastTo(PASSENGER)?.body.reply_markup)).toContain('chat=tnone');
     // A call takes the call at once (G79).
     await botSignals(testEnv).incomingCall(passenger, 'tnone');

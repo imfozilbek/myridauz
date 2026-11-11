@@ -5,7 +5,7 @@ describe('loadBrand', () => {
   it('returns the main brand in production by default', () => {
     expect(loadBrand()).toMatchObject({
       domain: 'ridaone.uz',
-      slogan: 'Manzil sari',
+      slogan: 'Манзил сари',
       monetization: 'commission',
       mainChannel: 'rida1uz',
     });
@@ -48,13 +48,13 @@ describe('loadBrand', () => {
     expect(production.teamOnly).toBeNull();
   });
 
-  // G84: the team sees a trip of any direction in its one channel «MyRida | Viloyatlar».
+  // G84: the team sees a trip of any direction in its one channel «MyRida | Вилоятлар».
   it('gives every place of the directions the one channel of the internal environment', () => {
     const internal = loadBrand('rida', 'internal');
     const places = loadBrand('rida', 'production').channels.flatMap((channel) => channel.places);
-    expect(internal.channels.map((channel) => channel.name)).toEqual(['MyRida | Viloyatlar']);
+    expect(internal.channels.map((channel) => channel.name)).toEqual(['MyRida | Вилоятлар']);
     expect(new Set(places.map((place) => channelOf(internal, place)?.name))).toEqual(
-      new Set(['MyRida | Viloyatlar']),
+      new Set(['MyRida | Вилоятлар']),
     );
   });
 

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { application, car, renderGate, tap } from './driver-test-kit';
@@ -21,11 +22,11 @@ describe('one photo to retake', { timeout: 20_000 }, () => {
     renderGate(
       application({ status: 'changes_requested', car, reasons: ['front_unclear'], photos: allPhotos }),
     );
-    expect(await screen.findByText('Bitta rasmni almashtiring')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Bitta rasmni almashtiring'))).toBeTruthy();
     expect(cameraOpened(clicked)).toBe(0);
-    await tap('Orqaga');
-    await tap('Tuzatish');
-    expect(await screen.findByText('Bitta rasmni almashtiring')).toBeTruthy();
+    await tap(toCyrillic('Orqaga'));
+    await tap(toCyrillic('Tuzatish'));
+    expect(await screen.findByText(toCyrillic('Bitta rasmni almashtiring'))).toBeTruthy();
     await waitFor(() => expect(cameraOpened(clicked)).toBe(1));
   });
 });

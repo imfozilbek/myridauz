@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { app } from './app';
 import { approvedDriver, json, read, seen } from './bookings-test-api';
@@ -90,7 +91,9 @@ describe('the driver shares a trip with the family (docs/43, G18)', () => {
     const created = await read<{ link: string; preparedMessageId: string }>(share(DRIVER));
     const prepared = telegram.find((item) => item.method === 'savePreparedInlineMessage');
     expect(prepared?.body.user_id).toBe(DRIVER);
-    expect(JSON.stringify(prepared?.body)).toContain('Mashina: Chevrolet Cobalt, 01 A 123 BC.');
+    expect(JSON.stringify(prepared?.body)).toContain(
+      `${toCyrillic('Mashina')}: Chevrolet Cobalt, 01 A 123 BC.`,
+    );
     const token = created.link.split('follow_')[1] ?? '';
     const shared = async () => app.request(`/shared/${token}`, {}, testEnv);
     expect(await read(shared())).toMatchObject({
@@ -109,8 +112,8 @@ describe('the driver shares a trip with the family (docs/43, G18)', () => {
     await cancel(trip.id);
     const toClose = telegram.filter((item) => item.body.chat_id === CLOSE).map((item) => item.body.text);
     expect(toClose).toHaveLength(2);
-    expect(String(toClose[0])).toMatch(/^Vaqt oʻzgardi: Ali /u);
-    expect(toClose[1]).toBe('Safar bekor qilindi.');
+    expect(String(toClose[0])).toMatch(/^Вақт ўзгарди: Ali /u);
+    expect(toClose[1]).toBe(toCyrillic('Safar bekor qilindi.'));
     expect((await shared()).status).toBe(404);
     for (const text of seen) expect(text).not.toMatch(/99890\d+|"(phone|username)"/u);
   });

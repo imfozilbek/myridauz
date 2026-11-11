@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -50,7 +51,7 @@ describe('a form keeps what the person typed (docs/94 F3)', () => {
     fireEvent.change(screen.getByLabelText('text'), { target: { value: 'Salom' } });
     expect(sdk.closingBehavior.enableConfirmation.ifAvailable).toHaveBeenCalledOnce();
     await act(async () => fireEvent.click(screen.getByText('back')));
-    expect(asked).toHaveBeenCalledWith('Oʻzgarishlar saqlanmaydi. Chiqasizmi?');
+    expect(asked).toHaveBeenCalledWith(toCyrillic('Oʻzgarishlar saqlanmaydi. Chiqasizmi?'));
     expect(onBack).not.toHaveBeenCalled();
     await act(async () => fireEvent.click(screen.getByText('back')));
     expect(onBack).toHaveBeenCalledOnce();

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError, type BookingsClient } from '@platform/api-client';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -22,7 +23,7 @@ describe('a booking changed under the driver', () => {
       </PlacesGate>,
       testClients({ bookings: { answer } }),
     );
-    const decline = await screen.findByText('Rad etish');
+    const decline = await screen.findByText(toCyrillic('Rad etish'));
     fireEvent.click(decline);
     fireEvent.click(decline);
     expect(answer).toHaveBeenCalledOnce();

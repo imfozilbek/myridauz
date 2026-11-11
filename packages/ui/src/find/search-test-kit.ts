@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { MarketClient } from '@platform/api-client';
 import { DAY_MS, tashkentDate, type TripDays } from '@platform/contracts';
 import { fireEvent, screen } from '@testing-library/react';
@@ -26,15 +27,15 @@ export const searchMarket = (
 // «Qayerdan» is not known on a new phone: Toshkent shahri whole in one tap (G78 П9), then Fargʻona
 // shahri by «Boshqa joy», or the whole Fargʻona region by its card.
 export async function findRoute(wholeRegion = false) {
-  await tap('Toshkent shahri');
-  return wholeRegion ? tap('Fargʻona') : findTo();
+  await tap(toCyrillic('Toshkent shahri'));
+  return wholeRegion ? tap(toCyrillic('Fargʻona')) : findTo();
 }
 
 // Fargʻona shahri by «Boshqa joy» once «Qayerdan» is known.
 export async function findTo() {
-  await tap('Boshqa joy: tuman yoki shahar');
-  fireEvent.change(screen.getByPlaceholderText('Boshqa joy: tuman yoki shahar'), {
+  await tap(toCyrillic('Boshqa joy: tuman yoki shahar'));
+  fireEvent.change(screen.getByPlaceholderText(toCyrillic('Boshqa joy: tuman yoki shahar')), {
     target: { value: 'Farg' },
   });
-  return fireEvent.click(await screen.findByText('ona shahri', { exact: false }));
+  return fireEvent.click(await screen.findByText(toCyrillic('ona shahri'), { exact: false }));
 }

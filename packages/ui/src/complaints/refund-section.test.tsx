@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { FeedbackClient } from '@platform/api-client';
 import type { ComplaintCase, TeamRole } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
@@ -31,32 +32,32 @@ describe('the refund of a no-show in the admin app', () => {
     const answerRefund = vi.fn<FeedbackClient['answerRefund']>(async () => undefined);
     const { tracked } = open('owner', answerRefund);
     expect(await screen.findByText(/9\s000/u)).toBeTruthy();
-    expect(screen.queryByText('Ogohlantirish')).toBeNull();
-    fireEvent.click(await screen.findByText('Qaytarishni tasdiqlash'));
+    expect(screen.queryByText(toCyrillic('Ogohlantirish'))).toBeNull();
+    fireEvent.click(await screen.findByText(toCyrillic('Qaytarishni tasdiqlash')));
     await waitFor(() => expect(answerRefund).toHaveBeenCalledWith('c1', 'confirm'));
-    expect(await screen.findByText('Javob yuborildi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Javob yuborildi'))).toBeTruthy();
     expect(tracked.some((event) => event.name === 'complaint_decided')).toBe(true);
   });
 
   it('the owner may refuse the refund', async () => {
     const answerRefund = vi.fn<FeedbackClient['answerRefund']>(async () => undefined);
     open('owner', answerRefund);
-    fireEvent.click(await screen.findByText('Qaytarmaslik'));
+    fireEvent.click(await screen.findByText(toCyrillic('Qaytarmaslik')));
     await waitFor(() => expect(answerRefund).toHaveBeenCalledWith('c1', 'reject'));
   });
 
   it('a moderator sees that it waits for the owner, without the buttons', async () => {
     open('moderator');
-    expect(await screen.findByText('Loyiha egasi tasdiqlashini kutmoqda.')).toBeTruthy();
-    expect(screen.queryByText('Qaytarishni tasdiqlash')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Loyiha egasi tasdiqlashini kutmoqda.'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Qaytarishni tasdiqlash'))).toBeNull();
   });
 
   it('a refund answered already shows how, without the buttons', async () => {
     open('owner', undefined, { ...waiting, refund: { state: 'confirmed', amount: 9000 } });
-    expect(await screen.findByText('Komissiya haydovchiga qaytarildi.')).toBeTruthy();
-    expect(screen.queryByText('Qaytarmaslik')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Komissiya haydovchiga qaytarildi.'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Qaytarmaslik'))).toBeNull();
     cleanup();
     open('owner', undefined, { ...waiting, refund: { state: 'rejected', amount: 9000 } });
-    expect(await screen.findByText('Loyiha egasi qaytarmaslikka qaror qildi.')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Loyiha egasi qaytarmaslikka qaror qildi.'))).toBeTruthy();
   });
 });

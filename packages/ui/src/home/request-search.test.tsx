@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { MarketClient } from '@platform/api-client';
 import { DAY_MS, tashkentDate } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
@@ -23,13 +24,13 @@ describe('«Safar topish» of an open request', { timeout: 20_000 }, () => {
       asked: async () => [open],
       market: { searchTrips },
     });
-    expect(await screen.findByText('Soʻrovim')).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Safar topish' }));
+    expect(await screen.findByText(toCyrillic('Soʻrovim'))).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: toCyrillic('Safar topish') }));
     await waitFor(() =>
       expect(searchTrips).toHaveBeenCalledWith(
         expect.objectContaining({ from: open.from, to: open.to, date: open.date }),
       ),
     );
-    expect(screen.queryByText('Qayerga borasiz?')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Qayerga borasiz?'))).toBeNull();
   });
 });

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { closeSheet } from '../home/sheet-closed';
@@ -38,8 +39,8 @@ describe('what people need to decide is on the screen (docs/65 C)', () => {
         },
       }),
     );
-    expect(await screen.findByText('2 ta taklif')).toBeTruthy();
-    await tap(/· Soʻrov$/u);
+    expect(await screen.findByText(toCyrillic('2 ta taklif'))).toBeTruthy();
+    await tap(/· Сўров$/u);
     expect(screen.getAllByText(/4,8/)).toHaveLength(2);
   });
 
@@ -53,11 +54,11 @@ describe('what people need to decide is on the screen (docs/65 C)', () => {
       }),
     );
     await openOwnTrip();
-    expect(await screen.findByText(/komissiya 19\s000$/u)).toBeTruthy();
+    expect(await screen.findByText(/комиссия 19\s000$/u)).toBeTruthy();
     await tap('Dilnoza');
-    expect(await screen.findByText(/^Javob berish uchun \d+ (daqiqa|soat)/u)).toBeTruthy();
+    expect(await screen.findByText(/^Жавоб бериш учун \d+ (дақиқа|соат)/u)).toBeTruthy();
     // The rule about changing seats is the passenger's, not the driver's (G27).
-    expect(screen.queryByText(/^Bron qilingach/)).toBeNull();
+    expect(screen.queryByText(/^Брон қилингач/)).toBeNull();
     await closeSheet();
   });
 
@@ -73,12 +74,14 @@ describe('what people need to decide is on the screen (docs/65 C)', () => {
     );
     await openOwnTrip();
     // On the trip and in the sheet the sum short shows and the button leads to the top up (G27, В9).
-    expect(await screen.findByText(/^Hamyonda 19\s000 yetmaydi$/u)).toBeTruthy();
+    expect(await screen.findByText(/^Ҳамёнда 19\s000 етмайди$/u)).toBeTruthy();
     const sent = vi.spyOn(window, 'open').mockReturnValue(null);
-    await tap('Hisobni toʻldirish');
+    await tap(toCyrillic('Hisobni toʻldirish'));
     await tap('Dilnoza');
-    expect(await screen.findByText('Yangi soʻrov')).toBeTruthy();
-    fireEvent.click(screen.getAllByRole('button', { name: 'Hisobni toʻldirish' }).at(-1) as HTMLElement);
+    expect(await screen.findByText(toCyrillic('Yangi soʻrov'))).toBeTruthy();
+    fireEvent.click(
+      screen.getAllByRole('button', { name: toCyrillic('Hisobni toʻldirish') }).at(-1) as HTMLElement,
+    );
     expect(sent).toHaveBeenCalledTimes(2);
     expect(answer).not.toHaveBeenCalled();
     sent.mockRestore();

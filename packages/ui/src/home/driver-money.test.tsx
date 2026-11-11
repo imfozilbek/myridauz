@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { loadBrand } from '@platform/brands';
 import { cleanup } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -20,10 +21,10 @@ describe('the wallet of a driver in the block at the bottom (G76, mockup g76/3 s
       { trips: async () => [], requests: async () => [], wallet: async () => ({ ...wallet, seatsLeft: 2 }) },
       approved,
     );
-    await tap('Hisobni toʻldirish');
+    await tap(toCyrillic('Hisobni toʻldirish'));
     const link = new URL(String(open.mock.calls[0]?.[0]));
     expect(link.pathname).toBe(`/${loadBrand().bots.support}`);
-    expect(link.searchParams.get('text')).toBe('Salom! Hamyonimni toʻldirmoqchiman.');
+    expect(link.searchParams.get('text')).toBe(toCyrillic('Salom! Hamyonimni toʻldirmoqchiman.'));
     open.mockRestore();
   });
 });

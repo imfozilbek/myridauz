@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { botSender, fakeTelegram } from './bots/test-bot';
 import { approvedDriver, json, read } from './bookings-test-api';
@@ -58,7 +59,9 @@ describe('the driver bot: the trip card and a request answered in the bot (G68, 
     await registerUser(STRANGER);
     const { tripId, bookingId } = await asked();
     const toDriver = telegram.sentTo(DRIVER);
-    const card = toDriver.find((sent) => String(sent.body.text).startsWith('<b>📣 Eʼlon qilindi'));
+    const card = toDriver.find((sent) =>
+      String(sent.body.text).startsWith(toCyrillic('<b>📣 Eʼlon qilindi')),
+    );
     expect(card?.body.disable_notification).toBe(true);
     expect(toDriver.some((sent) => sent.method === 'pinChatMessage')).toBe(true);
     const ask = toDriver.find((sent) => JSON.stringify(sent.body).includes(`ask:${bookingId}:yes`));
@@ -72,12 +75,13 @@ describe('the driver bot: the trip card and a request answered in the bot (G68, 
     const answered = telegram.sentTo(DRIVER).filter((sent) => sent.method === 'editMessageText');
     expect(
       answered.some(
-        (sent) => sent.body.message_id === ask?.id && String(sent.body.text).includes('✅ Qabul qilindi'),
+        (sent) =>
+          sent.body.message_id === ask?.id && String(sent.body.text).includes(toCyrillic('✅ Qabul qilindi')),
       ),
     ).toBe(true);
     expect(answered.some((sent) => sent.body.message_id === card?.id)).toBe(true);
     expect(await notice(await send('driver', press(`ask:${bookingId}:no`)))).toBe(
-      'Bu soʻrov allaqachon oʻzgargan.',
+      toCyrillic('Bu soʻrov allaqachon oʻzgargan.'),
     );
     expect(tripId).toBeTruthy();
   });
@@ -96,7 +100,9 @@ describe('the driver bot: the trip card and a request answered in the bot (G68, 
     const after = telegram.calls.slice(before);
     const arrived = (chatId: number) =>
       after.some(
-        (sent) => sent.body.chat_id === chatId && String(sent.body.text).startsWith('<b>🏁 Yetib keldingiz'),
+        (sent) =>
+          sent.body.chat_id === chatId &&
+          String(sent.body.text).startsWith(toCyrillic('<b>🏁 Yetib keldingiz')),
       );
     expect(arrived(ARRIVING)).toBe(true);
     expect(arrived(RIDER)).toBe(true);
@@ -114,7 +120,9 @@ describe('the driver bot: the trip card and a request answered in the bot (G68, 
     const before = telegram.calls.length;
     await completeTrips(testEnv, Date.now());
     const after = telegram.calls.slice(before).filter((sent) => sent.body.chat_id === FORGOT);
-    expect(after.some((sent) => String(sent.body.text).startsWith('<b>🏁 Yetib keldingiz'))).toBe(true);
+    expect(after.some((sent) => String(sent.body.text).startsWith(toCyrillic('<b>🏁 Yetib keldingiz')))).toBe(
+      true,
+    );
     expect(after.some((sent) => sent.method === 'unpinChatMessage')).toBe(true);
     expect(tripId).toBeTruthy();
   });

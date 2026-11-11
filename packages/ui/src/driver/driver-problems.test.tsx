@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { application, car, renderGate, shoot, tap } from './driver-test-kit';
@@ -13,15 +14,15 @@ describe('DriverGate: what the team asked to fix (docs/04, G62 mockup 5)', () =>
     const { submit, uploadPhoto, container } = renderGate(
       application({ status: 'changes_requested', car, reasons: ['front_unclear'], photos: allPhotos }),
     );
-    expect(await screen.findByText('Bitta rasmni almashtiring')).toBeTruthy();
-    const front = screen.getByText('Old tomondan', { exact: true }).closest('button');
+    expect(await screen.findByText(toCyrillic('Bitta rasmni almashtiring'))).toBeTruthy();
+    const front = screen.getByText(toCyrillic('Old tomondan'), { exact: true }).closest('button');
     expect(front?.className).toContain('photo-tile-problem');
-    expect(front?.textContent).toContain('Old tomondan olingan rasm tiniq emas');
-    expect(send('Qayta yuborish').disabled).toBe(true);
-    shoot(container, 'Old tomondan');
-    await waitFor(() => expect(send('Qayta yuborish').disabled).toBe(false));
+    expect(front?.textContent).toContain(toCyrillic('Old tomondan olingan rasm tiniq emas'));
+    expect(send(toCyrillic('Qayta yuborish')).disabled).toBe(true);
+    shoot(container, toCyrillic('Old tomondan'));
+    await waitFor(() => expect(send(toCyrillic('Qayta yuborish')).disabled).toBe(false));
     expect(uploadPhoto).toHaveBeenCalledWith('front', expect.anything());
-    await tap('Qayta yuborish');
+    await tap(toCyrillic('Qayta yuborish'));
     await waitFor(() => expect(submit).toHaveBeenCalledWith(car));
   });
 
@@ -30,13 +31,15 @@ describe('DriverGate: what the team asked to fix (docs/04, G62 mockup 5)', () =>
     const { submit } = renderGate(
       application({ status: 'changes_requested', car, reasons: ['plate_mismatch'], photos: allPhotos }),
     );
-    expect(await screen.findByText('Mashinangiz')).toBeTruthy();
-    expect(screen.getByRole('alert').textContent).toBe('Davlat raqami rasmdagiga mos emas');
-    expect(screen.getByLabelText('Davlat raqami').closest('label')?.className).toContain('uz-plate-problem');
+    expect(await screen.findByText(toCyrillic('Mashinangiz'))).toBeTruthy();
+    expect(screen.getByRole('alert').textContent).toBe(toCyrillic('Davlat raqami rasmdagiga mos emas'));
+    expect(screen.getByLabelText(toCyrillic('Davlat raqami')).closest('label')?.className).toContain(
+      'uz-plate-problem',
+    );
     fireEvent.change(screen.getByDisplayValue('01 A 123 BC'), { target: { value: '01A124BC' } });
     expect(screen.queryByRole('alert')).toBeNull();
-    await tap('Davom etish');
+    await tap(toCyrillic('Davom etish'));
     await waitFor(() => expect(submit).toHaveBeenCalledWith({ ...car, plate: '01A124BC' }));
-    expect(screen.queryByText('Mashina rasmi')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Mashina rasmi'))).toBeNull();
   });
 });

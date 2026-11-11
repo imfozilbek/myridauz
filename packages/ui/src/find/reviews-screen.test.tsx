@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { UserReviews } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -30,10 +31,10 @@ describe('the reviews of a person', () => {
       <ReviewsScreen userId="d1" reviews={first} onBack={() => undefined} />,
       testClients({ feedback: { reviewsOf } }),
     );
-    expect(await screen.findByText(/^5-oktabr · Zoʻr$/u)).toBeTruthy();
-    await tap('Yana koʻrsatish');
+    expect(await screen.findByText(/^5-октябр · Zoʻr$/u)).toBeTruthy();
+    await tap(toCyrillic('Yana koʻrsatish'));
     expect(await screen.findByText('Yoʻlovchi 3')).toBeTruthy();
     expect(reviewsOf).toHaveBeenCalledWith('d1', AT - 2);
-    expect(screen.queryByText('Yana koʻrsatish')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Yana koʻrsatish'))).toBeNull();
   });
 });

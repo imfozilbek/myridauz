@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { AdminReview } from '@platform/contracts';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -28,14 +29,14 @@ describe('«Sharhlar»', () => {
       more: false,
     }));
     renderManagement({ feedback: { teamReviews, hideReview } });
-    await tap('Sharhlar');
+    await tap(toCyrillic('Sharhlar'));
     expect(await screen.findAllByText('⭐ 1 · Dilnoza → Jasur')).toHaveLength(1);
-    expect(screen.getByText(/Vaqtida$/u)).toBeTruthy();
-    expect(screen.getByText(/Yashirilgan$/u)).toBeTruthy();
+    expect(screen.getByText(/Вақтида$/u)).toBeTruthy();
+    expect(screen.getByText(/Яширилган$/u)).toBeTruthy();
     await tap('⭐ 1 · Dilnoza → Jasur');
-    expect(screen.getByText('Sharh profildan va reytingdan olinadi')).toBeTruthy();
-    await tap('Yashirish');
+    expect(screen.getByText(toCyrillic('Sharh profildan va reytingdan olinadi'))).toBeTruthy();
+    await tap(toCyrillic('Yashirish'));
     await waitFor(() => expect(hideReview).toHaveBeenCalledWith('r1'));
-    expect(await screen.findAllByText(/Yashirilgan$/u)).toHaveLength(2);
+    expect(await screen.findAllByText(/Яширилган$/u)).toHaveLength(2);
   });
 });

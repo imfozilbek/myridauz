@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderInShell } from '../test-shell';
@@ -19,8 +20,8 @@ describe('SubscriptionsLink (G52)', () => {
         <p>ilova</p>
       </SubscriptionsLink>,
     );
-    expect(screen.getByText('Xatolik yuz berdi')).toBeTruthy();
-    fireEvent.click(screen.getByText('Orqaga'));
+    expect(screen.getByText(toCyrillic('Xatolik yuz berdi'))).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Orqaga')));
     expect(screen.getByText('ilova')).toBeTruthy();
     window.history.replaceState(null, '', '/');
   });

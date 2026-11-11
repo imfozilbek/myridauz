@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { arrivalAt } from '@platform/contracts';
@@ -42,9 +43,9 @@ describe('the chat in the 24 hours after the trip (G60, docs/129, mockup g60/7)'
         canWrite: true,
       });
     });
-    expect(await screen.findByText(/· safar tugadi$/u)).toBeTruthy();
-    expect(screen.getByText('Safar tugadi')).toBeTruthy();
-    expect(screen.getByPlaceholderText(/^Xabar · (bugun|ertaga) .* gacha$/u)).toBeTruthy();
+    expect(await screen.findByText(/· сафар тугади$/u)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Safar tugadi'))).toBeTruthy();
+    expect(screen.getByPlaceholderText(/^Хабар · (бугун|эртага) .* гача$/u)).toBeTruthy();
     vi.useRealTimers();
   });
 });

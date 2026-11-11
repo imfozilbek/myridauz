@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { Channel } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -21,7 +22,7 @@ const locations = {
         id: '1710224',
         parentId: null,
         type: 'region' as const,
-        name: 'Kitob',
+        name: toCyrillic('Kitob'),
         lat: 39,
         lng: 66,
         oneCity: false,
@@ -43,8 +44,8 @@ describe('Kanallar of a moderator', () => {
     fireEvent.click(await screen.findByText('Kanal | Kitob'));
     expect(open.mock.calls[0]?.[0]).toBe('https://t.me/ch_kitob');
     open.mockRestore();
-    expect(screen.queryByText('Kanal qoʻshish')).toBeNull();
-    expect(screen.queryByText('Kanalni oʻchirish')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Kanal qoʻshish'))).toBeNull();
+    expect(screen.queryByText(toCyrillic('Kanalni oʻchirish'))).toBeNull();
     expect(channelHealth).not.toHaveBeenCalled();
   });
 });

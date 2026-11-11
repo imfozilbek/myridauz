@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { act, fireEvent, screen } from '@testing-library/react';
 import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -14,7 +15,7 @@ describe('screen states', () => {
   it('shows a friendly error, reports it and lets the person retry', () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
     const { tracked } = renderInShell(<Broken />);
-    expect(screen.getByText('Xatolik yuz berdi')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Xatolik yuz berdi'))).toBeTruthy();
     // What broke and where, sent at once (G52, docs/112).
     expect(tracked).toEqual([
       {
@@ -26,8 +27,8 @@ describe('screen states', () => {
         client: 'browser',
       },
     ]);
-    fireEvent.click(screen.getByText('Qayta urinish'));
-    expect(screen.getByText('Xatolik yuz berdi')).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Qayta urinish')));
+    expect(screen.getByText(toCyrillic('Xatolik yuz berdi'))).toBeTruthy();
   });
 
   it('names the screen that broke and lets a section go back while the rest works (G52)', () => {
@@ -49,7 +50,7 @@ describe('screen states', () => {
     fireEvent.click(screen.getByText('buzish'));
     expect(tracked.at(-1)).toMatchObject({ name: 'client_error', screen: 'home', detail: 'boom' });
     expect(screen.getByText('tirik')).toBeTruthy();
-    fireEvent.click(screen.getByText('Orqaga'));
+    fireEvent.click(screen.getByText(toCyrillic('Orqaga')));
     expect(back).toHaveBeenCalledOnce();
   });
 
@@ -73,7 +74,7 @@ describe('screen states', () => {
   it('keeps "back" while an inner screen loads (docs/65 B1)', () => {
     const onBack = vi.fn();
     renderInShell(<ScreenSkeleton onBack={onBack} />);
-    fireEvent.click(screen.getByText('Orqaga'));
+    fireEvent.click(screen.getByText(toCyrillic('Orqaga')));
     expect(onBack).toHaveBeenCalled();
   });
 });

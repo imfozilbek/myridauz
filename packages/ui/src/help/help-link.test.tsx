@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import { useState } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -25,14 +26,14 @@ describe('«… boʻyicha savollar»', () => {
         <HelpLink topic="wallet" />
       </HomeGoProvider>,
     );
-    fireEvent.click(screen.getByText('Hamyon va komissiya boʻyicha savollar'));
+    fireEvent.click(screen.getByText(toCyrillic('Hamyon va komissiya boʻyicha savollar')));
     expect(go).toHaveBeenCalledWith('help', { help: 'wallet' });
     expect(tracked.at(-1)).toMatchObject({ name: 'help_open', code: 'wallet' });
   });
 
   it('is not drawn where nothing can open «Yordam»', () => {
     renderInShell(<HelpLink topic="wallet" />);
-    expect(screen.queryByText('Hamyon va komissiya boʻyicha savollar')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Hamyon va komissiya boʻyicha savollar'))).toBeNull();
   });
 
   it('the car of the application opens the answers of a driver, «Назад» comes back to the car', async () => {
@@ -55,10 +56,10 @@ describe('«… boʻyicha savollar»', () => {
       true,
     );
     fireEvent.click(await screen.findByText('main screen'));
-    fireEvent.click(await screen.findByText('Mashinam'));
-    fireEvent.click(await screen.findByText('Haydovchi boʻlish boʻyicha savollar'));
-    expect(screen.getByText('Arizam qaytarildi. Nima qilaman?')).toBeTruthy();
+    fireEvent.click(await screen.findByText(toCyrillic('Mashinam')));
+    fireEvent.click(await screen.findByText(toCyrillic('Haydovchi boʻlish boʻyicha savollar')));
+    expect(screen.getByText(toCyrillic('Arizam qaytarildi. Nima qilaman?'))).toBeTruthy();
     act(pressBack);
-    expect(await screen.findByText('Mashinangiz')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Mashinangiz'))).toBeTruthy();
   });
 });

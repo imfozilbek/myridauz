@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError, type FeedbackClient } from '@platform/api-client';
 import type { ReviewTarget } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
@@ -32,7 +33,7 @@ const open = (param: string, feedback: Partial<FeedbackClient>) => {
 describe('ratings and reviews in the Mini App (docs/24)', () => {
   it('shows "Yangi" below 3 ratings and "4,8 (37)" after', () => {
     renderMarket(<RatingBadge rating={{ average: null, count: 2 }} />, testClients({}));
-    expect(screen.getByText('Yangi')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Yangi'))).toBeTruthy();
     cleanup();
     renderMarket(<RatingBadge rating={{ average: 4.8, count: 37 }} />, testClients({}));
     expect(screen.getByText(/4,8/u).textContent?.replace(/\s/gu, ' ')).toBe('4,8 (37)');
@@ -45,15 +46,17 @@ describe('ratings and reviews in the Mini App (docs/24)', () => {
     const select = vi.spyOn(haptic, 'select');
     fireEvent.click(screen.getByRole('button', { name: '4' }));
     // Each tag is a chip: several can be chosen, seen before a tap (docs/88 L9, mockup g60/5).
-    await tap('Vaqtida');
-    expect(screen.getByRole('button', { name: 'Vaqtida' }).getAttribute('aria-pressed')).toBe('true');
+    await tap(toCyrillic('Vaqtida'));
+    expect(screen.getByRole('button', { name: toCyrillic('Vaqtida') }).getAttribute('aria-pressed')).toBe(
+      'true',
+    );
     // Each choice ticks softly, like Telegram's own lists (docs/88 L3).
     expect(select).toHaveBeenCalledTimes(2);
     // The comment opens by «+ Izoh yozish»; a text of several lines shows all of it (docs/88 L2).
-    await tap('+ Izoh yozish');
-    expect(screen.getByPlaceholderText(/qisqacha/u).tagName).toBe('TEXTAREA');
-    fireEvent.change(screen.getByPlaceholderText(/qisqacha/u), { target: { value: 'Yaxshi yoʻl' } });
-    await tap('Yuborish');
+    await tap(toCyrillic('+ Izoh yozish'));
+    expect(screen.getByPlaceholderText(/қисқача/u).tagName).toBe('TEXTAREA');
+    fireEvent.change(screen.getByPlaceholderText(/қисқача/u), { target: { value: 'Yaxshi yoʻl' } });
+    await tap(toCyrillic('Yuborish'));
     await waitFor(() => expect(review).toHaveBeenCalledOnce());
     expect(review).toHaveBeenCalledWith({
       bookingId: 'b1',
@@ -63,20 +66,20 @@ describe('ratings and reviews in the Mini App (docs/24)', () => {
     });
     // No screen after sending (G60): the bot opened it, so the app closes.
     await waitFor(() => expect(tracked.some((event) => event.name === 'review_sent')).toBe(true));
-    expect(screen.queryByText(/Bahongiz saqlandi/u)).toBeNull();
+    expect(screen.queryByText(/Баҳонгиз сақланди/u)).toBeNull();
   });
 
   it('goes from the review to a complaint and explains a second one', async () => {
     const complain = vi.fn<FeedbackClient['complain']>(async () => undefined);
     open('review', { target: async () => TARGET, complain });
-    await tap('Shikoyat');
+    await tap(toCyrillic('Shikoyat'));
     // Several reasons as ticks (owner decision 10.10.2026): a second tap takes one back.
-    await tap('Kelmadi');
-    await tap('Boshqa');
-    await tap('Kelishilgandan koʻp pul soʻradi');
-    await tap('Boshqa');
-    expect(screen.getByPlaceholderText(/Nima boʻlganini/u).tagName).toBe('TEXTAREA');
-    await tap('Yuborish');
+    await tap(toCyrillic('Kelmadi'));
+    await tap(toCyrillic('Boshqa'));
+    await tap(toCyrillic('Kelishilgandan koʻp pul soʻradi'));
+    await tap(toCyrillic('Boshqa'));
+    expect(screen.getByPlaceholderText(/Нима бўлганини/u).tagName).toBe('TEXTAREA');
+    await tap(toCyrillic('Yuborish'));
     await waitFor(() =>
       expect(complain).toHaveBeenCalledWith({
         bookingId: 'b1',
@@ -88,8 +91,8 @@ describe('ratings and reviews in the Mini App (docs/24)', () => {
     expect(await screen.findByText('Asosiy')).toBeTruthy();
     cleanup();
     open('complain', { complain: async () => Promise.reject(new ApiError(409, 'complaints.already')) });
-    await tap('Boshqa');
-    await tap('Yuborish');
-    expect(await screen.findByText(/allaqachon yuborilgan/u)).toBeTruthy();
+    await tap(toCyrillic('Boshqa'));
+    await tap(toCyrillic('Yuborish'));
+    expect(await screen.findByText(/аллақачон юборилган/u)).toBeTruthy();
   });
 });

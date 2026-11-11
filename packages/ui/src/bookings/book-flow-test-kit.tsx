@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { BookingsClient } from '@platform/api-client';
 import { screen } from '@testing-library/react';
 import { vi } from 'vitest';
@@ -14,7 +15,7 @@ import { BookFlow } from './book-flow';
 // Test helper of «Qayerdan, qayerga?» (G59): two seats of the trip, the map of Fargʻona.
 export const FARGONA_WHERE = {
   district: '1730401',
-  name: { step: 'mahalla', name: 'Yangi Margʻilon' },
+  name: { step: 'mahalla', name: toCyrillic('Yangi Margʻilon') },
   area: null,
 } as const;
 const TWO = { seats: 2, wholeCar: false, withWoman: false };

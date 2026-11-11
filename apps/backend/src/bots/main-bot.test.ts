@@ -1,4 +1,5 @@
 import { loadBrand } from '@platform/brands';
+import { toCyrillic } from '@platform/i18n';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { testD1 } from '../test-d1';
 import { botEnv, botSender, fakeTelegram, textMessage } from './test-bot';
@@ -24,8 +25,8 @@ describe('the main bot of the waitlist (G83, docs/181)', () => {
     const answer = await welcome(41, '/start ad-k7f2qx');
     expect(answer.method).toBe('sendPhoto');
     expect(answer.photo).toBe(`https://${brand.domain}/bot/main-welcome.png?v=${brand.welcomes.main}`);
-    expect(answer.caption).toContain('Assalomu alaykum, Ali! 👋');
-    expect(answer.caption).toContain('🔎 Guruhlardan kerakli eʼlonni topish qiyinmi?');
+    expect(answer.caption).toContain(`${toCyrillic('Assalomu alaykum')}, Ali! 👋`);
+    expect(answer.caption).toContain(toCyrillic('🔎 Guruhlardan kerakli eʼlonni topish qiyinmi?'));
     expect(answer.reply_markup.inline_keyboard[0]?.[0]?.web_app?.url).toBe(`https://main.${brand.domain}/`);
     expect(answer.reply_markup.inline_keyboard[1]?.[0]?.url).toBe(`https://t.me/${brand.mainChannel}`);
   });
@@ -51,7 +52,7 @@ describe('the main bot of the waitlist (G83, docs/181)', () => {
       .prepare("INSERT INTO switches (key, value, changed_by, changed_at) VALUES ('waitlist', 0, 7, 1)")
       .run();
     const answer = await welcome(44, '/start');
-    expect(answer.caption).toContain('ochildi');
+    expect(answer.caption).toContain(toCyrillic('ochildi'));
     expect(answer.photo).toBe(
       `https://${brand.domain}/bot/main-open-welcome.png?v=${brand.welcomes['main-open']}`,
     );
@@ -69,7 +70,7 @@ describe('the main bot of the waitlist (G83, docs/181)', () => {
     const other = (await (await send('main', textMessage(45, 'Salom'), 'hook', env)).json()) as {
       text: string;
     };
-    expect(other.text).toContain('xabarlarga javob bermaydi');
+    expect(other.text).toContain(toCyrillic('xabarlarga javob bermaydi'));
     const tap = { callback_query: { id: 'q', from: { id: 45 }, data: 'x' } };
     expect(await (await send('main', tap, 'hook', env)).json()).toEqual({});
   });

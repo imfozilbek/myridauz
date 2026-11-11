@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { ApplicationDetail, MyDecision, TeamMe } from '@platform/contracts';
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -60,30 +61,34 @@ function renderMine(role: TeamMe['role'] = 'moderator') {
 describe('«Mening qarorlarim»', () => {
   it('lists the own decisions with the decision and the plate in one line', async () => {
     renderMine();
-    expect(await screen.findByText('Mening qarorlarim')).toBeTruthy();
-    expect(screen.getByText('Tasdiqlangan · 01 A 123 BC')).toBeTruthy();
-    expect(screen.getByText('Rad etilgan · 30 B 456 CA')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Mening qarorlarim'))).toBeTruthy();
+    expect(screen.getByText(`${toCyrillic('Tasdiqlangan')} · 01 A 123 BC`)).toBeTruthy();
+    expect(screen.getByText(`${toCyrillic('Rad etilgan')} · 30 B 456 CA`)).toBeTruthy();
   });
 
   it('fixes the approved car by its photo: «Saqlash» only after a change', async () => {
     const { fixCar } = renderMine();
     fireEvent.click(await screen.findByText('Farhod'));
-    expect(await screen.findByText('Tasdiqlangan · 1-oktabr')).toBeTruthy();
-    fireEvent.click(screen.getByText('Mashinani tuzatish'));
-    expect(await screen.findByText('Rasmdagi mashinaga qarab tuzating')).toBeTruthy();
-    expect((screen.getByText('Saqlash').closest('button') as HTMLButtonElement).disabled).toBe(true);
-    fireEvent.change(screen.getByLabelText('Davlat raqami'), { target: { value: '01 a 777 bc' } });
-    await act(async () => fireEvent.click(screen.getByText('Saqlash')));
+    expect(await screen.findByText(toCyrillic('Tasdiqlangan · 1-oktabr'))).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Mashinani tuzatish')));
+    expect(await screen.findByText(toCyrillic('Rasmdagi mashinaga qarab tuzating'))).toBeTruthy();
+    expect((screen.getByText(toCyrillic('Saqlash')).closest('button') as HTMLButtonElement).disabled).toBe(
+      true,
+    );
+    fireEvent.change(screen.getByLabelText(toCyrillic('Davlat raqami')), {
+      target: { value: '01 a 777 bc' },
+    });
+    await act(async () => fireEvent.click(screen.getByText(toCyrillic('Saqlash'))));
     expect(fixCar).toHaveBeenCalledWith(FARHOD, { ...COBALT, plate: '01A777BC' });
-    expect(await screen.findByText('Farhod · ariza')).toBeTruthy();
+    expect(await screen.findByText(`Farhod · ${toCyrillic('ariza')}`)).toBeTruthy();
   });
 
   it('sends an approved application back with the ticked reasons', async () => {
     const { decide } = renderMine();
     fireEvent.click(await screen.findByText('Farhod'));
-    fireEvent.click(await screen.findByText('Tuzatishga qaytarish'));
-    fireEvent.click(await screen.findByText('Raqam rasmi aniq emas'));
-    await act(async () => fireEvent.click(screen.getByText('Yuborish')));
+    fireEvent.click(await screen.findByText(toCyrillic('Tuzatishga qaytarish')));
+    fireEvent.click(await screen.findByText(toCyrillic('Raqam rasmi aniq emas')));
+    await act(async () => fireEvent.click(screen.getByText(toCyrillic('Yuborish'))));
     expect(decide).toHaveBeenCalledWith(FARHOD, {
       action: 'request_changes',
       reasons: ['plate_not_readable'],
@@ -94,16 +99,18 @@ describe('«Mening qarorlarim»', () => {
     const { reopen } = renderMine('owner');
     vi.spyOn(window, 'confirm').mockReturnValue(true);
     fireEvent.click(await screen.findByText('Bobur'));
-    expect(await screen.findByText('Raqam rasmi aniq emas')).toBeTruthy();
-    await act(async () => fireEvent.click(await screen.findByText('Rad etishni bekor qilish')));
-    expect(window.confirm).toHaveBeenCalledWith('Rad etishni bekor qilasizmi? Ariza yana navbatga tushadi.');
+    expect(await screen.findByText(toCyrillic('Raqam rasmi aniq emas'))).toBeTruthy();
+    await act(async () => fireEvent.click(await screen.findByText(toCyrillic('Rad etishni bekor qilish'))));
+    expect(window.confirm).toHaveBeenCalledWith(
+      toCyrillic('Rad etishni bekor qilasizmi? Ariza yana navbatga tushadi.'),
+    );
     expect(reopen).toHaveBeenCalledWith(BOBUR);
   });
 
   it('gives a moderator no way to undo a refusal', async () => {
     renderMine('moderator');
     fireEvent.click(await screen.findByText('Bobur'));
-    expect(await screen.findByText('Bobur · ariza')).toBeTruthy();
-    expect(screen.queryByText('Rad etishni bekor qilish')).toBeNull();
+    expect(await screen.findByText(`Bobur · ${toCyrillic('ariza')}`)).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Rad etishni bekor qilish'))).toBeNull();
   });
 });

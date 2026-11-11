@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { fakeTelegram } from '../../bots/test-bot';
 import { testEnv } from '../../test-api';
@@ -29,7 +30,7 @@ describe('«Diqqat» of the owner', () => {
     });
     const card = telegram.sentTo(OWNER)[0];
     expect(card?.body).toMatchObject({ disable_notification: true });
-    expect(String(card?.body.text)).toContain('Diqqat · bugun');
+    expect(String(card?.body.text)).toContain(toCyrillic('Diqqat · bugun'));
     await tellOwners(testEnv, { id: 'errors', text: '🔴 Xatolar', ring: true, sign: ERRORS });
     const ring = telegram.sentTo(OWNER).find((sent) => sent.body.text === '🔴 Xatolar');
     expect(ring?.body.reply_parameters).toMatchObject({ message_id: card?.id });

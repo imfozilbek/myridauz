@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { arrivalAt, BOOKING_LINK, DAY_MS, type ReviewTarget } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -21,7 +22,7 @@ describe('«Baho berish» of a passenger', { timeout: 20_000 }, () => {
     const past = { ...trip, departAt: Date.now() - DAY_MS, firstDepartAt: Date.now() - DAY_MS };
     const done = { ...confirmed, trip: past, status: 'completed' as const };
     renderHome((go) => <PassengerHome go={go} />, PASSENGER_ACTIONS, { bookings: async () => [done] });
-    await tap('Baho berish');
+    await tap(toCyrillic('Baho berish'));
     expect(await screen.findByText(`opened ${BOOKING_LINK}:${done.id} end`)).toBeTruthy();
   });
 
@@ -37,8 +38,8 @@ describe('«Baho berish» of a passenger', { timeout: 20_000 }, () => {
         feedback: { target: async () => TARGET },
       }),
     );
-    expect(await screen.findByText('Safar qanday oʻtdi?')).toBeTruthy();
-    await tap('Orqaga');
+    expect(await screen.findByText(toCyrillic('Safar qanday oʻtdi?'))).toBeTruthy();
+    await tap(toCyrillic('Orqaga'));
     await waitFor(() => expect(onBack).toHaveBeenCalledOnce());
   });
 
@@ -58,7 +59,7 @@ describe('«Baho berish» of a passenger', { timeout: 20_000 }, () => {
       }),
     );
     fireEvent.click(await screen.findByRole('button', { name: '5' }));
-    await tap('Yuborish');
+    await tap(toCyrillic('Yuborish'));
     await waitFor(() => expect(onBack).toHaveBeenCalledOnce());
     expect(moment).not.toHaveBeenCalled();
   });

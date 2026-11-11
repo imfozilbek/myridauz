@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { renderInShell, testClients } from '@platform/ui/testing';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -17,28 +18,28 @@ const owner = (overrides: Parameters<typeof testClients>[0] = {}) =>
 describe('StartPage', () => {
   it('opens the main screen of the team', async () => {
     const { tracked } = renderInShell(<StartPage />, false, true, undefined, owner());
-    expect(await screen.findByText('Hammasi koʻrildi')).toBeTruthy();
-    expect(screen.getByText('Boshqaruv')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Hammasi koʻrildi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Boshqaruv'))).toBeTruthy();
     expect(tracked.map((event) => event.screen)).toEqual(['home']);
   });
 
   it('opens «Boshqaruv» and comes back', async () => {
     const clients = owner({ stats: { get: () => new Promise(() => undefined) } });
     renderInShell(<StartPage />, false, true, undefined, clients);
-    fireEvent.click(await screen.findByText('Boshqaruv'));
-    expect(screen.getByText('Narxlar')).toBeTruthy();
-    fireEvent.click(screen.getByText('Orqaga'));
-    fireEvent.click(await screen.findByText('Boshqaruv'));
-    fireEvent.click(screen.getByText('Statistika'));
+    fireEvent.click(await screen.findByText(toCyrillic('Boshqaruv')));
+    expect(screen.getByText(toCyrillic('Narxlar'))).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Orqaga')));
+    fireEvent.click(await screen.findByText(toCyrillic('Boshqaruv')));
+    fireEvent.click(screen.getByText(toCyrillic('Statistika')));
     // The dashboard of G12 (docs/29): the periods show while the numbers load.
-    expect(await screen.findByText('24 soat')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('24 soat'))).toBeTruthy();
   });
 
   // No bot sends «?application=» (G77, lesson 227): the main screen, the application waits in «Navbat».
   it('opens the main screen for an «?application=» nobody sends', async () => {
     window.history.replaceState(null, '', '/?application=00000000000000000000000000000005');
     renderInShell(<StartPage />, false, true, undefined, owner());
-    expect(await screen.findByText('Hammasi koʻrildi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Hammasi koʻrildi'))).toBeTruthy();
   });
 
   it('opens the dashboard at once from a signal of the admin bot (G12)', async () => {
@@ -46,13 +47,13 @@ describe('StartPage', () => {
     const periods: string[] = [];
     const get = (period: 'day' | 'week') => (periods.push(period), new Promise<never>(() => undefined));
     renderInShell(<StartPage />, false, true, undefined, owner({ stats: { get } }));
-    expect(await screen.findByText('7 kun')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('7 kun'))).toBeTruthy();
     expect(periods).toEqual(['week']);
     expect(window.location.search).toBe('');
     // «Назад» from the dashboard of a bot link: the main screen in one tap (G77).
-    fireEvent.click(screen.getByText('Orqaga'));
-    expect(await screen.findByText('Hammasi koʻrildi')).toBeTruthy();
-    expect(screen.queryByText('Narxlar')).toBeNull();
+    fireEvent.click(screen.getByText(toCyrillic('Orqaga')));
+    expect(await screen.findByText(toCyrillic('Hammasi koʻrildi'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Narxlar'))).toBeNull();
   });
 
   // «Diqqat» of the owner (G77, docs/168 B): the money of drivers opens «Hamyonlar», not the menu.
@@ -75,9 +76,9 @@ describe('StartPage', () => {
         wallet: { all },
       }),
     );
-    fireEvent.click(await screen.findByText('1 haydovchida pul kam'));
-    expect(await screen.findByText('Hamyonlar')).toBeTruthy();
-    expect(screen.queryByText('Narxlar')).toBeNull();
+    fireEvent.click(await screen.findByText(toCyrillic('1 haydovchida pul kam')));
+    expect(await screen.findByText(toCyrillic('Hamyonlar'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Narxlar'))).toBeNull();
   });
 
   // «Profilni ochish» under a support question (Q8 of docs/111, G45): the person in «Odamlar» at once,
@@ -110,8 +111,8 @@ describe('StartPage', () => {
     expect(await screen.findByText('Jasur')).toBeTruthy();
     expect(asked).toEqual([id]);
     expect(window.location.search).toBe('');
-    fireEvent.click(screen.getByText('Orqaga'));
-    expect(await screen.findByText('Hammasi koʻrildi')).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Orqaga')));
+    expect(await screen.findByText(toCyrillic('Hammasi koʻrildi'))).toBeTruthy();
   });
 
   // Who the member is did not load: the error with «Qayta urinish», never an empty screen (G77).
@@ -122,9 +123,9 @@ describe('StartPage', () => {
       return { id: null, firstName: 'Fozil', hasAvatar: false, role: 'owner' as const };
     };
     renderInShell(<StartPage />, false, true, undefined, owner({ moderation: { me } }));
-    expect(await screen.findByText('Xatolik yuz berdi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Xatolik yuz berdi'))).toBeTruthy();
     fail = false;
-    fireEvent.click(screen.getByRole('button', { name: 'Qayta urinish' }));
-    expect(await screen.findByText('Boshqaruv')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: toCyrillic('Qayta urinish') }));
+    expect(await screen.findByText(toCyrillic('Boshqaruv'))).toBeTruthy();
   });
 });

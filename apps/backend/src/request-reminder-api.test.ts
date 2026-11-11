@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { botSender, fakeTelegram } from './bots/test-bot';
 import { approvedDriver, json, read } from './bookings-test-api';
@@ -19,7 +20,7 @@ botSender(telegram.fetch);
 
 const DRIVER = 91;
 const PASSENGER = 92;
-const STILL_WAITS = 'hali javobingizni kutyapti';
+const STILL_WAITS = toCyrillic('hali javobingizni kutyapti');
 
 // The driver did not answer a request: halfway to its deadline the bot asks once more (docs/122).
 describe('a request waits for the driver (G68, docs/122)', () => {
@@ -50,7 +51,7 @@ describe('a request waits for the driver (G68, docs/122)', () => {
     expect(waiting()).toHaveLength(1);
     expect(waiting()[0]?.body.reply_parameters).toMatchObject({ message_id: ask?.id });
     expect(waiting()[0]?.body.text).toMatch(
-      /^⏳ .+ hali javobingizni kutyapti: \d\d:\d\d gacha javob bering$/u,
+      /^⏳ .+ ҳали жавобингизни кутяпти: \d\d:\d\d гача жавоб беринг$/u,
     );
   });
 });

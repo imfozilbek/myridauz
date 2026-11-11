@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import type { Bindings } from '../../env';
 import { testD1 } from '../../test-d1';
@@ -16,7 +17,7 @@ describe('the mark of a link a person shares', () => {
 
   it('puts «Men ham yoʻlga chiqaman» under the card for close people only with the mark', () => {
     expect(cardWords('brand_bot', 'follow-a1b2c3').second).toEqual({
-      text: 'Men ham yoʻlga chiqaman',
+      text: toCyrillic('Men ham yoʻlga chiqaman'),
       url: 'https://t.me/brand_bot?startapp=__follow-a1b2c3',
     });
     expect(cardWords('brand_bot', null)).not.toHaveProperty('second');

@@ -1,4 +1,5 @@
 import { loadBrand } from '@platform/brands';
+import { toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import { setupRoutes } from './setup-routes';
 
@@ -56,7 +57,8 @@ describe('POST /telegram/setup', () => {
       'https://api.telegram.org/botd/setChatMenuButton',
     ]);
     // The owner named the menu button «ilova» (03.10.2026): the setup must not rename it.
-    expect(menus.map((call) => (call.body.menu_button as { text: string }).text)).toEqual(['ilova', 'ilova']);
+    const app = toCyrillic('ilova');
+    expect(menus.map((call) => (call.body.menu_button as { text: string }).text)).toEqual([app, app]);
     const commands = calls.filter((call) => call.url.endsWith('/setMyCommands'));
     expect(commands.map((call) => call.url)).toEqual([
       'https://api.telegram.org/botp/setMyCommands',
@@ -64,7 +66,7 @@ describe('POST /telegram/setup', () => {
     ]);
     expect(commands[0]?.body.commands).toContainEqual({
       command: 'hujjatlar',
-      description: 'Hujjatlar: oferta va maxfiylik',
+      description: toCyrillic('Hujjatlar: oferta va maxfiylik'),
     });
   });
 
@@ -85,10 +87,10 @@ describe('POST /telegram/setup', () => {
     await request;
     const sent = (method: string) => calls.filter((call) => call.url.endsWith(`/${method}`));
     expect(sent('setMyName').map((call) => call.body.name)).toEqual([
-      `${brand.name} | yoʻlovchi`,
-      `${brand.name} | haydovchi`,
-      `${brand.name} | admin`,
-      `${brand.name} | yordam`,
+      `${brand.name} | ${toCyrillic('yoʻlovchi')}`,
+      `${brand.name} | ${toCyrillic('haydovchi')}`,
+      `${brand.name} | ${toCyrillic('admin')}`,
+      `${brand.name} | ${toCyrillic('yordam')}`,
     ]);
     const descriptions = sent('setMyDescription').map((call) => String(call.body.description));
     const shorts = sent('setMyShortDescription').map((call) => String(call.body.short_description));
@@ -97,7 +99,7 @@ describe('POST /telegram/setup', () => {
     expect(shorts.every((text) => text.length > 0 && text.length <= 120)).toBe(true);
     expect(shorts[0]).toContain(brand.slogan);
     expect(descriptions[0]).toContain(brand.name);
-    expect(shorts[3]).toContain('yordam xizmati');
+    expect(shorts[3]).toContain(toCyrillic('yordam xizmati'));
   });
 
   it('uploads the picture of every bot from the landing as its profile photo (G34)', async () => {

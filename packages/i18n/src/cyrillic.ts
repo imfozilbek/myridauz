@@ -28,7 +28,7 @@ const TS = /^ts(?:i[aeiouy]|e)/u;
 const WORD = /[A-Za-zʻʼ]+/gu;
 // A plate as Uzbekistan writes it: «01 A 123 BC», «01 123 ABC».
 const PLATE = String.raw`\b\d{2} (?:[A-Z] \d{3} [A-Z]{2}|\d{3} [A-Z]{3})\b`;
-const MARKS = String.raw`<[^>]*>|&#?\w+;|https?://[^\s<>]+|t\.me/[^\s<>]+|@\w+|(?<!\S)/[a-z_]+|\S+\.uz\b|${PLATE}`;
+const MARKS = String.raw`<[^>]*>|&#?\w+;|https?://[^\s<>]*|t\.me/[^\s<>]*|@\w+|(?<!\S)/[a-z_]+|\S+\.uz\b|${PLATE}`;
 const OWN: Readonly<Record<string, string>> = exceptions;
 
 const escaped = (word: string) => word.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');

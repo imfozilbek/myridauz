@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { MeResponse } from '@platform/contracts';
 import { act, cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -21,6 +22,6 @@ describe('a refusal about the person while the app is open', () => {
     const blocked: MeResponse = { state: 'blocked', until: null };
     client.getMe.mockResolvedValue(blocked);
     await act(async () => askAccountAgain());
-    expect(await screen.findByText('Hisobingiz bloklangan')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Hisobingiz bloklangan'))).toBeTruthy();
   });
 });

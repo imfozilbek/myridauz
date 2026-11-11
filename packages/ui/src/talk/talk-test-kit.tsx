@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { BookingsClient, MarketClient } from '@platform/api-client';
 import type { AppLink, ChatAbout, Offer } from '@platform/contracts';
 import { act, waitFor } from '@testing-library/react';
@@ -27,7 +28,7 @@ export const salonOffer: Offer = {
   seats: 4,
   wholeCar: true,
   price: 90000,
-  pitak: 'Qoʻyliq pitagi',
+  pitak: toCyrillic('Qoʻyliq pitagi'),
 };
 
 type Fakes = {

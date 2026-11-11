@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError } from '@platform/api-client';
 import { DAY_MS, type Booking, type Trip } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
@@ -13,11 +14,11 @@ const picture = vi.hoisted(() => ({ drawStory: vi.fn(async () => new Blob(['x'],
 vi.mock('../comfort/story-picture', () => picture);
 
 const STORY = { imageUrl: 'https://api.test/stories/t1?v=1', bookLink: 'https://t.me/bot?startapp=trip_t1' };
-
-afterEach(() => {
-  cleanup();
-  vi.unstubAllGlobals();
-});
+const ON_ROAD = toCyrillic('Yoʻlga chiqqan safarning vaqti va narxi oʻzgarmaydi.');
+const STORY_ROAD = toCyrillic('Yoʻlga chiqqan safarni hikoyaga joylab boʻlmaydi.');
+const STORY_FULL = toCyrillic('Hikoyaga faqat boʻsh joyi bor safar joylanadi.');
+afterEach(cleanup);
+afterEach(() => vi.unstubAllGlobals());
 
 async function open(shown: Trip, chat: object = {}, bookings: readonly Booking[] = []) {
   const rendered = renderMarket(
@@ -29,7 +30,7 @@ async function open(shown: Trip, chat: object = {}, bookings: readonly Booking[]
     }),
   );
   await openOwnTrip();
-  await screen.findByText('Yaqinlarimga');
+  await screen.findByText(toCyrillic('Yaqinlarimga'));
   return rendered;
 }
 
@@ -42,16 +43,16 @@ describe('«Yaqinlarimga» of the driver (docs/43, G18)', () => {
     }));
     const stopTripSharing = vi.fn(async () => undefined);
     const { tracked } = await open(trip, { shareTrip, stopTripSharing });
-    await tap('Yaqinlarimga');
+    await tap(toCyrillic('Yaqinlarimga'));
     expect(shareTrip).toHaveBeenCalledWith('t1');
-    expect(await screen.findByText('Yaqinlaringizga xabar berildi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Yaqinlaringizga xabar berildi'))).toBeTruthy();
     expect(tracked.map((event) => event.name)).toContain('driver_trip_shared');
-    await tap('Ulashishni toʻxtatish');
+    await tap(toCyrillic('Ulashishni toʻxtatish'));
     expect(stopTripSharing).toHaveBeenCalledWith('t1');
-    expect(await screen.findByText('Ulashish toʻxtatildi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Ulashish toʻxtatildi'))).toBeTruthy();
     shareTrip.mockRejectedValueOnce(new ApiError(409, 'shares.wrong_status'));
-    await tap('Yaqinlarimga');
-    expect(await screen.findByText('Bu safarni endi ulashib boʻlmaydi.')).toBeTruthy();
+    await tap(toCyrillic('Yaqinlarimga'));
+    expect(await screen.findByText(toCyrillic('Bu safarni endi ulashib boʻlmaydi.'))).toBeTruthy();
   });
 });
 
@@ -59,10 +60,10 @@ describe('«Hikoyaga» (docs/88 L19)', () => {
   it('draws the route, sends the picture and opens the story editor of Telegram', async () => {
     const putTripStory = vi.fn(async () => STORY);
     const { tracked } = await open(trip, { putTripStory });
-    await tap('Hikoyaga');
+    await tap(toCyrillic('Hikoyaga'));
     await vi.waitFor(() => expect(story.openStory).toHaveBeenCalled());
     const [texts] = picture.drawStory.mock.calls[0] as unknown as [{ readonly button: string }];
-    expect(texts.button).toBe('Joy band qilish');
+    expect(texts.button).toBe(toCyrillic('Joy band qilish'));
     expect(putTripStory).toHaveBeenCalledWith('t1', expect.any(Blob));
     const [url, caption, link] = story.openStory.mock.calls[0] as [string, string, { url: string }];
     expect(url).toBe(STORY.imageUrl);
@@ -74,57 +75,57 @@ describe('«Hikoyaga» (docs/88 L19)', () => {
 
   it('a trip on the road goes to no story, and says why', async () => {
     await open({ ...trip, departAt: Date.now() - 60 * 1000 });
-    await tap('Hikoyaga');
-    expect(await screen.findByText('Yoʻlga chiqqan safarni hikoyaga joylab boʻlmaydi.')).toBeTruthy();
+    await tap(toCyrillic('Hikoyaga'));
+    expect(await screen.findByText(STORY_ROAD)).toBeTruthy();
     expect(story.openStory).not.toHaveBeenCalled();
   });
 
   it('stays and says why: a full trip, an old Telegram, a failed upload', async () => {
     await open({ ...trip, status: 'full' });
-    await tap('Hikoyaga');
-    expect(await screen.findByText('Hikoyaga faqat boʻsh joyi bor safar joylanadi.')).toBeTruthy();
+    await tap(toCyrillic('Hikoyaga'));
+    expect(await screen.findByText(STORY_FULL)).toBeTruthy();
     cleanup();
     story.canShareStory.mockReturnValueOnce(false);
     await open(trip);
-    await tap('Hikoyaga');
-    expect(await screen.findByText('Hikoyaga joylash uchun Telegramni yangilang.')).toBeTruthy();
+    await tap(toCyrillic('Hikoyaga'));
+    expect(await screen.findByText(toCyrillic('Hikoyaga joylash uchun Telegramni yangilang.'))).toBeTruthy();
     cleanup();
     await open(trip, { putTripStory: async () => Promise.reject(new ApiError(409, 'shares.wrong_status')) });
-    await tap('Hikoyaga');
-    expect(await screen.findByText('Bu safarni endi ulashib boʻlmaydi.')).toBeTruthy();
+    await tap(toCyrillic('Hikoyaga'));
+    expect(await screen.findByText(toCyrillic('Bu safarni endi ulashib boʻlmaydi.'))).toBeTruthy();
   });
 });
 
 describe('«Vaqt yoki narx» and «Yoʻl xaritasi» (mockup g63/3)', () => {
   it('opens the two changes of G39 to choose from', async () => {
     await open(trip);
-    await tap('Vaqt yoki narx');
-    expect(await screen.findByText('Vaqtni surish')).toBeTruthy();
-    await tap('Narxni tushirish');
-    expect(await screen.findByText(/^Faqat pastga\./u)).toBeTruthy();
+    await tap(toCyrillic('Vaqt yoki narx'));
+    expect(await screen.findByText(toCyrillic('Vaqtni surish'))).toBeTruthy();
+    await tap(toCyrillic('Narxni tushirish'));
+    expect(await screen.findByText(/^Фақат пастга\./u)).toBeTruthy();
   });
 
   it('a trip on the road keeps its time and price, and says so', async () => {
     await open({ ...trip, departAt: Date.now() - 60 * 1000 });
-    await tap('Vaqt yoki narx');
-    expect(await screen.findByText('Yoʻlga chiqqan safarning vaqti va narxi oʻzgarmaydi.')).toBeTruthy();
+    await tap(toCyrillic('Vaqt yoki narx'));
+    expect(await screen.findByText(ON_ROAD)).toBeTruthy();
   });
 
   it('a trip that left early keeps its time and price too (G63 B1)', async () => {
     const left = { ...trip, departedAt: Date.now() - 60 * 1000 };
     await open(left);
-    await tap('Vaqt yoki narx');
-    expect(await screen.findByText('Yoʻlga chiqqan safarning vaqti va narxi oʻzgarmaydi.')).toBeTruthy();
+    await tap(toCyrillic('Vaqt yoki narx'));
+    expect(await screen.findByText(ON_ROAD)).toBeTruthy();
   });
 
   it('the map waits for a confirmed passenger, then opens', async () => {
     await open(trip);
-    await tap('Yoʻl xaritasi');
-    expect(await screen.findByText('Hali tasdiqlangan yoʻlovchi yoʻq.')).toBeTruthy();
+    await tap(toCyrillic('Yoʻl xaritasi'));
+    expect(await screen.findByText(toCyrillic('Hali tasdiqlangan yoʻlovchi yoʻq.'))).toBeTruthy();
     cleanup();
     await open(trip, {}, [confirmed]);
-    await tap('Yoʻl xaritasi');
-    expect(await screen.findByText(/ · \d+ yoʻlovchi$/u)).toBeTruthy();
+    await tap(toCyrillic('Yoʻl xaritasi'));
+    expect(await screen.findByText(/ · \d+ йўловчи$/u)).toBeTruthy();
   });
 });
 
@@ -134,16 +135,16 @@ describe('an over trip keeps its four tiles, each says how the trip ended (docs/
   it('a cancelled trip', async () => {
     await open({ ...trip, status: 'cancelled' }, {}, [confirmed]);
     for (const tile of ['Yaqinlarimga', 'Hikoyaga', 'Vaqt yoki narx', 'Yoʻl xaritasi']) {
-      await tap(tile);
-      expect(note()).toBe('Safar bekor qilindi');
+      await tap(toCyrillic(tile));
+      expect(note()).toBe(toCyrillic('Safar bekor qilindi'));
     }
   });
 
   it('a trip whose time ended before the list is fresh (an arrived one is the past trip)', async () => {
     await open({ ...trip, departAt: Date.now() - DAY_MS }, {}, [{ ...confirmed, status: 'completed' }]);
     for (const tile of ['Yoʻl xaritasi', 'Vaqt yoki narx']) {
-      await tap(tile);
-      expect(note()).toBe('Safar tugadi');
+      await tap(toCyrillic(tile));
+      expect(note()).toBe(toCyrillic('Safar tugadi'));
     }
   });
 });

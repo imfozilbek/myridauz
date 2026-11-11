@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderProfile, standing } from './profile-test-kit';
@@ -28,18 +29,20 @@ const open = (notes: object, rating = standing.rating) => {
 describe('the notes of «Profil»', () => {
   it('shows the warning with its day and the search hiding', async () => {
     open({ hidden: true, warnedAt: WARNED });
-    expect(await screen.findByText('Ogohlantirish · 8-okt')).toBeTruthy();
-    expect(screen.getByText('Hozir qidiruvda koʻrinmaysiz: shikoyatlar tekshirilmoqda.')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Ogohlantirish · 8-okt'))).toBeTruthy();
+    expect(
+      screen.getByText(toCyrillic('Hozir qidiruvda koʻrinmaysiz: shikoyatlar tekshirilmoqda.')),
+    ).toBeTruthy();
   });
 
   it('says a low rating once there are enough of them', async () => {
     open({}, { average: 3.2, count: 12 });
-    expect(await screen.findByText(/^Reytingingiz 3,2/u)).toBeTruthy();
+    expect(await screen.findByText(/^Рейтингингиз 3,2/u)).toBeTruthy();
   });
 
   it('says nothing while all is well', async () => {
     open({});
-    expect(await screen.findByText('8 baho')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('8 baho'))).toBeTruthy();
     expect(document.querySelector('.profile-notes')).toBeNull();
   });
 });

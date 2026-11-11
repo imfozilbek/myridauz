@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ADMIN_JOURNAL_PATH, adminTripCancelPath, journalSchema } from '@platform/contracts';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { approvedDriver, json, OWNER, read } from './bookings-test-api';
@@ -56,8 +57,12 @@ describe('the team cancels a trip', () => {
       call('/passenger/bookings', PASSENGER),
     );
     expect(mine.bookings.find((item) => item.id === booking.id)?.status).toBe('cancelled_by_driver');
-    expect(sent.some((m) => m.chat === PASSENGER && m.text.includes('Safarni jamoa bekor qildi'))).toBe(true);
-    expect(sent.some((m) => m.chat === DRIVER && m.text.includes('Sabab: Xavfli haydovchi'))).toBe(true);
+    expect(
+      sent.some((m) => m.chat === PASSENGER && m.text.includes(toCyrillic('Safarni jamoa bekor qildi'))),
+    ).toBe(true);
+    expect(
+      sent.some((m) => m.chat === DRIVER && m.text.includes(`${toCyrillic('Sabab')}: Xavfli haydovchi`)),
+    ).toBe(true);
     expect((await read<{ status: string }>(call(`/trips/${published.id}`, PASSENGER))).status).toBe(
       'cancelled',
     );

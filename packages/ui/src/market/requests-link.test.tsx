@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { MarketClient } from '@platform/api-client';
 import type { RequestBoard } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
@@ -57,8 +58,8 @@ describe('a new request on a followed route (docs/83 N08, G64)', { timeout: 20_0
       seen: '1',
     });
     // The board is drawn first: «Orqaga» of the loading screen goes away with it, a tap there is lost.
-    await screen.findByText('Bu kunga soʻrov yoʻq');
-    await tap('Orqaga');
+    await screen.findByText(toCyrillic('Bu kunga soʻrov yoʻq'));
+    await tap(toCyrillic('Orqaga'));
     expect(await screen.findByText('Asosiy')).toBeTruthy();
   });
 

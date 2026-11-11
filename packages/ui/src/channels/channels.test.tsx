@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError } from '@platform/api-client';
 import { loadBrand } from '@platform/brands';
 import type { Channel, Location } from '@platform/contracts';
@@ -21,10 +22,12 @@ const place = (id: string, parentId: string | null, name: string, lat: number, l
   lng,
   oneCity: false,
 });
-const REGION = place('1710', null, 'Qashqadaryo viloyati', 38.8, 66);
-const KITOB = place('1710224', '1710', 'Kitob', 39.12, 66.88);
-const SHAHRISABZ = place('1710245', '1710', 'Shahrisabz', 39.06, 66.83);
-const QARSHI = place('1710401', '1710', 'Qarshi', 38.86, 65.79);
+const REGION = place('1710', null, toCyrillic('Qashqadaryo viloyati'), 38.8, 66);
+const KITOB = place('1710224', '1710', toCyrillic('Kitob'), 39.12, 66.88);
+const SHAHRISABZ = place('1710245', '1710', toCyrillic('Shahrisabz'), 39.06, 66.83);
+const QARSHI = place('1710401', '1710', toCyrillic('Qarshi'), 38.86, 65.79);
+// A channel the bot may not post in, as the list says it (G75).
+const STUCK = `@ch_kitob · ${toCyrillic('Bot yoza olmaydi')}`;
 const LOCATIONS = [REGION, KITOB, SHAHRISABZ, QARSHI];
 // A main channel of the brand is private: no public name, only its invite link; the row says its
 // name copied from Telegram (owner 13.10.2026, docs/176).
@@ -77,11 +80,11 @@ describe('Kanallar: the channels of the team (docs/63)', () => {
   // a channel in trouble says it in red.
   it('lists each channel in a row and says in red when the bot may not post', async () => {
     setup([fixed, kitob]);
-    await tap('Kanallar');
-    expect(await screen.findByText('@ch_kitob · Bot yoza olmaydi')).toBeTruthy();
-    expect(screen.getByText('@ch_kitob · Bot yoza olmaydi').className).toContain('manage-danger');
+    await tap(toCyrillic('Kanallar'));
+    expect(await screen.findByText(STUCK)).toBeTruthy();
+    expect(screen.getByText(STUCK).className).toContain('manage-danger');
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
-    await tap('Boʻka | Bekobod');
+    await tap(toCyrillic('Boʻka | Bekobod'));
     expect(open.mock.calls[0]?.[0]).toBe(fixed.link);
     open.mockRestore();
   });
@@ -94,17 +97,15 @@ describe('Kanallar: the channels of the team (docs/63)', () => {
 
   it('adds a district channel with its close districts', async () => {
     const channels = setup([fixed]);
-    await tap('Kanallar');
-    expect(await screen.findByText('Asosiy kanal')).toBeTruthy();
+    await tap(toCyrillic('Kanallar'));
+    expect(await screen.findByText(toCyrillic('Asosiy kanal'))).toBeTruthy();
     // "No channels yet" is never shown above a filled list (docs/86 V14).
-    expect(screen.queryByText('Hozircha tuman kanallari yoʻq.')).toBeNull();
-    await tap('Kanal qoʻshish');
+    expect(screen.queryByText(toCyrillic('Hozircha tuman kanallari yoʻq.'))).toBeNull();
+    await tap(toCyrillic('Kanal qoʻshish'));
     fireEvent.change(field(0), { target: { value: '@ch_kitob' } });
     fireEvent.change(field(1), { target: { value: 'Kanal | Kitob' } });
-    await tap('Qashqadaryo viloyati');
-    await tap('Kitob');
-    await tap('Yaqin tumanlarni qoʻshish');
-    await tap('Saqlash');
+    for (const step of ['Qashqadaryo viloyati', 'Kitob', 'Yaqin tumanlarni qoʻshish', 'Saqlash'])
+      await tap(toCyrillic(step));
     expect(channels.save).toHaveBeenCalledWith('ch_kitob', {
       title: 'Kanal | Kitob',
       places: ['1710224', '1710245'],
@@ -113,9 +114,9 @@ describe('Kanallar: the channels of the team (docs/63)', () => {
 
   it('says there are no channels only when the list is empty', async () => {
     setup([]);
-    await tap('Kanallar');
-    expect(await screen.findByText('Hozircha tuman kanallari yoʻq.')).toBeTruthy();
-    expect(screen.getByText('Kanal qoʻshish')).toBeTruthy();
+    await tap(toCyrillic('Kanallar'));
+    expect(await screen.findByText(toCyrillic('Hozircha tuman kanallari yoʻq.'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Kanal qoʻshish'))).toBeTruthy();
   });
 
   it('says when the bot is not an admin of the channel', async () => {
@@ -123,28 +124,26 @@ describe('Kanallar: the channels of the team (docs/63)', () => {
       [fixed],
       vi.fn(async () => Promise.reject(new ApiError(422, 'channels.bot_not_admin'))),
     );
-    await tap('Kanallar');
-    await tap('Kanal qoʻshish');
+    await tap(toCyrillic('Kanallar'));
+    await tap(toCyrillic('Kanal qoʻshish'));
     fireEvent.change(field(0), { target: { value: 'ch_kitob' } });
     fireEvent.change(field(1), { target: { value: 'Kanal | Kitob' } });
-    await tap('Qashqadaryo viloyati');
-    await tap('Kitob');
-    await tap('Saqlash');
-    expect(await screen.findByText(/Bot bu kanalda administrator emas/u)).toBeTruthy();
+    for (const step of ['Qashqadaryo viloyati', 'Kitob', 'Saqlash']) await tap(toCyrillic(step));
+    expect(await screen.findByText(/Бот бу каналда администратор эмас/u)).toBeTruthy();
   });
 
   it('changes the places of a channel and removes it', async () => {
     const channels = setup([fixed, kitob]);
-    await tap('Kanallar');
+    await tap(toCyrillic('Kanallar'));
     await tap('Kanal | Kitob');
-    await tap('Kitob');
-    await tap('Qashqadaryo viloyati');
-    await tap('Qarshi');
-    await tap('Saqlash');
+    await tap(toCyrillic('Kitob'));
+    await tap(toCyrillic('Qashqadaryo viloyati'));
+    await tap(toCyrillic('Qarshi'));
+    await tap(toCyrillic('Saqlash'));
     expect(channels.save).toHaveBeenCalledWith('ch_kitob', { title: 'Kanal | Kitob', places: ['1710401'] });
     // Back on the list after the save: the channel opens again.
-    await tap('@ch_kitob · Bot yoza olmaydi');
-    await tap('Kanalni oʻchirish');
+    await tap(STUCK);
+    await tap(toCyrillic('Kanalni oʻchirish'));
     expect(channels.remove).toHaveBeenCalledWith('ch_kitob');
   });
 });

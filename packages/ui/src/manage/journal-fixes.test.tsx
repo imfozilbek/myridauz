@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { Journal, JournalKind } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -38,11 +39,13 @@ describe('the fixes of the team in «Jurnal»', () => {
     }));
     const get = vi.fn(async () => FARHOD);
     renderManagement({ team: { journal }, moderation: { get, photo: async () => new Blob(['x']) } });
-    await tap('Jurnal');
-    expect(await screen.findByText('Mashina tuzatildi · 01 A 123 BC → 01 A 777 BC')).toBeTruthy();
-    expect(screen.getByText('Rad etish bekor qilindi')).toBeTruthy();
-    await tap('Rad etish bekor qilindi');
-    expect(await screen.findByText('Farhod · ariza')).toBeTruthy();
+    await tap(toCyrillic('Jurnal'));
+    expect(
+      await screen.findByText(`${toCyrillic('Mashina tuzatildi')} · 01 A 123 BC → 01 A 777 BC`),
+    ).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Rad etish bekor qilindi'))).toBeTruthy();
+    await tap(toCyrillic('Rad etish bekor qilindi'));
+    expect(await screen.findByText(`Farhod · ${toCyrillic('ariza')}`)).toBeTruthy();
     expect(get).toHaveBeenCalledWith(PERSON);
   });
 
@@ -51,10 +54,10 @@ describe('the fixes of the team in «Jurnal»', () => {
     const get = vi.fn(async () => FARHOD);
     const blocks = async () => ({ active: null, entries: [] });
     renderManagement({ moderation: { get, blocks, photo: async () => new Blob(['x']) } });
-    await tap('Odamlar');
-    fireEvent.change(screen.getByLabelText('ID raqami'), { target: { value: PERSON } });
-    await tap('Ochish');
+    await tap(toCyrillic('Odamlar'));
+    fireEvent.change(screen.getByLabelText(toCyrillic('ID raqami')), { target: { value: PERSON } });
+    await tap(toCyrillic('Ochish'));
     await tap('Chevrolet Cobalt');
-    expect(await screen.findByText('Farhod · ariza')).toBeTruthy();
+    expect(await screen.findByText(`Farhod · ${toCyrillic('ariza')}`)).toBeTruthy();
   });
 });

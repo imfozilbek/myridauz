@@ -1,10 +1,11 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { chooseRoute, recommendation, tap } from './market-test-kit';
 import { openNewTrip, seatsLess } from './new-trip-test-kit';
 
 const COMMENT = 'Yukxona boʻsh';
-const RESTORED = 'Oldingi yozganingiz tiklandi.';
+const RESTORED = toCyrillic('Oldingi yozganingiz tiklandi.');
 
 afterEach(cleanup);
 beforeEach(() => localStorage.clear());
@@ -12,10 +13,10 @@ beforeEach(() => localStorage.clear());
 // Route, the one screen with 3 seats, then the comment on its own screen.
 async function toComment() {
   await chooseRoute();
-  await screen.findByText('Mashinada 4 joy');
+  await screen.findByText(toCyrillic('Mashinada 4 joy'));
   seatsLess();
-  await tap('Izoh (ixtiyoriy)');
-  return screen.findByPlaceholderText('Izoh yozing');
+  await tap(toCyrillic('Izoh (ixtiyoriy)'));
+  return screen.findByPlaceholderText(toCyrillic('Izoh yozing'));
 }
 
 describe('NewTripFlow keeps its answers (docs/94 F3, F8, B3)', { timeout: 20_000 }, () => {
@@ -25,12 +26,12 @@ describe('NewTripFlow keeps its answers (docs/94 F3, F8, B3)', { timeout: 20_000
     // «Izoh» is a sheet (G75, mockup g75/3 A): closed, the trip shows what was typed.
     fireEvent.keyDown(document.activeElement ?? document.body, { key: 'Escape' });
     expect(await screen.findByText(COMMENT)).toBeTruthy();
-    expect(screen.getByText('Siz bilan ketayotgan odam ayolmi?')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Siz bilan ketayotgan odam ayolmi?'))).toBeTruthy();
     // The route was chosen here: «Назад» goes back to it with both ends, then on to the same trip.
-    await tap('Orqaga');
-    expect(await screen.findByText('Chilonzor')).toBeTruthy();
-    expect(screen.getByText('Fargʻona shahri')).toBeTruthy();
-    await tap('Davom etish');
+    await tap(toCyrillic('Orqaga'));
+    expect(await screen.findByText(toCyrillic('Chilonzor'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Fargʻona shahri'))).toBeTruthy();
+    await tap(toCyrillic('Davom etish'));
     expect(await screen.findByText(COMMENT)).toBeTruthy();
   });
 
@@ -39,15 +40,15 @@ describe('NewTripFlow keeps its answers (docs/94 F3, F8, B3)', { timeout: 20_000
     fireEvent.change(await toComment(), { target: { value: COMMENT } });
     cleanup();
     const { publishTrip } = openNewTrip();
-    const comment = (await screen.findByPlaceholderText('Izoh yozing')) as HTMLTextAreaElement;
+    const comment = (await screen.findByPlaceholderText(toCyrillic('Izoh yozing'))) as HTMLTextAreaElement;
     expect(comment.value).toBe(COMMENT);
     expect(screen.getByText(RESTORED)).toBeTruthy();
-    await tap('Davom etish');
-    await tap('Eʼlon qilish');
+    await tap(toCyrillic('Davom etish'));
+    await tap(toCyrillic('Eʼlon qilish'));
     expect(publishTrip).toHaveBeenCalledWith(expect.objectContaining({ comment: COMMENT, seats: 3 }));
     cleanup();
     openNewTrip();
-    expect(await screen.findByText('Qayerdan yoʻlga chiqasiz?')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Qayerdan yoʻlga chiqasiz?'))).toBeTruthy();
     expect(screen.queryByText(RESTORED)).toBeNull();
   });
 
@@ -59,7 +60,7 @@ describe('NewTripFlow keeps its answers (docs/94 F3, F8, B3)', { timeout: 20_000
     });
     await chooseRoute();
     expect(document.querySelector('[aria-busy="true"]')).not.toBeNull();
-    await tap('Orqaga');
-    expect(await screen.findByText('Chilonzor')).toBeTruthy();
+    await tap(toCyrillic('Orqaga'));
+    expect(await screen.findByText(toCyrillic('Chilonzor'))).toBeTruthy();
   });
 });

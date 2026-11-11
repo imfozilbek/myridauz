@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { MINUTE_MS, type Booking } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -27,24 +28,24 @@ describe('the page of a seat the driver marked «Kelmadi»', () => {
     vi.setSystemTime(departAt - MINUTE_MS);
     open();
     // Not a live seat any more: it is with the past ones, under its mark.
-    await tap('Oʻtgan');
+    await tap(toCyrillic('Oʻtgan'));
     await tap(/^Jasur/u);
-    expect(screen.getAllByText('Kelmadi deb belgilandi').length).toBeGreaterThan(0);
-    expect(screen.getByText('Xato boʻlsa, yordamga yozing')).toBeTruthy();
+    expect(screen.getAllByText(toCyrillic('Kelmadi deb belgilandi')).length).toBeGreaterThan(0);
+    expect(screen.getByText(toCyrillic('Xato boʻlsa, yordamga yozing'))).toBeTruthy();
     for (const gone of ['Joy tasdiqlandi', 'Men keldim', 'Yaqinlarimga', 'Joyni bekor qilish'])
       expect(screen.queryByText(gone)).toBeNull();
-    expect(screen.getByText('Xabar yozish')).toBeTruthy();
-    expect(screen.getByText('Yordam')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Xabar yozish'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Yordam'))).toBeTruthy();
   });
 
   it('has no stars after the trip: the ride was not hers', async () => {
     vi.setSystemTime(departAt + 6 * 60 * MINUTE_MS);
     open({ ...missed, status: 'completed' });
-    await tap('Oʻtgan');
+    await tap(toCyrillic('Oʻtgan'));
     await tap(/^Jasur/u);
-    expect(screen.getByText('Kelmadi deb belgilandi')).toBeTruthy();
-    expect(screen.queryByText('Baho berish')).toBeNull();
-    expect(screen.queryByText('Yana Jasur bilan')).toBeNull();
+    expect(screen.getByText(toCyrillic('Kelmadi deb belgilandi'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Baho berish'))).toBeNull();
+    expect(screen.queryByText(`${toCyrillic('Yana')} Jasur ${toCyrillic('bilan')}`)).toBeNull();
   });
 });
 
@@ -59,11 +60,11 @@ describe('the page of a seat right after the arrival', () => {
       { ...confirmed, boardedAt: departAt, trip: { ...confirmed.trip, departedAt: departAt, arrivedAt } },
     ]) {
       open(seat);
-      await tap('Oʻtgan');
+      await tap(toCyrillic('Oʻtgan'));
       await tap(/^Jasur/u);
-      expect(screen.getByText('Safar tugadi')).toBeTruthy();
-      expect(screen.getByText('Baho berish')).toBeTruthy();
-      expect(screen.queryByText('Yaqinlarimga')).toBeNull();
+      expect(screen.getByText(toCyrillic('Safar tugadi'))).toBeTruthy();
+      expect(screen.getByText(toCyrillic('Baho berish'))).toBeTruthy();
+      expect(screen.queryByText(toCyrillic('Yaqinlarimga'))).toBeNull();
       cleanup();
     }
   });

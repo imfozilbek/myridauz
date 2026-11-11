@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { MarketClient } from '@platform/api-client';
 import type { RideRequest } from '@platform/contracts';
 import { cleanup, screen, waitFor } from '@testing-library/react';
@@ -32,18 +33,18 @@ const open = (
 describe('«Mening safarlarim» of a passenger', { timeout: 15_000 }, () => {
   it('counts the seat and both requests, the old one with «Qayta yuborish»', async () => {
     const recommend = open([request, { ...request, id: 'r2', status: 'expired' }]);
-    expect(await screen.findByText('Faol (3)')).toBeTruthy();
-    expect(screen.getByText('Joy tasdiqlandi')).toBeTruthy();
-    expect(screen.getByText('Muddati oʻtdi')).toBeTruthy();
-    expect(screen.getAllByText('2 kishi')).toHaveLength(2);
-    await tap('Qayta yuborish');
+    expect(await screen.findByText(toCyrillic('Faol (3)'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Joy tasdiqlandi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Muddati oʻtdi'))).toBeTruthy();
+    expect(screen.getAllByText(toCyrillic('2 kishi'))).toHaveLength(2);
+    await tap(toCyrillic('Qayta yuborish'));
     // The same way again: the request opens with its route and asks the day, never «today» by
     // itself (G77, docs/170 О2); «Назад» from the points comes back to the day.
     expect(recommend).toHaveBeenCalledWith(request.from, request.to);
     await pickDay(1);
-    await waitFor(() => expect(screen.queryByText('Qaysi kuni?')).toBeNull());
-    await tap('Orqaga');
-    expect(await screen.findByText('Qaysi kuni?')).toBeTruthy();
+    await waitFor(() => expect(screen.queryByText(toCyrillic('Qaysi kuni?'))).toBeNull());
+    await tap(toCyrillic('Orqaga'));
+    expect(await screen.findByText(toCyrillic('Qaysi kuni?'))).toBeTruthy();
   });
 
   // G79 П11 (docs/170): «Qayta yuborish» keeps the people, the price, «Boʻsh salon» and «ayol» of
@@ -54,12 +55,12 @@ describe('«Mening safarlarim» of a passenger', { timeout: 15_000 }, () => {
       [{ ...old, wholeCar: true, withWoman: true }],
       vi.fn(async () => recommendation),
     );
-    await tap('Qayta yuborish');
+    await tap(toCyrillic('Qayta yuborish'));
     await pickDay(1);
-    expect(await screen.findByText(/^3 joy × 110[\s.]000$/u)).toBeTruthy();
+    expect(await screen.findByText(/^3 жой × 110[\s.]000$/u)).toBeTruthy();
     const checked = (name: string) => (screen.getByRole('checkbox', { name }) as HTMLInputElement).checked;
-    expect(checked('Boʻsh salon kerak')).toBe(true);
-    expect(checked('Men bilan ayol bor')).toBe(true);
+    expect(checked(toCyrillic('Boʻsh salon kerak'))).toBe(true);
+    expect(checked(toCyrillic('Men bilan ayol bor'))).toBe(true);
   });
 
   it('says there is nothing live and offers «Safar topish»', async () => {
@@ -70,16 +71,16 @@ describe('«Mening safarlarim» of a passenger', { timeout: 15_000 }, () => {
         bookings: { myBookings: async () => [], myOffers: async () => [] },
       }),
     );
-    expect(await screen.findByText('Faol safar yoʻq')).toBeTruthy();
-    expect(screen.getByText('Safar toping yoki soʻrov qoldiring.')).toBeTruthy();
-    await tap('Safar topish');
-    expect(await screen.findByText('Qayerdan yoʻlga chiqasiz?')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Faol safar yoʻq'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Safar toping yoki soʻrov qoldiring.'))).toBeTruthy();
+    await tap(toCyrillic('Safar topish'));
+    expect(await screen.findByText(toCyrillic('Qayerdan yoʻlga chiqasiz?'))).toBeTruthy();
   });
 
   it('«Oʻtgan» without past trips says so, the routes and the drivers stay under it', async () => {
     open([request]);
-    await tap('Oʻtgan');
-    expect(screen.getByText('Oʻtgan safar yoʻq')).toBeTruthy();
-    expect(screen.getByText('Obunalar')).toBeTruthy();
+    await tap(toCyrillic('Oʻtgan'));
+    expect(screen.getByText(toCyrillic('Oʻtgan safar yoʻq'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Obunalar'))).toBeTruthy();
   });
 });

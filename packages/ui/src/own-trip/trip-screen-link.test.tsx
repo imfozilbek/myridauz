@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { MY_TRIP_LINK, type Trip } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -27,12 +28,12 @@ function open(shown: Trip, tripScreen: TripScreen) {
 describe('a trip opened from the block of a driver', { timeout: 20_000 }, () => {
   it('on «Safar tugadi» with its stars after «Yetib keldik» or «Baho berish»', async () => {
     open({ ...trip, departedAt: trip.departAt, arrivedAt: Date.now() }, 'end');
-    expect(await screen.findByText('Safar tugadi')).toBeTruthy();
-    expect(screen.getByText('Yoʻlovchilarni baholang')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Safar tugadi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Yoʻlovchilarni baholang'))).toBeTruthy();
   });
 
   it('on the map of the way after «Yoʻl xaritasi»', async () => {
     open(trip, 'map');
-    expect(await screen.findByText(/ · \d+ yoʻlovchi$/u)).toBeTruthy();
+    expect(await screen.findByText(/ · \d+ йўловчи$/u)).toBeTruthy();
   });
 });

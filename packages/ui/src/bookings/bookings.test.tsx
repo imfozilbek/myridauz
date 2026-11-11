@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError, type BookingsClient } from '@platform/api-client';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -21,21 +22,21 @@ describe('a passenger in "Mening safarlarim" (docs/35)', () => {
       }),
     );
     // A card of its own, as on the mockup g75/2 A (G75).
-    expect(await screen.findByText('Joy tasdiqlandi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Joy tasdiqlandi'))).toBeTruthy();
     await tap('Jasur');
     expect(screen.getByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
     // The plate of the page says the seat is confirmed (G60, mockup g60/1).
-    expect(screen.getByText('Joy tasdiqlandi')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Joy tasdiqlandi'))).toBeTruthy();
     // «The places do not change» was said before the booking, not again (G40, docs/106 C9).
-    expect(screen.queryByText(/^Bron qilingach/)).toBeNull();
+    expect(screen.queryByText(/^Брон қилингач/)).toBeNull();
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
     // The points fixed at the booking open in a map (docs/70).
-    await tap('Chilonzor bozori yaqinida');
+    await tap(toCyrillic('Chilonzor bozori yaqinida'));
     expect(open.mock.calls[0]?.[0]).toContain('41.2856');
     // The passenger never sees the driver's commission.
-    expect(screen.queryByText('Komissiya')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Komissiya'))).toBeNull();
     vi.stubGlobal('confirm', () => true);
-    await tap('Joyni bekor qilish');
+    await tap(toCyrillic('Joyni bekor qilish'));
     vi.unstubAllGlobals();
     expect(cancelMine).toHaveBeenCalledWith('b1');
     await vi.waitFor(() =>
@@ -52,7 +53,7 @@ describe('a passenger in "Mening safarlarim" (docs/35)', () => {
       }),
     );
     await tap('Jasur');
-    expect(await screen.findByText(/gacha javob beradi/u)).toBeTruthy();
+    expect(await screen.findByText(/гача жавоб беради/u)).toBeTruthy();
   });
 });
 
@@ -70,18 +71,18 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
   it('confirms on the booking at once: the commission is on the screen, no window (docs/122)', async () => {
     const answer = vi.fn<BookingsClient['answer']>(async () => confirmed);
     renderMarket(<MyTripsScreen onBack={() => undefined} />, driverClients(answer));
-    expect(await screen.findByText('Yuborilgan takliflar')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Yuborilgan takliflar'))).toBeTruthy();
     await openOwnTrip();
     await tap('Dilnoza');
     // The request opens in a sheet over the trip (G75, mockup g75/4 B); never the contacts.
     expect(screen.queryByText(/\+998/)).toBeNull();
-    expect(screen.getByText('Komissiya')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Komissiya'))).toBeTruthy();
     expect(screen.getAllByText(/19\s000/u).length).toBeGreaterThan(0);
-    inSheet('Tasdiqlash');
+    inSheet(toCyrillic('Tasdiqlash'));
     await vi.waitFor(() => expect(answer).toHaveBeenCalledWith('b1', 'confirm'));
     // Back on «Mening safarim»: no «Joy tasdiqlandi» screen in between (owner decision 06.10.2026).
-    expect(await screen.findByText('Safar eʼlon qilindi')).toBeTruthy();
-    expect(screen.queryByText('Joy tasdiqlandi')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Safar eʼlon qilindi'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Joy tasdiqlandi'))).toBeNull();
     await sheetClosed();
   });
 
@@ -93,9 +94,11 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
     renderMarket(<MyTripsScreen onBack={() => undefined} />, driverClients(answer));
     await openOwnTrip();
     await tap('Dilnoza');
-    inSheet('Tasdiqlash');
-    expect(await screen.findByText('Hamyonda komissiya uchun mablagʻ yetarli emas.')).toBeTruthy();
-    expect(screen.getByText('Yangi soʻrov')).toBeTruthy();
+    inSheet(toCyrillic('Tasdiqlash'));
+    expect(
+      await screen.findByText(toCyrillic('Hamyonda komissiya uchun mablagʻ yetarli emas.')),
+    ).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Yangi soʻrov'))).toBeTruthy();
     await closeSheet();
   });
 
@@ -104,9 +107,9 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
     renderMarket(<MyTripsScreen onBack={() => undefined} />, driverClients(answer));
     await openOwnTrip();
     await tap('Dilnoza');
-    inSheet('Rad etish');
+    inSheet(toCyrillic('Rad etish'));
     await vi.waitFor(() => expect(answer).toHaveBeenCalledWith('b1', 'decline'));
-    expect(await screen.findByText('Safar eʼlon qilindi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Safar eʼlon qilindi'))).toBeTruthy();
     await sheetClosed();
   });
 });

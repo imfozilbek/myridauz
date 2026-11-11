@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { Trip } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -47,9 +48,9 @@ async function openTrip() {
 
 // The past trip and not «Mening safarim»: «Safardan keyin», no main button of the way.
 async function pastShown() {
-  expect(await screen.findByText('Safardan keyin')).toBeTruthy();
-  expect(screen.queryByText('Yetib keldik')).toBeNull();
-  expect(screen.queryByText('Yaqinlarimga')).toBeNull();
+  expect(await screen.findByText(toCyrillic('Safardan keyin'))).toBeTruthy();
+  expect(screen.queryByText(toCyrillic('Yetib keldik'))).toBeNull();
+  expect(screen.queryByText(toCyrillic('Yaqinlarimga'))).toBeNull();
 }
 
 describe('after «Yetib keldik» the trip is past at once (lead decision)', { timeout: 20_000 }, () => {
@@ -57,23 +58,23 @@ describe('after «Yetib keldik» the trip is past at once (lead decision)', { ti
     open({ ...left, arrivedAt: NOW - 30 * MINUTE }, true);
     await openTrip();
     await pastShown();
-    expect(screen.getByText('Safar tugadi')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Safar tugadi'))).toBeTruthy();
   });
 
   it('its row in the list is past and says what is left after it', async () => {
     open({ ...left, arrivedAt: NOW - 30 * MINUTE }, true);
-    await tap('Oʻtgan');
-    expect(await screen.findByText(/^Baho bering · \d kun$/u)).toBeTruthy();
+    await tap(toCyrillic('Oʻtgan'));
+    expect(await screen.findByText(/^Баҳо беринг · \d кун$/u)).toBeTruthy();
     // «Faol» is only the tab now, no chip of a live trip (mockup g75/2 A).
-    expect(screen.getAllByText('Faol')).toHaveLength(1);
+    expect(screen.getAllByText(toCyrillic('Faol'))).toHaveLength(1);
   });
 
   it('«Safar tugadi» once after the arrival; «Назад» leads to the past trip, the list may lag', async () => {
     const arriveTrip = open(left, false);
     await openTrip();
-    await tap('Yetib keldik');
-    expect(await screen.findByText('Yoʻlovchilarni baholang')).toBeTruthy();
-    await tap('Orqaga');
+    await tap(toCyrillic('Yetib keldik'));
+    expect(await screen.findByText(toCyrillic('Yoʻlovchilarni baholang'))).toBeTruthy();
+    await tap(toCyrillic('Orqaga'));
     await pastShown();
     expect(arriveTrip).toHaveBeenCalledOnce();
   });
@@ -81,11 +82,11 @@ describe('after «Yetib keldik» the trip is past at once (lead decision)', { ti
   it('the stars of «Safar tugadi» are on the past trip at once, not offered again', async () => {
     open(left, true);
     await openTrip();
-    await tap('Yetib keldik');
-    expect(await screen.findByText('Yoʻlovchilarni baholang')).toBeTruthy();
-    await tap('Yuborish');
+    await tap(toCyrillic('Yetib keldik'));
+    expect(await screen.findByText(toCyrillic('Yoʻlovchilarni baholang'))).toBeTruthy();
+    await tap(toCyrillic('Yuborish'));
     await pastShown();
-    expect(await screen.findByText('Baho: ★★★★★ qoʻydingiz')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Baho: ★★★★★ qoʻydingiz'))).toBeTruthy();
   });
 
   // No celebration after the trip (owner decision 15.10.2026): the stars, then the past trip at once.
@@ -93,9 +94,9 @@ describe('after «Yetib keldik» the trip is past at once (lead decision)', { ti
     const moment = noMoment();
     open(left, true, moment);
     await openTrip();
-    await tap('Yetib keldik');
-    expect(await screen.findByText('Yoʻlovchilarni baholang')).toBeTruthy();
-    await tap('Yuborish');
+    await tap(toCyrillic('Yetib keldik'));
+    expect(await screen.findByText(toCyrillic('Yoʻlovchilarni baholang'))).toBeTruthy();
+    await tap(toCyrillic('Yuborish'));
     await pastShown();
     expect(moment).not.toHaveBeenCalled();
   });
@@ -103,14 +104,14 @@ describe('after «Yetib keldik» the trip is past at once (lead decision)', { ti
   it('opened again from the list after «Safar tugadi», the trip is past', async () => {
     open(left, true);
     await openTrip();
-    await tap('Yetib keldik');
-    expect(await screen.findByText('Yoʻlovchilarni baholang')).toBeTruthy();
-    await tap('Orqaga');
+    await tap(toCyrillic('Yetib keldik'));
+    expect(await screen.findByText(toCyrillic('Yoʻlovchilarni baholang'))).toBeTruthy();
+    await tap(toCyrillic('Orqaga'));
     await pastShown();
-    await tap('Orqaga');
+    await tap(toCyrillic('Orqaga'));
     await openTrip();
     await pastShown();
     // «Safar tugadi» with the stars came once: the past trip offers them in its row.
-    expect(screen.queryByText('Yoʻlovchilarni baholang')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Yoʻlovchilarni baholang'))).toBeNull();
   });
 });

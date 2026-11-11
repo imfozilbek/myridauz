@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ROUTE, tap } from '../market/market-test-kit';
@@ -18,7 +19,7 @@ afterEach(() => {
   localStorage.clear();
 });
 
-const HERE = 'Joylashuvingiz boʻyicha aniqlandi';
+const HERE = toCyrillic('Joylashuvingiz boʻyicha aniqlandi');
 // The request and «Mening safarlarim» as in the app.
 const REAL: Record<string, StartAction['Screen']> = {
   leave_request: NewRequestFlow,
@@ -36,32 +37,32 @@ describe('the ends of the block at the bottom of the main screen', { timeout: 20
   it('only «Qayerga»: «Safar topish» asks «Qayerdan», then the trips at once', async () => {
     home();
     await screen.findByText(HERE);
-    fireEvent.click(screen.getByRole('button', { name: 'Joylarni almashtirish' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Safar topish' }));
-    expect(await screen.findByText('Qayerdan yoʻlga chiqasiz?')).toBeTruthy();
-    await tap('Fargʻona viloyati');
-    await tap('Fargʻona shahri');
+    fireEvent.click(screen.getByRole('button', { name: toCyrillic('Joylarni almashtirish') }));
+    fireEvent.click(screen.getByRole('button', { name: toCyrillic('Safar topish') }));
+    expect(await screen.findByText(toCyrillic('Qayerdan yoʻlga chiqasiz?'))).toBeTruthy();
+    await tap(toCyrillic('Fargʻona viloyati'));
+    await tap(toCyrillic('Fargʻona shahri'));
     await today();
   });
 
   it('only «Qayerga»: «Soʻrov qoldirish» asks «Qayerdan», then the day', async () => {
     home();
     await screen.findByText(HERE);
-    fireEvent.click(screen.getByRole('button', { name: 'Joylarni almashtirish' }));
-    await tap('Soʻrov qoldirish');
-    expect(await screen.findByText('Qayerdan yoʻlga chiqasiz?')).toBeTruthy();
-    await tap('Fargʻona viloyati');
-    await tap('Fargʻona shahri');
-    expect(await screen.findByText('Qaysi kuni?')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: toCyrillic('Joylarni almashtirish') }));
+    await tap(toCyrillic('Soʻrov qoldirish'));
+    expect(await screen.findByText(toCyrillic('Qayerdan yoʻlga chiqasiz?'))).toBeTruthy();
+    await tap(toCyrillic('Fargʻona viloyati'));
+    await tap(toCyrillic('Fargʻona shahri'));
+    expect(await screen.findByText(toCyrillic('Qaysi kuni?'))).toBeTruthy();
   });
 
   it('an empty «Suhbatlar» searches from the ends of the block', async () => {
     rememberRoute(ROUTE);
     home();
     await screen.findByText(HERE);
-    await tap('Suhbatlar');
-    await screen.findByText('Hali suhbat yoʻq');
-    await tap('Safar topish');
+    await tap(toCyrillic('Suhbatlar'));
+    await screen.findByText(toCyrillic('Hali suhbat yoʻq'));
+    await tap(toCyrillic('Safar topish'));
     await today();
   });
 
@@ -69,9 +70,9 @@ describe('the ends of the block at the bottom of the main screen', { timeout: 20
     rememberRoute(ROUTE);
     home();
     await screen.findByText(HERE);
-    await tap('Mening safarlarim');
-    await screen.findByText('Faol safar yoʻq');
-    await tap('Safar topish');
+    await tap(toCyrillic('Mening safarlarim'));
+    await screen.findByText(toCyrillic('Faol safar yoʻq'));
+    await tap(toCyrillic('Safar topish'));
     await today();
   });
 });

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError } from '@platform/api-client';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -24,10 +25,10 @@ describe('a screen that cannot load for good', () => {
         },
       }),
     );
-    expect(await screen.findByText('Baholash muddati tugagan.')).toBeTruthy();
-    expect(screen.queryByText('Qayta urinish')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Baholash muddati tugagan.'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Qayta urinish'))).toBeNull();
     // The main button leads back, as «Назад» of the header (both read «Orqaga» outside Telegram).
-    const [, main] = screen.getAllByText('Orqaga');
+    const [, main] = screen.getAllByText(toCyrillic('Orqaga'));
     if (main) fireEvent.click(main);
     expect(onBack).toHaveBeenCalled();
   });
@@ -43,8 +44,8 @@ describe('a screen that cannot load for good', () => {
         },
       }),
     );
-    expect(await screen.findByText('Buni faqat loyiha egasi qila oladi.')).toBeTruthy();
-    expect(screen.queryByText('Qayta urinish')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Buni faqat loyiha egasi qila oladi.'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Qayta urinish'))).toBeNull();
   });
 
   it('a failed network still offers «Qayta urinish»', async () => {
@@ -58,7 +59,7 @@ describe('a screen that cannot load for good', () => {
         },
       }),
     );
-    expect(await screen.findByText('Qayta urinish')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Qayta urinish'))).toBeTruthy();
   });
 
   // G91 texts 1, 3 (owner, 20.10.2026): a trip that is gone, a rating of a ride that was not hers.
@@ -73,7 +74,7 @@ describe('a screen that cannot load for good', () => {
         },
       }),
     );
-    expect(await screen.findByText('Bu safarni baholab boʻlmaydi.')).toBeTruthy();
-    expect(screen.queryByText('Qayta urinish')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Bu safarni baholab boʻlmaydi.'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Qayta urinish'))).toBeNull();
   });
 });

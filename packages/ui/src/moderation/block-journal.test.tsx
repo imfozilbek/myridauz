@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { ModerationClient } from '@platform/api-client';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -27,13 +28,13 @@ describe('the block journal of a person', () => {
       },
     });
     renderInShell(<BlockJournal userId={USER} />, false, true, undefined, clients);
-    expect(await screen.findByText('Hozir butunlay bloklangan')).toBeTruthy();
-    expect(screen.getByText('Shikoyat boʻyicha bloklangan')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Hozir butunlay bloklangan'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Shikoyat boʻyicha bloklangan'))).toBeTruthy();
     vi.stubGlobal('confirm', () => true);
-    fireEvent.click(screen.getByText('Blokdan chiqarish'));
+    fireEvent.click(screen.getByText(toCyrillic('Blokdan chiqarish')));
     await vi.waitFor(() => expect(unblock).toHaveBeenCalledWith(USER));
     // Blocked before, not now: the journal does not say "never blocked".
-    expect(await screen.findByText('Hozir bloklanmagan')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Hozir bloklanmagan'))).toBeTruthy();
   });
 
   // G91 ADM-11: lifting a block is the owner's (ownerOnly): a moderator reads the journal only.
@@ -48,8 +49,8 @@ describe('the block journal of a person', () => {
       },
     });
     renderInShell(<BlockJournal userId={USER} />, false, true, undefined, clients);
-    expect(await screen.findByText('Hozir butunlay bloklangan')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Hozir butunlay bloklangan'))).toBeTruthy();
     await new Promise((settled) => setTimeout(settled, 50));
-    expect(screen.queryByText('Blokdan chiqarish')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Blokdan chiqarish'))).toBeNull();
   });
 });

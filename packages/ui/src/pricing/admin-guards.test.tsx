@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { Direction } from '@platform/contracts';
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
@@ -16,7 +17,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-const UNSAVED = 'Oʻzgarishlar saqlanmaydi. Chiqasizmi?';
+const UNSAVED = toCyrillic('Oʻzgarishlar saqlanmaydi. Chiqasizmi?');
 const directory = buildDirectory([]);
 const direction: Direction = {
   from: '1726',
@@ -52,7 +53,7 @@ const FORMS: [string, Form][] = [
   ],
 ];
 const back = async () => {
-  const button = await screen.findByText('Orqaga');
+  const button = await screen.findByText(toCyrillic('Orqaga'));
   await act(async () => fireEvent.click(button));
 };
 
@@ -67,7 +68,7 @@ describe('an admin form asks before Back loses what was typed (docs/94 F3)', () 
     untouched.unmount();
     onBack.mockClear();
     shown(form(onBack));
-    await screen.findByText('Orqaga');
+    await screen.findByText(toCyrillic('Orqaga'));
     const input = document.querySelector('input:not([type=checkbox])');
     fireEvent.change(input as HTMLInputElement, { target: { value: '12345' } });
     await back();

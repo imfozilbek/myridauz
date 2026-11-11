@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { DAY_MS, type Journal, type JournalKind, type Limits } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -29,22 +30,22 @@ describe('«Cheklovlar» and «Jurnal»', () => {
     renderManagement({
       limits: { current: async () => ({ values: {} }), state: async () => limitsOf(4), change },
     });
-    await tap('Cheklovlar');
-    expect(await screen.findByText('4 ta')).toBeTruthy();
-    expect(screen.getByText(/9\s000 soʻm/u)).toBeTruthy();
+    await tap(toCyrillic('Cheklovlar'));
+    expect(await screen.findByText(toCyrillic('4 ta'))).toBeTruthy();
+    expect(screen.getByText(/9\s000 сўм/u)).toBeTruthy();
     expect(screen.getByText('07:00')).toBeTruthy();
     // The value stands on the right of its row (G78 sheet 5); a tap opens its sheet over the list.
-    await tap('Bir soʻrovdagi joylar');
-    expect(screen.getByText('1 ta … 7 ta')).toBeTruthy();
-    expect(screen.getByText('Cheklovlar')).toBeTruthy();
+    await tap(toCyrillic('Bir soʻrovdagi joylar'));
+    expect(screen.getByText(toCyrillic('1 ta … 7 ta'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Cheklovlar'))).toBeTruthy();
     // A count goes by «−» and «+», not typed (G79 К9): one tap instead of a keyboard.
-    expect(screen.queryByLabelText('Bir soʻrovdagi joylar')).toBeNull();
-    fireEvent.click(screen.getByRole('button', { name: 'Kamaytirish' }));
-    expect(screen.getByText('3 ta')).toBeTruthy();
-    await tap('Saqlash');
+    expect(screen.queryByLabelText(toCyrillic('Bir soʻrovdagi joylar'))).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: toCyrillic('Kamaytirish') }));
+    expect(screen.getByText(toCyrillic('3 ta'))).toBeTruthy();
+    await tap(toCyrillic('Saqlash'));
     await waitFor(() => expect(change).toHaveBeenCalledWith('requests.maxSeats', 3));
-    expect(await screen.findByText('3 ta')).toBeTruthy();
-    expect(screen.getByText(/4 ta → 3 ta · Fozil/u)).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('3 ta'))).toBeTruthy();
+    expect(screen.getByText(/4 та → 3 та · Fozil/u)).toBeTruthy();
   });
 
   // A long range is typed, never hundreds of taps (G79 К9, review).
@@ -53,17 +54,19 @@ describe('«Cheklovlar» and «Jurnal»', () => {
     renderManagement({
       limits: { current: async () => ({ values: {} }), state: async () => limitsOf(4), change },
     });
-    await tap('Cheklovlar');
-    await tap('Bir joy uchun eng kam komissiya');
-    expect(screen.getByLabelText('Bir joy uchun eng kam komissiya').tagName).toBe('INPUT');
-    expect(screen.queryByRole('button', { name: 'Kamaytirish' })).toBeNull();
-    const field = screen.getByLabelText('Bir joy uchun eng kam komissiya');
+    await tap(toCyrillic('Cheklovlar'));
+    await tap(toCyrillic('Bir joy uchun eng kam komissiya'));
+    expect(screen.getByLabelText(toCyrillic('Bir joy uchun eng kam komissiya')).tagName).toBe('INPUT');
+    expect(screen.queryByRole('button', { name: toCyrillic('Kamaytirish') })).toBeNull();
+    const field = screen.getByLabelText(toCyrillic('Bir joy uchun eng kam komissiya'));
     fireEvent.change(field, { target: { value: '' } });
-    expect(screen.getByText('Saqlash').closest('button')?.disabled).toBe(true);
+    expect(screen.getByText(toCyrillic('Saqlash')).closest('button')?.disabled).toBe(true);
     // «Saqlash» with the same value only closes the sheet: nothing to send.
     fireEvent.change(field, { target: { value: '9000' } });
-    await tap('Saqlash');
-    await waitFor(() => expect(screen.queryByLabelText('Bir joy uchun eng kam komissiya')).toBeNull());
+    await tap(toCyrillic('Saqlash'));
+    await waitFor(() =>
+      expect(screen.queryByLabelText(toCyrillic('Bir joy uchun eng kam komissiya'))).toBeNull(),
+    );
     expect(change).not.toHaveBeenCalled();
   });
 
@@ -72,12 +75,14 @@ describe('«Cheklovlar» and «Jurnal»', () => {
     renderManagement({
       limits: { current: async () => ({ values: {} }), state: async () => limitsOf(3), change: vi.fn() },
     });
-    await tap('Cheklovlar');
+    await tap(toCyrillic('Cheklovlar'));
     // The list row; the same name stands in «Oʻzgarishlar» under the list.
-    const [row] = await screen.findAllByText('Bir soʻrovdagi joylar');
+    const [row] = await screen.findAllByText(toCyrillic('Bir soʻrovdagi joylar'));
     if (row) fireEvent.click(row);
-    expect(await screen.findByText('Yoʻlovchi bitta soʻrovda nechta joy soʻray oladi.')).toBeTruthy();
-    expect(screen.getByText('4 ta → 3 ta')).toBeTruthy();
+    expect(
+      await screen.findByText(toCyrillic('Yoʻlovchi bitta soʻrovda nechta joy soʻray oladi.')),
+    ).toBeTruthy();
+    expect(screen.getByText(toCyrillic('4 ta → 3 ta'))).toBeTruthy();
     expect(screen.getAllByText(/, Fozil$/u).length).toBeGreaterThan(0);
   });
 
@@ -94,14 +99,14 @@ describe('«Cheklovlar» and «Jurnal»', () => {
         : { entries: before > 1 ? [{ ...entry('team', 'add'), at: 1 }] : [] },
     );
     renderManagement({ team: { journal } });
-    await tap('Jurnal');
-    expect(await screen.findByText('Ariza tasdiqlandi')).toBeTruthy();
-    expect(screen.getByText('7 kunga blok · qaytarish taklif qilindi')).toBeTruthy();
-    expect(screen.getByText('Bir soʻrovdagi joylar: 2')).toBeTruthy();
-    await tap('Yana');
-    expect(await screen.findByText('Jamoaga qoʻshildi')).toBeTruthy();
-    await tap('Yana');
-    await waitFor(() => expect(screen.queryByText('Yana')).toBeNull());
+    await tap(toCyrillic('Jurnal'));
+    expect(await screen.findByText(toCyrillic('Ariza tasdiqlandi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('7 kunga blok · qaytarish taklif qilindi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Bir soʻrovdagi joylar: 2'))).toBeTruthy();
+    await tap(toCyrillic('Yana'));
+    expect(await screen.findByText(toCyrillic('Jamoaga qoʻshildi'))).toBeTruthy();
+    await tap(toCyrillic('Yana'));
+    await waitFor(() => expect(screen.queryByText(toCyrillic('Yana'))).toBeNull());
   });
 
   // By days with the time, a sign for each decision; a decision about a person opens the person (G78 sheet 5).
@@ -114,11 +119,11 @@ describe('«Cheklovlar» and «Jurnal»', () => {
       ],
     }));
     renderManagement({ team: { journal } });
-    await tap('Jurnal');
-    expect(await screen.findByText('Bugun')).toBeTruthy();
-    expect(screen.getByText('Kecha')).toBeTruthy();
+    await tap(toCyrillic('Jurnal'));
+    expect(await screen.findByText(toCyrillic('Bugun'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Kecha'))).toBeTruthy();
     expect(document.querySelector('.manage-tone-success')).not.toBeNull();
-    await tap('Rasm mos');
+    await tap(toCyrillic('Rasm mos'));
     expect(await screen.findByText('Jasur')).toBeTruthy();
   });
 });

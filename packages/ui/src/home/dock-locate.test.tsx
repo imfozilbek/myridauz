@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { Point } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -22,9 +23,9 @@ afterEach(() => {
   location.requestPosition.mockClear();
 });
 
-const HERE = 'Joylashuvingiz boʻyicha aniqlandi';
-const LOCATE = 'Joylashuvim';
-const CLEAR = 'Joyni tozalash';
+const HERE = toCyrillic('Joylashuvingiz boʻyicha aniqlandi');
+const LOCATE = toCyrillic('Joylashuvim');
+const CLEAR = toCyrillic('Joyni tozalash');
 const driver = () => {
   markApprovalSeen();
   renderHome(() => <DriverHome />, DRIVER_ACTIONS, {
@@ -46,7 +47,7 @@ describe.each([
     open();
     fireEvent.click(await screen.findByRole('button', { name: LOCATE }));
     expect(await screen.findByText(HERE)).toBeTruthy();
-    expect(screen.getByText('Chilonzor, Toshkent shahri')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Chilonzor, Toshkent shahri'))).toBeTruthy();
     expect(location.requestPosition).toHaveBeenCalledOnce();
     expect(screen.queryByRole('button', { name: LOCATE })).toBeNull();
     expect(screen.getByRole('button', { name: CLEAR })).toBeTruthy();
@@ -56,7 +57,7 @@ describe.each([
     location.requestPosition.mockResolvedValueOnce(null);
     open();
     fireEvent.click(await screen.findByRole('button', { name: LOCATE }));
-    expect(await screen.findByText('Qayerdan yoʻlga chiqasiz?')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Qayerdan yoʻlga chiqasiz?'))).toBeTruthy();
   });
 });
 
@@ -65,11 +66,11 @@ describe('the «x» of the ends of a passenger', { timeout: 20_000 }, () => {
   it('empties «Qayerga», then «Qayerdan», whose «Joylashuvim» comes back', async () => {
     rememberRoute(ROUTE);
     passenger();
-    expect(await screen.findByText('Fargʻona shahri')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Fargʻona shahri'))).toBeTruthy();
     fireEvent.click(screen.getAllByRole('button', { name: CLEAR })[1] as HTMLElement);
-    expect(screen.getByText('Qayerga borasiz?')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Qayerga borasiz?'))).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: CLEAR }));
-    expect(screen.getByText('Qayerdan ketasiz?')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Qayerdan ketasiz?'))).toBeTruthy();
     expect(screen.queryByRole('button', { name: CLEAR })).toBeNull();
     expect(screen.getByRole('button', { name: LOCATE })).toBeTruthy();
   });

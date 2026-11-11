@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { loadBrand } from '@platform/brands';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -16,14 +17,14 @@ describe('legal documents (docs/30)', () => {
   it('shows a document with its edition and the numbers of the brand', async () => {
     const brand = loadBrand();
     renderInShell(<LegalScreen document="offer" onBack={vi.fn()} />);
-    expect(screen.getByText('Ommaviy oferta')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Ommaviy oferta'))).toBeTruthy();
     // Without an answer of the API: the base edition and the brand name, never a placeholder (G34).
-    expect(await screen.findByText(/Tahrir 1\.10/)).toBeTruthy();
+    expect(await screen.findByText(/Таҳрир 1\.10/)).toBeTruthy();
     // All the sections open in one white card, read from top to bottom (G75, mockup g75/5 A).
     const card = document.querySelector('.legal-card');
-    expect(card?.querySelector('h3')?.textContent).toBe('1. Umumiy qoidalar');
+    expect(card?.querySelector('h3')?.textContent).toBe(toCyrillic('1. Umumiy qoidalar'));
     expect(card?.querySelectorAll('h3').length).toBeGreaterThan(3);
-    expect(screen.getByText(new RegExp(`${brand.commission.percent} foizi`))).toBeTruthy();
+    expect(screen.getByText(new RegExp(`${brand.commission.percent} ${toCyrillic('foizi')}`))).toBeTruthy();
     expect(document.body.textContent).not.toMatch(/\{/u);
   });
 
@@ -43,9 +44,9 @@ describe('legal documents (docs/30)', () => {
       undefined,
       testClients({ company: { current } }),
     );
-    expect(await screen.findByText(/Tahrir 1\.2/)).toBeTruthy();
+    expect(await screen.findByText(/Таҳрир 1\.2/)).toBeTruthy();
     expect(
-      screen.getByText(/Yoʻldosh Servis \(MChJ, STIR 123456789, manzil: Toshkent shahri\)/u),
+      screen.getByText(/Yoʻldosh Servis \(MChJ, СТИР 123456789, манзил: Toshkent shahri\)/u),
     ).toBeTruthy();
   });
 
@@ -56,8 +57,8 @@ describe('legal documents (docs/30)', () => {
         <p>inside</p>
       </LegalGate>,
     );
-    expect(screen.getByText('Maxfiylik siyosati')).toBeTruthy();
-    fireEvent.click(screen.getByText('Orqaga'));
+    expect(screen.getByText(toCyrillic('Maxfiylik siyosati'))).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Orqaga')));
     expect(screen.getByText('inside')).toBeTruthy();
     expect(window.location.search).toBe('');
   });
@@ -69,8 +70,8 @@ describe('legal documents (docs/30)', () => {
     const connect = async () => '';
     const Page = () => <p>questionnaire</p>;
     renderInShell(<AppGates app="main" welcome={undefined} users={users} connect={connect} Page={Page} />);
-    expect(screen.getByText('Ommaviy oferta')).toBeTruthy();
-    fireEvent.click(screen.getByText('Orqaga'));
+    expect(screen.getByText(toCyrillic('Ommaviy oferta'))).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Orqaga')));
     expect(screen.getByText('questionnaire')).toBeTruthy();
   });
 

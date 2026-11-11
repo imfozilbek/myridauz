@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { BookingsClient } from '@platform/api-client';
 import { cleanup, fireEvent, waitFor } from '@testing-library/react';
 import { useState } from 'react';
@@ -35,11 +36,11 @@ describe('«Mening safarlarim» after «Назад» (docs/94 F2, S3, W1)', { ti
     scrolledTo(900);
     const last = document.querySelectorAll('.driver-trip')[11];
     if (last) fireEvent.click(last);
-    await tap('Orqaga');
+    await tap(toCyrillic('Orqaga'));
     expect(skeleton()).toBeNull();
     expect(rows()).toHaveLength(12);
     expect(scrollTo).toHaveBeenLastCalledWith(0, 900);
-    await tap('Orqaga');
+    await tap(toCyrillic('Orqaga'));
     scrollTo.mockClear();
     await tap('again');
     await waitFor(() => expect(rows()).toHaveLength(12));

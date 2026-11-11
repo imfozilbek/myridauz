@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError, type BookingsClient } from '@platform/api-client';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -27,7 +28,7 @@ describe('a booking changed under the passenger', () => {
       }),
     );
     await tap('Jasur');
-    await tap('Joyni bekor qilish');
+    await tap(toCyrillic('Joyni bekor qilish'));
     await waitFor(() => expect(myBookings).toHaveBeenCalledTimes(2));
   });
 
@@ -42,7 +43,7 @@ describe('a booking changed under the passenger', () => {
       }),
     );
     await tap('Jasur');
-    const cancel = await screen.findByText('Joyni bekor qilish');
+    const cancel = await screen.findByText(toCyrillic('Joyni bekor qilish'));
     fireEvent.click(cancel);
     fireEvent.click(cancel);
     await waitFor(() => expect(cancelMine).toHaveBeenCalled());

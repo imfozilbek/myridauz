@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { chooseRoute, tap } from './market-test-kit';
@@ -6,8 +7,8 @@ import { openNewTrip } from './new-trip-test-kit';
 afterEach(cleanup);
 beforeEach(() => localStorage.clear());
 
-const PITAK = 'Qoʻyliq pitagi';
-const DOORS = 'Yoʻlovchilar uyidan: oʻzlari xaritada belgilaydi.';
+const PITAK = toCyrillic('Qoʻyliq pitagi');
+const DOORS = toCyrillic('Yoʻlovchilar uyidan: oʻzlari xaritada belgilaydi.');
 const smallMap = () => document.querySelector('.meeting-map');
 const chips = () => screen.getAllByRole('radio').map((chip) => chip.textContent);
 
@@ -17,57 +18,65 @@ describe('the parts of a new trip', { timeout: 20_000 }, () => {
     openNewTrip();
     await chooseRoute();
     expect(await screen.findByText(PITAK)).toBeTruthy();
-    expect(chips()).toEqual(['Pitakdan', 'Uydan', 'Ikkalasi']);
-    expect(screen.getByRole('radio', { name: 'Pitakdan' }).getAttribute('aria-checked')).toBe('true');
-    expect(screen.getByText('Fargʻona yoʻnalishi pitagi')).toBeTruthy();
+    expect(chips()).toEqual([toCyrillic('Pitakdan'), toCyrillic('Uydan'), toCyrillic('Ikkalasi')]);
+    expect(screen.getByRole('radio', { name: toCyrillic('Pitakdan') }).getAttribute('aria-checked')).toBe(
+      'true',
+    );
+    expect(screen.getByText(toCyrillic('Fargʻona yoʻnalishi pitagi'))).toBeTruthy();
     // The pitak is on the small map right under its card (docs/126, journey g63/4 screen 3).
     expect(smallMap()).toBeTruthy();
-    await tap('Uydan');
+    await tap(toCyrillic('Uydan'));
     expect(screen.getByText(DOORS)).toBeTruthy();
     expect(screen.queryByText(PITAK)).toBeNull();
     expect(smallMap()).toBeNull();
-    await tap('Ikkalasi');
+    await tap(toCyrillic('Ikkalasi'));
     expect(smallMap()).toBeTruthy();
-    await tap('Xaritada');
+    await tap(toCyrillic('Xaritada'));
     // The pitak on the big map with a sheet (G75, mockup g75/6 A): this one, or the doors only.
     expect(document.querySelector('.pitak-map')).toBeTruthy();
-    expect(screen.getByText('Qayerdan olasiz?')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Qayerdan olasiz?'))).toBeTruthy();
     expect(screen.getByText(PITAK)).toBeTruthy();
-    expect(screen.getByText('Yoʻlovchilar shu pitakni koʻradi.')).toBeTruthy();
-    await tap('Pitaksiz: faqat uyidan');
-    expect(await screen.findByText('Eʼlon qilish')).toBeTruthy();
-    expect(screen.getByRole('radio', { name: 'Uydan' }).getAttribute('aria-checked')).toBe('true');
-    await tap('Pitakdan');
+    expect(screen.getByText(toCyrillic('Yoʻlovchilar shu pitakni koʻradi.'))).toBeTruthy();
+    await tap(toCyrillic('Pitaksiz: faqat uyidan'));
+    expect(await screen.findByText(toCyrillic('Eʼlon qilish'))).toBeTruthy();
+    expect(screen.getByRole('radio', { name: toCyrillic('Uydan') }).getAttribute('aria-checked')).toBe(
+      'true',
+    );
+    await tap(toCyrillic('Pitakdan'));
     // A tap on the small map opens the same big one.
-    fireEvent.click(screen.getByRole('button', { name: 'Xaritada ochish' }));
+    fireEvent.click(screen.getByRole('button', { name: toCyrillic('Xaritada ochish') }));
     expect(document.querySelector('.pitak-map')).toBeTruthy();
-    await tap('Shu pitakdan');
-    expect(await screen.findByText('Eʼlon qilish')).toBeTruthy();
-    expect(screen.getByRole('radio', { name: 'Pitakdan' }).getAttribute('aria-checked')).toBe('true');
+    await tap(toCyrillic('Shu pitakdan'));
+    expect(await screen.findByText(toCyrillic('Eʼlon qilish'))).toBeTruthy();
+    expect(screen.getByRole('radio', { name: toCyrillic('Pitakdan') }).getAttribute('aria-checked')).toBe(
+      'true',
+    );
   });
 
   it('offers only the doors where the direction has no pitak', async () => {
     const { publishTrip } = openNewTrip({ pitak: false });
     await chooseRoute();
     expect(await screen.findByText(DOORS)).toBeTruthy();
-    expect(chips()).toEqual(['Uydan']);
+    expect(chips()).toEqual([toCyrillic('Uydan')]);
     expect(smallMap()).toBeNull();
-    await tap('Eʼlon qilish');
+    await tap(toCyrillic('Eʼlon qilish'));
     expect(publishTrip).toHaveBeenCalledWith(expect.objectContaining({ pickupMode: 'door' }));
   });
 
   it('opens the rule and the comment on their own screens and comes back with the answers', async () => {
     const { publishTrip } = openNewTrip();
     await chooseRoute();
-    expect(await screen.findByText(/^Faqat joylar · 380\s000$/u)).toBeTruthy();
-    await tap('Qanday band qilinadi?');
-    await tap('Joylar yoki butun salon');
-    expect(await screen.findByText(/^Joylar yoki butun salon · 380\s000$/u)).toBeTruthy();
-    await tap('Izoh (ixtiyoriy)');
-    fireEvent.change(await screen.findByPlaceholderText('Izoh yozing'), { target: { value: 'Yuk yoʻq' } });
-    await tap('Davom etish');
+    expect(await screen.findByText(/^Фақат жойлар · 380\s000$/u)).toBeTruthy();
+    await tap(toCyrillic('Qanday band qilinadi?'));
+    await tap(toCyrillic('Joylar yoki butun salon'));
+    expect(await screen.findByText(/^Жойлар ёки бутун салон · 380\s000$/u)).toBeTruthy();
+    await tap(toCyrillic('Izoh (ixtiyoriy)'));
+    fireEvent.change(await screen.findByPlaceholderText(toCyrillic('Izoh yozing')), {
+      target: { value: 'Yuk yoʻq' },
+    });
+    await tap(toCyrillic('Davom etish'));
     expect(await screen.findByText('Yuk yoʻq')).toBeTruthy();
-    await tap('Eʼlon qilish');
+    await tap(toCyrillic('Eʼlon qilish'));
     expect(publishTrip).toHaveBeenCalledWith(
       expect.objectContaining({ bookingRule: 'seats_or_car', comment: 'Yuk yoʻq' }),
     );

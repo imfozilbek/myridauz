@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { loadBrand } from '@platform/brands';
 import type { ChatClient } from '@platform/api-client';
 import { cleanup, screen, waitFor } from '@testing-library/react';
@@ -31,18 +32,20 @@ describe('the meeting card on the trip day (docs/126, G60)', () => {
     await tap('Jasur');
     expect(document.querySelector('.meeting-block .dock-card-soon')).toBeTruthy();
     expect(document.querySelector('.booking-card .driver-row')).toBeNull();
-    expect(screen.getByRole('button', { name: 'Xaritada ochish' })).toBeTruthy();
-    await tap('Men keldim');
+    expect(screen.getByRole('button', { name: toCyrillic('Xaritada ochish') })).toBeTruthy();
+    await tap(toCyrillic('Men keldim'));
     expect(came).toHaveBeenCalledWith(confirmed.id);
-    await waitFor(() => expect(screen.queryByText('Men keldim')).toBeNull());
-    expect(screen.getByRole('button', { name: 'Xaritada ochish' }).className).toBe('meeting-main');
+    await waitFor(() => expect(screen.queryByText(toCyrillic('Men keldim'))).toBeNull());
+    expect(screen.getByRole('button', { name: toCyrillic('Xaritada ochish') }).className).toBe(
+      'meeting-main',
+    );
   });
 
   it('is not there earlier', async () => {
     vi.setSystemTime(confirmed.trip.departAt - (MEET_BEFORE_MINUTES + 10) * MINUTE);
     open(vi.fn());
     await tap('Jasur');
-    expect(screen.queryByText('Men keldim')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Men keldim'))).toBeNull();
     expect(document.querySelector('.booking-card .driver-row')).toBeTruthy();
   });
 });

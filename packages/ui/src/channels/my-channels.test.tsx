@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { channelOf, loadBrand } from '@platform/brands';
 import type { HistoryItem } from '@platform/contracts';
 import { cleanup, fireEvent, screen, within } from '@testing-library/react';
@@ -16,6 +17,7 @@ const [andijon, samarqand, fargona, qoqon] = ['1703202', '1718401', '1730401', '
 );
 // The server made the link «Rida ilovasi» of Qoʻqon, not yet of the others (docs/176).
 const APP_LINK = 'https://t.me/+app_qoqon';
+const SEARCH = toCyrillic('Viloyat yoki shahar');
 const made = [andijon, samarqand, fargona, qoqon].map((zone) => ({
   chat: zone?.chat ?? '',
   member: zone === samarqand,
@@ -56,8 +58,8 @@ async function openChannels(clients: Overrides, driver = false) {
     },
   );
   fireEvent.click(screen.getByText('Dilnoza'));
-  fireEvent.click(await screen.findByText('Kanallar'));
-  await screen.findByText('Siz uchun');
+  fireEvent.click(await screen.findByText(toCyrillic('Kanallar')));
+  await screen.findByText(toCyrillic('Siz uchun'));
 }
 
 const passenger: Overrides = {
@@ -68,37 +70,37 @@ const passenger: Overrides = {
 describe('«Kanallar» of a person (G65, docs/119)', () => {
   it('offers the channels for the person with the reason, then all of them under their regions', async () => {
     await openChannels(passenger);
-    expect(screen.getByText('Har bir kanalda shu joydagi yangi safarlar')).toBeTruthy();
-    const forYou = screen.getByText('Siz uchun').nextElementSibling as HTMLElement;
-    expect(within(forYou).getByText('Koʻp borasiz')).toBeTruthy();
-    expect(within(forYou).getByText('Soʻrovingiz shu yerga')).toBeTruthy();
-    expect(within(forYou).getByText('Oxirgi qidiruv')).toBeTruthy();
-    expect(within(forYou).getByText('✓ Aʼzosiz')).toBeTruthy();
-    expect(screen.getByText('Fargʻona viloyati')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Har bir kanalda shu joydagi yangi safarlar'))).toBeTruthy();
+    const forYou = screen.getByText(toCyrillic('Siz uchun')).nextElementSibling as HTMLElement;
+    expect(within(forYou).getByText(toCyrillic('Koʻp borasiz'))).toBeTruthy();
+    expect(within(forYou).getByText(toCyrillic('Soʻrovingiz shu yerga'))).toBeTruthy();
+    expect(within(forYou).getByText(toCyrillic('Oxirgi qidiruv'))).toBeTruthy();
+    expect(within(forYou).getByText(toCyrillic('✓ Aʼzosiz'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Fargʻona viloyati'))).toBeTruthy();
     // A channel by its name in Telegram without the brand (owner 13.10.2026, docs/176), in «Siz uchun»
     // and under its region.
-    expect(screen.getAllByText('Margʻilon | Fargʻona shahri')).toHaveLength(2);
-    expect(screen.getByText('Qamchiq | Furqat | Qoʻqon')).toBeTruthy();
+    expect(screen.getAllByText(toCyrillic('Margʻilon | Fargʻona shahri'))).toHaveLength(2);
+    expect(screen.getByText(toCyrillic('Qamchiq | Furqat | Qoʻqon'))).toBeTruthy();
     // Only the channels that are made: 4 here, 3 of them «Siz uchun» too.
-    expect(screen.getAllByText(/Qoʻshilish|✓ Aʼzosiz/u)).toHaveLength(7);
+    expect(screen.getAllByText(/Қўшилиш|✓ Аъзосиз/u)).toHaveLength(7);
   });
 
   it('finds a channel by a place or a region, and says when nothing is found', async () => {
     await openChannels(passenger);
-    fireEvent.change(screen.getByPlaceholderText('Viloyat yoki shahar'), { target: { value: 'qoʻqon' } });
-    expect(screen.queryByText('Siz uchun')).toBeNull();
-    expect(screen.getAllByText(/Qoʻshilish|✓ Aʼzosiz/u)).toHaveLength(1);
-    fireEvent.change(screen.getByPlaceholderText('Viloyat yoki shahar'), { target: { value: 'samarqand' } });
-    expect(screen.getByText('✓ Aʼzosiz')).toBeTruthy();
-    fireEvent.change(screen.getByPlaceholderText('Viloyat yoki shahar'), { target: { value: 'xyz' } });
-    expect(screen.getByText('Bunday kanal topilmadi')).toBeTruthy();
+    fireEvent.change(screen.getByPlaceholderText(SEARCH), { target: { value: 'qoʻqon' } });
+    expect(screen.queryByText(toCyrillic('Siz uchun'))).toBeNull();
+    expect(screen.getAllByText(/Қўшилиш|✓ Аъзосиз/u)).toHaveLength(1);
+    fireEvent.change(screen.getByPlaceholderText(SEARCH), { target: { value: 'samarqand' } });
+    expect(screen.getByText(toCyrillic('✓ Aʼzosiz'))).toBeTruthy();
+    fireEvent.change(screen.getByPlaceholderText(SEARCH), { target: { value: 'xyz' } });
+    expect(screen.getByText(toCyrillic('Bunday kanal topilmadi'))).toBeTruthy();
   });
 
   it('opens the channel in Telegram from «Qoʻshilish» by the own link of the app', async () => {
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
     await openChannels(passenger);
-    fireEvent.change(screen.getByPlaceholderText('Viloyat yoki shahar'), { target: { value: 'qoʻqon' } });
-    fireEvent.click(screen.getByText('Qoʻshilish'));
+    fireEvent.change(screen.getByPlaceholderText(SEARCH), { target: { value: 'qoʻqon' } });
+    fireEvent.click(screen.getByText(toCyrillic('Qoʻshilish')));
     expect(open.mock.calls[0]?.[0]).toBe(APP_LINK);
     open.mockRestore();
   });
@@ -122,10 +124,9 @@ describe('«Kanallar» of a person (G65, docs/119)', () => {
       notify: null,
     };
     await openChannels({ market: { myTrips: async () => trips, requestBoard: async () => board } }, true);
-    expect(screen.getByText('Safarlaringiz shu kanallarda chiqadi')).toBeTruthy();
-    expect(screen.getByText('Koʻp yurasiz')).toBeTruthy();
-    expect(screen.getByText('Soʻrovlar koʻp')).toBeTruthy();
-    expect(screen.getByText('Oxirgi safaringiz')).toBeTruthy();
+    for (const reason of ['Safarlaringiz shu kanallarda chiqadi', 'Koʻp yurasiz', 'Soʻrovlar koʻp'])
+      expect(screen.getByText(toCyrillic(reason))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Oxirgi safaringiz'))).toBeTruthy();
   });
 
   // A failed load offers nothing for the person: every channel stays below (docs/119, G49).
@@ -142,8 +143,8 @@ describe('«Kanallar» of a person (G65, docs/119)', () => {
       },
     );
     fireEvent.click(screen.getByText('Dilnoza'));
-    fireEvent.click(await screen.findByText('Kanallar'));
-    expect(await screen.findByText('Qamchiq | Furqat | Qoʻqon')).toBeTruthy();
-    expect(screen.queryByText('Siz uchun')).toBeNull();
+    fireEvent.click(await screen.findByText(toCyrillic('Kanallar')));
+    expect(await screen.findByText(toCyrillic('Qamchiq | Furqat | Qoʻqon'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Siz uchun'))).toBeNull();
   });
 });

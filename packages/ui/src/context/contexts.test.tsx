@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { renderInShell } from '../test-shell';
@@ -13,7 +14,7 @@ describe('contexts', () => {
 
   it('shows the language switcher when a second language appears', () => {
     renderInShell(<LanguageSwitcher locales={['uz-Latn', 'uz-Latn']} />);
-    expect(screen.getByText('Til')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Til'))).toBeTruthy();
     screen.getAllByText(/lotin/i)[0]?.click();
   });
 

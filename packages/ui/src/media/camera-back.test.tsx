@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { ModerationReason } from '@platform/contracts';
 import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
@@ -62,7 +63,9 @@ describe('the cameras and «Назад» of Telegram (docs/94 F6, F7)', () => {
     const onBack = vi.fn();
     inTelegram(<Photos reasons={[]} onBack={onBack} />);
     expect(native.mainShown).toBe(true);
-    fireEvent.click(screen.getByText('Old tomondan', { exact: true }).closest('button') as HTMLElement);
+    fireEvent.click(
+      screen.getByText(toCyrillic('Old tomondan'), { exact: true }).closest('button') as HTMLElement,
+    );
     expect(screen.getByRole('dialog')).toBeTruthy();
     expect(native.backShown).toBe(true);
     // The button hides once nobody takes it after the step gave it away (G41, docs/108 E).
@@ -80,7 +83,7 @@ describe('the cameras and «Назад» of Telegram (docs/94 F6, F7)', () => {
     inTelegram(<Photos reasons={['face_not_visible']} onBack={onBack} />);
     expect(native.mainShown).toBe(true);
     // The face comes back to the fix only when the team asks for a new one (G62).
-    fireEvent.click(screen.getByText('Yuzingiz').closest('button') as HTMLElement);
+    fireEvent.click(screen.getByText(toCyrillic('Yuzingiz')).closest('button') as HTMLElement);
     expect(screen.getByRole('dialog')).toBeTruthy();
     // The button hides once nobody takes it after the step gave it away (G41, docs/108 E).
     await waitFor(() => expect(native.mainShown).toBe(false));
@@ -94,7 +97,7 @@ describe('the cameras and «Назад» of Telegram (docs/94 F6, F7)', () => {
   it('the photo of the profile opens our front camera, «Назад» closes it and the profile stays', () => {
     const onBack = vi.fn();
     inTelegram(<ProfileScreen onBack={onBack} />);
-    fireEvent.click(screen.getByText('Rasmni almashtirish'));
+    fireEvent.click(screen.getByText(toCyrillic('Rasmni almashtirish')));
     expect(screen.getByRole('dialog')).toBeTruthy();
     act(pressBack);
     expect(screen.queryByRole('dialog')).toBeNull();

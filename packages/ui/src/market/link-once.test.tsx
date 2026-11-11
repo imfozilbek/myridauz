@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -40,7 +41,7 @@ async function openTwice(Link: Link, shown: string | RegExp) {
 describe('a link from a bot or a channel opens once (docs/94 B10)', () => {
   it('a trip of a channel post; the start parameter stays for the source of the launch', async () => {
     window.history.replaceState(null, '', `/?tgWebAppStartParam=trip_${trip.id}`);
-    await openTwice(TripLink, '1 ta joy band qilish');
+    await openTwice(TripLink, toCyrillic('1 ta joy band qilish'));
     expect(startParam()).toBe(`trip_${trip.id}`);
   });
 
@@ -58,11 +59,11 @@ describe('a link from a bot or a channel opens once (docs/94 B10)', () => {
 
   it('a route of a channel post to subscribe', async () => {
     window.history.replaceState(null, '', '/#tgWebAppStartParam=sub_1726_1730_2020-01-01');
-    await openTwice(SubscribeLink, /^Faqat/u);
+    await openTwice(SubscribeLink, /^Фақат/u);
   });
 
   it('a search of the landing', async () => {
     window.history.replaceState(null, '', '/#tgWebAppStartParam=find_9999_1730');
-    await openTwice(FindLink, 'Qayerdan yoʻlga chiqasiz?');
+    await openTwice(FindLink, toCyrillic('Qayerdan yoʻlga chiqasiz?'));
   });
 });

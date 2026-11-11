@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError, type BookingsClient, type ChatClient } from '@platform/api-client';
 import type { Booking } from '@platform/contracts';
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
@@ -36,17 +37,17 @@ describe('the driver answers a request right in its card (owner decision 06.10.2
     let seats: readonly Booking[] = [booking];
     const answer = vi.fn<BookingsClient['answer']>(async () => (seats = [confirmed])[0] as Booking);
     const { tracked } = await open(() => seats, { answer });
-    await tap('Tasdiqlash');
+    await tap(toCyrillic('Tasdiqlash'));
     expect(answer).toHaveBeenCalledWith('b1', 'confirm');
-    expect(await screen.findByText('Yoʻlovchilar (2)')).toBeTruthy();
-    expect(screen.queryByText('Joy soʻraganlar (1)')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Yoʻlovchilar (2)'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Joy soʻraganlar (1)'))).toBeNull();
     expect(tracked.some((event) => event.name === 'booking_step' && event.step === 'confirmed')).toBe(true);
   });
 
   it('declines with one tap', async () => {
     const answer = vi.fn<BookingsClient['answer']>(async () => ({ ...booking, status: 'declined' }));
     await open(() => [booking], { answer });
-    await tap('Rad etish');
+    await tap(toCyrillic('Rad etish'));
     expect(answer).toHaveBeenCalledWith('b1', 'decline');
   });
 
@@ -54,11 +55,11 @@ describe('the driver answers a request right in its card (owner decision 06.10.2
   it('offers the way to top up, not a «Tasdiqlash» that would fail (G27)', async () => {
     const answer = vi.fn<BookingsClient['answer']>();
     await open(() => [booking], { answer, mine: async () => ({ ...wallet, bonus: 0, main: 0 }) });
-    expect(await screen.findByText(/^Hamyonda 19\s000 yetmaydi$/u)).toBeTruthy();
+    expect(await screen.findByText(/^Ҳамёнда 19\s000 етмайди$/u)).toBeTruthy();
     const sent = vi.spyOn(window, 'open').mockReturnValue(null);
-    await tap('Hisobni toʻldirish');
+    await tap(toCyrillic('Hisobni toʻldirish'));
     const url = decodeURIComponent(String(sent.mock.calls[0]?.[0]));
-    expect(url).toMatch(/\?text=Salom! Hamyonimni toʻldirmoqchiman\. Dilnozaning joyini tasdiqlash/u);
+    expect(url).toMatch(/\?text=Салом! Ҳамёнимни тўлдирмоқчиман\. Dilnozaнинг жойини тасдиқлаш/u);
     expect(answer).not.toHaveBeenCalled();
     sent.mockRestore();
   });
@@ -68,9 +69,11 @@ describe('the driver answers a request right in its card (owner decision 06.10.2
       throw new ApiError(409, 'wallet.not_enough');
     });
     await open(() => [booking], { answer, mine: async () => Promise.reject(new Error('down')) });
-    await tap('Tasdiqlash');
-    expect(await screen.findByText('Hamyonda komissiya uchun mablagʻ yetarli emas.')).toBeTruthy();
-    expect(screen.getByText('Joy soʻraganlar (1)')).toBeTruthy();
+    await tap(toCyrillic('Tasdiqlash'));
+    expect(
+      await screen.findByText(toCyrillic('Hamyonda komissiya uchun mablagʻ yetarli emas.')),
+    ).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Joy soʻraganlar (1)'))).toBeTruthy();
   });
 
   it('keeps the page with the reason when an answer fails', async () => {
@@ -78,9 +81,9 @@ describe('the driver answers a request right in its card (owner decision 06.10.2
       throw new ApiError(409, 'bookings.wrong_status');
     });
     await open(() => [booking], { answer });
-    await tap('Rad etish');
+    await tap(toCyrillic('Rad etish'));
     expect(await screen.findByRole('alert')).toBeTruthy();
-    expect(screen.getByText('Joy soʻraganlar (1)')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Joy soʻraganlar (1)'))).toBeTruthy();
   });
 
   // The sheet of the main screen over the trip (G78 sheet 3): who, the trip, the time left, the answer.
@@ -88,10 +91,10 @@ describe('the driver answers a request right in its card (owner decision 06.10.2
     const answer = vi.fn<BookingsClient['answer']>(async () => booking);
     await open(() => [booking], { answer });
     await tap('Dilnoza');
-    expect(await screen.findByText('Yangi soʻrov')).toBeTruthy();
-    expect(screen.getByText(/^Javob berish uchun \d+ (daqiqa|soat)/u)).toBeTruthy();
-    expect(screen.getByText('Joy soʻraganlar (1)')).toBeTruthy();
-    fireEvent.click(screen.getAllByRole('button', { name: 'Tasdiqlash' }).at(-1) as HTMLElement);
+    expect(await screen.findByText(toCyrillic('Yangi soʻrov'))).toBeTruthy();
+    expect(screen.getByText(/^Жавоб бериш учун \d+ (дақиқа|соат)/u)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Joy soʻraganlar (1)'))).toBeTruthy();
+    fireEvent.click(screen.getAllByRole('button', { name: toCyrillic('Tasdiqlash') }).at(-1) as HTMLElement);
     await vi.waitFor(() => expect(answer).toHaveBeenCalledWith('b1', 'confirm'));
   });
 });
@@ -119,7 +122,7 @@ describe('a confirmed passenger has the chat and the call (mockup g63/3)', () =>
   it('the call button rings the passenger as the chat header does', async () => {
     const socketUrl = vi.fn<ChatClient['socketUrl']>(async () => 'wss://api.test/socket');
     await open(() => [confirmed], { socketUrl });
-    fireEvent.click(await screen.findByRole('button', { name: 'Qoʻngʻiroq' }));
+    fireEvent.click(await screen.findByRole('button', { name: toCyrillic('Qoʻngʻiroq') }));
     const sent = await answered();
     expect(socketUrl).toHaveBeenCalledWith(confirmed.chatKey);
     await vi.waitFor(() => expect(sent()).toContainEqual(RING));
@@ -127,7 +130,7 @@ describe('a confirmed passenger has the chat and the call (mockup g63/3)', () =>
 
   it('the chat button opens the chat and never rings by itself', async () => {
     await open(() => [confirmed], { socketUrl: async () => 'wss://api.test/socket' });
-    fireEvent.click(await screen.findByRole('button', { name: 'Xabar yozish' }));
+    fireEvent.click(await screen.findByRole('button', { name: toCyrillic('Xabar yozish') }));
     const sent = await answered();
     await act(async () => undefined);
     expect(sent()).not.toContainEqual(RING);
@@ -136,9 +139,9 @@ describe('a confirmed passenger has the chat and the call (mockup g63/3)', () =>
   it('asks no wallet while no request waits for an answer (docs/117)', async () => {
     const mine = vi.fn(async () => wallet);
     await open(() => [confirmed], { mine });
-    expect(await screen.findByText('Yoʻlovchilar (2)')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Yoʻlovchilar (2)'))).toBeTruthy();
     await tap('Dilnoza');
-    expect(await screen.findByText('Joyni bekor qilish')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Joyni bekor qilish'))).toBeTruthy();
     expect(mine).not.toHaveBeenCalled();
   });
 });

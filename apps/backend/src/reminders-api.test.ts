@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { approvedDriver, json, read } from './bookings-test-api';
 import { sendReminders } from './modules/reminders';
@@ -54,18 +55,18 @@ describe('trip reminders (G10, G68)', () => {
       `${PASSENGER} editMessageText`,
       `${DRIVER} editMessageText`,
     ]);
-    expect(telegram[0]?.text).toContain('Ertaga');
+    expect(telegram[0]?.text).toContain(toCyrillic('Ertaga'));
     expect(telegram[0]?.text).toContain('01 A 123 BC');
-    expect(telegram[1]?.text).toContain('Ertaga');
+    expect(telegram[1]?.text).toContain(toCyrillic('Ertaga'));
     // Two hours before: a ring under the card (docs/122).
     telegram.length = 0;
     vi.setSystemTime(departAt - 90 * 60_000);
     await sendReminders(testEnv, Date.now());
     const ring = telegram.find((item) => item.chat === PASSENGER && item.method === 'sendMessage');
-    expect(ring?.text).toContain('2 soat qoldi');
+    expect(ring?.text).toContain(toCyrillic('2 soat qoldi'));
     const driverRing = telegram.find((item) => item.chat === DRIVER && item.method === 'sendMessage');
     expect(driverRing?.text).toMatch(
-      /^🚏 Safarga 2 soat qoldi: 2 yoʻlovchi\. Birinchisi \d\d:\d\d da kutadi: /u,
+      /^🚏 Сафарга 2 соат қолди: 2 йўловчи\. Биринчиси \d\d:\d\d да кутади: /u,
     );
   });
 });

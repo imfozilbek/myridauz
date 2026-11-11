@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { AppLink, Booking, RideRequest, Trip } from '@platform/contracts';
@@ -10,7 +11,7 @@ import { SafarScreen } from './safar-screen';
 
 afterEach(cleanup);
 
-const BOOK = '1 ta joy band qilish';
+const BOOK = toCyrillic('1 ta joy band qilish');
 // The person of renderMarket has the id …01; trip is driven by …07.
 const open = (shown: Trip, clients = testClients({}), openLink: (link: AppLink) => void = () => undefined) =>
   renderMarket(
@@ -38,7 +39,7 @@ const theirs = (mine: readonly Booking[], requests: readonly RideRequest[] = [])
 describe('«Safar» that cannot be booked', () => {
   it('says the own trip is theirs', async () => {
     open({ ...trip, driver: { ...trip.driver, id: '00000000000000000000000000000001' } });
-    expect(await screen.findByText('Bu sizning safaringiz.')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Bu sizning safaringiz.'))).toBeTruthy();
     expect(screen.queryByText(BOOK)).toBeNull();
   });
 
@@ -46,25 +47,33 @@ describe('«Safar» that cannot be booked', () => {
   it('says the seat is asked already, «Joyimni ochish» opens it', async () => {
     const openLink = vi.fn();
     open(trip, theirs([{ ...booking, trip: { ...booking.trip, id: trip.id } }]), openLink);
-    expect(await screen.findByText('Bu safarda joyingiz bor.')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Bu safarda joyingiz bor.'))).toBeTruthy();
     expect(screen.queryByText(BOOK)).toBeNull();
-    fireEvent.click(screen.getByText('Joyimni ochish'));
+    fireEvent.click(screen.getByText(toCyrillic('Joyimni ochish')));
     expect(openLink).toHaveBeenCalledWith({ name: 'booking', id: booking.id });
   });
 
   it('says a trip on the road left and a cancelled one is closed', async () => {
     open({ ...trip, departAt: Date.now() - 60 * 60 * 1000 });
-    expect(await screen.findByText('Bu safar yoʻlga chiqqan. Joy band qilib boʻlmaydi.')).toBeTruthy();
+    expect(
+      await screen.findByText(toCyrillic('Bu safar yoʻlga chiqqan. Joy band qilib boʻlmaydi.')),
+    ).toBeTruthy();
     expect(screen.queryByText(BOOK)).toBeNull();
     cleanup();
     // G89 U14: «Yoʻlga chiqdim» an hour early closes it too.
     open({ ...trip, departAt: Date.now() + 60 * 60 * 1000, departedAt: Date.now() });
-    expect(await screen.findByText('Bu safar yoʻlga chiqqan. Joy band qilib boʻlmaydi.')).toBeTruthy();
+    expect(
+      await screen.findByText(toCyrillic('Bu safar yoʻlga chiqqan. Joy band qilib boʻlmaydi.')),
+    ).toBeTruthy();
     cleanup();
     open({ ...trip, status: 'cancelled' });
-    expect(await screen.findByText('Haydovchi bu safarni bekor qildi. Boshqa safarni tanlang.')).toBeTruthy();
+    expect(
+      await screen.findByText(toCyrillic('Haydovchi bu safarni bekor qildi. Boshqa safarni tanlang.')),
+    ).toBeTruthy();
     // One plate of how it ended for a seat, «Safar» and a request (G75, docs/158 А).
-    expect(document.querySelector('.outcome-plate.outcome-plate-off')?.textContent).toContain('bekor qildi');
+    expect(document.querySelector('.outcome-plate.outcome-plate-off')?.textContent).toContain(
+      toCyrillic('bekor qildi'),
+    );
   });
 
   // One at a time (owner decision 12.10.2026, docs/172): a seat on another trip opens instead.
@@ -73,10 +82,10 @@ describe('«Safar» that cannot be booked', () => {
     const held = { ...confirmed, id: 'held', trip: { ...booking.trip, id: 'other' } };
     open(trip, theirs([held]), openLink);
     expect(
-      await screen.findByText('Sizda boshqa safarda joy bor. Yangi joy shu safar tugagach.'),
+      await screen.findByText(toCyrillic('Sizda boshqa safarda joy bor. Yangi joy shu safar tugagach.')),
     ).toBeTruthy();
     expect(screen.queryByText(BOOK)).toBeNull();
-    fireEvent.click(screen.getByText('Joyimni ochish'));
+    fireEvent.click(screen.getByText(toCyrillic('Joyimni ochish')));
     expect(openLink).toHaveBeenCalledWith({ name: 'booking', id: 'held' });
   });
 
@@ -86,15 +95,15 @@ describe('«Safar» that cannot be booked', () => {
     open(trip, theirs([asked]));
     expect(
       await screen.findByText(
-        'Sizda boshqa safarda joy bor. Yangi joy soʻrash uchun avval uni bekor qiling.',
+        toCyrillic('Sizda boshqa safarda joy bor. Yangi joy soʻrash uchun avval uni bekor qiling.'),
       ),
     ).toBeTruthy();
-    expect(screen.getByText('Joyimni ochish')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Joyimni ochish'))).toBeTruthy();
   });
 
   it('says an open request closes with the seat, the button stays', async () => {
     open(trip, theirs([], [{ ...request, status: 'open' }]));
-    expect(await screen.findByText('Joy soʻrasangiz, ochiq soʻrovingiz yopiladi.')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Joy soʻrasangiz, ochiq soʻrovingiz yopiladi.'))).toBeTruthy();
     expect(screen.getByText(BOOK)).toBeTruthy();
   });
 

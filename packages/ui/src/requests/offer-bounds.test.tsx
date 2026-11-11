@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError } from '@platform/api-client';
 import { cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -23,11 +24,11 @@ describe('«Taklif yuborish» without the bounds of the price', { timeout: 20_00
       .mockRejectedValueOnce(new ApiError(503, undefined))
       .mockResolvedValue(recommendation);
     openBoard({ market: { recommend } });
-    await tap('Taklif yuborish');
+    await tap(toCyrillic('Taklif yuborish'));
     const form = within(await screen.findByRole('dialog'));
-    expect(await form.findByText('Birozdan keyin qayta urinib koʻring.')).toBeTruthy();
-    fireEvent.click(form.getByRole('button', { name: 'Qayta urinish' }));
+    expect(await form.findByText(toCyrillic('Birozdan keyin qayta urinib koʻring.'))).toBeTruthy();
+    fireEvent.click(form.getByRole('button', { name: toCyrillic('Qayta urinish') }));
     await waitFor(() => expect(recommend).toHaveBeenCalledTimes(2));
-    expect(await form.findByRole('button', { name: 'Taklif yuborish' })).toBeTruthy();
+    expect(await form.findByRole('button', { name: toCyrillic('Taklif yuborish') })).toBeTruthy();
   });
 });

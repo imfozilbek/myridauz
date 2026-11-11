@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { MarketClient } from '@platform/api-client';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -23,7 +24,7 @@ describe('FindTripFlow: the days and the empty day (G59, docs/97 K2, K6)', { tim
     await findRoute();
     // The row of the week (docs/172): today stands out, no dot without trips.
     await waitFor(() => expect(document.querySelectorAll('.week-day')).toHaveLength(7));
-    expect(document.querySelector('.week-day[aria-pressed="true"]')?.textContent).toMatch(/^Bu\d/u);
+    expect(document.querySelector('.week-day[aria-pressed="true"]')?.textContent).toMatch(/^Бу\d/u);
     expect(document.querySelectorAll('.week-dot:not(.week-dot-none)')).toHaveLength(0);
     await pickDay(1);
     const tomorrow = weekOf([]).days[1]?.date;
@@ -44,10 +45,10 @@ describe('FindTripFlow: the days and the empty day (G59, docs/97 K2, K6)', { tim
       }),
     );
     await findRoute();
-    expect(await screen.findByText('Hozircha safar yoʻq')).toBeTruthy();
-    await tap('Soʻrov qoldirish');
+    expect(await screen.findByText(toCyrillic('Hozircha safar yoʻq'))).toBeTruthy();
+    await tap(toCyrillic('Soʻrov qoldirish'));
     // The route and the day come from the search: the one screen of the request at once (G61).
-    expect(await screen.findByText('Qayerdan, qayerga?')).toBeTruthy();
-    expect(screen.queryByText('Qaysi kuni?')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Qayerdan, qayerga?'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Qaysi kuni?'))).toBeNull();
   });
 });

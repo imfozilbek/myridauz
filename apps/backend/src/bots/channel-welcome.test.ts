@@ -1,5 +1,6 @@
 import { channelsOnly, groupChats, loadBrand } from '@platform/brands';
 import { botStartLink, channelVia, HOUR_MS } from '@platform/contracts';
+import { toCyrillic } from '@platform/i18n';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Bindings } from '../env';
 import { testD1 } from '../test-d1';
@@ -56,7 +57,9 @@ describe('the welcomes of the bots in the channels (owner, 18.10.2026)', () => {
       photo: welcomePicture(brand, 'passenger'),
       caption: welcomeCaption(brand, 'passenger'),
       reply_markup: {
-        inline_keyboard: [[{ text: 'Ochish', url: botStartLink(brand.bots.passenger, channelVia(MAIN)) }]],
+        inline_keyboard: [
+          [{ text: toCyrillic('Ochish'), url: botStartLink(brand.bots.passenger, channelVia(MAIN)) }],
+        ],
       },
       // In a channel only the board of the day sounds (docs/122).
       disable_notification: true,

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { MarketClient } from '@platform/api-client';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -25,11 +26,11 @@ describe('a route from the landing (docs/59)', () => {
     // The first screen of a file loads TelegramUI: under load it takes more than the default 1 s.
     await vi.waitFor(() => expect(searchTrips).toHaveBeenCalled(), { timeout: 5000 });
     expect(searchTrips.mock.calls[0]?.[0]).toMatchObject({ from: '1726', to: '1730' });
-    await screen.findByText('Hozircha safar yoʻq');
+    await screen.findByText(toCyrillic('Hozircha safar yoʻq'));
     // Back where the person came from, not to «Qayerga borasiz?» they never saw (G79 П2): 2 taps → 1.
-    await tap('Orqaga');
+    await tap(toCyrillic('Orqaga'));
     expect(await screen.findByText('Asosiy')).toBeTruthy();
-    expect(screen.queryByText('Qayerga borasiz?')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Qayerga borasiz?'))).toBeNull();
   });
 
   it('opens the trips of the route and the day from a bot button (docs/89 S10)', async () => {
@@ -70,7 +71,7 @@ describe('a route from the landing (docs/59)', () => {
       testClients({}),
     );
     // K1: the list of «Qayerdan» opens at once.
-    expect(await screen.findByText('Qayerdan yoʻlga chiqasiz?')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Qayerdan yoʻlga chiqasiz?'))).toBeTruthy();
     cleanup();
     renderMarket(
       <FindLink enabled={false}>

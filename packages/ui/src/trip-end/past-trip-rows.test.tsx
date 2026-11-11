@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { tap } from '../market/market-test-kit';
@@ -25,15 +26,15 @@ const named = (n: number, firstName: string) => ({
 describe('«Safardan keyin» of the driver: who a row is about (docs/129, mockup g63/5 phone 5)', () => {
   it('«Suhbatlar» opens the chat of the only passenger', async () => {
     openPast([rode]);
-    await tap('Suhbatlar');
+    await tap(toCyrillic('Suhbatlar'));
     expect(await screen.findByText('chat Madina')).toBeTruthy();
   });
 
   // A sheet over the past trip, as the forms of the mockup g75/3 A: every passenger, one tap each.
   it('«Shikoyat» asks which passenger in a sheet over the trip', async () => {
     openPast([rode, gone]);
-    await tap('Shikoyat');
-    expect((await screen.findAllByText('Qaysi yoʻlovchi?')).length).toBeGreaterThan(0);
+    await tap(toCyrillic('Shikoyat'));
+    expect((await screen.findAllByText(toCyrillic('Qaysi yoʻlovchi?'))).length).toBeGreaterThan(0);
     fireEvent.click(within(sheet()).getByText('Akmal'));
     expect(await screen.findByText(`complaint ${gone.id}`)).toBeTruthy();
   });
@@ -41,33 +42,33 @@ describe('«Safardan keyin» of the driver: who a row is about (docs/129, mockup
   it('a fourth passenger is in the same sheet, never left out', async () => {
     const four = [named(1, 'Madina'), named(2, 'Akmal'), named(3, 'Sardor'), named(4, 'Bobur')];
     openPast(four);
-    await tap('Shikoyat');
-    await screen.findAllByText('Qaysi yoʻlovchi?');
+    await tap(toCyrillic('Shikoyat'));
+    await screen.findAllByText(toCyrillic('Qaysi yoʻlovchi?'));
     fireEvent.click(within(sheet()).getByText('Bobur'));
     expect(await screen.findByText('complaint r4')).toBeTruthy();
   });
 
   it('all rated: the stars row says so in green and opens nothing (G78 В17)', async () => {
     openPast([{ ...rode, rated: true }]);
-    const done = await screen.findByText('Hammasi baholandi');
+    const done = await screen.findByText(toCyrillic('Hammasi baholandi'));
     expect(done.hasAttribute('data-done')).toBe(true);
     expect(done.closest('button')).toBeNull();
   });
 
   it('the chat and the call of a passenger row: the call rings', async () => {
     openPast([rode]);
-    (await screen.findByRole('button', { name: 'Qoʻngʻiroq' })).click();
+    (await screen.findByRole('button', { name: toCyrillic('Qoʻngʻiroq') })).click();
     expect(await screen.findByText('chat Madina ring')).toBeTruthy();
     cleanup();
     openPast([rode]);
-    (await screen.findByRole('button', { name: 'Xabar yozish' })).click();
+    (await screen.findByRole('button', { name: toCyrillic('Xabar yozish') })).click();
     expect(await screen.findByText('chat Madina')).toBeTruthy();
   });
 
   // G91 DRV-11: nobody rode: no rows that open nothing, only what the trip cost.
   it('a trip nobody rode has only the row of the commission', async () => {
     openPast([]);
-    expect(await screen.findByText('Safardan keyin')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Safardan keyin'))).toBeTruthy();
     for (const row of ['Yoʻlovchilarni baholash', 'Suhbatlar', 'Shikoyat'])
       expect(screen.queryByText(row)).toBeNull();
     expect(document.querySelectorAll('.past-after-row')).toHaveLength(1);

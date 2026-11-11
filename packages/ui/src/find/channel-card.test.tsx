@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { loadBrand } from '@platform/brands';
 import type { ChannelsClient } from '@platform/api-client';
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
@@ -28,7 +29,7 @@ async function join(channel: typeof samarqand, channels: Partial<ChannelsClient>
   await vi.waitFor(() => expect(channels.mine).toHaveBeenCalled());
   // The answer of the server comes in.
   await act(() => new Promise((done) => setTimeout(done, 0)));
-  fireEvent.click(screen.getByText('Kanalga qoʻshilish'));
+  fireEvent.click(screen.getByText(toCyrillic('Kanalga qoʻshilish')));
   const opened = open.mock.calls[0]?.[0];
   open.mockRestore();
   expect(onClose).toHaveBeenCalledOnce();
@@ -40,11 +41,11 @@ async function join(channel: typeof samarqand, channels: Partial<ChannelsClient>
 describe('the card of a channel (docs/119)', () => {
   it('shows the logo and the name the channel has in Telegram, without the brand', async () => {
     await join(samarqand, { mine: vi.fn(mine) });
-    const logo = screen.getByAltText('Boʻka | Bekobod');
+    const logo = screen.getByAltText(toCyrillic('Boʻka | Bekobod'));
     expect(logo.getAttribute('src')).toBe(`/channels/${samarqand?.code ?? ''}.webp`);
-    expect(screen.getByText('Boʻka | Bekobod', { selector: '.channel-card-name' })).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Boʻka | Bekobod'), { selector: '.channel-card-name' })).toBeTruthy();
     // The name says the places: the hint does not say them again (owner 13.10.2026, docs/177).
-    const hint = screen.getByText('Shu yoʻnalishdagi barcha yangi safarlar bir joyda');
+    const hint = screen.getByText(toCyrillic('Shu yoʻnalishdagi barcha yangi safarlar bir joyda'));
     expect(hint.className).toBe('channel-card-hint');
   });
 

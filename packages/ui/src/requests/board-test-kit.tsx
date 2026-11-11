@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { BookingsClient, MarketClient } from '@platform/api-client';
 import type { RequestBoard, RequestBoardQuery, RideRequest } from '@platform/contracts';
 import { vi } from 'vitest';
@@ -64,7 +65,7 @@ export function openBoard(fakes: Fakes = {}) {
       map: {
         pitakOf: async () => ({
           id: 'qoyliq',
-          name: 'Qoʻyliq pitagi',
+          name: toCyrillic('Qoʻyliq pitagi'),
           point: { lat: 41.24, lng: 69.34 },
           hint: null,
         }),

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { GrowthClient } from '@platform/api-client';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -26,21 +27,21 @@ const open = (ui: JSX.Element, growth: Partial<GrowthClient> = {}) =>
 describe('what came of the links of a person', () => {
   it('shows who came and rode, the badge reached, the next with its bar and the later one', async () => {
     open(<ImpactScreen onBack={() => undefined} />);
-    expect(await screen.findByText('3 kishi')).toBeTruthy();
-    expect(screen.getByText('havolangiz orqali qoʻshildi · 2 tasi safarga chiqdi')).toBeTruthy();
-    expect(screen.getByText('Yoʻl hamrohi')).toBeTruthy();
-    expect(screen.getByText('1 kishini olib keldingiz')).toBeTruthy();
-    expect(screen.getByText('5 kishi · yana 2 ta')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('3 kishi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('havolangiz orqali qoʻshildi · 2 tasi safarga chiqdi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Yoʻl hamrohi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('1 kishini olib keldingiz'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('5 kishi · yana 2 ta'))).toBeTruthy();
     expect(screen.getAllByRole('progressbar')).toHaveLength(1);
-    expect(screen.getByText('Yoʻnalish qahramoni')).toBeTruthy();
-    expect(screen.getByText('25 kishi')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Yoʻnalish qahramoni'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('25 kishi'))).toBeTruthy();
   });
 
   it('«Yana ulashish» sends the ready card with the own link; an old Telegram gets its words (G88)', async () => {
     const opened = vi.spyOn(window, 'open').mockReturnValue(null);
     const loopCard = vi.fn<GrowthClient['loopCard']>(async () => CARD);
     const { tracked } = open(<ImpactScreen onBack={() => undefined} />, { loopCard });
-    await tap('Yana ulashish');
+    await tap(toCyrillic('Yana ulashish'));
     await waitFor(() => expect(opened).toHaveBeenCalled());
     expect(loopCard).toHaveBeenCalledWith({ loop: 'share-join' });
     expect(String(opened.mock.calls[0]?.[0])).toBe(
@@ -57,9 +58,9 @@ describe('what came of the links of a person', () => {
     const qrPicture = vi.fn<GrowthClient['qrPicture']>(async () => 'https://api.test/stories/x');
     const opened = vi.spyOn(window, 'open').mockReturnValue(null);
     const { tracked } = open(<QrScreen onBack={() => undefined} />, { qrPicture });
-    const code = await screen.findByRole('img', { name: /^Skanerlang: / });
+    const code = await screen.findByRole('img', { name: /^Сканерланг: / });
     expect(code.getAttribute('src')).toMatch(/^data:image\/svg\+xml/u);
-    await tap('Rasmni yuklab olish');
+    await tap(toCyrillic('Rasmni yuklab olish'));
     await waitFor(() =>
       expect(opened).toHaveBeenCalledWith('https://api.test/stories/x', '_blank', 'noopener'),
     );

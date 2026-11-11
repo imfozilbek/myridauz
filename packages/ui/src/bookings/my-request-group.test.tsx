@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { GrowthClient } from '@platform/api-client';
 import { REQUEST_LINK } from '@platform/contracts';
 import { cleanup, screen, waitFor } from '@testing-library/react';
@@ -28,9 +29,9 @@ describe('«Tumaningiz guruhiga yuboring» (G69, docs/123 loop 2)', () => {
     }));
     const opened = vi.spyOn(window, 'open').mockReturnValue(null);
     const { tracked } = open({ loopCard });
-    expect(await screen.findByText('Tumaningiz guruhiga yuboring')).toBeTruthy();
-    expect(screen.getByText('Raqamingiz koʻrinmaydi.')).toBeTruthy();
-    await tap('Guruhimga yuborish');
+    expect(await screen.findByText(toCyrillic('Tumaningiz guruhiga yuboring'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Raqamingiz koʻrinmaydi.'))).toBeTruthy();
+    await tap(toCyrillic('Guruhimga yuborish'));
     await waitFor(() => expect(opened).toHaveBeenCalled());
     expect(loopCard).toHaveBeenCalledWith({ loop: 'req-share', requestId: request.id });
     expect(String(opened.mock.calls[0]?.[0])).toContain(encodeURIComponent('https://t.me/d?startapp=x'));

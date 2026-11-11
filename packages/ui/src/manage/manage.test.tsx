@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { loadBrand } from '@platform/brands';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -14,33 +15,36 @@ afterEach(() => {
 describe('«Boshqaruv»', () => {
   it('has the 4 groups with the live lines of the day', async () => {
     renderManagement();
-    expect(screen.getByText('Faqat egasi koʻradi')).toBeTruthy();
-    for (const group of ['Odamlar va safarlar', 'Pul', 'Joylar', loadBrand().name])
+    expect(screen.getByText(toCyrillic('Faqat egasi koʻradi'))).toBeTruthy();
+    for (const group of [
+      ...['Odamlar va safarlar', 'Pul', 'Joylar'].map((name) => toCyrillic(name)),
+      loadBrand().name,
+    ])
       expect(screen.getByText(group)).toBeTruthy();
-    expect(await screen.findByText('Bugun 17 ta')).toBeTruthy();
-    expect(await screen.findByText('3 tasida pul kam')).toBeTruthy();
-    expect(await screen.findByText(/^2 ta · 41\s200 obunachi$/u)).toBeTruthy();
-    expect(await screen.findByText('64 ta')).toBeTruthy();
-    expect(await screen.findByText('1 moderator')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Bugun 17 ta'))).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('3 tasida pul kam'))).toBeTruthy();
+    expect(await screen.findByText(/^2 та · 41\s200 обуначи$/u)).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('64 ta'))).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('1 moderator'))).toBeTruthy();
   });
 
   // The values on the right; «Bloklash» at the bottom, the days in a sheet (G78 sheet 6).
   it('opens a person by the public id in «Odamlar» and blocks for 7 days', async () => {
     const block = vi.fn(async () => undefined);
     renderManagement({ moderation: { block, blocks: async () => ({ active: null, entries: [] }) } });
-    await tap('Odamlar');
-    const field = screen.getByLabelText('ID raqami');
+    await tap(toCyrillic('Odamlar'));
+    const field = screen.getByLabelText(toCyrillic('ID raqami'));
     fireEvent.change(field, { target: { value: 'nope' } });
-    expect(screen.getByText('Ochish').closest('button')?.disabled).toBe(true);
+    expect(screen.getByText(toCyrillic('Ochish')).closest('button')?.disabled).toBe(true);
     fireEvent.change(field, { target: { value: PERSON.toUpperCase() } });
-    await tap('Ochish');
-    expect(await screen.findByText('Haydovchi: 5 · yoʻlovchi: 2')).toBeTruthy();
-    expect(screen.getByText(/4,8 \(37 ta baho\)/u)).toBeTruthy();
+    await tap(toCyrillic('Ochish'));
+    expect(await screen.findByText(toCyrillic('Haydovchi: 5 · yoʻlovchi: 2'))).toBeTruthy();
+    expect(screen.getByText(/4,8 \(37 та баҳо\)/u)).toBeTruthy();
     expect(screen.getByText('01 A 123 BC').className).toBe('manage-value');
-    expect(await screen.findByText('Hech qachon bloklanmagan')).toBeTruthy();
-    await tap('Bloklash');
-    expect(await screen.findByText('Qancha muddatga bloklaymiz?')).toBeTruthy();
-    await tap('7 kun');
+    expect(await screen.findByText(toCyrillic('Hech qachon bloklanmagan'))).toBeTruthy();
+    await tap(toCyrillic('Bloklash'));
+    expect(await screen.findByText(toCyrillic('Qancha muddatga bloklaymiz?'))).toBeTruthy();
+    await tap(toCyrillic('7 kun'));
     await waitFor(() => expect(block).toHaveBeenCalledWith(CARD.id, 7));
     await sheetClosed();
   });
@@ -61,23 +65,25 @@ describe('«Boshqaruv»', () => {
       .mockResolvedValueOnce(CARD)
       .mockResolvedValue({ ...CARD, blocked: true, blockedUntil: WEEK });
     renderManagement({ moderation: { block, blocks }, team: { person } });
-    await tap('Odamlar');
-    fireEvent.change(screen.getByLabelText('ID raqami'), { target: { value: PERSON } });
-    await tap('Ochish');
-    expect(await screen.findByText('Hech qachon bloklanmagan')).toBeTruthy();
-    await tap('Bloklash');
-    await tap('7 kun');
-    expect(await screen.findByText(/^Hozir .+gacha bloklangan$/u)).toBeTruthy();
+    await tap(toCyrillic('Odamlar'));
+    fireEvent.change(screen.getByLabelText(toCyrillic('ID raqami')), { target: { value: PERSON } });
+    await tap(toCyrillic('Ochish'));
+    expect(await screen.findByText(toCyrillic('Hech qachon bloklanmagan'))).toBeTruthy();
+    await tap(toCyrillic('Bloklash'));
+    await tap(toCyrillic('7 kun'));
+    expect(await screen.findByText(/^Ҳозир .+гача блокланган$/u)).toBeTruthy();
   });
 
   it('adds a moderator by the public id in «Jamoa» and removes one', async () => {
     const add = vi.fn(async () => undefined);
     const remove = vi.fn(async () => undefined);
     renderManagement({ team: { members: async () => MEMBERS, add, remove } });
-    await tap('Jamoa');
-    expect(await screen.findByText('Egasi')).toBeTruthy();
-    fireEvent.change(screen.getByLabelText('ID yoki Telegram ID raqami'), { target: { value: PERSON } });
-    await tap('Qoʻshish');
+    await tap(toCyrillic('Jamoa'));
+    expect(await screen.findByText(toCyrillic('Egasi'))).toBeTruthy();
+    fireEvent.change(screen.getByLabelText(toCyrillic('ID yoki Telegram ID raqami')), {
+      target: { value: PERSON },
+    });
+    await tap(toCyrillic('Qoʻshish'));
     await waitFor(() => expect(add).toHaveBeenCalledWith(PERSON));
     vi.stubGlobal('confirm', () => true);
     await tap('Aziz');
@@ -88,11 +94,11 @@ describe('«Boshqaruv»', () => {
   it('adds a moderator by the Telegram ID in «Jamoa»', async () => {
     const add = vi.fn(async () => undefined);
     renderManagement({ team: { members: async () => MEMBERS, add, remove: vi.fn() } });
-    await tap('Jamoa');
-    fireEvent.change(await screen.findByLabelText('ID yoki Telegram ID raqami'), {
+    await tap(toCyrillic('Jamoa'));
+    fireEvent.change(await screen.findByLabelText(toCyrillic('ID yoki Telegram ID raqami')), {
       target: { value: ' 123456789 ' },
     });
-    await tap('Qoʻshish');
+    await tap(toCyrillic('Qoʻshish'));
     await waitFor(() => expect(add).toHaveBeenCalledWith('123456789'));
   });
 });

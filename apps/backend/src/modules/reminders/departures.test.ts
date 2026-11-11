@@ -1,4 +1,5 @@
 import { loadBrand } from '@platform/brands';
+import { toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import type { NotificationJob } from '../notifications';
 import { watchDepartures, type DepartureDeps } from './application/departures';
@@ -53,7 +54,7 @@ describe('a driver who forgot «Yoʻlga chiqdim» (G63)', () => {
       () => DEPART,
     )(TRIP);
     expect(sent).toMatchObject([{ bot: 'driver', chatId: 7 }]);
-    expect(sent[0]?.text).toContain('«Yoʻlga chiqdim»');
+    expect(sent[0]?.text).toContain(toCyrillic('«Yoʻlga chiqdim»'));
     expect(JSON.stringify(sent[0]?.markup)).toContain(`?mytrip=${TRIP.id}`);
     expect(sent[0]).not.toHaveProperty('silent');
   });

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError, type ComfortClient, type FeedbackClient } from '@platform/api-client';
 import { NOBODY_ID, type ReviewTarget } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
@@ -36,25 +37,25 @@ describe('the review (G60, mockup g60/5): one short screen', () => {
   it('shows the driver and the one trip card, stars, tags as chips, the comment behind a link', async () => {
     open({});
     // After the trip the card shows the road between the ends (mockup g60/6).
-    expect(await screen.findByText(/soat yoʻl$/u)).toBeTruthy();
-    expect(screen.queryByText('2 joy')).toBeNull();
-    expect(screen.getByText('Safar qanday oʻtdi?')).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Vaqtida' })).toBeTruthy();
-    expect(screen.queryByPlaceholderText(/Safar haqida/u)).toBeNull();
-    await tap('+ Izoh yozish');
-    expect(screen.getByPlaceholderText(/Safar haqida/u)).toBeTruthy();
-    expect(screen.getByText('Sevimli haydovchi')).toBeTruthy();
+    expect(await screen.findByText(/соат йўл$/u)).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('2 joy'))).toBeNull();
+    expect(screen.getByText(toCyrillic('Safar qanday oʻtdi?'))).toBeTruthy();
+    expect(screen.getByRole('button', { name: toCyrillic('Vaqtida') })).toBeTruthy();
+    expect(screen.queryByPlaceholderText(/Сафар ҳақида/u)).toBeNull();
+    await tap(toCyrillic('+ Izoh yozish'));
+    expect(screen.getByPlaceholderText(/Сафар ҳақида/u)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Sevimli haydovchi'))).toBeTruthy();
   });
 
   it('sends and goes back at once: no screen after sending', async () => {
     const review = vi.fn<FeedbackClient['review']>(async () => undefined);
     const onBack = open({ review });
     fireEvent.click(await screen.findByRole('button', { name: '5' }));
-    await tap('Vaqtida');
-    await tap('Yuborish');
+    await tap(toCyrillic('Vaqtida'));
+    await tap(toCyrillic('Yuborish'));
     await vi.waitFor(() => expect(onBack).toHaveBeenCalled());
     expect(review).toHaveBeenCalledWith({ bookingId: done.id, stars: 5, tags: ['on_time'], text: '' });
-    expect(screen.queryByText('Rahmat. Bahongiz saqlandi.')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Rahmat. Bahongiz saqlandi.'))).toBeNull();
   });
 
   // G89 A7: a review that shows keeps its stars; the person reads why, not «Xatolik».
@@ -62,21 +63,23 @@ describe('the review (G60, mockup g60/5): one short screen', () => {
     const review = async () => Promise.reject(new ApiError(409, 'reviews.published'));
     open({ review });
     fireEvent.click(await screen.findByRole('button', { name: '1' }));
-    await tap('Yuborish');
-    expect(await screen.findByText('Baho eʼlon qilindi. Endi uni oʻzgartirib boʻlmaydi.')).toBeTruthy();
+    await tap(toCyrillic('Yuborish'));
+    expect(
+      await screen.findByText(toCyrillic('Baho eʼlon qilindi. Endi uni oʻzgartirib boʻlmaydi.')),
+    ).toBeTruthy();
   });
 
   it('saves the driver as a favourite by the switch', async () => {
     const save = vi.fn<ComfortClient['save']>(async () => undefined);
     open({}, { save });
-    fireEvent.click(await screen.findByRole('checkbox', { name: 'Sevimli haydovchi' }));
+    fireEvent.click(await screen.findByRole('checkbox', { name: toCyrillic('Sevimli haydovchi') }));
     await vi.waitFor(() => expect(save).toHaveBeenCalledWith(TARGET.rateeId));
   });
 
   // G89 M9: a driver who deleted the account is nobody to save.
   it('offers no «Sevimli haydovchi» for a deleted driver', async () => {
     open({}, {}, { ...TARGET, rateeId: NOBODY_ID });
-    expect(await screen.findByText('Safar qanday oʻtdi?')).toBeTruthy();
-    expect(screen.queryByText('Sevimli haydovchi')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Safar qanday oʻtdi?'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Sevimli haydovchi'))).toBeNull();
   });
 });

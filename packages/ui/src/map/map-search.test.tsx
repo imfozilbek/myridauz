@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Screen } from '../screen/screen';
@@ -27,7 +28,7 @@ describe('the search on the map and «Назад» (docs/94 B6)', () => {
       undefined,
       testClients({ map: { search } }),
     );
-    const field = screen.getByPlaceholderText('Joy nomini yozing') as HTMLInputElement;
+    const field = screen.getByPlaceholderText(toCyrillic('Joy nomini yozing')) as HTMLInputElement;
     fireEvent.change(field, { target: { value: 'Chorsu' } });
     act(pressBack);
     expect(field.value).toBe('');

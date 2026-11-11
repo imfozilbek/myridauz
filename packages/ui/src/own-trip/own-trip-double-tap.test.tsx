@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { BookingsClient, ChatClient, MarketClient } from '@platform/api-client';
 import type { Booking, Trip } from '@platform/contracts';
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
@@ -50,7 +51,7 @@ describe('a double tap on «Mening safarim» calls the server once (G63)', { tim
     vi.stubGlobal('confirm', asked);
     const cancelTrip = vi.fn(() => new Promise<Trip>(() => undefined));
     await open(trip, [], { market: { cancelTrip } });
-    await twice('Safarni bekor qilish');
+    await twice(toCyrillic('Safarni bekor qilish'));
     expect(asked).toHaveBeenCalledOnce();
     expect(cancelTrip).toHaveBeenCalledOnce();
   });
@@ -59,7 +60,7 @@ describe('a double tap on «Mening safarim» calls the server once (G63)', { tim
     vi.stubGlobal('open', vi.fn());
     const shareTrip = vi.fn<ChatClient['shareTrip']>(() => new Promise(() => undefined));
     await open(trip, [], { chat: { shareTrip } });
-    await twice('Yaqinlarimga');
+    await twice(toCyrillic('Yaqinlarimga'));
     expect(shareTrip).toHaveBeenCalledOnce();
   });
 
@@ -69,7 +70,7 @@ describe('a double tap on «Mening safarim» calls the server once (G63)', { tim
     vi.stubGlobal('confirm', asked);
     const meet = vi.fn<BookingsClient['meet']>(() => new Promise(() => undefined));
     await open(akmal.trip, [{ ...akmal, driverCameAt: MEETING_NOW }], { meet });
-    await twice('Kelmadi · safar tugaguncha belgilash mumkin');
+    await twice(toCyrillic('Kelmadi · safar tugaguncha belgilash mumkin'));
     expect(asked).toHaveBeenCalledOnce();
     expect(meet).toHaveBeenCalledOnce();
   });

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { tap } from '../market/market-test-kit';
@@ -8,7 +9,12 @@ import { PitakMap } from './pitak-map';
 
 afterEach(cleanup);
 
-const PITAK = { id: 'qoyliq', name: 'Qoʻyliq pitagi', point: { lat: 41.2438, lng: 69.3394 }, hint: null };
+const PITAK = {
+  id: 'qoyliq',
+  name: toCyrillic('Qoʻyliq pitagi'),
+  point: { lat: 41.2438, lng: 69.3394 },
+  hint: null,
+};
 
 describe('the small map of a pitak (G43, docs/65 B3)', () => {
   it('says the map did not load and draws it again', async () => {
@@ -18,8 +24,8 @@ describe('the small map of a pitak (G43, docs/65 B3)', () => {
         <PitakMap pitak={PITAK} />
       </MapEngineContext.Provider>,
     );
-    await tap('Xarita yuklanmadi');
+    await tap(toCyrillic('Xarita yuklanmadi'));
     await vi.waitFor(() => expect(map.marks()).toHaveLength(1));
-    expect(screen.queryByText('Xarita yuklanmadi')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Xarita yuklanmadi'))).toBeNull();
   });
 });

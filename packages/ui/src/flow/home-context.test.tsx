@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { useState } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -22,7 +23,7 @@ describe('a finished action', () => {
     const home = vi.fn();
     const onBack = vi.fn();
     renderInShell(<HomeProvider value={home}>{sent(onBack)}</HomeProvider>);
-    fireEvent.click(screen.getByText('Orqaga'));
+    fireEvent.click(screen.getByText(toCyrillic('Orqaga')));
     expect(home).toHaveBeenCalledOnce();
     expect(onBack).not.toHaveBeenCalled();
   });
@@ -30,7 +31,7 @@ describe('a finished action', () => {
   it('keeps its own way back outside the main screen', () => {
     const onBack = vi.fn();
     renderInShell(sent(onBack));
-    fireEvent.click(screen.getByText('Orqaga'));
+    fireEvent.click(screen.getByText(toCyrillic('Orqaga')));
     expect(onBack).toHaveBeenCalledOnce();
   });
 
@@ -50,7 +51,7 @@ describe('a finished action', () => {
       );
     }
     renderMarket(<App />, testClients({}));
-    fireEvent.click(await screen.findByRole('button', { name: 'Bosh sahifa' }));
+    fireEvent.click(await screen.findByRole('button', { name: toCyrillic('Bosh sahifa') }));
     expect(screen.getByText('main screen')).toBeTruthy();
     expect(section).not.toHaveBeenCalled();
   });

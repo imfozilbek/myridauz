@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { ReviewTarget } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -41,25 +42,25 @@ const pressed = (label: string) => screen.getByLabelText(label).getAttribute('ar
 describe('the stars of a trip by the link of the bot', () => {
   it('puts the person of the link on top with the stars of the bot; the others wait', async () => {
     const { review, onSent } = open({ stars: 4, tags: [], text: '' });
-    expect(await screen.findByText('Yoʻlovchilarni baholang')).toBeTruthy();
-    expect(screen.getByText(/^\d+-[a-z]+ · .+ → .+$/u)).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Yoʻlovchilarni baholang'))).toBeTruthy();
+    expect(screen.getByText(/^\d+-[а-яёўқғҳ]+ · .+ → .+$/u)).toBeTruthy();
     expect(riders().map((rider) => rider.firstChild?.textContent)).toEqual(['Madina', 'Akmal']);
     expect(riders()[0]?.classList.contains('trip-end-rider-marked')).toBe(true);
     expect(pressed('Madina 4')).toBe('true');
     expect(riders()[1]?.querySelector('.trip-end-stars-wait')).not.toBeNull();
     // The stars of the bot unchanged and nobody else chosen: nothing to send again.
-    await tap('Yuborish');
+    await tap(toCyrillic('Yuborish'));
     await waitFor(() => expect(onSent).toHaveBeenCalled());
     expect(review).not.toHaveBeenCalled();
   });
 
   it('sends the stars that were chosen', async () => {
     const { review, onSent } = open({ stars: 4, tags: [], text: '' });
-    await screen.findByText('Yoʻlovchilarni baholang');
+    await screen.findByText(toCyrillic('Yoʻlovchilarni baholang'));
     fireEvent.click(screen.getByLabelText('Madina 5'));
     fireEvent.click(screen.getByLabelText('Akmal 3'));
     expect(riders()[1]?.querySelector('.trip-end-stars-wait')).toBeNull();
-    await tap('Yuborish');
+    await tap(toCyrillic('Yuborish'));
     await waitFor(() => expect(onSent).toHaveBeenCalled());
     expect(review.mock.calls).toEqual([
       [{ bookingId: madina.id, stars: 5 }],
@@ -69,9 +70,9 @@ describe('the stars of a trip by the link of the bot', () => {
 
   it('gives five stars to the person of the link the bot did not get', async () => {
     const { review } = open(null);
-    await screen.findByText('Yoʻlovchilarni baholang');
+    await screen.findByText(toCyrillic('Yoʻlovchilarni baholang'));
     expect(pressed('Madina 5')).toBe('true');
-    await tap('Yuborish');
+    await tap(toCyrillic('Yuborish'));
     await waitFor(() => expect(review).toHaveBeenCalledWith({ bookingId: madina.id, stars: 5 }));
     expect(review).toHaveBeenCalledTimes(1);
   });

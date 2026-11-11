@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { request } from '../bookings/booking-test-kit';
@@ -17,10 +18,10 @@ describe('a second request on the same route and day', { timeout: 20_000 }, () =
     const publishRequest = openRequest({ shared: true, mine: { myRequests: async () => [open] } });
     await quickRoute();
     await pickDay(1);
-    expect(await screen.findByText('Soʻrovni bekor qilish')).toBeTruthy();
-    expect(screen.queryByText('Qayerdan, qayerga?')).toBeNull();
-    await tap('Orqaga');
-    expect(await screen.findByText('Qaysi kuni?')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Soʻrovni bekor qilish'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Qayerdan, qayerga?'))).toBeNull();
+    await tap(toCyrillic('Orqaga'));
+    expect(await screen.findByText(toCyrillic('Qaysi kuni?'))).toBeTruthy();
     expect(document.querySelectorAll('.week-day')[1]?.getAttribute('aria-pressed')).toBe('true');
     expect(publishRequest).not.toHaveBeenCalled();
   });
@@ -34,8 +35,8 @@ describe('a second request on the same route and day', { timeout: 20_000 }, () =
       search: { route: ROUTE, date: '2030-01-02' },
       mine: { myRequests: async () => [open] },
     });
-    expect(await screen.findByText('Soʻrovni bekor qilish')).toBeTruthy();
-    await tap('Orqaga');
+    expect(await screen.findByText(toCyrillic('Soʻrovni bekor qilish'))).toBeTruthy();
+    await tap(toCyrillic('Orqaga'));
     expect(onBack).toHaveBeenCalledOnce();
   });
 });

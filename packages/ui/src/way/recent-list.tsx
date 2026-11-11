@@ -16,12 +16,14 @@ type Props = {
 // «Oxirgi joylar» (docs/71): a chip with the name of each place, one tap takes it at once
 // (G36, docs/100; mockup screen 9).
 export function RecentList({ find, onChoose }: Props) {
-  const { t } = useI18n();
+  const { t, placeName } = useI18n();
   const [recent] = useState(recentPlaces);
+  // A place remembered before G98 has its name in Latin: shown and taken in the alphabet of the text.
   const shown = recent
     .flatMap((item) => {
       const place = find(item.district);
-      return place ? [{ ...item, place }] : [];
+      const name = item.name && { ...item.name, name: placeName(item.name.name) };
+      return place ? [{ ...item, place, name }] : [];
     })
     .slice(0, SHOWN);
   if (shown.length === 0) return null;

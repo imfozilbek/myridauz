@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { PersonActivity } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -30,14 +31,14 @@ describe('what a person did lately', () => {
       team: { person: async () => CARD, activity: async () => ACTIVITY, support },
     });
     renderInShell(<PeopleScreen person={PERSON} onBack={() => undefined} />, false, true, locations, clients);
-    expect(await screen.findByText('Tasdiqdan keyin bekor qilgan')).toBeTruthy();
-    expect(screen.getByText('Haydovchi sifatida').closest('div')?.textContent).toContain('2');
-    expect(screen.getByText('Yoʻlovchi sifatida').closest('div')?.textContent).toContain('1');
-    expect(await screen.findAllByText('Chilonzor → Fargʻona shahri')).toHaveLength(2);
-    expect(screen.getByText(/Yakunlangan$/u)).toBeTruthy();
-    expect(screen.getByText(/Bekor qilingan$/u)).toBeTruthy();
-    expect(screen.getByText('Kelmadi')).toBeTruthy();
-    expect(screen.getByText(/Hal qilindi$/u)).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Tasdiqdan keyin bekor qilgan'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Haydovchi sifatida')).closest('div')?.textContent).toContain('2');
+    expect(screen.getByText(toCyrillic('Yoʻlovchi sifatida')).closest('div')?.textContent).toContain('1');
+    expect(await screen.findAllByText(toCyrillic('Chilonzor → Fargʻona shahri'))).toHaveLength(2);
+    expect(screen.getByText(/Якунланган$/u)).toBeTruthy();
+    expect(screen.getByText(/Бекор қилинган$/u)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Kelmadi'))).toBeTruthy();
+    expect(screen.getByText(/Ҳал қилинди$/u)).toBeTruthy();
     // The talk with support, the newest first (G45).
     const [answer, question] = await screen.findAllByText(/^(Tekshiramiz|Pulim qaytmadi)$/u);
     expect([answer?.textContent, question?.textContent]).toEqual(['Tekshiramiz', 'Pulim qaytmadi']);

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { MarketClient } from '@platform/api-client';
 import { tashkentDate } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
@@ -20,9 +21,9 @@ describe('a trip that takes nobody is no dead end (docs/89 P8)', () => {
       </PlacesGate>,
       testClients({ market: { ...searchMarket(), trip: async () => full, searchTrips } }),
     );
-    expect(await screen.findByText('Boʻsh joy qolmagan. Boshqa safarni tanlang.')).toBeTruthy();
-    expect(screen.getByText('Xabar bering')).toBeTruthy();
-    await tap('Shu kungi boshqa safarlar');
+    expect(await screen.findByText(toCyrillic('Boʻsh joy qolmagan. Boshqa safarni tanlang.'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Xabar bering'))).toBeTruthy();
+    await tap(toCyrillic('Shu kungi boshqa safarlar'));
     await vi.waitFor(() => expect(searchTrips).toHaveBeenCalled());
     expect(searchTrips.mock.calls[0]?.[0]).toMatchObject({
       from: full.from,

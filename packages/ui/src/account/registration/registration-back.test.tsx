@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { loadBrand } from '@platform/brands';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -15,7 +16,7 @@ const welcome = {
     { icon: 'hidden', textKey: 'account.about.hidden' },
   ],
 } as const;
-const HIDDEN = /hech kimga koʻr/;
+const HIDDEN = /ҳеч кимга кўр/;
 const click = async (text: string) => fireEvent.click(await screen.findByText(text));
 const open = () =>
   renderInShell(
@@ -37,14 +38,14 @@ describe('RegistrationFlow: two screens (G58)', () => {
     await passWelcome();
     await addFace(container);
     fireEvent.change(screen.getByDisplayValue('Dilnoza'), { target: { value: 'Dilya' } });
-    await click('Ayol');
-    await click('Orqaga');
+    await click(toCyrillic('Ayol'));
+    await click(toCyrillic('Orqaga'));
     expect(await screen.findByText(loadBrand().slogan)).toBeTruthy();
     expect(screen.getAllByRole('checkbox').every((box) => (box as HTMLInputElement).checked)).toBe(true);
-    await click('Davom etish');
+    await click(toCyrillic('Davom etish'));
     expect(screen.getByDisplayValue('Dilya')).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Rasmni almashtirish' })).toBeTruthy();
-    expect(screen.getByText('Raqamni yuborish')).toBeTruthy();
+    expect(screen.getByRole('button', { name: toCyrillic('Rasmni almashtirish') })).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Raqamni yuborish'))).toBeTruthy();
   });
 
   it('says on both screens of the passenger that the number is hidden (the approved mockups)', async () => {

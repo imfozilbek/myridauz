@@ -12,6 +12,7 @@ const BREAKS_AS_ON_MOCKUP = new Set(['market.rule.price']);
 // @names, /commands, plates and the words of keep.json (G98, docs/228).
 const NOT_WORDS =
   /\{\s*\w+\s*(?:,\s*\w+\s*)?|\b(?:other|one|few|many|zero|two)\s*\{|https?:\/\/\S+|t\.me\/\S+|@\w+|\/[a-z_]+|\S+\.uz\b|\b\d{2} [A-Z] \d{3} [A-Z]{2}\b|\b\d{2} \d{3} [A-Z]{3}\b|\b[a-z]\s*\{/gu;
+const LINKS = /https?:\/\/|t\.me\//gu;
 const KEPT = new RegExp(String.raw`\b(?:${kept.join('|')})[a-zʻʼ]*`, 'gu');
 
 const KEYS = Object.entries(CATALOG).flatMap(([namespace, messages]) =>
@@ -43,8 +44,16 @@ describe('messages', () => {
     expect(latin).toEqual([]);
   });
 
+  it('keeps every link of the reference whole in Cyrillic (G98, lesson 389)', () => {
+    const links = (text: string) => (text.match(LINKS) ?? []).join(' ');
+    const broken = KEYS.filter(
+      (key) => links(messageOf('uz-Latn', key)) !== links(messageOf('uz-Cyrl', key)),
+    );
+    expect(broken).toEqual([]);
+  });
+
   it('formats a Cyrillic message with the same values as the reference', () => {
-    expect(messageOf('uz-Cyrl', 'common.money')).toBe('{amount} сўм');
+    expect(messageOf('uz-Cyrl', 'common.money')).toBe('{amount}\u00A0сўм');
     expect(messageOf('uz-Cyrl', 'bot.navbat.counts')).toBe(
       '{applications} ариза · {complaints} шикоят · {faces} расм{supports, plural, =0 {} other { · # мурожаат}}',
     );

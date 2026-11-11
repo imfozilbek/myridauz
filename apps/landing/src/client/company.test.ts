@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { loadBrand } from '@platform/brands';
 import { LEGAL_EDITION } from '@platform/contracts';
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import { documentPage } from '../document';
 import { initCompany } from './company';
@@ -33,9 +33,9 @@ describe('legal document script (G34)', () => {
       return answer({ company, edition: { version: '1.3', date: '2026-10-05' } })();
     });
     expect(asked).toEqual([`https://api.${brand.domain}/public/company`]);
-    expect(edition()).toBe(i18n.t('legal.edition', { version: '1.3', date: '5-oktabr 2026' }));
+    expect(edition()).toBe(i18n.t('legal.edition', { version: '1.3', date: '5-октябр 2026' }));
     expect(document.querySelector('[data-company]')?.textContent).toBe(
-      'Yoʻldosh <b>Servis</b> (MChJ, STIR 123456789, manzil: Toshkent shahri)',
+      'Yoʻldosh <b>Servis</b> (MChJ, СТИР 123456789, манзил: Toshkent shahri)',
     );
     expect(document.querySelector('b')).toBeNull();
     expect(document.querySelector('[data-email]')?.textContent).toBe('info@example.uz');
@@ -45,7 +45,7 @@ describe('legal document script (G34)', () => {
   it('keeps the brand name before the first save and the page as built without an answer', async () => {
     await initCompany(mount(), answer({ company: null, edition: LEGAL_EDITION }));
     expect(document.querySelector('[data-company]')?.textContent).toBe(brand.name);
-    expect(edition()).toContain(`Tahrir ${LEGAL_EDITION.version}`);
+    expect(edition()).toContain(toCyrillic(`Tahrir ${LEGAL_EDITION.version}`));
     const built = mount();
     const before = built.innerHTML;
     await initCompany(built, answer({}, false));

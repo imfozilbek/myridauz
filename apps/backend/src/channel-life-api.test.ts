@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { channelOf, loadBrand } from '@platform/brands';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { approvedDriver, json, read } from './bookings-test-api';
@@ -64,15 +65,17 @@ describe('the life of a channel post (G68)', () => {
     vi.setSystemTime(Date.now() + 5 * HOUR);
     await step('arrive');
     expect(posts()[0]?.body.disable_notification).toBe(true);
-    expect(heads().map(([, head]) => head)).toEqual([
-      '<b>🆕 Yangi safar</b>',
-      '<b>🆕 Yangi safar</b>',
-      '<b>🚗 Yoʻlga chiqdi</b>',
-      '<b>🏁 Yetib bordi</b>',
-    ]);
+    expect(heads().map(([, head]) => head)).toEqual(
+      [
+        '<b>🆕 Yangi safar</b>',
+        '<b>🆕 Yangi safar</b>',
+        '<b>🚗 Yoʻlga chiqdi</b>',
+        '<b>🏁 Yetib bordi</b>',
+      ].map((head) => toCyrillic(head)),
+    );
     // Who went and when, no words about sharing the costs (owner decision 18.10.2026, docs/193).
-    expect(String(posts().at(-1)?.body.text)).toContain(' · 2 kishi · ');
-    expect(String(posts().at(-1)?.body.text)).not.toContain('xarajat');
+    expect(String(posts().at(-1)?.body.text)).toContain(toCyrillic(' · 2 kishi · '));
+    expect(String(posts().at(-1)?.body.text)).not.toContain(toCyrillic('xarajat'));
     // The board of the day (08:00 now): pinned, with sound once, the picture of the direction above.
     const boards = telegram.filter(
       (item) => item.body.chat_id === SAMARQAND && String(item.body.text ?? '').startsWith('<b>📋'),
@@ -84,7 +87,7 @@ describe('the life of a channel post (G68)', () => {
       show_above_text: true,
     });
     expect(boards.slice(1).every((item) => item.method === 'editMessageText')).toBe(true);
-    expect(String(boards.at(-1)?.body.text)).toContain('yetib bordi</s>');
+    expect(String(boards.at(-1)?.body.text)).toContain(toCyrillic('yetib bordi</s>'));
     expect(telegram.some((item) => item.method === 'pinChatMessage' && item.body.chat_id === SAMARQAND)).toBe(
       true,
     );
@@ -98,7 +101,7 @@ describe('the life of a channel post (G68)', () => {
     telegram.length = 0;
     await call(`/driver/trips/${published.id}/cancel`, OTHER_DRIVER, { method: 'POST', app: 'driver' });
     expect(heads()).toEqual([
-      ['editMessageText', '<b>❌ Safar bekor qilindi</b>'],
+      ['editMessageText', toCyrillic('<b>❌ Safar bekor qilindi</b>')],
       ['deleteMessage', ''],
     ]);
   });

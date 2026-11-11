@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { CallsClient } from '@platform/api-client';
 import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -55,7 +56,7 @@ async function inCall(onBack = vi.fn()) {
     socket.open();
     socket.receive({ type: 'history', messages: [], canCall: true });
   });
-  fireEvent.click(screen.getByLabelText('Qoʻngʻiroq'));
+  fireEvent.click(screen.getByLabelText(toCyrillic('Qoʻngʻiroq')));
   await waitFor(() => expect(socket.sent).toContain(JSON.stringify({ type: 'call', action: 'ring' })));
   act(() => socket.receive({ type: 'call', call: { status: 'ringing', caller: 'me' } }));
   return { ...view, socket, onBack };
@@ -66,10 +67,10 @@ describe('leaving a call (docs/94 F5, C4)', () => {
     const { socket, onBack, unmount } = await inCall();
     expect(sdk.closingBehavior.enableConfirmation.ifAvailable).toHaveBeenCalledOnce();
     asked.mockReturnValueOnce(false).mockReturnValueOnce(true);
-    await act(async () => fireEvent.click(screen.getByText('Orqaga')));
-    expect(asked).toHaveBeenCalledWith('Qoʻngʻiroqni tugatasizmi?');
+    await act(async () => fireEvent.click(screen.getByText(toCyrillic('Orqaga'))));
+    expect(asked).toHaveBeenCalledWith(toCyrillic('Qoʻngʻiroqni tugatasizmi?'));
     expect(onBack).not.toHaveBeenCalled();
-    await act(async () => fireEvent.click(screen.getByText('Orqaga')));
+    await act(async () => fireEvent.click(screen.getByText(toCyrillic('Orqaga'))));
     expect(onBack).toHaveBeenCalledOnce();
     expect(stop).not.toHaveBeenCalled();
     unmount();
@@ -84,7 +85,7 @@ describe('leaving a call (docs/94 F5, C4)', () => {
       <ChatScreen chatKey={KEY} onBack={onBack} />,
       testClients({ chat: { socketUrl: async () => 'wss://api.test/socket' } }),
     );
-    fireEvent.click(screen.getByText('Orqaga'));
+    fireEvent.click(screen.getByText(toCyrillic('Orqaga')));
     expect(onBack).toHaveBeenCalledOnce();
     expect(asked).not.toHaveBeenCalled();
   });
@@ -93,7 +94,7 @@ describe('leaving a call (docs/94 F5, C4)', () => {
     const { socket } = await inCall();
     act(() => socket.receive({ type: 'call', call: { status: 'active', caller: 'me' } }));
     act(() => socket.close());
-    expect(screen.getByText('Qoʻngʻiroq tugadi')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Qoʻngʻiroq tugadi'))).toBeTruthy();
     expect(stop).toHaveBeenCalled();
   });
 });

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import { closeDeparted, refreshPosts, rememberPost } from './application/channels';
 import { setup } from './channels-kit';
@@ -14,7 +15,7 @@ describe('the life of the posts of a trip (G68)', () => {
       [7, false],
       [7, true],
     ]);
-    expect(sent[0]?.text).toContain('Safar bekor qilindi');
+    expect(sent[0]?.text).toContain(toCyrillic('Safar bekor qilindi'));
   });
 
   it('a trip that arrived edits its closed posts once more: «Yetib bordi» (G68)', async () => {
@@ -25,8 +26,8 @@ describe('the life of the posts of a trip (G68)', () => {
     change({ status: 'completed', arrivedAt: TRIP.departAt });
     await refreshPosts(deps, 'trip-1');
     expect(sent.map((job) => job.text.split('\n')[0])).toEqual([
-      '<b>🚗 Yoʻlga chiqdi</b>',
-      '<b>🏁 Yetib bordi</b>',
+      toCyrillic('<b>🚗 Yoʻlga chiqdi</b>'),
+      toCyrillic('<b>🏁 Yetib bordi</b>'),
     ]);
   });
 });

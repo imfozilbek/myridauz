@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { MarketClient } from '@platform/api-client';
 import { DAY_MS, MINUTE_MS, type Location, type Recommendation } from '@platform/contracts';
 import { fireEvent, screen } from '@testing-library/react';
@@ -66,15 +67,17 @@ export function openNewTrip(options: Options = {}) {
 }
 
 // The two steppers of the screen: the seats first, the price second.
-export const seatsLess = () => fireEvent.click(screen.getAllByLabelText('Kamaytirish')[0] as HTMLElement);
-export const seatsMore = () => fireEvent.click(screen.getAllByLabelText('Oshirish')[0] as HTMLElement);
+export const seatsLess = () =>
+  fireEvent.click(screen.getAllByLabelText(toCyrillic('Kamaytirish'))[0] as HTMLElement);
+export const seatsMore = () =>
+  fireEvent.click(screen.getAllByLabelText(toCyrillic('Oshirish'))[0] as HTMLElement);
 
 // The day row opens the sheet of the day and the time (G75); tomorrow in the row of the week, the tap
 // on 08:00 comes back to the screen (G78 В12).
 export async function tomorrowAtEight() {
-  await tap(/^(Bugun|Ertaga), \d\d:\d\d$/u);
-  await screen.findByText('Qachon joʻnaysiz?');
+  await tap(/^(Бугун|Эртага), \d\d:\d\d$/u);
+  await screen.findByText(toCyrillic('Qachon joʻnaysiz?'));
   fireEvent.click(document.querySelectorAll('.week-day')[1] as HTMLElement);
   await tap('08:00');
-  await screen.findByText('Ertaga, 08:00');
+  await screen.findByText(toCyrillic('Ertaga, 08:00'));
 }

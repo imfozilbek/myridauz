@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { confirmed } from '../bookings/booking-test-kit';
@@ -42,30 +43,30 @@ describe('the sheet of a new message (G68)', { timeout: 20_000 }, () => {
   it('shows who wrote, about which trip and the words', async () => {
     passenger('b00000000-0000-4000-8000-000000000a01');
     // The red dot on the chat of the block opens the sheet (G76, docs/164).
-    fireEvent.click(await screen.findByRole('button', { name: 'Xabar yozish' }));
-    expect(await screen.findByText('Yangi xabar')).toBeTruthy();
+    fireEvent.click(await screen.findByRole('button', { name: toCyrillic('Xabar yozish') }));
+    expect(await screen.findByText(toCyrillic('Yangi xabar'))).toBeTruthy();
     expect(screen.getAllByText('Jasur').length).toBeGreaterThan(0);
-    expect(screen.getByText('Ertaga 08:00 · Fargʻonaga')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Ertaga 08:00 · Fargʻonaga'))).toBeTruthy();
     expect(screen.getByText(`«${WORDS}»`)).toBeTruthy();
-    await tap('Keyinroq');
+    await tap(toCyrillic('Keyinroq'));
     await sheetClosed();
   });
 
   it('a ready answer goes in one tap without opening the chat', async () => {
     const key = 'b00000000-0000-4000-8000-000000000a02';
     const { answer } = passenger(key);
-    fireEvent.click(await screen.findByRole('button', { name: 'Xabar yozish' }));
-    await tap('Kutaman');
-    expect(answer).toHaveBeenCalledWith(key, 'Kutaman');
-    expect(await screen.findByText('Javob yuborildi')).toBeTruthy();
+    fireEvent.click(await screen.findByRole('button', { name: toCyrillic('Xabar yozish') }));
+    await tap(toCyrillic('Kutaman'));
+    expect(answer).toHaveBeenCalledWith(key, toCyrillic('Kutaman'));
+    expect(await screen.findByText(toCyrillic('Javob yuborildi'))).toBeTruthy();
     await sheetClosed();
   });
 
   it('«Javob yozish» opens the chat', async () => {
     const key = 'b00000000-0000-4000-8000-000000000a03';
     const { openChat } = passenger(key);
-    fireEvent.click(await screen.findByRole('button', { name: 'Xabar yozish' }));
-    await tap('Javob yozish');
+    fireEvent.click(await screen.findByRole('button', { name: toCyrillic('Xabar yozish') }));
+    await tap(toCyrillic('Javob yozish'));
     expect(openChat).toHaveBeenCalledWith(key);
     await sheetClosed();
   });
@@ -77,7 +78,7 @@ describe('the sheet of a new message (G68)', { timeout: 20_000 }, () => {
     window.history.replaceState(null, '', `/?sheet=${read}`);
     const { openChat } = passenger('b00000000-0000-4000-8000-000000000a05');
     await vi.waitFor(() => expect(openChat).toHaveBeenCalledWith(read));
-    expect(screen.queryByText('Yangi xabar')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Yangi xabar'))).toBeNull();
     window.history.replaceState(null, '', '/');
   });
 });

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { DAY_MS, tashkentDate } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -23,14 +24,14 @@ describe(
         bookings: async () => [],
         asked: async () => [{ ...open, views: 14 }],
       });
-      expect(await screen.findByText(/ · 14 haydovchi koʻrdi$/u)).toBeTruthy();
+      expect(await screen.findByText(/ · 14 ҳайдовчи кўрди$/u)).toBeTruthy();
       cleanup();
       renderHome((go) => <PassengerHome go={go} />, PASSENGER_ACTIONS, {
         bookings: async () => [],
         asked: async () => [open],
       });
-      expect(await screen.findByText('Soʻrovim')).toBeTruthy();
-      expect(screen.queryByText(/koʻrdi$/u)).toBeNull();
+      expect(await screen.findByText(toCyrillic('Soʻrovim'))).toBeTruthy();
+      expect(screen.queryByText(/кўрди$/u)).toBeNull();
     });
 
     it('a published trip says how many people opened it', async () => {
@@ -41,7 +42,7 @@ describe(
         { trips: async () => [ahead], requests: async () => [], where: true },
         approved,
       );
-      expect(await screen.findByText(/ · 23 kishi koʻrdi$/u)).toBeTruthy();
+      expect(await screen.findByText(/ · 23 киши кўрди$/u)).toBeTruthy();
     });
   },
 );

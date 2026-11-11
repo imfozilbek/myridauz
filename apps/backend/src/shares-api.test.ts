@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { app } from './app';
 import { approvedDriver, json, read, seen } from './bookings-test-api';
@@ -73,7 +74,7 @@ describe('"Yaqinlarimga yuborish" (docs/43)', () => {
     expect(prepared?.user_id).toBe(passenger);
     // The last lines call close people to the brand too (G69, docs/123 loop 4) and say why (G88).
     expect(created.text).toMatch(
-      /\n\nSiz ham \w+ bilan yoʻlga chiqing\.\nRaqamingiz yashirin\. Telegramda ochiladi\. Ilova yuklab olish shart emas\.$/u,
+      /\n\nСиз ҳам \w+ билан йўлга чиқинг\.\nРақамингиз яширин\. Telegramda очилади\. Илова юклаб олиш шарт эмас\.$/u,
     );
     expect(JSON.stringify(prepared)).toContain(JSON.stringify(created.text).slice(1, -1));
     const token = tokenOf(created.link);
@@ -110,7 +111,10 @@ describe('"Yaqinlarimga yuborish" (docs/43)', () => {
     await call(`/passenger/bookings/${booking.id}/arrived`, passenger, { method: 'POST' });
     vi.useRealTimers();
     const toClose = telegram.filter((item) => item.body.chat_id === CLOSE[0]).map((item) => item.body.text);
-    expect(toClose).toEqual(['Ali mashinaga chiqdi: Chevrolet Cobalt, 01 A 123 BC.', 'Ali yetib keldi.']);
+    expect(toClose).toEqual([
+      `Ali ${toCyrillic('mashinaga chiqdi')}: Chevrolet Cobalt, 01 A 123 BC.`,
+      `Ali ${toCyrillic('yetib keldi.')}`,
+    ]);
     expect((await read<{ status: string }>(shared(token))).status).toBe('arrived');
     expect(
       (await call(`/passenger/bookings/${booking.id}/share/stop`, OTHER, { method: 'POST' })).status,
@@ -128,7 +132,7 @@ describe('"Yaqinlarimga yuborish" (docs/43)', () => {
     // A second later: the time is real, a later minute could fall on the next day.
     expect((await retime(departAt + 1000)).status).toBe(200);
     const toClose = telegram.filter((item) => item.body.chat_id === CLOSE[2]).map((item) => item.body.text);
-    expect(toClose.some((text) => String(text).startsWith('Vaqt oʻzgardi'))).toBe(true);
+    expect(toClose.some((text) => String(text).startsWith(toCyrillic('Vaqt oʻzgardi')))).toBe(true);
   });
 
   it('closes the link by itself a day after the arrival', async () => {

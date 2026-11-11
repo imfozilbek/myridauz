@@ -18,7 +18,7 @@ describe('the name of a channel in the apps (owner 13.10.2026, docs/176)', () =>
   });
 
   it('takes a channel of the brand by its name in Telegram, a channel of the team by its title', () => {
-    expect(channelName(brand, { chat: boka?.chat ?? '', title: 'whatever' })).toBe(`Boʻka${KEPT}Bekobod`);
+    expect(channelName(brand, { chat: boka?.chat ?? '', title: 'whatever' })).toBe(`Бўка${KEPT}Бекобод`);
     expect(channelName(brand, { chat: '@yol_fargona', title: 'Fargʻona yoʻli' })).toBe('Fargʻona yoʻli');
   });
 });

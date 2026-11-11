@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { fakeTelegram } from './bots/test-bot';
 import { sendCaseReminders } from './modules/assignments';
@@ -39,8 +40,10 @@ describe('a photo nobody checked', () => {
     }
     const late = adminTexts().filter((sent) => sent.text.startsWith('⏱'));
     expect(late.map((sent) => sent.chat).sort()).toEqual([OWNER, MODERATOR].sort());
-    expect(late[0]?.text).toBe('⏱ Ali rasmi 25 daqiqa kutmoqda: 5 daqiqa qoldi');
+    expect(late[0]?.text).toBe(`⏱ Ali ${toCyrillic('rasmi 25 daqiqa kutmoqda: 5 daqiqa qoldi')}`);
     const owner = adminTexts().filter((sent) => sent.text.startsWith('⚠️'));
-    expect(owner).toEqual([{ chat: OWNER, text: '⚠️ Ali rasmi 30 daqiqadan beri koʻrilmadi.' }]);
+    expect(owner).toEqual([
+      { chat: OWNER, text: `⚠️ Ali ${toCyrillic('rasmi 30 daqiqadan beri koʻrilmadi.')}` },
+    ]);
   });
 });

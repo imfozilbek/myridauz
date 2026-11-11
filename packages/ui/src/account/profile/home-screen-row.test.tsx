@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { addAppToHomeScreen } from '../../telegram/home-screen';
@@ -23,15 +24,15 @@ describe('«Bosh ekranga qoʻshish» in «Sozlamalar»', () => {
     can.value = true;
     renderProfile();
     fireEvent.click(screen.getByText('Dilnoza'));
-    fireEvent.click(screen.getByText('Bosh ekranga qoʻshish'));
+    fireEvent.click(screen.getByText(toCyrillic('Bosh ekranga qoʻshish')));
     expect(addAppToHomeScreen).toHaveBeenCalledOnce();
-    expect(screen.queryByText('Bosh ekranga qoʻshish')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Bosh ekranga qoʻshish'))).toBeNull();
   });
 
   it('is not offered when Telegram cannot add it or it is already there', () => {
     can.value = false;
     renderProfile();
     fireEvent.click(screen.getByText('Dilnoza'));
-    expect(screen.queryByText('Bosh ekranga qoʻshish')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Bosh ekranga qoʻshish'))).toBeNull();
   });
 });

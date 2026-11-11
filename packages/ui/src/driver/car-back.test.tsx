@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import { useState } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -44,11 +45,11 @@ describe('the car opened from «Profil»', () => {
       true,
     );
     fireEvent.click(await screen.findByText('main screen'));
-    fireEvent.click(await screen.findByText('Mashinam'));
-    expect(await screen.findByText('Mashinangiz')).toBeTruthy();
+    fireEvent.click(await screen.findByText(toCyrillic('Mashinam')));
+    expect(await screen.findByText(toCyrillic('Mashinangiz'))).toBeTruthy();
     act(pressBack);
-    expect(screen.queryByText('Mashinangiz')).toBeNull();
-    expect(screen.getByText('Mashinam')).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Mashinangiz'))).toBeNull();
+    expect(screen.getByText(toCyrillic('Mashinam'))).toBeTruthy();
     expect(screen.queryByText('main screen')).toBeNull();
   });
 });

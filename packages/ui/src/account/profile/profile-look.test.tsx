@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { channelOf, loadBrand } from '@platform/brands';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -21,10 +22,12 @@ describe('«Profil» of a driver and how the other side sees the person (G65)', 
   it('shows the car with its plate; a tap changes it', () => {
     renderProfile({}, { driver: approved });
     fireEvent.click(screen.getByText('Dilnoza'));
-    expect(screen.getByText(`Haydovchi · ${loadBrand().name} bilan 2 oy`)).toBeTruthy();
-    expect(screen.getByText('Mashinam')).toBeTruthy();
-    expect(screen.getByText('Cobalt, Oq')).toBeTruthy();
-    fireEvent.click(screen.getByText('Mashinam'));
+    expect(
+      screen.getByText(`${toCyrillic('Haydovchi')} · ${loadBrand().name} ${toCyrillic('bilan 2 oy')}`),
+    ).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Mashinam'))).toBeTruthy();
+    expect(screen.getByText(`Cobalt, ${toCyrillic('Oq')}`)).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Mashinam')));
     expect(approved.editCar).toHaveBeenCalled();
   });
 
@@ -32,37 +35,37 @@ describe('«Profil» of a driver and how the other side sees the person (G65)', 
   it('opens what passengers see: the car, the plate, the numbers, then «Baholarim»', async () => {
     renderProfile({}, { driver: approved, clients: { feedback: { reviewsOf: async () => reviews } } });
     fireEvent.click(screen.getByText('Dilnoza'));
-    fireEvent.click(screen.getByText('Yoʻlovchilar meni qanday koʻradi ›'));
-    expect(screen.getByText('Yoʻlovchilar sizni shunday koʻradi')).toBeTruthy();
-    expect(screen.getByText('Chevrolet Cobalt, Oq')).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Yoʻlovchilar meni qanday koʻradi ›')));
+    expect(screen.getByText(toCyrillic('Yoʻlovchilar sizni shunday koʻradi'))).toBeTruthy();
+    expect(screen.getByText(`Chevrolet Cobalt, ${toCyrillic('Oq')}`)).toBeTruthy();
     await waitFor(() =>
-      expect(document.querySelector('.look-stats')?.textContent).toBe('8baho12safar100%vaqtida'),
+      expect(document.querySelector('.look-stats')?.textContent).toBe(toCyrillic('8baho12safar100%vaqtida')),
     );
-    expect(screen.getByText('Telefon raqamingiz hech kimga koʻrinmaydi.')).toBeTruthy();
-    fireEvent.click(screen.getByText('Baholarim'));
+    expect(screen.getByText(toCyrillic('Telefon raqamingiz hech kimga koʻrinmaydi.'))).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Baholarim')));
     expect(await screen.findByText('Madina')).toBeTruthy();
   });
 
   it('opens what drivers see of a passenger: the face, the name, the stars', async () => {
     renderProfile({}, { clients: { feedback: { reviewsOf: async () => reviews } } });
     fireEvent.click(screen.getByText('Dilnoza'));
-    fireEvent.click(screen.getByText('Haydovchilar meni qanday koʻradi ›'));
-    expect(screen.getByText('Haydovchilar sizni shunday koʻradi')).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Haydovchilar meni qanday koʻradi ›')));
+    expect(screen.getByText(toCyrillic('Haydovchilar sizni shunday koʻradi'))).toBeTruthy();
     expect(await screen.findByText('★ 4,9')).toBeTruthy();
-    expect(screen.queryByText('Mashinam')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Mashinam'))).toBeNull();
   });
 
   it('lists the reviews under «Baholarim», or says there is none yet', async () => {
     const reviewsOf = vi.fn(async () => reviews);
     renderProfile({}, { clients: { feedback: { reviewsOf } } });
     fireEvent.click(screen.getByText('Dilnoza'));
-    fireEvent.click(await screen.findByText('Baholarim'));
+    fireEvent.click(await screen.findByText(toCyrillic('Baholarim')));
     expect(await screen.findByText('Madina')).toBeTruthy();
     expect(screen.getByText(/ · Juda yaxshi$/u)).toBeTruthy();
     reviewsOf.mockResolvedValueOnce({ rating: { average: null, count: 0 }, reviews: [], more: false });
-    fireEvent.click(screen.getByText('Orqaga'));
-    fireEvent.click(await screen.findByText('Baholarim'));
-    expect(await screen.findByText('Hali izoh yoʻq')).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Orqaga')));
+    fireEvent.click(await screen.findByText(toCyrillic('Baholarim')));
+    expect(await screen.findByText(toCyrillic('Hali izoh yoʻq'))).toBeTruthy();
   });
 
   it('counts the channels the person is in with their drawings (docs/119)', async () => {
@@ -74,7 +77,7 @@ describe('«Profil» of a driver and how the other side sees the person (G65)', 
     ];
     renderProfile({}, { clients: { channels: { mine } } });
     fireEvent.click(screen.getByText('Dilnoza'));
-    expect(await screen.findByText('2 ta kanaldasiz')).toBeTruthy();
-    expect(await screen.findByAltText('Samarqand shahri | Samarqand tumani')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('2 ta kanaldasiz'))).toBeTruthy();
+    expect(await screen.findByAltText(toCyrillic('Samarqand shahri | Samarqand tumani'))).toBeTruthy();
   });
 });

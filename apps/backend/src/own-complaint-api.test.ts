@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ADMIN_NAVBAT_PATH, ADMIN_WORK_PATH, navbatSchema, workSchema } from '@platform/contracts';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { fakeTelegram } from './bots/test-bot';
@@ -17,7 +18,7 @@ const OWNER = 900;
 const DRIVER = 952;
 const PASSENGER = 953;
 const HOUR = 3_600_000;
-const RING_NEW = '📋 Yangi ish keldi';
+const RING_NEW = toCyrillic('📋 Yangi ish keldi');
 const navbat = async (id: number) =>
   navbatSchema.parse(await (await call(ADMIN_NAVBAT_PATH, id, { app: 'admin' })).json());
 
@@ -58,12 +59,13 @@ describe('a complaint about a member of the team', () => {
         .map((item) => String(item.body.text ?? ''));
     const card = (chat: number) =>
       texts(chat)
-        .filter((text) => text.includes(' ariza · '))
+        .filter((text) => text.includes(toCyrillic(' ariza · ')))
         .at(-1) ?? '';
-    expect(card(OWNER)).toContain('1 shikoyat');
-    expect(card(DRIVER)).not.toContain('1 shikoyat');
+    expect(card(OWNER)).toContain(toCyrillic('1 shikoyat'));
+    expect(card(DRIVER)).not.toContain(toCyrillic('1 shikoyat'));
     // The urgent ring of a harassment goes to the owner, not to the moderator it is about.
-    const rang = (chat: number) => texts(chat).some((text) => text.startsWith('⚠️ Muhim shikoyat'));
+    const rang = (chat: number) =>
+      texts(chat).some((text) => text.startsWith(toCyrillic('⚠️ Muhim shikoyat')));
     expect(rang(OWNER)).toBe(true);
     expect(rang(DRIVER)).toBe(false);
     // «A case came» rings a member whose own «Navbat» was empty, by his own count (G91 review).

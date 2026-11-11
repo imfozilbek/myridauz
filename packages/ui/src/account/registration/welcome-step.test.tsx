@@ -1,5 +1,5 @@
 import { loadBrand } from '@platform/brands';
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderInShell } from '../../test-shell';
@@ -23,8 +23,8 @@ const welcome = {
 } as const;
 const brand = loadBrand();
 const { formatMoney } = createI18n(DEFAULT_LOCALE);
-const OFFER = /ni qabul qilaman/;
-const DATA = /ga roziman/;
+const OFFER = /ни қабул қиламан/;
+const DATA = /га розиман/;
 const open = () =>
   renderInShell(
     <AccountGate
@@ -35,7 +35,7 @@ const open = () =>
       <p>inside</p>
     </AccountGate>,
   );
-const button = () => screen.getByRole('button', { name: 'Davom etish' });
+const button = () => screen.getByRole('button', { name: toCyrillic('Davom etish') });
 const tick = (line: RegExp) => {
   const label = screen.getByText(line).closest('label');
   if (label) fireEvent.click(label);
@@ -49,15 +49,15 @@ describe('Registration, screen 1: the welcome with two ticks (G58)', () => {
     expect(await screen.findByText(brand.slogan)).toBeTruthy();
     expect(container.querySelector('img.welcome-logo')?.getAttribute('src')).toMatch(/logo-driver\.svg$/);
     expect(screen.getByText(brand.name)).toBeTruthy();
-    expect(screen.getByText(`Nima uchun ${brand.name}`)).toBeTruthy();
-    expect(screen.getByText('Narxni oʻzingiz belgilaysiz.')).toBeTruthy();
-    const bonus = `Boshlash uchun ${formatMoney(brand.promo.amount)} bonus.`;
+    expect(screen.getByText(`${toCyrillic('Nima uchun')} ${brand.name}`)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Narxni oʻzingiz belgilaysiz.'))).toBeTruthy();
+    const bonus = `${toCyrillic('Boshlash uchun')} ${formatMoney(brand.promo.amount)} ${toCyrillic('bonus')}.`;
     expect(screen.getByText(bonus, { normalizer: (text) => text })).toBeTruthy();
-    expect(screen.getByText('Yoʻlovchilar sizni oʻzi topadi.')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Yoʻlovchilar sizni oʻzi topadi.'))).toBeTruthy();
     // Each row has its icon in a tile, as the tiles of the main screen.
     expect(container.querySelectorAll('.welcome-points .welcome-tile svg')).toHaveLength(3);
-    expect(screen.queryByText('Safaringizga yoʻlovchi toping')).toBeNull();
-    expect(screen.queryByText(/tugmasini bosib, siz/)).toBeNull();
+    expect(screen.queryByText(toCyrillic('Safaringizga yoʻlovchi toping'))).toBeNull();
+    expect(screen.queryByText(/тугмасини босиб, сиз/)).toBeNull();
   });
 
   it('«Davom etish» stays inactive until both ticks are set', async () => {
@@ -83,9 +83,9 @@ describe('Registration, screen 1: the welcome with two ticks (G58)', () => {
       'Maxfiylik siyosati',
       'Shaxsga doir maʼlumotlarimni qayta ishlash',
     ]) {
-      fireEvent.click(screen.getByText(link));
+      fireEvent.click(screen.getByText(toCyrillic(link)));
       expect(screen.queryByText(brand.slogan)).toBeNull();
-      fireEvent.click(screen.getByText('Orqaga'));
+      fireEvent.click(screen.getByText(toCyrillic('Orqaga')));
       expect(await screen.findByText(brand.slogan)).toBeTruthy();
       expect(checked()).toEqual([false, true]);
     }
@@ -98,7 +98,7 @@ describe('Registration, screen 1: the welcome with two ticks (G58)', () => {
     tick(DATA);
     fireEvent.click(button());
     expect(permissions.requestBotMessages).toHaveBeenCalledTimes(1);
-    expect(await screen.findByText('Siz haqingizda')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Siz haqingizda'))).toBeTruthy();
     const steps = tracked.filter((event) => event.name === 'registration_step');
     expect(steps.map((event) => 'step' in event && event.step)).toEqual(['consent']);
   });

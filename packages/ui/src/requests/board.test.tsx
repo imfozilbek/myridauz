@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { BookingsClient } from '@platform/api-client';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -21,16 +22,16 @@ describe('«Yoʻlovchilar soʻrovlari» (G64, docs/118 path 7)', { timeout: 20_0
     const requestBoard = openBoard();
     expect(await screen.findByText('Dilnoza')).toBeTruthy();
     expect(screen.getByText('★ 4,8')).toBeTruthy();
-    expect(screen.getByText('Chilonzor → Fargʻona')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Chilonzor → Fargʻona'))).toBeTruthy();
     expect(screen.getByText('95 000')).toBeTruthy();
-    expect(screen.getByText('2 kishi')).toBeTruthy();
-    expect(screen.getByText('Uyidan yoki pitakdan')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('2 kishi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Uyidan yoki pitakdan'))).toBeTruthy();
     // The row of the week (docs/172): a day with requests has its dot.
     expect(document.querySelectorAll('.week-day')).toHaveLength(7);
     expect(document.querySelectorAll('.week-dot:not(.week-dot-none)')).toHaveLength(3);
     // The numbers stay hidden: a chat and a call inside the app, before any booking (docs/07).
-    expect(screen.getByLabelText('Xabar yozish')).toBeTruthy();
-    expect(screen.getByLabelText('Qoʻngʻiroq')).toBeTruthy();
+    expect(screen.getByLabelText(toCyrillic('Xabar yozish'))).toBeTruthy();
+    expect(screen.getByLabelText(toCyrillic('Qoʻngʻiroq'))).toBeTruthy();
     await pickDay(1);
     await waitFor(() => expect(requestBoard).toHaveBeenLastCalledWith({ date: '2026-10-03', seen: '1' }));
   });
@@ -41,14 +42,14 @@ describe('«Yoʻlovchilar soʻrovlari» (G64, docs/118 path 7)', { timeout: 20_0
       requestBoard: async () => board({ trip, fits: [{ ...asked, extraKm: 2 }], others: [] }),
       bookings: { sendOffer },
     });
-    expect(await screen.findByText('Safaringiz: bugun 08:00, Fargʻona')).toBeTruthy();
-    expect(screen.getByText('3 boʻsh joy · 95 000')).toBeTruthy();
-    expect(screen.getByText('Safaringizga mos (1)')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Safaringiz: bugun 08:00, Fargʻona'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('3 boʻsh joy · 95 000'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Safaringizga mos (1)'))).toBeTruthy();
     // One line of words that wraps as the words of the mockup do (g64/2 phone 1).
-    expect(screen.getByText('Chilonzor → Fargʻona · +2 km')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Chilonzor → Fargʻona · +2 km'))).toBeTruthy();
     // No day buttons while a trip leads the screen (mockup g64/2).
     expect(document.querySelector('.week-row')).toBeNull();
-    await tap('Safarimga taklif qilish');
+    await tap(toCyrillic('Safarimga taklif qilish'));
     await waitFor(() =>
       expect(sendOffer).toHaveBeenCalledWith('r1', { departAt: trip.departAt, price: 95000, tripId: 't1' }),
     );
@@ -60,24 +61,24 @@ describe('«Yoʻlovchilar soʻrovlari» (G64, docs/118 path 7)', { timeout: 20_0
       requestBoard: async () =>
         board({ date: '2026-10-03', others: [later, { ...asked, date: '2026-10-03' }] }),
     });
-    expect(await screen.findByText('Chilonzor → Fargʻona · ertaga')).toBeTruthy();
-    expect(screen.getByText('Chilonzor → Fargʻona')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Chilonzor → Fargʻona · ertaga'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Chilonzor → Fargʻona'))).toBeTruthy();
     cleanup();
     openBoard({ requestBoard: async () => board({ others: [salon] }) });
-    expect(await screen.findByText('Chilonzor → Fargʻona')).toBeTruthy();
-    expect(screen.queryByText(/· bugun/u)).toBeNull();
+    expect(await screen.findByText(toCyrillic('Chilonzor → Fargʻona'))).toBeTruthy();
+    expect(screen.queryByText(/· бугун/u)).toBeNull();
   });
 
   it('a request with a live offer of the driver says «Taklif yuborildi» and asks no second one', async () => {
     openBoard({ bookings: { driverOffers: async () => [offer] } });
-    const sent = await screen.findByText('Taklif yuborildi');
+    const sent = await screen.findByText(toCyrillic('Taklif yuborildi'));
     expect((sent as HTMLButtonElement).disabled).toBe(true);
   });
 
   it('opens the talk about the request before a booking: a chat, or a call at once', async () => {
     const openTalk = vi.fn<BookingsClient['openTalk']>(async () => 'ttalk1');
     openBoard({ bookings: { openTalk } });
-    fireEvent.click(await screen.findByLabelText('Qoʻngʻiroq'));
+    fireEvent.click(await screen.findByLabelText(toCyrillic('Qoʻngʻiroq')));
     await waitFor(() => expect(openTalk).toHaveBeenCalledWith('r1'));
   });
 
@@ -85,7 +86,12 @@ describe('«Yoʻlovchilar soʻrovlari» (G64, docs/118 path 7)', { timeout: 20_0
     const requestBoard = openBoard({
       requestBoard: async (query) => (query.from ? board() : board({ known: false })),
     });
-    for (const step of ['Toshkent shahri', 'Chilonzor', 'Fargʻona viloyati', 'Fargʻona shahri'])
+    for (const step of [
+      toCyrillic('Toshkent shahri'),
+      toCyrillic('Chilonzor'),
+      toCyrillic('Fargʻona viloyati'),
+      toCyrillic('Fargʻona shahri'),
+    ])
       await tap(step);
     await waitFor(() =>
       expect(requestBoard).toHaveBeenLastCalledWith({ from: '1726269', to: '1730401', seen: '1' }),
@@ -95,23 +101,28 @@ describe('«Yoʻlovchilar soʻrovlari» (G64, docs/118 path 7)', { timeout: 20_0
 
   it('an empty day leads to a new trip; an empty day under a trip does not', async () => {
     openBoard({ requestBoard: async () => board({ others: [] }) });
-    expect(await screen.findByText('Bu kunga soʻrov yoʻq')).toBeTruthy();
-    expect(screen.getByText('Safar eʼlon qilish')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Bu kunga soʻrov yoʻq'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Safar eʼlon qilish'))).toBeTruthy();
     cleanup();
     openBoard({ requestBoard: async () => board({ trip, others: [] }) });
-    expect(await screen.findByText('Bu kunga soʻrov yoʻq')).toBeTruthy();
-    expect(screen.queryByText('Safar eʼlon qilish')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Bu kunga soʻrov yoʻq'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Safar eʼlon qilish'))).toBeNull();
   });
 
   it('the route chosen for the board goes on to the new trip of an empty day (G37 R4)', async () => {
     openBoard({
       requestBoard: async (query) => (query.from ? board({ others: [] }) : board({ known: false })),
     });
-    for (const step of ['Toshkent shahri', 'Chilonzor', 'Fargʻona viloyati', 'Fargʻona shahri'])
+    for (const step of [
+      toCyrillic('Toshkent shahri'),
+      toCyrillic('Chilonzor'),
+      toCyrillic('Fargʻona viloyati'),
+      toCyrillic('Fargʻona shahri'),
+    ])
       await tap(step);
-    await tap('Safar eʼlon qilish');
-    expect(await screen.findByText('Chilonzor, Toshkent shahri')).toBeTruthy();
-    expect(screen.getByText('Mashinada 4 joy')).toBeTruthy();
+    await tap(toCyrillic('Safar eʼlon qilish'));
+    expect(await screen.findByText(toCyrillic('Chilonzor, Toshkent shahri'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Mashinada 4 joy'))).toBeTruthy();
   });
 
   it('keeps the requests private while the application of the driver is checked', async () => {
@@ -123,7 +134,9 @@ describe('«Yoʻlovchilar soʻrovlari» (G64, docs/118 path 7)', { timeout: 20_0
       </DriverContext.Provider>,
       testClients({ market: { requestBoard } }),
     );
-    expect(await screen.findByText('Yoʻlovchilar soʻrovlarini ariza tasdiqlangach koʻrasiz.')).toBeTruthy();
+    expect(
+      await screen.findByText(toCyrillic('Yoʻlovchilar soʻrovlarini ariza tasdiqlangach koʻrasiz.')),
+    ).toBeTruthy();
     expect(requestBoard).not.toHaveBeenCalled();
   });
 });

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_LOCALE } from './config';
 import { createI18n } from './create-i18n';
+import { toCyrillic } from './cyrillic';
 import { legalEdition, legalSections, legalTitle, legalValues } from './legal';
 
 const i18n = createI18n(DEFAULT_LOCALE);
@@ -36,21 +37,21 @@ describe('legal texts (docs/30)', () => {
       title: 'legal.consent.1.title',
       text: 'legal.consent.1.text',
     });
-    expect(i18n.t(legalTitle('privacy'))).toBe('Maxfiylik siyosati');
+    expect(i18n.t(legalTitle('privacy'))).toBe('Махфийлик сиёсати');
   });
 
   it('takes every number and name from the brand and the requisites, not from the text', () => {
     const values = legalValues(i18n, brand, requisites);
     expect(values).toMatchObject({ brand: 'Yoʻl', supportBot: 'yol_yordam_bot', percent: '7', grants: '2' });
-    expect(values.minPerSeat).toMatch(/^2\s000\ssoʻm$/u);
-    expect(values.company).toBe('Yoʻl Servis (MChJ, STIR 123456789, manzil: Toshkent)');
+    expect(values.minPerSeat).toMatch(/^2\s000\sсўм$/u);
+    expect(values.company).toBe('Yoʻl Servis (MChJ, СТИР 123456789, манзил: Toshkent)');
     const text = i18n.t('legal.offer.7.text', values);
-    expect(text).toContain('7 foizi');
+    expect(text).toContain(toCyrillic('7 foizi'));
     expect(text).not.toMatch(/\{\w+\}/u);
     // A rating shows after the days of the brand config, as the code reveals it (owner decision 10.10.2026).
-    expect(i18n.t('legal.offer.9.text', values)).toContain('yoki 5 kundan keyin koʻrinadi');
-    expect(i18n.t('legal.offer.12.text', values)).toContain('yol@example.uz manziliga');
-    expect(i18n.t('legal.privacy.7.text', values)).toContain('yol@example.uz manziliga');
+    expect(i18n.t('legal.offer.9.text', values)).toContain(toCyrillic('yoki 5 kundan keyin koʻrinadi'));
+    expect(i18n.t('legal.offer.12.text', values)).toContain(toCyrillic('yol@example.uz manziliga'));
+    expect(i18n.t('legal.privacy.7.text', values)).toContain(toCyrillic('yol@example.uz manziliga'));
   });
 
   it('names the brand and its email until the owner enters the requisites, never a placeholder', () => {
@@ -62,6 +63,6 @@ describe('legal texts (docs/30)', () => {
   });
 
   it('writes the edition with its date', () => {
-    expect(legalEdition(i18n, { version: '1.0', date: '2026-09-30' })).toBe('Tahrir 1.0, 30-sentabr 2026');
+    expect(legalEdition(i18n, { version: '1.0', date: '2026-09-30' })).toBe('Таҳрир 1.0, 30-сентябр 2026');
   });
 });

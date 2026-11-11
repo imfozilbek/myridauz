@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { MapView } from '../map/map-engine';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -9,7 +10,9 @@ describe('the name under the pin (G24, G59)', () => {
   it('is not asked again when the map ends a «move» on the same center (a resize of its box)', async () => {
     const map = fakeMap();
     const { calls } = openPoint(map);
-    await waitFor(() => expect(screen.getByRole('status').textContent).not.toBe('Joy aniqlanmoqda…'));
+    await waitFor(() =>
+      expect(screen.getByRole('status').textContent).not.toBe(toCyrillic('Joy aniqlanmoqda…')),
+    );
     const where = vi.mocked(calls.where ?? vi.fn());
     const asked = where.mock.calls.length;
     const view = (await map.engine.mock.results[0]?.value) as MapView;
@@ -24,9 +27,12 @@ describe('the name under the pin (G24, G59)', () => {
     const answer = testMap().where;
     const where = vi.fn(answer).mockRejectedValueOnce(new Error('network'));
     openPoint(fakeMap(), { where });
-    await waitFor(() => expect(screen.getByRole('status').textContent).not.toBe('Joy aniqlanmoqda…'), {
-      timeout: 4000,
-    });
+    await waitFor(
+      () => expect(screen.getByRole('status').textContent).not.toBe(toCyrillic('Joy aniqlanmoqda…')),
+      {
+        timeout: 4000,
+      },
+    );
     expect(where.mock.calls.length).toBeGreaterThan(1);
   });
 });

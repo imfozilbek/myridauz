@@ -1,9 +1,12 @@
 import { loadBrand } from '@platform/brands';
+import { toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import { loopCard, type LoopDeps } from './application/loop-cards';
 import { loopMessage } from './infrastructure/loop-text';
 
 const brand = loadBrand();
+// The brand name stays as the brand config writes it (G98).
+const cyrillic = (text: string) => toCyrillic(text, [brand.name]);
 const DEPART = Date.parse('2026-10-16T03:00:00Z');
 const REQUEST = { passengerId: 7, from: '1726273', to: '1718401', date: '2026-10-16', seats: 2 };
 const SEAT = {
@@ -20,7 +23,9 @@ const PLACES = new Map([
   ['1726273', { name: 'Toshkent', parentId: null }],
   ['1718401', { name: 'Urgut', parentId: null }],
 ]);
-const PASSENGER_VALUE = 'Raqamingiz yashirin. Telegramda ochiladi. Ilova yuklab olish shart emas.';
+const PASSENGER_VALUE = toCyrillic(
+  'Raqamingiz yashirin. Telegramda ochiladi. Ilova yuklab olish shart emas.',
+);
 
 function deps(seatsLeft = 2) {
   const prepared: string[] = [];
@@ -64,12 +69,14 @@ describe('the cards of the request and of the free seats', () => {
       link: 'driver:1726273_1718401_2026-10-16__req-share-a1b2c3',
     });
     expect(card?.text.replace(/[\u00a0\u202f]/gu, ' ')).toBe(
-      'Toshkent → Urgut, 16-oktabr\n2 kishi yoʻlga chiqmoqchi.\n\n' +
-        'Narxni oʻzingiz belgilaysiz. Har 10 daqiqada yozish shart emas.\n' +
-        'Yangi haydovchilarga 1 500 000 soʻmgacha bonus.\n' +
-        'Haydovchilar, taklif yuboring:',
+      toCyrillic(
+        'Toshkent → Urgut, 16-oktabr\n2 kishi yoʻlga chiqmoqchi.\n\n' +
+          'Narxni oʻzingiz belgilaysiz. Har 10 daqiqada yozish shart emas.\n' +
+          'Yangi haydovchilarga 1 500 000 soʻmgacha bonus.\n' +
+          'Haydovchilar, taklif yuboring:',
+      ),
     );
-    expect(prepared[0]).toMatch(/^passenger\|\|Toshkent → Urgut.+\|Taklif yuborish$/su);
+    expect(prepared[0]).toMatch(/^passenger\|\|Тошкент → Ургут.+\|Таклиф юбориш$/su);
     expect(await loopCard(value, passenger(8, { loop: 'req-share', requestId: 'r1' }))).toBeNull();
     expect(await loopCard(value, passenger(7, { loop: 'req-share', requestId: 'r2' }))).toBeNull();
   });
@@ -78,7 +85,7 @@ describe('the cards of the request and of the free seats', () => {
     const { value } = deps();
     const card = await loopCard(value, passenger(7, { loop: 'seats', bookingId: 'b1' }));
     expect(card?.link).toBe('passenger:trip_trip-1__seats-a1b2c3');
-    expect(card?.text).toMatch(/^Toshkent → Urgut, .+\nMen shu safarda boraman, yana 2 ta joy bor/u);
+    expect(card?.text).toMatch(/^Тошкент → Ургут, .+\nМен шу сафарда бораман, яна 2 та жой бор/u);
     expect(card?.text.endsWith(`\n\n${PASSENGER_VALUE}`)).toBe(true);
     expect(await loopCard(deps(0).value, passenger(7, { loop: 'seats', bookingId: 'b1' }))).toBeNull();
     expect(await loopCard(value, passenger(8, { loop: 'seats', bookingId: 'b1' }))).toBeNull();
@@ -97,9 +104,9 @@ describe('the card of the driver trip and of «Yana ulashish»', () => {
       photo,
     });
     expect(card?.link).toBe('passenger:trip_trip-1__trip-a1b2c3');
-    expect(card?.text.split('\n')[0]).toBe('Safarimda 2 ta boʻsh joy bor');
+    expect(card?.text.split('\n')[0]).toBe(toCyrillic('Safarimda 2 ta boʻsh joy bor'));
     expect(card?.text.endsWith(`\n\n${PASSENGER_VALUE}`)).toBe(true);
-    expect(prepared[0]).toMatch(new RegExp(`^driver\\|${photo}\\|Safarimda .+\\|Joy band qilish$`, 'su'));
+    expect(prepared[0]).toMatch(new RegExp(`^driver\\|${photo}\\|Сафаримда .+\\|Жой банд қилиш$`, 'su'));
     // Another driver's trip, or a full one: nothing to send.
     const other = { userId: 7, side: 'driver' as const, card: { loop: 'trip' as const, tripId: 'trip-1' } };
     expect(await loopCard(value, other)).toBeNull();
@@ -112,8 +119,8 @@ describe('the card of the driver trip and of «Yana ulashish»', () => {
     expect(card).toEqual({
       prepared: 'prepared-1',
       link: 'passenger:start__share-join-a1b2c3',
-      text: `Men ${brand.name} bilan yoʻlga chiqaman. Siz ham qoʻshiling!\n\n${PASSENGER_VALUE}`,
+      text: `${cyrillic(`Men ${brand.name} bilan yoʻlga chiqaman. Siz ham qoʻshiling!`)}\n\n${PASSENGER_VALUE}`,
     });
-    expect(prepared[0]).toMatch(/^driver\|\|Men .+\|Men ham qoʻshilaman$/su);
+    expect(prepared[0]).toMatch(/^driver\|\|Мен .+\|Мен ҳам қўшиламан$/su);
   });
 });

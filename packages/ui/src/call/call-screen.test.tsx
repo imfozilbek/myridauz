@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { confirmed } from '../bookings/booking-test-kit';
@@ -36,22 +37,22 @@ async function ringing(role: 'passenger' | 'driver') {
 describe('the call (G60, mockup g60/4): the face, the car, the one trip card', () => {
   it('shows a passenger the driver with the car and plate, and the card of the booking', async () => {
     await ringing('passenger');
-    expect(await screen.findByText('Sizga qoʻngʻiroq qilishyapti')).toBeTruthy();
-    const call = within(screen.getByRole('dialog', { name: 'Qoʻngʻiroq' }));
+    expect(await screen.findByText(toCyrillic('Sizga qoʻngʻiroq qilishyapti'))).toBeTruthy();
+    const call = within(screen.getByRole('dialog', { name: toCyrillic('Qoʻngʻiroq') }));
     expect(call.getByText(/^Cobalt, /u)).toBeTruthy();
     expect(call.getByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
-    expect(call.getByText(/olib ketish joyi$/u)).toBeTruthy();
-    expect(call.getByText('2 joy')).toBeTruthy();
-    expect(call.getByText('Ilovani yopmang: qoʻngʻiroq uziladi.')).toBeTruthy();
+    expect(call.getByText(/олиб кетиш жойи$/u)).toBeTruthy();
+    expect(call.getByText(toCyrillic('2 joy'))).toBeTruthy();
+    expect(call.getByText(toCyrillic('Ilovani yopmang: qoʻngʻiroq uziladi.'))).toBeTruthy();
   });
 
   it('shows a driver the passenger, one hint only, also while talking', async () => {
     const socket = await ringing('driver');
-    const call = within(await screen.findByRole('dialog', { name: 'Qoʻngʻiroq' }));
+    const call = within(await screen.findByRole('dialog', { name: toCyrillic('Qoʻngʻiroq') }));
     expect(call.getAllByText(confirmed.passenger.firstName).length).toBeGreaterThan(0);
     expect(call.queryByRole('img', { name: '01 A 123 BC' })).toBeNull();
     act(() => socket.receive({ type: 'call', call: { status: 'active', caller: 'other' } }));
-    expect(screen.queryByText(/Quloqchin/u)).toBeNull();
+    expect(screen.queryByText(/Қулоқчин/u)).toBeNull();
     expect(call.getByText(/^\d{2}:\d{2}$/u)).toBeTruthy();
   });
 });

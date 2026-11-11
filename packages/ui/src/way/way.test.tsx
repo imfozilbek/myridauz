@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { Border } from '@platform/contracts';
 import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -12,15 +13,15 @@ afterEach(() => {
   localStorage.clear();
   vi.mocked(requestPosition).mockResolvedValue(null);
 });
-const MARGILON = { ...CHORSU, name: 'Yangi Margʻilon', district: '1730401', point: FARGONA };
+const MARGILON = { ...CHORSU, name: toCyrillic('Yangi Margʻilon'), district: '1730401', point: FARGONA };
 const PERSON = { lat: 41.3, lng: 69.25 };
 // The name under the pin: the district and the name are known, «Shu yerda» takes the point.
 const here = async (name: string) => {
   await screen.findByText(name, {}, { timeout: 3000 });
-  await tap('Shu yerda');
+  await tap(toCyrillic('Shu yerda'));
 };
 const type = (text: string) =>
-  fireEvent.change(screen.getByPlaceholderText('Joy nomini yozing'), { target: { value: text } });
+  fireEvent.change(screen.getByPlaceholderText(toCyrillic('Joy nomini yozing')), { target: { value: text } });
 
 describe('One point over the map (G24, docs/71)', { timeout: 20_000 }, () => {
   it('chooses a point by a search in Cyrillic and cuts the map by its district', async () => {
@@ -28,11 +29,11 @@ describe('One point over the map (G24, docs/71)', { timeout: 20_000 }, () => {
     const { done, calls } = openPoint(map, { search: vi.fn(async () => [MARGILON]) });
     await waitFor(() => expect(map.clipped()).toBe(true));
     type('Маргилан');
-    await tap('Yangi Margʻilon');
+    await tap(toCyrillic('Yangi Margʻilon'));
     expect(calls.search).toHaveBeenCalledWith('Маргилан', HERE);
     // The map of the start was cut by its district: the cut goes before the move to another one.
     await waitFor(() => expect(map.log().join(' ')).toMatch(/clip unclip move.* clip$/u));
-    await here('Yangi Margʻilon');
+    await here(toCyrillic('Yangi Margʻilon'));
     expect(done[0]).toMatchObject({ place: { id: '1730401' } });
   });
 
@@ -41,7 +42,7 @@ describe('One point over the map (G24, docs/71)', { timeout: 20_000 }, () => {
     const map = fakeMap();
     openPoint(map, {}, true);
     await waitFor(() => expect(map.log()).toContain('move'));
-    await here('Chorsu bozori yaqinida');
+    await here(toCyrillic('Chorsu bozori yaqinida'));
   });
 
   it('keeps the map where it opened when the person stands outside the place', async () => {
@@ -78,9 +79,9 @@ describe('One point over the map (G24, docs/71)', { timeout: 20_000 }, () => {
       // The border of the start comes only after the person moved to Margʻilon.
       border: vi.fn(async (id: string) => (id === '1726269' ? gate.then(() => square(id)) : square(id))),
     });
-    await screen.findByText('Chorsu bozori yaqinida');
+    await screen.findByText(toCyrillic('Chorsu bozori yaqinida'));
     type('Margilan');
-    await tap('Yangi Margʻilon');
+    await tap(toCyrillic('Yangi Margʻilon'));
     await waitFor(() => expect(map.clipped()).toBe(true));
     // The late border arrives: give it the time to reach the map.
     await act(async () => {
@@ -93,15 +94,15 @@ describe('One point over the map (G24, docs/71)', { timeout: 20_000 }, () => {
 
   it('keeps the last places on the phone and offers them next time', async () => {
     openPoint(fakeMap());
-    await here('Chorsu bozori yaqinida');
+    await here(toCyrillic('Chorsu bozori yaqinida'));
     cleanup();
     openPoint(fakeMap());
-    expect(await screen.findByText('Oxirgi joylar')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Oxirgi joylar'))).toBeTruthy();
   });
 
   it('says so when the map does not load, and tries again', async () => {
     openPoint(fakeMap(1));
-    await tap('Qayta urinish');
-    expect(await screen.findByText('Shu yerda')).toBeTruthy();
+    await tap(toCyrillic('Qayta urinish'));
+    expect(await screen.findByText(toCyrillic('Shu yerda'))).toBeTruthy();
   });
 });

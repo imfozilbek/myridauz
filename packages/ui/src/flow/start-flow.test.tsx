@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { loadBrand } from '@platform/brands';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -75,9 +76,9 @@ describe('StartFlow', () => {
     const broken = [{ ...ACTIONS[1], Screen: Broken }];
     const { tracked } = renderInShell(<StartFlow actions={broken} tiles={tiles} />);
     fireEvent.click(screen.getByText(HOME));
-    expect(screen.getByText('Xatolik yuz berdi')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Xatolik yuz berdi'))).toBeTruthy();
     expect(tracked.at(-1)).toMatchObject({ name: 'client_error', screen: 'home', detail: 'boom' });
-    fireEvent.click(screen.getByText('Orqaga'));
+    fireEvent.click(screen.getByText(toCyrillic('Orqaga')));
     expect(screen.getByText(HOME)).toBeTruthy();
   });
 
@@ -88,7 +89,7 @@ describe('StartFlow', () => {
     };
     renderInShell(<StartFlow actions={ACTIONS} tiles={tiles} home={() => <Broken />} />);
     expect(screen.getByText(HOME)).toBeTruthy();
-    expect(screen.getByText('Xatolik yuz berdi')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Xatolik yuz berdi'))).toBeTruthy();
   });
 
   it('keeps the tiles when the block «Qayerdan / Qayerga» breaks, and the block when the tiles break (G52)', () => {

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { fakeTelegram } from './bots/test-bot';
 import { approvedDriver, json, OWNER, read } from './bookings-test-api';
@@ -44,7 +45,7 @@ describe('a block from the admin app (docs/17, docs/65 A5)', () => {
     // The seat is gone: «Boshqa safar topish» opens the same route and day (docs/89 S10).
     expect(JSON.stringify(telegram.sentTo(PASSENGER).map((sent) => sent.body))).toContain('?find=');
     // The trip card of the driver bot says so and leaves the top of the chat (G68).
-    expect(JSON.stringify(telegram.sentTo(DRIVER))).toContain('❌ Safar bekor qilindi');
+    expect(JSON.stringify(telegram.sentTo(DRIVER))).toContain(toCyrillic('❌ Safar bekor qilindi'));
     expect(telegram.sentTo(DRIVER).some((sent) => sent.method === 'unpinChatMessage')).toBe(true);
     // A moderator never blocks a member of the team; the owner may.
     const refused = await call(`/admin/users/${await pid(MODERATOR)}/block`, MODERATOR, block(null));
@@ -55,7 +56,7 @@ describe('a block from the admin app (docs/17, docs/65 A5)', () => {
     const blockNote = telegram
       .sentTo(PASSENGER)
       .slice(told)
-      .find((sent) => String(sent.body.text).includes('blok'));
+      .find((sent) => String(sent.body.text).includes(toCyrillic('blok')));
     expect(blockNote?.token).toBe(testEnv.PASSENGER_BOT_TOKEN);
     // The journal says who blocked and why; only the owner lifts a block (docs/65 C).
     const journal = async () =>
