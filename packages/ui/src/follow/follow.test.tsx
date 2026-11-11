@@ -19,7 +19,7 @@ describe('close people follow a shared trip (docs/43)', () => {
       <FollowScreen token={TOKEN} onJoin={() => undefined} />,
       testClients({ chat: { sharedTrip: async () => TRIP, follow } }),
     );
-    expect(await screen.findByText(/^Dilnozaнинг сафари · /u)).toBeTruthy();
+    expect(await screen.findByText(/^Dilnozaning сафари · /u)).toBeTruthy();
     expect(screen.getByText(toCyrillic('Mashinaga chiqdi'))).toBeTruthy();
     expect(screen.getByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
     // Where the passenger boards and gets off (the owner, docs/111 Q1).

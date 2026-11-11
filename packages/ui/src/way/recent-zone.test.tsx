@@ -40,7 +40,8 @@ describe('«Oxirgi joylar» of a booking (docs/90 F-P5)', { timeout: 20_000 }, (
     await tap(toCyrillic('Tushirish joyi'));
     // The end is in Fargʻona shahri: a place of Chilonzor is not offered there.
     expect(await screen.findByText(toCyrillic('Oxirgi joylar'))).toBeTruthy();
-    expect(screen.getByText(/Uzoq joy/u)).toBeTruthy();
+    // Remembered before G98 in Latin: shown in the alphabet of the text.
+    expect(screen.getByText(/Узоқ жой/u)).toBeTruthy();
     expect(screen.queryByText(/Яқин жой/u)).toBeNull();
   });
 });

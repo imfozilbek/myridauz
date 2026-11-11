@@ -89,7 +89,7 @@ describe('the sheet of a new request (G68)', { timeout: 20_000 }, () => {
       .find((button) => button.closest('[vaul-drawer]'));
     fireEvent.click(inSheet as HTMLElement);
     expect(decodeURIComponent(String(sent.mock.calls[0]?.[0]))).toMatch(
-      /Madinaнинг жойини тасдиқлаш учун 14.000.сўм етмаяпти/u,
+      /Madinaning жойини тасдиқлаш учун 14.000.сўм етмаяпти/u,
     );
     expect(answer).not.toHaveBeenCalled();
     sent.mockRestore();

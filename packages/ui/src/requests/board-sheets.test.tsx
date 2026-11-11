@@ -30,7 +30,7 @@ describe(
       openBoard({ bookings: { sendOffer } });
       await tap(toCyrillic('Taklif yuborish'));
       const form = await sheet();
-      expect(form.getByText(`Dilnoza${toCyrillic('ga taklif')}`)).toBeTruthy();
+      expect(form.getByText(`Dilnozaga ${toCyrillic('taklif')}`)).toBeTruthy();
       expect(form.getByText(toCyrillic('Chilonzor → Fargʻona · bugun · 2 kishi'))).toBeTruthy();
       expect(form.getByText(`Dilnoza ${toCyrillic('taklifi: 95 000')}`)).toBeTruthy();
       expect(form.getByRole('radio', { name: '08:00' }).getAttribute('aria-checked')).toBe('true');

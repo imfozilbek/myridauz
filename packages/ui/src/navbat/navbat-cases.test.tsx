@@ -67,7 +67,7 @@ describe('the cases of «Navbat»', () => {
     renderNavbat({ filter: 'all', kind: 'complaint', id: COMPLAINT.id }, [COMPLAINT], { feedback });
     expect(await screen.findByText(`Madina → Jasur (${toCyrillic('haydovchi')})`)).toBeTruthy();
     expect(screen.getByText(toCyrillic('Kelmadi'))).toBeTruthy();
-    expect(screen.getByText(`Madina${toCyrillic('ning soʻzi')}`)).toBeTruthy();
+    expect(screen.getByText(`Madinaning ${toCyrillic('soʻzi')}`)).toBeTruthy();
     expect(screen.getByText(toCyrillic('2 soat oldin'))).toBeTruthy();
     // A passenger's «Kelmadi» about the driver: no commission of the driver to give back (G89 A11).
     expect(screen.queryByText(toCyrillic('Haydovchiga komissiyani qaytarish'))).toBeNull();

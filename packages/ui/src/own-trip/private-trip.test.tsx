@@ -39,7 +39,7 @@ async function open(status: Offer['status'], openTrip = vi.fn<MarketClient['open
 describe('a trip of one «Boʻsh salon kerak» request (G64, docs/118 path 7)', { timeout: 20_000 }, () => {
   it('waits for the answer of the passenger: the plate, the trip and the cancel only', async () => {
     await open('sent');
-    expect(await screen.findByText(`Sardor${toCyrillic('ga taklif yuborildi')}`)).toBeTruthy();
+    expect(await screen.findByText(`Sardorga ${toCyrillic('taklif yuborildi')}`)).toBeTruthy();
     expect(screen.getByText(toCyrillic('Javobini kutyapsiz. Safar boshqalarga koʻrinmaydi.'))).toBeTruthy();
     expect(screen.getByText(toCyrillic('Faqat butun salon · 3 joy'))).toBeTruthy();
     expect(screen.getByText('285 000')).toBeTruthy();

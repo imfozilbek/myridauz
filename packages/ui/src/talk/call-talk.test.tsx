@@ -28,7 +28,7 @@ describe('the call before a booking (G64, mockups g64/2, g64/4)', { timeout: 20_
     await screen.findByText(toCyrillic('Yoʻlovchi'));
     ring(socket);
     const call = within(screen.getByRole('dialog', { name: toCyrillic('Qoʻngʻiroq') }));
-    expect(call.getByText(`Dilnoza${toCyrillic('ning soʻrovi')}`)).toBeTruthy();
+    expect(call.getByText(`Dilnozaning ${toCyrillic('soʻrovi')}`)).toBeTruthy();
     expect(call.queryByText(toCyrillic('Ilovani yopmang: qoʻngʻiroq uziladi.'))).toBeNull();
     expect(call.getByText(toCyrillic('Chilonzor → Fargʻona · bugun'))).toBeTruthy();
     expect(call.getByText(toCyrillic('2 kishi · 95 000 · Uyidan yoki pitakdan'))).toBeTruthy();
@@ -36,7 +36,7 @@ describe('the call before a booking (G64, mockups g64/2, g64/4)', { timeout: 20_
     await waitFor(() => expect(send.disabled).toBe(false));
     fireEvent.click(send);
     // The time and the price of the offer come from the sheet, as on the board (G64 C).
-    expect(await screen.findByText(`Dilnoza${toCyrillic('ga taklif')}`)).toBeTruthy();
+    expect(await screen.findByText(`Dilnozaga ${toCyrillic('taklif')}`)).toBeTruthy();
     expect(sendOffer).not.toHaveBeenCalled();
   });
 
@@ -64,7 +64,7 @@ describe('the call before a booking (G64, mockups g64/2, g64/4)', { timeout: 20_
     await screen.findByText(`Jasur ${toCyrillic('taklif yubordi')}`);
     ring(socket);
     const call = within(screen.getByRole('dialog', { name: toCyrillic('Qoʻngʻiroq') }));
-    expect(call.getByText(`Jasur${toCyrillic('ning taklifi · hozir keldi')}`)).toBeTruthy();
+    expect(call.getByText(`Jasurning ${toCyrillic('taklifi · hozir keldi')}`)).toBeTruthy();
     expect(call.getByText(toCyrillic('bugun 08:00 · butun salon'))).toBeTruthy();
     expect(call.getByText(toCyrillic('4 joy × 90 000 = 360 000 · Qoʻyliq pitagi'))).toBeTruthy();
     fireEvent.click(call.getByText(toCyrillic('Taklifni qabul qilish')));
@@ -86,7 +86,7 @@ describe('the call before a booking (G64, mockups g64/2, g64/4)', { timeout: 20_
     await screen.findByText(`Jasur ${toCyrillic('taklif yubordi')}`);
     ring(socket);
     const call = within(screen.getByRole('dialog', { name: toCyrillic('Qoʻngʻiroq') }));
-    expect(call.getByText(`Jasur${toCyrillic('ning taklifi')}`)).toBeTruthy();
+    expect(call.getByText(`Jasurning ${toCyrillic('taklifi')}`)).toBeTruthy();
     expect(call.queryByText(/ҳозир келди/u)).toBeNull();
   });
 });

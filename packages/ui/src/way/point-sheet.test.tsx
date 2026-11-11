@@ -40,12 +40,13 @@ describe('The point over the map with a sheet (G36, docs/100)', { timeout: 20_00
   });
 
   it('shows two last places at most as chips with their names (DS4, mockup screen 9)', async () => {
+    // Remembered before G98 in Latin: shown in the alphabet of the text.
     remember('Birinchi', 'Ikkinchi', 'Uchinchi');
     openPoint(fakeMap());
     const bottom = await sheet();
-    expect(within(bottom).queryByText('Uchinchi')).toBeNull();
-    expect(within(bottom).getByRole('button', { name: 'Birinchi' })).toBeTruthy();
-    expect(within(bottom).getByRole('button', { name: 'Ikkinchi' })).toBeTruthy();
+    expect(within(bottom).queryByText('Учинчи')).toBeNull();
+    expect(within(bottom).getByRole('button', { name: 'Биринчи' })).toBeTruthy();
+    expect(within(bottom).getByRole('button', { name: 'Иккинчи' })).toBeTruthy();
   });
 
   it('closes the keyboard when a place is found, so the sheet goes down (DS4)', async () => {

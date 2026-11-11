@@ -59,7 +59,7 @@ describe('the driver answers a request right in its card (owner decision 06.10.2
     const sent = vi.spyOn(window, 'open').mockReturnValue(null);
     await tap(toCyrillic('Hisobni toʻldirish'));
     const url = decodeURIComponent(String(sent.mock.calls[0]?.[0]));
-    expect(url).toMatch(/\?text=Салом! Ҳамёнимни тўлдирмоқчиман\. Dilnozaнинг жойини тасдиқлаш/u);
+    expect(url).toMatch(/\?text=Салом! Ҳамёнимни тўлдирмоқчиман\. Dilnozaning жойини тасдиқлаш/u);
     expect(answer).not.toHaveBeenCalled();
     sent.mockRestore();
   });

@@ -50,7 +50,7 @@ describe('the chat 24 hours after the trip (G60, docs/129)', () => {
         canWrite: false,
       });
     });
-    screen.getByText(`Jasur${toCyrillic('ning yangi safarlari')}`).click();
+    screen.getByText(`Jasurning ${toCyrillic('yangi safarlari')}`).click();
     expect(onAgain).toHaveBeenCalled();
   });
 });
