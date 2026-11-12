@@ -1,6 +1,6 @@
 # 230. «Yordam» попутчика: темы, вопросы и ответы (на согласие)
 
-> **Кратко:** решение владельца 12.11.2026: помощь каждой роли заново, только то, о чём спросит попутчик в своём Mini App и в боте. 7 тем, 33 вопроса. Тексты в uz-Latn, люди видят кириллицу (`docs/228`). Числа в фигурных скобках берутся из бренда и «Cheklovlar» (`docs/226`). Ответы сверены с кодом (проход 12.11.2026). Водитель: `231`. Статус: **согласовано владельцем 12.11.2026** (оплата: наличными или переводом); ждёт проверки носителем (`docs/25`).
+> **Кратко:** решение владельца 12.11.2026: помощь каждой роли заново, только то, о чём спросит попутчик в своём Mini App и в боте. 7 тем, 33 вопроса. Тексты в uz-Latn, люди видят кириллицу (`docs/228`). Числа в фигурных скобках берутся из бренда и «Cheklovlar» (`docs/226`). Ответы сверены с кодом (проход 12.11.2026). Водитель: `231`. Статус: **согласовано владельцем 12.11.2026** (оплата: любым способом, Rida не вмешивается); ждёт проверки носителем (`docs/25`).
 
 ## 1. «{brand} qanday ishlaydi»
 
@@ -8,7 +8,7 @@
 |---|---|
 | {brand} taksimi? | Yoʻq. Haydovchi oʻz ishi bilan yoʻlga chiqadi va boʻsh joylarga yoʻlovchi oladi. Yoʻl xarajatini birga boʻlasizlar. |
 | Yoʻlovchi {brand}ga pul toʻlaydimi? | Yoʻq. {brand} yoʻlovchidan pul olmaydi. |
-| Pulni qachon va kimga beraman? | Haydovchiga, safarda oʻzingiz berasiz: naqd yoki pul oʻtkazish orqali, haydovchi bilan kelishib. Qancha ekanini joy band qilishda «Jami» qatorida koʻrasiz. |
+| Pulni qachon va kimga beraman? | Haydovchiga, safarda oʻzingiz berasiz. Qanday toʻlashni (naqd, karta yoki pul oʻtkazish) haydovchi bilan oʻzingiz kelishasiz: {brand} bunga aralashmaydi. Qancha ekanini joy band qilishda «Jami» qatorida koʻrasiz. |
 | Narxni kim belgilaydi? | Haydovchi. {brand} yoʻl xarajatiga qarab tavsiya etilgan narxni koʻrsatadi. Soʻrov qoldirsangiz, narxni oʻzingiz taklif qilasiz. |
 | Haydovchilar tekshiriladimi? | Ha. Jamoamiz har bir haydovchining yuzi, mashinasi va davlat raqami rasmini tekshiradi. Shundan keyingina u safar eʼlon qila oladi. |
 

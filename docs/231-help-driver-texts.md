@@ -48,7 +48,7 @@
 
 | Вопрос | Ответ |
 |---|---|
-| Haydovchi uchun qancha turadi? | Bir joy narxining {percent} foizi, lekin kamida {minPerSeat}. Joy tasdiqlanganda yoki yoʻlovchi taklifingizni qabul qilganda olinadi. Yoʻlovchi pulni sizga safarda oʻzi beradi: naqd yoki pul oʻtkazish orqali. |
+| Haydovchi uchun qancha turadi? | Bir joy narxining {percent} foizi, lekin kamida {minPerSeat}. Joy tasdiqlanganda yoki yoʻlovchi taklifingizni qabul qilganda olinadi. Yoʻlovchi pulni sizga safarda oʻzi beradi. Qanday toʻlashni oʻzingiz kelishasiz: {brand} bunga aralashmaydi. |
 | Bonus qanday ishlaydi? | Ariza tasdiqlangach {bonus} bonus beriladi. Har bir bonus {bonusDays} kun amal qiladi. Ishlatib boʻlsangiz, keyingisi keladi: dastlabki {windowDays} kunda {bonusGrants} martagacha. |
 | Hamyonni qanday toʻldiraman? | «Hamyon»da «Hisobni toʻldirish»ni bosing. Yordam boti tayyor xabar bilan ochiladi: uni yuboring, jamoamiz qanday toʻlashni yozadi. |
 | Joy bekor boʻlsa, komissiya qaytadimi? | Ha, kim bekor qilganidan qatʼi nazar, oʻsha hisobga qaytadi. |
