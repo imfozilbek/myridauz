@@ -1,5 +1,5 @@
 import type { Rost, RostPeriod } from '@platform/contracts';
-import { directionsOf, loopsOf } from '../domain/rost';
+import { directionsOf, loopsOf, tipsOf } from '../domain/rost';
 import { cached } from './read-stats';
 import type { StatsDeps } from './ports';
 
@@ -28,9 +28,10 @@ async function eventsPart(deps: StatsDeps, period: RostPeriod, at: number): Prom
 export async function readRost(deps: StatsDeps, period: RostPeriod): Promise<Rost> {
   const at = deps.now();
   const since = at - PERIOD_DAYS[period] * DAY;
-  const [arrivals, rode, part] = await Promise.all([
+  const [arrivals, rode, tips, part] = await Promise.all([
     cached(deps.cache, `rost:arrivals:${period}`, at, () => deps.numbers.arrivals(since)),
     cached(deps.cache, `rost:riders:${period}`, at, () => deps.numbers.riders(since)),
+    cached(deps.cache, `rost:tips:${period}`, at, () => deps.tips(since)),
     eventsPart(deps, period, at),
   ]);
   return {
@@ -38,6 +39,7 @@ export async function readRost(deps: StatsDeps, period: RostPeriod): Promise<Ros
     events: part.events,
     loops: loopsOf(part.came, arrivals, rode),
     directions: part.directions,
+    tips: tipsOf(tips),
     at,
   };
 }

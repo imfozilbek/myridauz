@@ -16,10 +16,11 @@ export function botMessageUrl(url: string, kind: string): string {
 }
 
 // A button that opens the Mini App, right on its booking, offer or trip when a link is given
-// (docs/65 B5), never only on the main screen. The buttons of a live card are these (G68).
-export function appButton(brand: BrandConfig, app: App, text: string, link?: AppLink) {
+// (docs/65 B5), never only on the main screen. The buttons of a live card are these (G68). kind: the
+// mark of the message when it is not the link, «tip-p2» of a tip (G70a, docs/232).
+export function appButton(brand: BrandConfig, app: App, text: string, link?: AppLink, kind?: string) {
   const query = link ? `?${link.name}=${encodeURIComponent(link.id)}` : '';
-  const url = botMessageUrl(`https://${appHost(brand, app)}/${query}`, link?.name ?? HOME);
+  const url = botMessageUrl(`https://${appHost(brand, app)}/${query}`, kind ?? link?.name ?? HOME);
   return { text, web_app: { url } };
 }
 

@@ -1,6 +1,7 @@
 import type { Bindings } from '../../env';
 import { localAnalyticsRows } from '../analytics';
 import { tellOwners } from '../team-queue';
+import { tipResults } from '../tips';
 import { checkAlerts } from './application/check-alerts';
 import { cached } from './application/read-stats';
 import type { EventSource, StatsDeps } from './application/ports';
@@ -49,6 +50,7 @@ const statsDeps = (env: Bindings): StatsDeps => {
     numbers: env.DB ? d1Numbers(env.DB) : localNumbers,
     cache: env.DB ? d1Cache(env.DB) : localCache,
     rules: brand.alerts,
+    tips: (since) => tipResults(env, since),
     tellOwners: (alert) => tellOwners(env, alertSign(alert)),
     now: Date.now,
   };

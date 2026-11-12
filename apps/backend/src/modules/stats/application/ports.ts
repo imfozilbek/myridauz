@@ -3,7 +3,7 @@ import type { Alert, AlertRules } from '../domain/alerts';
 import type { ArrivalCount } from '../domain/arrivals';
 import type { BotEvents } from '../domain/bot-load';
 import type { Counter } from '../domain/counters';
-import type { MarkCount, SearchCount } from '../domain/rost';
+import type { MarkCount, SearchCount, TipCount } from '../domain/rost';
 import type { VoiceRows } from '../domain/voice';
 
 // Errors (docs/29): a crash of a screen, a failure of the server (G42) and an error answer of the API.
@@ -48,6 +48,8 @@ export type StatsDeps = {
   readonly numbers: NumbersSource;
   readonly cache: StatsCache;
   readonly rules: AlertRules;
+  // «Rost»: the tips of a step sent since a moment and how many worked (G70a, docs/232).
+  readonly tips: (since: number) => Promise<readonly TipCount[]>;
   // A sign in «Diqqat» of the owner (G68, docs/122).
   readonly tellOwners: (alert: Alert) => Promise<void>;
   readonly now: () => number;

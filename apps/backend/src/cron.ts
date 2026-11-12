@@ -23,6 +23,7 @@ import { expireRequests } from './modules/ride-requests';
 import { endSubscriptions } from './modules/route-subscriptions';
 import { checkStatsAlerts, dayNumbers } from './modules/stats';
 import { purgeSupport } from './modules/support';
+import { sendTips } from './modules/tips';
 import { completeTrips } from './modules/trips';
 import { burnBonuses, warnBonusEnd } from './modules/wallet';
 import { refreshWaitlistCards, tellOpenedDirections } from './modules/waitlist';
@@ -67,8 +68,8 @@ const everyTick = (env: Bindings, now: number): Job[] => [
 // bonuses that are over, asks both sides of ended rides for a rating, checks the signals of the
 // dashboard, erases the points of rides 30 days after the trip, sends the summary of the day to the
 // owner at 21:00, reads a few channels again for «Kanallar», shows each bot without its key in
-// «Statistika», finishes a cancel that broke halfway (docs/12, docs/24, docs/29, docs/69, docs/92,
-// docs/122, G11, G12, G24, G68, G75, G89, lesson 331).
+// «Statistika», finishes a cancel that broke halfway, sends the tips of a step by day (docs/12,
+// docs/24, docs/29, docs/69, docs/92, docs/122, docs/232, G11, G12, G24, G68, G70a, G75, G89, lesson 331).
 const everyHour = (env: Bindings, now: number): Job[] => [
   ['endSubscriptions', () => endSubscriptions(env)],
   ['sendChannelSummaries', () => sendChannelSummaries(env)],
@@ -80,6 +81,7 @@ const everyHour = (env: Bindings, now: number): Job[] => [
   ['showMissingBotKeys', async () => showMissingBotKeys(env)],
   ['erasePastPoints', async () => erasePastPoints(env, now, await bookingsUnderComplaint(env))],
   ['settleSeats', () => settleSeats(env)],
+  ['sendTips', () => sendTips(env, now)],
   [
     'sendDaySummary',
     () =>

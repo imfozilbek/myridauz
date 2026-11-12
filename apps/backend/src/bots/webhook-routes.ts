@@ -10,6 +10,7 @@ import { onAdminCallback } from './admin-callbacks';
 import { isArrivedButton, onArrivedCallback } from './arrived-callbacks';
 import { isAskButton, onAskCallback } from './ask-callbacks';
 import { isNewsOffButton, onNewsOffCallback } from './news-callbacks';
+import { isTipsOffButton, onTipsOffCallback } from './tips-callbacks';
 import { onAdminMessage } from './admin-messages';
 import { onRatingCallback } from './rating-callbacks';
 import { onSupportUpdate, SUPPORT_BOT, toSupportBot } from './support-bot';
@@ -79,6 +80,7 @@ async function answer(bot: BotContext, role: BotRole | typeof SUPPORT_BOT, data:
     if (role === 'admin') return onAdminCallback(bot, query);
     if (isHelpButton(query.data)) return onHelpCallback(bot, role, query);
     if (isNewsOffButton(query.data)) return onNewsOffCallback(bot, role, query);
+    if (isTipsOffButton(query.data)) return onTipsOffCallback(bot, role, query);
     if (role === 'passenger' && isArrivedButton(query.data)) return onArrivedCallback(bot, query);
     return role === 'driver' && isAskButton(query.data)
       ? onAskCallback(bot, query)

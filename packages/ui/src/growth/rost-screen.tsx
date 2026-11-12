@@ -14,7 +14,7 @@ const PERIODS: readonly RostPeriod[] = ['week', 'month'];
 const PERCENT = 100;
 
 // «Rost» of the owner (G69, docs/123): what each loop of growth brought, came, registered and rode,
-// and each direction, how many searches found a trip (the capture goes on after 70 %).
+// each direction, how many searches found a trip (the capture goes on after 70 %), and the tips.
 export function RostScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenView('growth.rost');
   const { t } = useI18n();
@@ -80,6 +80,24 @@ function RostSections({ rost }: { readonly rost: Rost }) {
           );
         })}
       </ManageGroup>
+      <RostTips tips={rost.tips} />
     </>
+  );
+}
+
+// The tips of a step in the bots (G70a, docs/232): sent, and how many did the step within 72 h.
+function RostTips({ tips }: { readonly tips: Rost['tips'] }) {
+  const { t, formatNumber } = useI18n();
+  return (
+    <ManageGroup title={t('growth.rost.tips')}>
+      {tips.map(({ step, sent, done }) => (
+        <ManageRow
+          key={step}
+          title={t(`growth.rost.tip.${step}`)}
+          hint={t('growth.rost.tipLine', { sent: formatNumber(sent), done: formatNumber(done) })}
+          arrow={false}
+        />
+      ))}
+    </ManageGroup>
   );
 }

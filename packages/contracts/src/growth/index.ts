@@ -3,3 +3,4 @@ export * from './loops';
 export * from './api';
 export * from './card';
 export * from './rost';
+export * from './tips';

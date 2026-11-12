@@ -1,0 +1,18 @@
+{
+  "tip.p2": "Qayerga borasiz? Yoʻnalishni tanlang: bugungi va ertangi safarlar shu yerda.",
+  "tip.p3": "Siz koʻrgan safarda hali boʻsh joy bor. Joyni band qilib qoʻyasizmi?",
+  "tip.p10": "Yana yoʻlga chiqasizmi? Yoʻnalishingizda yangi safarlar bor.",
+  "tip.req": "Soʻrovingizga hali taklif kelmadi. Uni tanishlaringizga yoki guruhga ulashing: haydovchi tezroq topiladi.",
+  "tip.d1": "Arizangiz deyarli tayyor. Qolgan qadamni tugating, keyin safar eʼlon qila olasiz.",
+  "tip.d2": "Birinchi safaringizni eʼlon qiling: yoʻlovchilar kutyapti.",
+  "tip.d2Bonus": "Birinchi safaringizni eʼlon qiling: yoʻlovchilar kutyapti. Hamyoningizda {bonus} bonus bor.",
+  "tip.d7": "Safaringizda hali yoʻlovchi yoʻq. Havolani tanishlaringizga va guruhlarga yuboring.",
+  "tip.d4": "Yana yoʻlga chiqasizmi? Yangi safarni bir necha bosishda eʼlon qilasiz.",
+  "tip.find": "Safar topish",
+  "tip.openTrip": "Safarni ochish",
+  "tip.openRequest": "Soʻrovni ochish",
+  "tip.application": "Arizani davom ettirish",
+  "tip.publish": "Safar eʼlon qilish",
+  "tip.off": "🔕 Kerak emas",
+  "tip.offDone": "Maslahatlar oʻchirildi. Muhim xabarlar kelaveradi."
+}

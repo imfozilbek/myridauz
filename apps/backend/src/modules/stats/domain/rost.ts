@@ -1,9 +1,17 @@
-import { GROWTH_LOOPS, loopOf, type GrowthLoop, type Rost } from '@platform/contracts';
+import {
+  GROWTH_LOOPS,
+  loopOf,
+  TIP_STEPS,
+  type GrowthLoop,
+  type Rost,
+  type TipStep,
+} from '@platform/contracts';
 import type { ArrivalCount } from './arrivals';
 
 // The sessions or the people of one mark; the searches of one direction with their result.
 export type MarkCount = { readonly via: string; readonly count: number };
 export type SearchCount = { readonly route: string; readonly result: string; readonly count: number };
+export type TipCount = { readonly step: TipStep; readonly sent: number; readonly done: number };
 type Counted = { readonly via: string | null; readonly count: number };
 
 // The counts of the marks of one kind summed by their loop; the marks of channels and ads have none.
@@ -46,3 +54,10 @@ export function directionsOf(rows: readonly SearchCount[]): Rost['directions'] {
   }
   return [...routes].map(([route, sums]) => ({ route, ...sums })).sort((a, b) => b.searches - a.searches);
 }
+
+// Every step of the tips, in the order of docs/232, with what its tips did (G70a).
+export const tipsOf = (rows: readonly TipCount[]): Rost['tips'] =>
+  TIP_STEPS.map((step) => {
+    const found = rows.find((row) => row.step === step);
+    return { step, sent: found?.sent ?? 0, done: found?.done ?? 0 };
+  });

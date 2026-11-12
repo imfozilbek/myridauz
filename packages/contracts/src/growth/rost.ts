@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { GROWTH_LOOPS } from './loops';
+import { TIP_STEPS } from './tips';
 
 // «Rost» of the team (G69, docs/123): each loop of growth, the people who came by its links (the
 // sessions of Analytics Engine), registered (D1) and rode; and each direction, how many searches found
@@ -13,6 +14,8 @@ export const rostSchema = z.object({
   loops: z.array(z.object({ loop: z.enum(GROWTH_LOOPS), came: count, registered: count, rode: count })),
   // route: the two regions of the search, «1726-1718».
   directions: z.array(z.object({ route: z.string().regex(/^\d{4}-\d{4}$/), searches: count, found: count })),
+  // The tips of a step (G70a, docs/232): sent in the period, and how many did the step within 72 h.
+  tips: z.array(z.object({ step: z.enum(TIP_STEPS), sent: count, done: count })),
   at: z.number().int(),
 });
 export type Rost = z.infer<typeof rostSchema>;

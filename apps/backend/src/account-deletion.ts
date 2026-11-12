@@ -10,6 +10,7 @@ import { eraseRequestPointsOf, forgetRequestViews } from './modules/ride-request
 import { forgetSubscriptions } from './modules/route-subscriptions';
 import { forgetFollows } from './modules/shares';
 import { forgetSupport } from './modules/support';
+import { forgetTips } from './modules/tips';
 import { forgetModerator } from './modules/team';
 import { wireAccountDeletion } from './modules/users';
 import { closeWalletOf } from './modules/wallet';
@@ -47,6 +48,8 @@ wireAccountDeletion(async (env, userId) => {
   // The records of the waitlist, its first touch and its joins by an ad (G83, docs/181).
   await forgetWaitlist(env, userId);
   await forgetRequestViews(env, userId);
+  // The tips of a step and «Kerak emas» (G70a, docs/232).
+  await forgetTips(env, userId);
   // The support talk goes with the account (G32, docs/30).
   await forgetSupport(env, userId);
   // A moderator leaves the team: no hidden member keeps the admin app (G89 M3).

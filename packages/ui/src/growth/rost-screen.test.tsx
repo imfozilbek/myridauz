@@ -1,6 +1,6 @@
 import { toCyrillic } from '@platform/i18n';
 import type { StatsClient } from '@platform/api-client';
-import { GROWTH_LOOPS, type Rost } from '@platform/contracts';
+import { GROWTH_LOOPS, TIP_STEPS, type Rost } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket, tap } from '../market/market-test-kit';
@@ -19,6 +19,7 @@ const ROST: Rost = {
     rode: loop === 'qr' ? 1 : 0,
   })),
   directions: [{ route: '1726-1730', searches: 10, found: 7 }],
+  tips: TIP_STEPS.map((step) => ({ step, sent: step === 'd2' ? 5 : 0, done: step === 'd2' ? 2 : 0 })),
   at: 0,
 };
 
@@ -33,6 +34,9 @@ describe('«Rost»', () => {
     expect(screen.getByText(toCyrillic('7 / 10 qidiruvda safar topildi'))).toBeTruthy();
     expect(screen.getByText('70%')).toBeTruthy();
     expect(screen.getByText(toCyrillic('Kelganlar soni analitika ulanganda chiqadi.'))).toBeTruthy();
+    // The tips of a step (G70a, docs/232).
+    expect(screen.getByText(toCyrillic('Tasdiqlandi, safar eʼlon qilmadi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('5 ta yuborildi · 2 kishi 72 soatda qadam qoʻydi'))).toBeTruthy();
     await tap(toCyrillic('30 kun'));
     expect(rost).toHaveBeenLastCalledWith('month');
   });
