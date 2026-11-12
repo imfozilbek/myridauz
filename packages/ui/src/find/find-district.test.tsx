@@ -26,7 +26,7 @@ describe('the places of a region with their trips', { timeout: 20_000 }, () => {
     expect(await screen.findByText(toCyrillic('Fargʻonaning qaysi joyi?'))).toBeTruthy();
     const whole = document.querySelector('.district-whole');
     expect(whole?.textContent).toBe(toCyrillic('Butun viloyat4 ta safar'));
-    const rows = [...document.querySelectorAll('.district-row')].map((row) => row.textContent);
+    const rows = [...document.querySelectorAll('.region-tile')].map((row) => row.textContent);
     expect(rows).toEqual([toCyrillic('Fargʻona shahri4 ta safar')]);
   });
 

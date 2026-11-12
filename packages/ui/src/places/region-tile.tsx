@@ -10,29 +10,33 @@ import './region-tile.css';
 type Props = {
   readonly region: Location;
   readonly name: string;
-  readonly hint: string;
+  readonly hint?: string | undefined;
   // A line in the color of the app: the trips of a direction.
   readonly strong?: boolean;
+  // A district has no drawing of its own: its tile is its name (owner, 12.11.2026).
+  readonly pictured?: boolean;
   readonly onOpen: () => void;
 };
 
 // One tile of a region wherever a region is chosen, «Qayerdan» and «Qayerga», by a passenger and a
 // driver (owner, 12.11.2026): its drawing small at the left, its name and one line beside it. Two
 // columns, every region on one screen; the text never lies on the picture (docs/118).
-export function RegionTile({ region, name, hint, strong = false, onOpen }: Props) {
+export function RegionTile({ region, name, hint, strong = false, pictured = true, onOpen }: Props) {
   const art = useRegionArt()(region.id);
   // «Qoraqalpogʻiston» is one long word: smaller on a narrow phone, never broken (docs/121).
   const fitted = useFitLine<HTMLSpanElement>(name);
   return (
     <Tappable Component="button" className="region-tile" onClick={onOpen}>
-      {art ? <img className="region-tile-art" src={art} alt={region.name} /> : null}
+      {pictured && art ? <img className="region-tile-art" src={art} alt={region.name} /> : null}
       <span className="region-tile-text">
         <span ref={fitted} className="region-tile-name">
           {name}
         </span>
-        <span className="region-tile-hint" data-strong={strong}>
-          {hint}
-        </span>
+        {hint ? (
+          <span className="region-tile-hint" data-strong={strong}>
+            {hint}
+          </span>
+        ) : null}
       </span>
     </Tappable>
   );
