@@ -16,7 +16,9 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('an open booking stays fresh and clear (docs/65 B2, B3, B4)', () => {
+// The first test draws «Mening safarlarim» cold: on a busy CI machine that took over 5 s (main,
+// 12.11.2026), as for the other heavy screens (book-flow.test.tsx).
+describe('an open booking stays fresh and clear (docs/65 B2, B3, B4)', { timeout: 20_000 }, () => {
   it('shows the driver cancel on the open booking without closing it', async () => {
     const channel = testFeed();
     let mine: Booking[] = [confirmed];
