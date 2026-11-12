@@ -1,56 +1,19 @@
 // Cars people drive in Uzbekistan: the driver chooses from the list, "Boshqa" lets them type (docs/19).
 // Brand and model names are the same in every language, so they are data, not translations.
-// Each model has its seats for passengers: the biggest common version (owner decision 30.09.2026).
-// A trip offers from 1 to these seats, the team checks them on the photo of the interior (docs/50).
-type Models = Readonly<Record<string, number>>;
+// The longest list of makes and models (owner decision 12.11.2026), kept by groups in their files.
+import { ASIAN_CARS } from './car-catalog-asia';
+import { CHINESE_CARS } from './car-catalog-china';
+import { CHINESE_CARS_2 } from './car-catalog-china-2';
+import { WESTERN_CARS } from './car-catalog-europe';
+import { GM_CARS } from './car-catalog-gm';
+import type { CarModels } from './car-models';
 
-export const CAR_CATALOG: Readonly<Record<string, Models>> = {
-  Chevrolet: {
-    Cobalt: 4,
-    Nexia: 4,
-    Gentra: 4,
-    Lacetti: 4,
-    Spark: 4,
-    Matiz: 4,
-    Damas: 6,
-    Malibu: 4,
-    Onix: 4,
-    Tracker: 4,
-    Equinox: 4,
-    Captiva: 6,
-    Traverse: 7,
-    Tahoe: 7,
-  },
-  Daewoo: { Nexia: 4, Matiz: 4, Tico: 4 },
-  Ravon: { R2: 4, R3: 4, R4: 4, Gentra: 4 },
-  Kia: { K5: 4, K8: 4, Rio: 4, Seltos: 4, Sonet: 4, Sportage: 4, Sorento: 6, Carnival: 7 },
-  Hyundai: { Accent: 4, Elantra: 4, Sonata: 4, Creta: 4, Tucson: 4, 'Santa Fe': 6, Palisade: 7, Staria: 7 },
-  BYD: { Seagull: 3, 'Qin Plus': 4, Chazor: 4, Han: 4, 'Yuan Plus': 4, 'Song Plus': 4, Tang: 6 },
-  Chery: { 'Tiggo 2': 4, 'Tiggo 4': 4, 'Tiggo 7': 4, 'Tiggo 8': 6, 'Arrizo 8': 4 },
-  Haval: { Jolion: 4, H6: 4, M6: 4, Dargo: 4 },
-  // Owner decision 12.11.2026: the longest list of Dongfeng, Forthing included.
-  Dongfeng: {
-    Shine: 4,
-    'Shine Max': 4,
-    'Shine GS': 4,
-    Huge: 4,
-    Mage: 4,
-    AX4: 4,
-    AX7: 4,
-    S30: 4,
-    'H30 Cross': 4,
-    'Glory 500': 4,
-    'Glory 580': 6,
-    'Glory iX5': 4,
-    'EP 007': 4,
-    'EP 008': 5,
-    'Nammi 01': 4,
-    'Forthing T5 EVO': 4,
-    'Forthing U-Tour': 6,
-    'Forthing Lingzhi': 6,
-  },
-  Toyota: { Corolla: 4, Camry: 4, RAV4: 4, Highlander: 6, Prado: 6, 'Land Cruiser': 6 },
-  Lada: { Granta: 4, Vesta: 4, Niva: 4, Largus: 6 },
+export const CAR_CATALOG: Readonly<Record<string, CarModels>> = {
+  ...GM_CARS,
+  ...ASIAN_CARS,
+  ...CHINESE_CARS,
+  ...CHINESE_CARS_2,
+  ...WESTERN_CARS,
 };
 
 // The buttons of «Mashinangiz»: the cars most people have, chosen by one tap without the make (G62).

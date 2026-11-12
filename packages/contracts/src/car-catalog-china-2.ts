@@ -1,0 +1,123 @@
+import type { CarModels } from './car-models';
+
+// More Chinese cars: new electric and hybrid brands and the brands of Chery.
+export const CHINESE_CARS_2: Readonly<Record<string, CarModels>> = {
+  LiXiang: {
+    L6: 4,
+    L7: 4,
+    L8: 5,
+    L9: 5,
+    Mega: 6,
+  },
+  Zeekr: {
+    '001': 4,
+    '007': 4,
+    '7X': 4,
+    X: 4,
+    '009': 5,
+  },
+  Jetour: {
+    X70: 6,
+    'X70 Plus': 6,
+    X90: 6,
+    Dashing: 4,
+    T2: 4,
+  },
+  Omoda: {
+    C5: 4,
+    S5: 4,
+  },
+  Jaecoo: {
+    J7: 4,
+    J8: 6,
+  },
+  Exeed: {
+    LX: 4,
+    TXL: 4,
+    RX: 4,
+    VX: 6,
+  },
+  Leapmotor: {
+    C10: 4,
+    C11: 4,
+    C16: 5,
+    T03: 3,
+    B10: 4,
+  },
+  Hongqi: {
+    H5: 4,
+    H9: 4,
+    HS5: 4,
+    HS7: 4,
+    'E-HS9': 5,
+  },
+  Voyah: {
+    Free: 4,
+    Dream: 6,
+    Passion: 4,
+    Courage: 4,
+  },
+  JAC: {
+    J7: 4,
+    JS4: 4,
+    JS6: 4,
+    S3: 4,
+  },
+  GAC: {
+    'Aion S': 4,
+    'Aion Y': 4,
+    GS3: 4,
+    GS8: 6,
+    Emkoo: 4,
+    M8: 6,
+  },
+  Kaiyi: {
+    E5: 4,
+    X3: 4,
+    'X3 Pro': 4,
+  },
+  Xpeng: {
+    G6: 4,
+    G9: 4,
+    P7: 4,
+    X9: 6,
+  },
+  Aito: {
+    M5: 4,
+    M7: 4,
+    M9: 5,
+  },
+  Avatr: {
+    '11': 4,
+    '12': 4,
+  },
+  Neta: {
+    V: 4,
+    X: 4,
+    U: 4,
+  },
+  Livan: {
+    'X3 Pro': 4,
+    'S6 Pro': 4,
+  },
+  Dongfeng: {
+    Shine: 4,
+    'Shine Max': 4,
+    'Shine GS': 4,
+    Huge: 4,
+    Mage: 4,
+    AX4: 4,
+    AX7: 4,
+    S30: 4,
+    'H30 Cross': 4,
+    'Glory 500': 4,
+    'Glory 580': 6,
+    'Glory iX5': 4,
+    'EP 007': 4,
+    'EP 008': 5,
+    'Nammi 01': 4,
+    'Forthing T5 EVO': 4,
+    'Forthing U-Tour': 6,
+    'Forthing Lingzhi': 6,
+  },
+};
