@@ -35,8 +35,8 @@ for (const platform of PLATFORMS)
       };
       await openFindTrip(page);
       await fromIfAsked(page);
-      await expect(page.locator('.direction-card').first()).toBeVisible();
-      await oneSize(page, '.direction-card');
+      await expect(page.locator('.region-tile').first()).toBeVisible();
+      await oneSize(page, '.region-tile');
       await shot('01-directions');
       await page.getByText(TEXT.otherPlace).click();
       await page.getByPlaceholder(TEXT.otherPlace).fill('Samar');

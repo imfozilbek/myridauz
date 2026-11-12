@@ -81,7 +81,7 @@ describe(
       await tap(toCyrillic('Orqaga'));
       await screen.findByText(toCyrillic('Bugun 1, ertaga 0 ta safar'));
       fireEvent.click(fromLine() as HTMLElement);
-      await tap(toCyrillic('Fargʻona viloyati'));
+      await tap(toCyrillic('Fargʻona'));
       await tap(toCyrillic('Butun viloyat'));
       await waitFor(() => expect(fromLine()?.textContent).toContain(toCyrillic('Fargʻona')));
       expect(toLine()?.textContent).toContain(toCyrillic('Qayerga borasiz?'));

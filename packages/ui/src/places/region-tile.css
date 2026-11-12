@@ -1,0 +1,61 @@
+/* The regions on one screen (owner, 12.11.2026): two columns, one size for one kind (docs/121). */
+.region-tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  gap: 8px;
+  padding: 12px 14px 0;
+}
+
+.region-tile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 8px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--reg-card);
+  font: inherit;
+  /* The ink of the text: a button of iOS paints its words system blue by itself (lesson 391). */
+  color: var(--reg-ink);
+  text-align: left;
+}
+
+/* The drawing of the region, small and square at the left of its tile. */
+.region-tile-art {
+  display: block;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 9px;
+  object-fit: cover;
+}
+
+.region-tile-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.region-tile-name {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.region-tile-hint {
+  font-size: 12.5px;
+  line-height: 1.2;
+  color: var(--reg-muted);
+}
+
+/* The trips of a direction, in the color of the app. */
+.region-tile-hint[data-strong='true'] {
+  font-weight: 600;
+  color: var(--reg-text);
+}

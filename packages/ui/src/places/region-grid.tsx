@@ -1,36 +1,31 @@
 import type { Location } from '@platform/contracts';
-import { Text } from '@telegram-apps/telegram-ui';
 import { useI18n } from '../context/i18n-context';
-import { useRegionArt } from './region-art';
+import type { PlaceDirectory } from './directory';
+import { RegionTile, useRegionWords } from './region-tile';
 
 type RegionGridProps = {
-  readonly regions: readonly Location[];
+  readonly directory: PlaceDirectory;
   // A city that is a region is one tap, «Butun shahar» (G78 П9).
   readonly cityAtOnce: boolean;
   readonly onOpen: (region: Location) => void;
 };
 
-// 14 regions as picture cards: people find their region by the picture faster than by the name.
-// The name lies under the drawing on white, never on the picture (docs/118).
-export function RegionGrid({ regions, cityAtOnce, onOpen }: RegionGridProps) {
+// The 14 regions as tiles: people find their region by the picture faster than by the name; the same
+// tiles as «Qayerga borasiz?» (owner, 12.11.2026).
+export function RegionGrid({ directory, cityAtOnce, onOpen }: RegionGridProps) {
   const { t } = useI18n();
-  const artOf = useRegionArt();
+  const words = useRegionWords(directory);
   return (
-    <div className="region-grid">
-      {regions.map((region) => {
-        const art = artOf(region.id);
-        return (
-          <button key={region.id} type="button" className="region-card" onClick={() => onOpen(region)}>
-            {art ? <img className="region-photo" src={art} alt={region.name} loading="lazy" /> : null}
-            <Text weight="2" className="region-name">
-              {region.name}
-              {cityAtOnce && region.oneCity ? (
-                <span className="region-whole">{t('places.wholeCity')}</span>
-              ) : null}
-            </Text>
-          </button>
-        );
-      })}
+    <div className="region-tiles">
+      {directory.regions.map((region) => (
+        <RegionTile
+          key={region.id}
+          region={region}
+          name={words.name(region)}
+          hint={cityAtOnce && region.oneCity ? t('places.wholeCity') : words.districts(region)}
+          onOpen={() => onOpen(region)}
+        />
+      ))}
     </div>
   );
 }

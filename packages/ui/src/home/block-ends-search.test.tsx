@@ -40,7 +40,7 @@ describe('the ends of the block at the bottom of the main screen', { timeout: 20
     fireEvent.click(screen.getByRole('button', { name: toCyrillic('Joylarni almashtirish') }));
     fireEvent.click(screen.getByRole('button', { name: toCyrillic('Safar topish') }));
     expect(await screen.findByText(toCyrillic('Qayerdan yoʻlga chiqasiz?'))).toBeTruthy();
-    await tap(toCyrillic('Fargʻona viloyati'));
+    await tap(toCyrillic('Fargʻona'));
     await tap(toCyrillic('Fargʻona shahri'));
     await today();
   });
@@ -51,7 +51,7 @@ describe('the ends of the block at the bottom of the main screen', { timeout: 20
     fireEvent.click(screen.getByRole('button', { name: toCyrillic('Joylarni almashtirish') }));
     await tap(toCyrillic('Soʻrov qoldirish'));
     expect(await screen.findByText(toCyrillic('Qayerdan yoʻlga chiqasiz?'))).toBeTruthy();
-    await tap(toCyrillic('Fargʻona viloyati'));
+    await tap(toCyrillic('Fargʻona'));
     await tap(toCyrillic('Fargʻona shahri'));
     expect(await screen.findByText(toCyrillic('Qaysi kuni?'))).toBeTruthy();
   });

@@ -5,15 +5,16 @@ import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 import type { PlaceDirectory } from '../places/directory';
 import { usePlaceNames } from '../places/place-names';
+import { RegionTile, useRegionWords } from '../places/region-tile';
 import { Screen } from '../screen/screen';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { useScreenBackground } from '../telegram/screen-background';
 import { brandVars } from '../theme/brand-vars';
 import { useBrand } from '../context/brand-context';
-import { DirectionCard } from './direction-card';
 import { PlaceSearchSheet } from './place-search-sheet';
 import { useDirections } from './use-directions';
+import { tripsOf } from './trips-of';
 import './find.css';
 
 type Props = {
@@ -34,6 +35,7 @@ export function DirectionsScreen({ directory, from, error, onBack, onChangeFrom,
   const { t } = useI18n();
   const { colors } = useBrand().theme;
   const names = usePlaceNames(directory);
+  const words = useRegionWords(directory);
   const { value: cards, failed, reload } = useDirections(from.id);
   const [searching, setSearching] = useState(false);
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
@@ -60,14 +62,19 @@ export function DirectionsScreen({ directory, from, error, onBack, onChangeFrom,
       )}
       {error ? <p className="find-error">{t(`errors.${error}`)}</p> : null}
       {cards === null ? <ScreenSkeleton /> : null}
-      <div className="direction-list">
+      {/* Every region as the same tile as «Qayerdan» (owner, 12.11.2026): its trips when there are,
+          else how many districts it has. */}
+      <div className="region-tiles">
         {cards?.map((card) => {
           const region = directory.find(card.to);
+          const trips = tripsOf(t, card);
           return region ? (
-            <DirectionCard
+            <RegionTile
               key={card.to}
-              card={card}
-              name={names.short(region)}
+              region={region}
+              name={words.name(region)}
+              hint={trips ?? words.districts(region)}
+              strong={trips !== null}
               onOpen={() => onPick(region)}
             />
           ) : null;

@@ -97,7 +97,7 @@ test('the steps of the flyer: a driver publishes, a passenger finds and books, t
   await phone.getByAltText(toCyrillic('Qashqadaryo viloyati')).click();
   await phone.getByText(toCyrillic('Qarshi shahri'), { exact: true }).click();
   await seen(phone, t('find.title'));
-  await expect(phone.locator('.direction-card').first()).toBeVisible();
+  await expect(phone.locator('.region-tile').first()).toBeVisible();
   await shot(phone, 'passenger-2');
   await phone.getByText(toCyrillic('Toshkent'), { exact: false }).first().click();
   const chilonzor = phone.getByText(toCyrillic('Chilonzor'), { exact: true });

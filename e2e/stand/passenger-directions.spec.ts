@@ -29,7 +29,7 @@ async function openLastCard(page: Page, person: Person) {
     // Toshkent shahri is taken whole in one tap (G78 П9).
     await page.getByAltText(toCyrillic('Toshkent shahri')).click();
   }
-  const cards = page.locator('.direction-card');
+  const cards = page.locator('.region-tile');
   // Every region but Toshkent shahri itself (owner, 12.11.2026).
   await expect(cards).toHaveCount(REGIONS_BUT_HOME);
   return cards;

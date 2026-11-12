@@ -89,7 +89,7 @@ describe('«Yoʻlovchilar soʻrovlari» (G64, docs/118 path 7)', { timeout: 20_0
     for (const step of [
       toCyrillic('Toshkent shahri'),
       toCyrillic('Chilonzor'),
-      toCyrillic('Fargʻona viloyati'),
+      toCyrillic('Fargʻona'),
       toCyrillic('Fargʻona shahri'),
     ])
       await tap(step);
@@ -116,7 +116,7 @@ describe('«Yoʻlovchilar soʻrovlari» (G64, docs/118 path 7)', { timeout: 20_0
     for (const step of [
       toCyrillic('Toshkent shahri'),
       toCyrillic('Chilonzor'),
-      toCyrillic('Fargʻona viloyati'),
+      toCyrillic('Fargʻona'),
       toCyrillic('Fargʻona shahri'),
     ])
       await tap(step);
