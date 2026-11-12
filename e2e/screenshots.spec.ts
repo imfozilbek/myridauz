@@ -49,6 +49,13 @@ test('places: screenshots', async ({ page }) => {
   await page.getByText(TEXT.change).click();
   await expect(page.getByAltText(toCyrillic('Xorazm viloyati'))).toBeVisible();
   await page.waitForLoadState('networkidle');
+  // iOS paints the words of a button blue by itself: the names keep the ink of the text (12.11.2026).
+  await page.addStyleTag({ content: 'button { color: rgb(0, 122, 255); }' });
+  const inks = await page
+    .locator('.region-name')
+    .evaluateAll((names) => [...new Set(names.map((name) => getComputedStyle(name).color))]);
+  expect(inks).toHaveLength(1);
+  expect(inks).not.toContain('rgb(0, 122, 255)');
   await shot('2-regions');
   const search = page.getByPlaceholder(TEXT.search);
   await search.fill("g'ijduvon");
