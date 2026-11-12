@@ -34,7 +34,7 @@ describe('team hours (G34)', () => {
   });
 
   it('reads an hour as people do', () => {
-    expect(hourLabel(7)).toBe('7:00');
+    expect(hourLabel(7)).toBe('07:00');
     expect(hourLabel(23)).toBe('23:00');
   });
 

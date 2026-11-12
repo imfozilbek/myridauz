@@ -38,7 +38,7 @@ describe('«Yordam»', () => {
       toCyrillic('Hisob va xavfsizlik'),
     ]);
     expect(
-      screen.getByText(toCyrillic('Jamoamiz har kuni soat 7:00 dan 23:00 gacha javob beradi')),
+      screen.getByText(toCyrillic('Jamoamiz har kuni soat 07:00 dan 23:00 gacha javob beradi')),
     ).toBeTruthy();
   });
 

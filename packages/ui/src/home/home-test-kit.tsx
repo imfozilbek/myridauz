@@ -87,6 +87,7 @@ export function renderHome(
     comfort: { favorites: data.favorites ?? (async () => ({ drivers: [], trips: [] })) },
     market: {
       ...searchMarket(),
+      requestDirections: async () => [{ to: '1730', today: 0, tomorrow: 2 }],
       searchTrips: none,
       myRequests: data.asked ?? none,
       ...(data.trips ? { myTrips: data.trips } : {}),

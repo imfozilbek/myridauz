@@ -1,6 +1,7 @@
 import {
   ADMIN_TRIPS_PATH,
   DRIVER_MONTH_PATH,
+  DRIVER_REQUEST_DIRECTIONS_PATH,
   DRIVER_REQUESTS_BOARD_PATH,
   DRIVER_REQUESTS_PATH,
   DRIVER_SCHEDULE_PATH,
@@ -101,6 +102,11 @@ export function createMarketClient(options: SignedOptions) {
       requestBoardSchema.parse(
         await (await request(`${DRIVER_REQUESTS_BOARD_PATH}?${query(search)}`)).json(),
       ),
+    // «Qayerga» of a driver: the requests of today and tomorrow by region (owner, 12.11.2026).
+    requestDirections: async (from: string): Promise<DirectionCard[]> =>
+      directionCardsSchema.parse(
+        await (await request(`${DRIVER_REQUEST_DIRECTIONS_PATH}?${query({ from })}`)).json(),
+      ).directions,
     // A trip opened for one request, opened for everybody (G64).
     openTrip: async (id: string): Promise<Trip> => trip(await post(driverTripOpenPath(id), {})),
     // «Bu oy N safar», «Yoʻl xarajati qaytdi» (G64).

@@ -27,8 +27,8 @@ export function teamWaitMs(since: number, now: number, hours: TeamHours): number
   return waited;
 }
 
-// "7:00", "23:00": an hour of the team as people read it.
-export const hourLabel = (hour: number) => `${hour}:00`;
+// "07:00", "23:00": an hour of the team as people read it, two digits as every time of Rida (docs/25).
+export const hourLabel = (hour: number) => `${String(hour).padStart(2, '0')}:00`;
 
 // The night of the bots, Tashkent time: no sound from 22:00 to 07:00, but for a call and
 // «2 soat qoldi» (G68, docs/122 rule 3).

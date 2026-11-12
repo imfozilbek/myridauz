@@ -1,9 +1,17 @@
 import type { Page, Route } from '@playwright/test';
 import { DAY_MS, tashkentDate } from '@platform/contracts';
 import { toCyrillic } from '@platform/i18n';
+import locations from '../apps/backend/seed/locations.json' with { type: 'json' };
+import { regionOrder } from '../apps/backend/src/shared/places/region-order';
 
 const CHILONZOR = '1726294';
 const KM = 300;
+const PLACES = new Map(locations.map((place) => [place.id, place]));
+// The requests of passengers of today and tomorrow by the region they go to (owner, 12.11.2026).
+const DEMAND = new Map([
+  ['1718', { today: 1, tomorrow: 2 }],
+  ['1730', { today: 0, tomorrow: 1 }],
+]);
 
 // How many trips go where (G59): the cards of «Qayerga borasiz?», the days of «Safarlar» and
 // «Yaqin joylar» around the pin.
@@ -25,6 +33,14 @@ export async function mockCounts(page: Page, found: readonly { departAt: number 
       ],
     }),
   );
+  // «Qayerga» of a driver: the regions in the order of the server, never the own one (docs/118).
+  await page.route('**/api/driver/requests/directions?*', (route) => {
+    const from = new URL(route.request().url()).searchParams.get('from') ?? '';
+    const home = PLACES.get(from)?.parentId ?? from;
+    const activity = new Map([...DEMAND].map(([to, count]) => [to, count.today + count.tomorrow]));
+    const card = (to: string) => ({ to, today: 0, tomorrow: 0, ...DEMAND.get(to) });
+    return json(route, { directions: regionOrder(activity, home, PLACES).map(card) });
+  });
   // The names as the API gives them: in Cyrillic (G98).
   const near = (name: string, kind: string, lat: number) => ({
     name: toCyrillic(name),

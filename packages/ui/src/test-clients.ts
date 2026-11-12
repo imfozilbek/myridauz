@@ -51,6 +51,7 @@ export const testClients = (overrides: Overrides): ApiClients => ({
     cancelRequest: NOT_USED,
     setRequestCalls: NOT_USED,
     requestBoard: NOT_USED,
+    requestDirections: NOT_USED,
     openTrip: NOT_USED,
     month: NOT_USED,
     teamTrips: NOT_USED,

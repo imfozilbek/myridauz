@@ -57,3 +57,12 @@ describe('«Yoʻlga chiqdim» and «Yetib keldik» of the driver app (G63)', () 
     await expect(failed).rejects.toEqual(new ApiError(409, 'trips.too_early_to_depart'));
   });
 });
+
+describe('«Qayerga» of the driver app (owner decision 12.11.2026)', () => {
+  it('reads the requests of each direction from a place, signed', async () => {
+    const directions = [{ to: '1718', today: 1, tomorrow: 2 }];
+    const fetch = vi.fn<Fetch>(async () => Response.json({ directions }));
+    expect(await createMarketClient({ ...options, fetch }).requestDirections('1726')).toEqual(directions);
+    expect(fetch.mock.calls[0]?.[0]).toBe('https://api.test/driver/requests/directions?from=1726');
+  });
+});
