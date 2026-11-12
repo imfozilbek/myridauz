@@ -1,6 +1,6 @@
 import './help.css';
 import '../account/profile/profile.css';
-import { appHelpTopics, helpQuestions, type HelpQuestion, type HelpTopic } from '@platform/contracts';
+import { helpQuestions, helpTopicsFor, type HelpQuestion, type HelpTopic } from '@platform/contracts';
 import { useState } from 'react';
 import { ProfileGroup, ProfileRow } from '../account/profile/profile-row';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
@@ -10,11 +10,20 @@ import type { IconName } from '../icons';
 import { HelpPage, MoreRow, useHelpValues } from './help-parts';
 
 const TOPIC_ICONS: Readonly<Record<HelpTopic, IconName>> = {
+  basics: 'companion',
   find: 'search',
   booking: 'myTrips',
-  driver: 'carSide',
-  wallet: 'wallet',
+  request: 'request',
+  ride_day: 'map',
+  after: 'star',
   account: 'locked',
+  application: 'carSide',
+  publish: 'newTrip',
+  riders: 'passengers',
+  driver_day: 'map',
+  wallet: 'wallet',
+  driver_account: 'locked',
+  support: 'write',
 };
 
 type Props = {
@@ -48,7 +57,9 @@ export function HelpScreen({ onBack, help: opened }: Props) {
 function HelpTopics({ onOpen, onBack }: { onOpen: (topic: HelpTopic) => void; onBack: () => void }) {
   useScreenView('help');
   const { t } = useI18n();
-  const topics = appHelpTopics(useDriver() ? 'driver' : 'passenger');
+  const values = useHelpValues();
+  // Only the topics of the people of this Mini App (owner decision 12.11.2026, docs/230, docs/231).
+  const topics = helpTopicsFor(useDriver() ? 'driver' : 'passenger');
   return (
     <HelpPage title={t('help.title')} lead={t('help.lead')} onBack={onBack}>
       <MoreRow />
@@ -57,7 +68,7 @@ function HelpTopics({ onOpen, onBack }: { onOpen: (topic: HelpTopic) => void; on
           <ProfileRow
             key={topic}
             icon={TOPIC_ICONS[topic]}
-            title={t(`help.topic.${topic}`)}
+            title={t(`help.topic.${topic}`, values)}
             onClick={() => onOpen(topic)}
           />
         ))}
@@ -76,10 +87,12 @@ function HelpQuestions({ topic, onOpen, onBack }: QuestionsProps) {
   useScreenView('help.topic');
   const { t } = useI18n();
   const values = useHelpValues();
+  // The questions of the application only until it is approved (docs/231 [A]).
+  const approved = useDriver()?.application.status === 'approved';
   return (
-    <HelpPage title={t(`help.topic.${topic}`)} onBack={onBack}>
+    <HelpPage title={t(`help.topic.${topic}`, values)} onBack={onBack}>
       <ProfileGroup>
-        {helpQuestions(topic).map((question) => (
+        {helpQuestions(topic, approved).map((question) => (
           <ProfileRow
             key={question}
             icon="help"

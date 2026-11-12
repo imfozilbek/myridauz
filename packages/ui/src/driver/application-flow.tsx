@@ -113,7 +113,7 @@ export function ApplicationFlow({ initial, onSubmitted, onClose, tapped = false 
       fixed('plate');
     if (['make', 'model', 'color', 'seats'].some((field) => field in patch)) fixed('car');
   };
-  if (help) return <HelpScreen help="driver" onBack={() => setHelp(false)} />;
+  if (help) return <HelpScreen help="application" onBack={() => setHelp(false)} />;
   return (
     <>
       <CarScreen

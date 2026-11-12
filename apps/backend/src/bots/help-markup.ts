@@ -3,6 +3,7 @@ import {
   helpQuestions,
   helpTopicsFor,
   helpValues,
+  type HelpAudience,
   type HelpQuestion,
   type HelpTopic,
 } from '@platform/contracts';
@@ -13,7 +14,8 @@ import { supportUrl } from './support-link';
 const { t, formatMoney } = createI18n(DEFAULT_LOCALE);
 
 // The help in the bots (G97, docs/226): one message changes in place, topic, questions, answer.
-// help:topics, help:t:<topic>, help:q:<topic.question>, help:more (the support bot only).
+// help:topics:<audience>, help:t:<topic>:<audience>, help:q:<topic.question>:<audience>, help:more
+// (the support bot only). The audience keeps the topics of the person on «Mavzular» (docs/231).
 export const HELP_PREFIX = 'help';
 export const HELP_COMMAND = '/yordam';
 export type HelpBot = 'passenger' | 'driver' | 'main' | 'support';
@@ -22,6 +24,7 @@ export type HelpView = { readonly text: string; readonly rows: readonly (readonl
 
 const TOPICS_IN_ROW = 2;
 const button = (text: string, data: string): Button => ({ text, callback_data: `${HELP_PREFIX}:${data}` });
+const valuesOf = (brand: BrandConfig) => helpValues(brand, formatMoney);
 
 // «Boshqa savolim bor»: the support bot waits for the question, the other bots lead there.
 const more = (brand: BrandConfig, bot: HelpBot): Button =>
@@ -29,7 +32,7 @@ const more = (brand: BrandConfig, bot: HelpBot): Button =>
     ? button(t('help.bot.more'), 'more')
     : { text: t('help.bot.more'), url: supportUrl(brand) };
 
-const appOf = (bot: HelpBot) => (bot === 'driver' || bot === 'passenger' ? bot : 'other');
+const back = (audience: HelpAudience) => button(t('help.bot.back'), `topics:${audience}`);
 
 function inRows(buttons: readonly Button[]): Button[][] {
   const rows: Button[][] = [];
@@ -38,33 +41,47 @@ function inRows(buttons: readonly Button[]): Button[][] {
   return rows;
 }
 
-// The topics two in a row, «Boshqa savolim bor» alone under them.
-export function topicRows(brand: BrandConfig, bot: HelpBot): Button[][] {
-  const topics = helpTopicsFor(appOf(bot)).map((topic) => button(t(`help.bot.topic.${topic}`), `t:${topic}`));
+// The topics of the person two in a row, «Boshqa savolim bor» alone under them. The support bot
+// adds «Yordam xizmati» (docs/231).
+export function topicRows(brand: BrandConfig, bot: HelpBot, audience: HelpAudience): Button[][] {
+  const values = valuesOf(brand);
+  const topics = helpTopicsFor(audience, bot === 'support').map((topic) =>
+    button(t(`help.bot.topic.${topic}`, values), `t:${topic}:${audience}`),
+  );
   return [...inRows(topics), [more(brand, bot)]];
 }
 
-export const topicsView = (brand: BrandConfig, bot: HelpBot): HelpView => ({
+export const topicsView = (brand: BrandConfig, bot: HelpBot, audience: HelpAudience): HelpView => ({
   text: escapeHtml(t('help.bot.topics')),
-  rows: topicRows(brand, bot),
+  rows: topicRows(brand, bot, audience),
 });
 
-export function questionsView(brand: BrandConfig, bot: HelpBot, topic: HelpTopic): HelpView {
-  const values = helpValues(brand, formatMoney);
+export function questionsView(
+  brand: BrandConfig,
+  bot: HelpBot,
+  topic: HelpTopic,
+  audience: HelpAudience,
+): HelpView {
+  const values = valuesOf(brand);
   const questions = helpQuestions(topic).map((question) => [
-    button(t(`help.${question}.q`, values), `q:${question}`),
+    button(t(`help.${question}.q`, values), `q:${question}:${audience}`),
   ]);
   return {
-    text: escapeHtml(t('help.bot.questions', { topic: t(`help.topic.${topic}`) })),
-    rows: [...questions, [button(t('help.bot.back'), 'topics'), more(brand, bot)]],
+    text: escapeHtml(t('help.bot.questions', { topic: t(`help.topic.${topic}`, values) })),
+    rows: [...questions, [back(audience), more(brand, bot)]],
   };
 }
 
 // The answer: the question in bold, the answer under it, back to the topics or to the team.
-export function answerView(brand: BrandConfig, bot: HelpBot, question: HelpQuestion): HelpView {
-  const values = helpValues(brand, formatMoney);
+export function answerView(
+  brand: BrandConfig,
+  bot: HelpBot,
+  question: HelpQuestion,
+  audience: HelpAudience,
+): HelpView {
+  const values = valuesOf(brand);
   return {
     text: `${bold(escapeHtml(t(`help.${question}.q`, values)))}\n\n${escapeHtml(t(`help.${question}.a`, values))}`,
-    rows: [[button(t('help.bot.back'), 'topics'), more(brand, bot)]],
+    rows: [[back(audience), more(brand, bot)]],
   };
 }

@@ -57,8 +57,8 @@ describe('«… boʻyicha savollar»', () => {
     );
     fireEvent.click(await screen.findByText('main screen'));
     fireEvent.click(await screen.findByText(toCyrillic('Mashinam')));
-    fireEvent.click(await screen.findByText(toCyrillic('Haydovchi boʻlish boʻyicha savollar')));
-    expect(screen.getByText(toCyrillic('Arizam qaytarildi. Nima qilaman?'))).toBeTruthy();
+    fireEvent.click(await screen.findByText(toCyrillic('Ariza va mashina boʻyicha savollar')));
+    expect(screen.getByText(toCyrillic('Mashinamni qanday almashtiraman?'))).toBeTruthy();
     act(pressBack);
     expect(await screen.findByText(toCyrillic('Mashinangiz'))).toBeTruthy();
   });

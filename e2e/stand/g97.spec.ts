@@ -11,7 +11,7 @@ import { NARROW } from './screen-tour';
 import { openAs, outsideCalls, type Person } from './stand-kit';
 import { botMessages, clearBotMessages, type BotMessage } from './stand-tools';
 
-// G97 (docs/226) on the whole local Rida: the help of the bots, one message that changes in place, and
+// G97 (docs/226), by role (docs/230, docs/231), on the whole local Rida: the help of the bots, one message that changes in place, and
 // «Yordam» of the Mini App. People of this goal only (lessons 95, 378).
 test.use({ viewport: NARROW });
 test.describe.configure({ mode: 'serial' });
@@ -57,11 +57,11 @@ test('H1. «/yordam» in the bot of a passenger: a topic and an answer change th
   await clearBotMessages();
   const topics = await say('passenger', LOLA, '/yordam');
   expect(topics.text).toBe(t('help.bot.topics'));
-  expect(buttons(topics)[0]).toBe(t('help.bot.topic.find'));
+  expect(buttons(topics)[0]).toBe(t('help.bot.topic.basics', values));
   expect(buttons(topics).at(-1)).toBe(t('help.bot.more'));
   await chat(browser, '6-bot-topics', [sent(topics)]);
-  await press('passenger', LOLA, 'help:t:booking', TOPICS);
-  await press('passenger', LOLA, 'help:q:booking.wait', TOPICS);
+  await press('passenger', LOLA, 'help:t:booking:passenger', TOPICS);
+  await press('passenger', LOLA, 'help:q:booking.wait:passenger', TOPICS);
   const [topic, answer] = await edits(LOLA);
   expect(topic).toMatchObject({ method: 'editMessageText', target: TOPICS });
   expect(topic?.text).toBe(t('help.bot.questions', { topic: t('help.topic.booking') }));
@@ -70,10 +70,10 @@ test('H1. «/yordam» in the bot of a passenger: a topic and an answer change th
   await chat(browser, '7-bot-answer', [sent(topics), ...(await edits(LOLA))]);
 });
 
-test('H2. the driver sees the topics of a driver first; the main bot has the help too', async () => {
+test('H2. the driver sees only the topics of a driver; the main bot has the help too', async () => {
   expect(buttons(await say('driver', JAMSHID, '/yordam')).slice(0, 2)).toEqual([
-    t('help.bot.topic.driver'),
-    t('help.bot.topic.wallet'),
+    t('help.bot.topic.application'),
+    t('help.bot.topic.publish'),
   ]);
   expect((await say('main', JAMSHID, '/yordam')).text).toBe(t('help.bot.topics'));
 });
@@ -83,7 +83,7 @@ test('H3. the support bot: the topics under its welcome, «Boshqa savolim bor» 
   const welcome = await say('support', LOLA, '/start');
   expect(welcome.caption).toContain(t('help.more'));
   expect(buttons(welcome).at(-1)).toBe(t('help.bot.more'));
-  await press('support', LOLA, 'help:q:account.delete', 9);
+  await press('support', LOLA, 'help:q:account.delete:passenger', 9);
   const [answer] = await edits(LOLA);
   expect(answer).toMatchObject({ method: 'editMessageCaption', target: 9 });
   expect(answer?.text).toContain(t('help.account.delete.q'));
@@ -96,8 +96,8 @@ test('H4. «Yordam» of the Mini App: a topic, an answer with the numbers of the
   await page.getByText(t('home.support'), { exact: true }).click();
   await expect(page.getByText(t('help.lead'))).toBeVisible();
   await shoot(page, { platform: 'android' }, '1-topics');
-  await page.getByText(t('help.topic.wallet'), { exact: true }).click();
-  await page.getByText(t('help.wallet.fee.q')).click();
-  await expect(page.getByText(t('help.wallet.fee.a', values))).toBeVisible();
+  await page.getByText(t('help.topic.booking'), { exact: true }).click();
+  await page.getByText(t('help.booking.wait.q')).click();
+  await expect(page.getByText(t('help.booking.wait.a', values))).toBeVisible();
   await shoot(page, { platform: 'android' }, '2-answer');
 });

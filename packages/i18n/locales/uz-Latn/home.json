@@ -114,7 +114,7 @@
   "cue.fix": "Hozir: tuzating",
   "cue.topUp": "Hozir: hisobni toʻldiring",
   "dock.requestsSee": "Soʻrovlarni koʻrish",
-  "dock.afterCheckLong": "Tekshiruvdan keyin ochiladi. Odatda 30 daqiqagacha.",
+  "dock.afterCheckLong": "Tekshiruvdan keyin ochiladi. Odatda 1 soat ichida.",
   "dock.cancel": "Bekor qilish",
   "dock.openTrip": "Safarni ochish",
   "dock.openRequest": "Soʻrovni ochish",

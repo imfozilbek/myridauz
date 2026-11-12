@@ -124,7 +124,7 @@ describe(
     it('keeps both buttons grey with a note while the application is checked', async () => {
       driver([], [], pending);
       expect(
-        await screen.findByText(toCyrillic('Tekshiruvdan keyin ochiladi. Odatda 30 daqiqagacha.')),
+        await screen.findByText(toCyrillic('Tekshiruvdan keyin ochiladi. Odatda 1 soat ichida.')),
       ).toBeTruthy();
       const button = screen.getByRole('button', { name: toCyrillic('Safar eʼlon qilish') });
       expect(button.hasAttribute('disabled')).toBe(true);

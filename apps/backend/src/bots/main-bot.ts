@@ -10,6 +10,7 @@ import { DOCUMENTS_COMMAND, documentsReply } from './documents-reply';
 import { helpReply, isHelpButton, onHelpCallback } from './help-callbacks';
 import { HELP_COMMAND } from './help-markup';
 import { noRepliesReply } from './no-replies';
+import { helpAudienceFor } from './support-asker';
 import { welcomePicture } from './start-reply';
 import { isStartCommand, type BotMessage, type TelegramUpdate } from './telegram-update';
 
@@ -66,7 +67,8 @@ async function onMessage(bot: BotContext, message: BotMessage) {
     return mainWelcome(bot.brand, chatId, message.from?.first_name ?? '', open);
   }
   if (message.text === DOCUMENTS_COMMAND) return documentsReply(bot.brand, 'main', chatId);
-  if (message.text === HELP_COMMAND) return helpReply(bot.brand, 'main', chatId);
+  if (message.text === HELP_COMMAND)
+    return helpReply(bot.brand, 'main', chatId, await helpAudienceFor(bot.env, fromId));
   return message.text ? noRepliesReply(bot.brand, 'main', chatId) : {};
 }
 

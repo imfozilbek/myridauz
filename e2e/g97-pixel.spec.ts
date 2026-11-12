@@ -19,6 +19,7 @@ async function shot(page: Page, name: string) {
   await page.screenshot({ path: `${OUT}/${name}-code.png`, animations: 'disabled' });
 }
 
+// By role since 12.11.2026 (docs/230, docs/231): 7 topics of a passenger, 6 of a driver.
 const openHelp = async (page: Page) => {
   await page.getByText(t('home.support'), { exact: true }).click();
   await expect(page.getByText(t('help.lead'))).toBeVisible();

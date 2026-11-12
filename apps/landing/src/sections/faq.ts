@@ -10,9 +10,9 @@ export type Question = { readonly q: string; readonly a: string };
 // The questions of the site come from the help of the bots and the Mini Apps (G97, docs/226): one
 // text everywhere. «Muammo boʻlsa, kimga yozaman?» is the site's own: in the apps it is a button.
 const QUESTIONS: readonly HelpQuestion[] = [
-  'find.taxi',
-  'find.price',
-  'driver.check',
+  'basics.taxi',
+  'basics.price',
+  'basics.checked',
   'account.phone',
   'account.app',
   'wallet.fee',
