@@ -35,7 +35,7 @@ test('1 … 3: a passenger opens «Yordam», a topic and an answer', async ({ pa
   await shot(page, '3-answer');
 });
 
-test('4: a driver sees the topics of a driver first', async ({ page }) => {
+test('4: a driver sees only the topics of a driver', async ({ page }) => {
   await openDriverShot(page, 2);
   await openHelp(page);
   await shot(page, '4-driver-topics');

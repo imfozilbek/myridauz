@@ -1,6 +1,6 @@
 import './help.css';
 import '../account/profile/profile.css';
-import { helpQuestions, helpTopicsFor, type HelpQuestion, type HelpTopic } from '@platform/contracts';
+import { appHelpTopics, helpQuestions, type HelpQuestion, type HelpTopic } from '@platform/contracts';
 import { useState } from 'react';
 import { ProfileGroup, ProfileRow } from '../account/profile/profile-row';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
@@ -48,7 +48,7 @@ export function HelpScreen({ onBack, help: opened }: Props) {
 function HelpTopics({ onOpen, onBack }: { onOpen: (topic: HelpTopic) => void; onBack: () => void }) {
   useScreenView('help');
   const { t } = useI18n();
-  const topics = helpTopicsFor(useDriver() ? 'driver' : 'passenger');
+  const topics = appHelpTopics(useDriver() ? 'driver' : 'passenger');
   return (
     <HelpPage title={t('help.title')} lead={t('help.lead')} onBack={onBack}>
       <MoreRow />
