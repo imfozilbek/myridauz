@@ -27,7 +27,7 @@ type Props = {
 };
 
 // «Qayerga borasiz?» (owner decision 06.10.2026, docs/118 path 2, V2): «Qayerdan» in one line, the
-// search of any other place, the main directions as cards. One tap on a card opens its trips.
+// search of any other place, every region as a tile (owner, 12.11.2026). One tap opens its trips.
 export function DirectionsScreen({ directory, from, error, onBack, onChangeFrom, onPick }: Props) {
   useScreenView('market.directions');
   useScreenBackground();
@@ -67,7 +67,6 @@ export function DirectionsScreen({ directory, from, error, onBack, onChangeFrom,
             <DirectionCard
               key={card.to}
               card={card}
-              region={region}
               name={names.short(region)}
               onOpen={() => onPick(region)}
             />

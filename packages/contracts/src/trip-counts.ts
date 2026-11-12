@@ -12,13 +12,12 @@ export const COUNTED_DAYS = 7;
 export const directionsQuerySchema = z.object({ from: locationIdSchema });
 export const daysQuerySchema = z.object({ from: locationIdSchema, to: locationIdSchema });
 
-// A card of a direction: the region, the trips today and tomorrow, «… soʻmdan» (the cheapest seat
-// of those trips, or the recommended price when there are none).
+// A tile of a direction: the region and its trips today and tomorrow. No price for now (owner,
+// 12.11.2026: «Цены пока не нужны»).
 export const directionCardSchema = z.object({
   to: locationIdSchema,
   today: z.number().int().nonnegative(),
   tomorrow: z.number().int().nonnegative(),
-  price: z.number().int().positive(),
 });
 export type DirectionCard = z.infer<typeof directionCardSchema>;
 export const directionCardsSchema = z.object({ directions: z.array(directionCardSchema) });

@@ -25,7 +25,7 @@ describe('FindTripFlow: a passenger looks for a trip (G59, docs/118 path 2)', { 
     // Toshkent shahri says «Butun shahar» and is taken whole in one tap (G78 П9).
     expect(await screen.findByText(toCyrillic('Butun shahar'))).toBeTruthy();
     await tap(toCyrillic('Toshkent shahri'));
-    // «Qayerdan» in one line, the card of the region with its trips and «… soʻmdan».
+    // «Qayerdan» in one line, the tile of the region with its trips (no price: owner, 12.11.2026).
     expect(await screen.findByText(toCyrillic('Qayerga borasiz?'))).toBeTruthy();
     expect(screen.getByText(/^Тошкентдан/u)).toBeTruthy();
     expect(screen.getByText(toCyrillic('Bugun 2 ta, ertaga 5 ta safar'))).toBeTruthy();

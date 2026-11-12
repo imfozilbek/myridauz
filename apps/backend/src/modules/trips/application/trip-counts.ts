@@ -56,9 +56,8 @@ export async function tripDays(
   return { ok: true, value: { km: way.value.km, days, places: inside.sort((a, b) => b.trips - a.trips) } };
 }
 
-// «Qayerga borasiz?»: every region, the directions with the most trips today and tomorrow first, then
-// the popular ones (owner, 12.11.2026: four cards hid the other regions behind the search);
-// «… soʻmdan» is the cheapest seat of those trips or the recommended price.
+// «Qayerga borasiz?»: every region but the own one, the directions with the most trips today and
+// tomorrow first, then the popular ones (owner, 12.11.2026: all of them on one screen, no price).
 export async function directionCards(
   deps: TripsDeps,
   from: string,
@@ -78,17 +77,11 @@ export async function directionCards(
   const order = [...new Set([...busiest, ...POPULAR_REGIONS])].filter(
     (region) => region !== home && places.has(region),
   );
-  const cards = await Promise.all(
-    order.map(async (to) => {
-      const trips = byRegion.get(to) ?? [];
-      const cheapest = Math.min(...trips.map(({ trip }) => trip.price));
-      const recommended = trips.length > 0 ? null : await deps.recommendDirection(from, to);
-      const price = recommended ? (recommended.ok ? recommended.value.price : null) : cheapest;
-      const count = (date: string) => trips.filter((item) => item.date === date).length;
-      return price === null ? null : { to, today: count(today), tomorrow: count(tomorrow), price };
-    }),
-  );
-  return cards.filter((card) => card !== null);
+  return order.map((to) => {
+    const trips = byRegion.get(to) ?? [];
+    const count = (date: string) => trips.filter((item) => item.date === date).length;
+    return { to, today: count(today), tomorrow: count(tomorrow) };
+  });
 }
 
 // The trips of today and tomorrow from a place to a region: the card of an opened direction of the

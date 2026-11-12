@@ -15,20 +15,15 @@ async function market() {
 }
 
 describe('the trips of each direction (G59, docs/118)', () => {
-  it('a card per busy direction: today, tomorrow and the cheapest seat', async () => {
+  it('a card per busy direction: its trips today and tomorrow', async () => {
     const { deps } = await market();
     const [samarqand] = await directionCards(deps, '1726273');
-    expect(samarqand).toEqual({ to: '1718', today: 1, tomorrow: 1, price: 80000 });
+    expect(samarqand).toEqual({ to: '1718', today: 1, tomorrow: 1 });
   });
 
-  it('the popular regions fill the cards with the recommended price', async () => {
+  it('the popular regions follow the busy ones', async () => {
     const { deps } = await market();
-    expect((await directionCards(deps, '1726273'))[1]).toEqual({
-      to: '1706',
-      today: 0,
-      tomorrow: 0,
-      price: 90000,
-    });
+    expect((await directionCards(deps, '1726273'))[1]).toEqual({ to: '1706', today: 0, tomorrow: 0 });
   });
 
   // Owner, 12.11.2026: «не всегда видны все айтемы», four cards hid nine regions.
