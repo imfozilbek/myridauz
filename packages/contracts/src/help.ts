@@ -32,6 +32,14 @@ const DRIVER_FIRST: readonly HelpTopic[] = ['driver', 'wallet', 'find', 'booking
 export const helpTopicsFor = (app: 'passenger' | 'driver' | 'other'): readonly HelpTopic[] =>
   app === 'driver' ? DRIVER_FIRST : HELP_TOPICS;
 
+// «Yordam» of a Mini App shows only the topics of its people (owner decision 12.11.2026): a passenger
+// has no wallet and no fee, a driver books his own trips in the passenger app. Bots and the site keep all.
+const APP_TOPICS: Readonly<Record<'passenger' | 'driver', readonly HelpTopic[]>> = {
+  passenger: ['find', 'booking', 'driver', 'account'],
+  driver: ['driver', 'wallet', 'account'],
+};
+export const appHelpTopics = (app: 'passenger' | 'driver'): readonly HelpTopic[] => APP_TOPICS[app];
+
 // What the answers take from a brand: a BrandConfig fits it as it is.
 export type HelpFacts = {
   readonly name: string;

@@ -76,6 +76,8 @@ describe('DriverGate: the application of a driver in 2 screens (G62, docs/118 pa
     // The chosen car joins the buttons, with its seats.
     expect(await screen.findByText('Sorento')).toBeTruthy();
     expect(screen.getByText('6')).toBeTruthy();
+    // The long list closes with its sheet first: the next «Boshqa» opens a new one.
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
     await tap(toCyrillic('Boshqa ›'));
     const typed = within(await screen.findByRole('dialog'));
     fireEvent.change(typed.getByPlaceholderText(toCyrillic('Marka yoki model')), {

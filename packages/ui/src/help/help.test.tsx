@@ -3,6 +3,8 @@ import { loadBrand } from '@platform/brands';
 import { HELP_TOPICS, helpQuestions } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { approved } from '../account/profile/profile-test-kit';
+import { DriverContext } from '../driver/driver-context';
 import { renderInShell } from '../test-shell';
 import { HelpScreen } from './help-screen';
 
@@ -26,14 +28,13 @@ describe('«Yordam»', () => {
     expect(screen.getByText(LEAD)).toBeTruthy();
     expect(
       rows()
-        .slice(0, 6)
+        .slice(0, 5)
         .map((row) => row.split(toCyrillic('Jamoamiz'))[0]),
     ).toEqual([
       toCyrillic('Boshqa savolim bor'),
       toCyrillic('Safar topish'),
       toCyrillic('Joy band qilish'),
       toCyrillic('Haydovchi boʻlish'),
-      toCyrillic('Hamyon va komissiya'),
       toCyrillic('Hisob va xavfsizlik'),
     ]);
     expect(
@@ -41,9 +42,17 @@ describe('«Yordam»', () => {
     ).toBeTruthy();
   });
 
-  it('opens a topic, an answer with the numbers of the brand, and goes back step by step', () => {
+  // A passenger has no wallet (owner decision 12.11.2026): only a driver sees it, with no trips topics.
+  it('a driver sees the wallet, an answer with the numbers of the brand, and goes back step by step', () => {
     const back = vi.fn();
-    const { tracked } = renderInShell(<HelpScreen onBack={back} />);
+    const { tracked } = renderInShell(
+      <DriverContext.Provider value={approved}>
+        <HelpScreen onBack={back} />
+      </DriverContext.Provider>,
+    );
+    expect(rows().slice(1)).toEqual(
+      ['Haydovchi boʻlish', 'Hamyon va komissiya', 'Hisob va xavfsizlik'].map((one) => toCyrillic(one)),
+    );
     fireEvent.click(screen.getByText(toCyrillic('Hamyon va komissiya')));
     expect(screen.getByText(toCyrillic('Yoʻlovchi kelmasa, komissiya qaytadimi?'))).toBeTruthy();
     fireEvent.click(screen.getByText(toCyrillic('Haydovchi uchun qancha turadi?')));
