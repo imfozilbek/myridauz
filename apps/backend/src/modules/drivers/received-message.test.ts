@@ -46,7 +46,7 @@ describe('the driver bot after an application is sent', () => {
   it('at night and before 7:00: the answer comes in the morning, with the team hours', async () => {
     for (const hour of [2, 6, 23]) {
       const text = (await sent(hour))[0]?.text;
-      expect(text).toContain(toCyrillic('soat 7:00 dan 23:00 gacha tekshiramiz'));
+      expect(text).toContain(toCyrillic('soat 07:00 dan 23:00 gacha tekshiramiz'));
       expect(text).toContain(toCyrillic('ertalab javob beramiz'));
     }
   });

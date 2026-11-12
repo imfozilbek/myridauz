@@ -28,7 +28,7 @@ describe('the support bot', () => {
       photo: `https://${brand.domain}/bot/support-welcome.png?v=${brand.welcomes.support}`,
     });
     expect(welcome.caption).toContain(toCyrillic(`Bu ${brand.name} yordam xizmati.`, [brand.name]));
-    expect(welcome.caption).toContain(toCyrillic('har kuni soat 7:00 dan 23:00 gacha'));
+    expect(welcome.caption).toContain(toCyrillic('har kuni soat 07:00 dan 23:00 gacha'));
     expect((await reply(await send('support', textMessage(PERSON, 'Pulim qaytmadi')))).text).toContain(
       toCyrillic('qabul qilindi'),
     );
