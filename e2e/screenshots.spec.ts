@@ -4,7 +4,8 @@ import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, openFindTrip, TEXT } from './apps';
 import { fromIfAsked } from './market';
 import { register } from './registration';
-import { mockTelegram, telegramUrl } from './telegram-mock';
+import { noSystemBlue } from './sizes';
+import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
@@ -49,19 +50,20 @@ test('places: screenshots', async ({ page }) => {
   await page.getByText(TEXT.change).click();
   await expect(page.getByAltText(toCyrillic('Xorazm viloyati'))).toBeVisible();
   await page.waitForLoadState('networkidle');
-  // iOS paints the words of a button blue by itself: the names keep the ink of the text (12.11.2026).
-  await page.addStyleTag({ content: 'button { color: rgb(0, 122, 255); }' });
-  const inks = await page
-    .locator('.region-name')
-    .evaluateAll((names) => [...new Set(names.map((name) => getComputedStyle(name).color))]);
-  expect(inks).toHaveLength(1);
-  expect(inks).not.toContain('rgb(0, 122, 255)');
+  await noSystemBlue(page);
   await shot('2-regions');
   const search = page.getByPlaceholder(TEXT.search);
   await search.fill("g'ijduvon");
   await expect(page.getByText(toCyrillic('Gʻijduvon'))).toBeVisible();
+  await noSystemBlue(page);
   await shot('4-search');
   await search.fill('');
+  // The places of a region by the values of the mockup g75/6 A, in the same colors on an iPhone.
+  await page.getByAltText(toCyrillic('Xorazm viloyati')).click();
+  await expect(page.locator('.district-row').first()).toBeVisible();
+  await noSystemBlue(page);
+  await shot('3-districts');
+  await pressBack(page);
   // Toshkent shahri is taken whole in one tap (G78 П9).
   await page.getByAltText(toCyrillic('Toshkent shahri')).click();
   // A place of the same city is refused under the search (docs/14).

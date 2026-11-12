@@ -34,3 +34,21 @@ export async function oneHeight(page: Page, selector: string) {
     .evaluateAll((items) => items.map((item) => (item as HTMLElement).offsetHeight));
   expect(new Set(heights).size, `${selector}: ${heights.join(' ')}`).toBe(1);
 }
+
+// iOS paints the words of a button system blue by itself (lesson 391): every word on a button keeps
+// the color the screen gives it. The blue stays on the page, as an iPhone shows it.
+const IOS_BLUE = 'rgb(0, 122, 255)';
+export async function noSystemBlue(page: Page) {
+  await page.addStyleTag({ content: `button { color: ${IOS_BLUE}; }` });
+  const blue = await page.evaluate(
+    (ios) =>
+      [...document.querySelectorAll<HTMLElement>('button, button *')]
+        .filter((e) =>
+          [...e.childNodes].some((node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim()),
+        )
+        .filter((e) => getComputedStyle(e).color === ios)
+        .map((e) => e.textContent?.trim() ?? ''),
+    IOS_BLUE,
+  );
+  expect(blue).toEqual([]);
+}

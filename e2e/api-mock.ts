@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { toCyrillic } from '@platform/i18n';
+import { byCyrillic, toCyrillic } from '@platform/i18n';
 import locations from '../apps/backend/seed/locations.json' with { type: 'json' };
 import { mockDrivers, type DriverStart } from './drivers-mock';
 import { mockBookings } from './bookings-mock';
@@ -65,15 +65,14 @@ export async function mockApi(
     route.fulfill({ json: { hidden: false, warnedAt: null } }),
   );
   // The real directory of the seed (docs/48) in the order of the backend: regions as in docs/14,
-  // places inside a region by their Latin name; people read the names in Cyrillic (G98, docs/228).
-  const directory = [...locations]
-    .sort(
-      (a, b) =>
-        Number(a.parentId !== null) - Number(b.parentId !== null) ||
-        a.position - b.position ||
-        (a.name < b.name ? -1 : 1),
-    )
+  // places inside a region by the Cyrillic alphabet, as people read them (G98, lesson 392).
+  const shown = [...locations]
+    .sort((a, b) => a.position - b.position)
     .map((place) => ({ ...place, name: toCyrillic(place.name), position: undefined }));
+  const directory = [
+    ...shown.filter((place) => place.parentId === null),
+    ...shown.filter((place) => place.parentId !== null).sort((a, b) => byCyrillic(a.name, b.name)),
+  ];
   await page.route('**/api/locations', (route) =>
     route.fulfill({ json: { version: '1', locations: directory } }),
   );
