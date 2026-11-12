@@ -18,6 +18,8 @@ const messageSchema = z.object({
   // A photo to the support bot or in the answer of the team: sizes, the largest last (G32).
   photo: z.array(z.object({ file_id: z.string() })).optional(),
   caption: z.string().optional(),
+  // A sticker to the bot of a passenger or a driver: answered with the way to the team (docs/231).
+  sticker: z.object({ file_id: z.string() }).optional(),
 });
 export type BotMessage = z.infer<typeof messageSchema>;
 

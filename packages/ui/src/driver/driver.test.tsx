@@ -55,7 +55,7 @@ describe('DriverGate: the application of a driver in 2 screens (G62, docs/118 pa
     await tap(toCyrillic('Arizani yuborish'));
     // No «Ariza yuborildi»: the main screen says it is checked (G62).
     expect(
-      await screen.findByText(toCyrillic('Tekshiruvdan keyin ochiladi. Odatda 30 daqiqagacha.')),
+      await screen.findByText(toCyrillic('Tekshiruvdan keyin ochiladi. Odatda 1 soat ichida.')),
     ).toBeTruthy();
     expect(screen.queryByText(toCyrillic('Ariza yuborildi'))).toBeNull();
     expect(screen.getByTestId('driver-home')).toBeTruthy();

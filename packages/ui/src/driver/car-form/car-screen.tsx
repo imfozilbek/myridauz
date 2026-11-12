@@ -80,7 +80,7 @@ export function CarScreen({ car, reasons, onChange, onBack, onDone, onHelp }: Pr
             </div>
           ) : null}
         </div>
-        <HelpLink topic="driver" onOpen={onHelp} />
+        <HelpLink topic="application" onOpen={onHelp} />
         <OtherCarSheet open={other} onClose={() => setOther(false)} onPick={pick} />
         <MainButton
           text={t('common.continue')}

@@ -11,7 +11,7 @@ import { isHelpButton, onHelpCallback } from './help-callbacks';
 import { HELP_COMMAND, topicRows } from './help-markup';
 import { mediaOf } from './media';
 import { welcomePicture } from './start-reply';
-import { askerOf } from './support-asker';
+import { askerOf, helpAudienceFor } from './support-asker';
 import { supportButtons, supportCard } from './support-card';
 import { supportUrl } from './support-link';
 
@@ -63,33 +63,45 @@ async function toSupport(context: BotContext, message: BotMessage) {
         markup: supportButtons(brand, asker, wroteBefore, owners.has(teamId)),
       }),
   };
+  const night = !isTeamTime(now, brand.moderation.hours);
   const card = {
     text: supportCard(brand, asker, { kind, text: said }, now),
     media,
     html: true,
-    quiet: !isTeamTime(now, brand.moderation.hours),
+    quiet: night,
   };
   await forwardToTeam(deps, { chatId, bot: SUPPORT_BOT }, card);
-  return sendMessage(chatId, t('bot.support.received'));
+  return sendMessage(chatId, received(brand, night));
+}
+
+// At night the team sleeps: the answer comes in the morning, as for an application (docs/231 №6).
+function received(brand: BrandConfig, night: boolean) {
+  const { from, to } = brand.moderation.hours;
+  return night
+    ? t('bot.support.receivedNight', { from: hourLabel(from), to: hourLabel(to) })
+    : t('bot.support.received');
 }
 
 // The welcome: a picture with the words and the team hours under it (owner approval 03.10.2026), the
-// topics of the help under it (G97, docs/226): the answer first, then the team.
-function supportWelcome(brand: BrandConfig, chatId: number) {
+// topics of the help under it (G97, docs/226): the answer first, then the team. The topics are those
+// of the person, with «Yordam xizmati» (docs/231).
+async function supportWelcome(context: BotContext, chatId: number) {
+  const { brand } = context;
   const { from, to } = brand.moderation.hours;
+  const audience = await helpAudienceFor(context.env, chatId);
   return {
     method: 'sendPhoto',
     chat_id: chatId,
     photo: welcomePicture(brand, 'support'),
     caption: t('bot.support.welcome', { brand: brand.name, from: hourLabel(from), to: hourLabel(to) }),
-    reply_markup: { inline_keyboard: topicRows(brand, SUPPORT_BOT) },
+    reply_markup: { inline_keyboard: topicRows(brand, SUPPORT_BOT, audience) },
   };
 }
 
 // The support bot answers everyone, a blocked person too: support is where a block is asked about.
 function onSupportMessage(context: BotContext, message: BotMessage) {
   if (isStartCommand(message.text) || message.text === HELP_COMMAND)
-    return supportWelcome(context.brand, message.chat.id);
+    return supportWelcome(context, message.chat.id);
   return toSupport(context, message);
 }
 

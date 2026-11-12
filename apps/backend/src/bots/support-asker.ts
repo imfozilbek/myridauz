@@ -1,7 +1,7 @@
-import type { Booking, Rating, Trip } from '@platform/contracts';
+import type { Booking, HelpAudience, Rating, Trip } from '@platform/contracts';
 import type { Bindings } from '../env';
 import { liveBookingFor, pastRidesOf } from '../modules/bookings';
-import { approvedCar } from '../modules/drivers';
+import { appliedAsDriver, approvedCar } from '../modules/drivers';
 import { placesOf } from '../modules/locations';
 import { ratingsOfPeople } from '../modules/ratings';
 import { upcomingTripsOf } from '../modules/trips';
@@ -47,4 +47,11 @@ export async function askerOf(env: Bindings, chatId: number, telegramName: strin
   return Array.isArray(live)
     ? { ...facts, role: 'driver', trip: live.sort((a, b) => a.departAt - b.departAt)[0] }
     : { ...facts, role: 'passenger', booking: live };
+}
+
+// Whose topics of «Yordam» a person sees in the support and the main bot (docs/231): a driver from the
+// application sent on, a passenger with an account, and someone with no role yet.
+export async function helpAudienceFor(env: Bindings, chatId: number): Promise<HelpAudience> {
+  if (!(await peopleOf(env).find(chatId))) return 'guest';
+  return (await appliedAsDriver(env, chatId)) ? 'driver' : 'passenger';
 }

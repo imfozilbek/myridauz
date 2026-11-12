@@ -115,11 +115,11 @@ describe(
       expect(screen.getByText(toCyrillic('Qoʻshing'))).toBeTruthy();
       expect(screen.queryByText(toCyrillic('Qayerdan'))).toBeNull();
       await tap(toCyrillic('Yordam'));
-      // G97 (docs/226): only the topics of a driver (owner decision 12.11.2026); the team is one tap further.
+      // G97 (docs/226, docs/231): only the topics of a driver (owner decision 12.11.2026); the team is one tap further.
       expect(
         await screen.findByText(toCyrillic('Javobni shu yerdan toping yoki jamoamizga yozing.')),
       ).toBeTruthy();
-      expect(screen.getByText(toCyrillic('Haydovchi boʻlish'))).toBeTruthy();
+      expect(screen.getByText(toCyrillic('Ariza va mashina'))).toBeTruthy();
       expect(screen.queryByText(toCyrillic('Safar topish'))).toBeNull();
       await tap(toCyrillic('Boshqa savolim bor'));
       expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.support}`);

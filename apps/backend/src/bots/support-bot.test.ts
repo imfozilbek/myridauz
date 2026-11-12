@@ -1,7 +1,14 @@
 import { loadBrand } from '@platform/brands';
 import { toCyrillic } from '@platform/i18n';
 import { afterAll, describe, expect, it, vi } from 'vitest';
-import { botEnv as BOT_ENV, botSender, fakeTelegram, textMessage, voiceMessage } from './test-bot';
+import {
+  botEnv as BOT_ENV,
+  botSender,
+  fakeTelegram,
+  photoMessage,
+  textMessage,
+  voiceMessage,
+} from './test-bot';
 
 const telegram = fakeTelegram();
 vi.stubGlobal('fetch', telegram.fetch);
@@ -98,6 +105,33 @@ describe('the support bot', () => {
   it('asks for a text or a voice when a person sends something else', async () => {
     const photo = { message: { message_id: 2, chat: { id: PERSON }, from: { id: PERSON } } };
     expect((await reply(await send('support', photo))).text).toContain(toCyrillic('ovozli xabar'));
+  });
+
+  // docs/231 №6: at night the team sleeps, the answer comes in the morning.
+  it('says at night that the answer comes in the morning', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(Date.parse('2026-10-17T20:00:00Z'));
+    const night = await reply(await send('support', textMessage(PERSON, 'Kechasi savol')));
+    vi.useRealTimers();
+    expect(night.text).toBe(
+      toCyrillic(
+        'Xabaringiz qabul qilindi. Jamoamiz har kuni soat 07:00 dan 23:00 gacha javob beradi, shuning uchun ertalab javob beramiz.',
+      ),
+    );
+  });
+
+  // docs/231 №5: a voice, a photo or a sticker to the bot of a passenger or a driver is not silence.
+  it('the bots of the trips answer a voice, a photo or a sticker with the way to the team', async () => {
+    const sticker = { message: { message_id: 3, chat: { id: PERSON }, sticker: { file_id: 'x' } } };
+    for (const [role, message] of [
+      ['passenger', voiceMessage(PERSON)],
+      ['driver', photoMessage(PERSON)],
+      ['passenger', sticker],
+    ] as const) {
+      const answer = await reply(await send(role, message));
+      expect(answer.text).toContain(toCyrillic('xabarlarga javob bermaydi'));
+      expect(answer.text).toContain(brand.bots.support);
+    }
   });
 
   it('is closed without its token and to a wrong secret', async () => {

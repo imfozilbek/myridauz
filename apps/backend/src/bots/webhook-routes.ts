@@ -25,7 +25,12 @@ import { onMainUpdate } from './main-bot';
 import { movedReply } from './moved-reply';
 import { profileReply } from './profile-reply';
 import { startReply } from './start-reply';
-import { isStartCommand, telegramUpdateSchema, type TelegramUpdate } from './telegram-update';
+import {
+  isStartCommand,
+  telegramUpdateSchema,
+  type BotMessage,
+  type TelegramUpdate,
+} from './telegram-update';
 import { brandOf } from '../shared/brand/brand-of';
 
 const UNAUTHORIZED = 401;
@@ -56,6 +61,12 @@ export function webhookRoutes(fetch: Fetch) {
     }
   });
 }
+
+const heard = (message: BotMessage) =>
+  message.text !== undefined ||
+  message.voice !== undefined ||
+  message.photo !== undefined ||
+  message.sticker !== undefined;
 
 // The answer to one update of a bot: a reply method for Telegram, or nothing to do.
 async function answer(bot: BotContext, role: BotRole | typeof SUPPORT_BOT, data: TelegramUpdate) {
@@ -88,7 +99,10 @@ async function answer(bot: BotContext, role: BotRole | typeof SUPPORT_BOT, data:
   if (blocked) return {};
   if (message.text === DOCUMENTS_COMMAND && role !== 'admin')
     return documentsReply(bot.brand, role, message.chat.id);
-  if (message.text === HELP_COMMAND && role !== 'admin') return helpReply(bot.brand, role, message.chat.id);
-  if (role !== 'admin') return message.text ? noRepliesReply(bot.brand, role, message.chat.id) : {};
+  if (message.text === HELP_COMMAND && role !== 'admin')
+    return helpReply(bot.brand, role, message.chat.id, role);
+  // A text, a voice, a photo or a sticker: the bot does not read them, it shows the way to the team
+  // (docs/231 №5).
+  if (role !== 'admin') return heard(message) ? noRepliesReply(bot.brand, role, message.chat.id) : {};
   return onAdminMessage(bot, message, team);
 }

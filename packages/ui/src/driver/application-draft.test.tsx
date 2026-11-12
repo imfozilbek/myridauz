@@ -36,7 +36,7 @@ describe('the application not sent yet: the tile of the main screen and the draf
     await tap(toCyrillic('Davom etish'));
     await tap(toCyrillic('Arizani yuborish'));
     expect(
-      await screen.findByText(toCyrillic('Tekshiruvdan keyin ochiladi. Odatda 30 daqiqagacha.')),
+      await screen.findByText(toCyrillic('Tekshiruvdan keyin ochiladi. Odatda 1 soat ichida.')),
     ).toBeTruthy();
     await waitFor(() => expect(localStorage.getItem('draft:application')).toBeNull());
   });

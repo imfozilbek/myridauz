@@ -29,6 +29,7 @@
   "support.welcome": "Assalomu alaykum! Bu {brand} yordam xizmati.\n\nKoʻp beriladigan savollarga javob pastda. Javob topmasangiz, «Boshqa savolim bor»ni bosing yoki savolingizni shu yerga yozing.\n🕖 Jamoamiz har kuni soat {from} dan {to} gacha javob beradi.",
   "support.ask": "Savolingizni shu yerga yozing. 🎤 Ovozli xabar yoki 🖼 rasm ham yuborsa boʻladi.",
   "support.received": "Xabaringiz qabul qilindi. Tez orada javob beramiz.",
+  "support.receivedNight": "Xabaringiz qabul qilindi. Jamoamiz har kuni soat {from} dan {to} gacha javob beradi, shuning uchun ertalab javob beramiz.",
   "support.reply": "Javob berish",
   "support.replyPrompt": "Javobingizni yozing: matn, rasm yoki ovozli xabar.",
   "support.historyTitle": "{name}: murojaatlar tarixi",
