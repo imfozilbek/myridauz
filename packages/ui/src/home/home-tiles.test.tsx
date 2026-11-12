@@ -98,7 +98,7 @@ describe('the four tiles of a passenger (G76, mockup g76/2)', { timeout: 20_000 
   it('asks for a photo on the right of the head and opens the choice of a photo in «Profil»', async () => {
     const clicked = vi.spyOn(HTMLInputElement.prototype, 'click');
     const { tracked } = home({ bookings: async () => [] });
-    expect(await screen.findByText(toCyrillic('Tezroq tasdiq'))).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Ixtiyoriy'))).toBeTruthy();
     await tap(toCyrillic('Rasm qoʻshing'));
     expect(tracked).toContainEqual(expect.objectContaining({ name: 'screen_open', screen: 'profile' }));
     expect(clicked.mock.contexts.some((input) => (input as HTMLInputElement).type === 'file')).toBe(true);

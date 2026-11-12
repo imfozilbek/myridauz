@@ -1,6 +1,6 @@
 # 231. «Yordam» водителя и бот «Yordam»: темы, вопросы и ответы (на согласие)
 
-> **Кратко:** решение владельца 12.11.2026, продолжение `230`. Водителю 6 тем; вопросы с пометкой **[A]** видит только тот, чья заявка ещё не одобрена. Боту «Yordam» темы по роли человека и новая тема «Yordam xizmati». Числа в фигурных скобках из бренда и «Cheklovlar». Статус: **ждёт согласия владельца и проверки носителем**.
+> **Кратко:** решение владельца 12.11.2026, продолжение `230`. Водителю 6 тем; вопросы с пометкой **[A]** видит только тот, чья заявка ещё не одобрена. Боту «Yordam» темы по роли человека и новая тема «Yordam xizmati». Числа в фигурных скобках из бренда и «Cheklovlar». Статус: **согласовано владельцем 12.11.2026**; ждёт проверки носителем (`docs/25`).
 
 ## 1. «Ariza va mashina»
 
@@ -48,7 +48,7 @@
 
 | Вопрос | Ответ |
 |---|---|
-| Haydovchi uchun qancha turadi? | Bir joy narxining {percent} foizi, lekin kamida {minPerSeat}. Joy tasdiqlanganda yoki yoʻlovchi taklifingizni qabul qilganda olinadi. Yoʻlovchi pulni sizga safarda oʻzi beradi. |
+| Haydovchi uchun qancha turadi? | Bir joy narxining {percent} foizi, lekin kamida {minPerSeat}. Joy tasdiqlanganda yoki yoʻlovchi taklifingizni qabul qilganda olinadi. Yoʻlovchi pulni sizga safarda oʻzi beradi: naqd yoki pul oʻtkazish orqali. |
 | Bonus qanday ishlaydi? | Ariza tasdiqlangach {bonus} bonus beriladi. Har bir bonus {bonusDays} kun amal qiladi. Ishlatib boʻlsangiz, keyingisi keladi: dastlabki {windowDays} kunda {bonusGrants} martagacha. |
 | Hamyonni qanday toʻldiraman? | «Hamyon»da «Hisobni toʻldirish»ni bosing. Yordam boti tayyor xabar bilan ochiladi: uni yuboring, jamoamiz qanday toʻlashni yozadi. |
 | Joy bekor boʻlsa, komissiya qaytadimi? | Ha, kim bekor qilganidan qatʼi nazar, oʻsha hisobga qaytadi. |

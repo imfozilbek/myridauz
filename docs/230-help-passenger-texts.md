@@ -1,6 +1,6 @@
 # 230. «Yordam» попутчика: темы, вопросы и ответы (на согласие)
 
-> **Кратко:** решение владельца 12.11.2026: помощь каждой роли заново, только то, о чём спросит попутчик в своём Mini App и в боте. 7 тем, 33 вопроса. Тексты в uz-Latn, люди видят кириллицу (`docs/228`). Числа в фигурных скобках берутся из бренда и «Cheklovlar» (`docs/226`). Ответы сверены с кодом (проход 12.11.2026). Водитель: `231`. Статус: **ждёт согласия владельца и проверки носителем** (`docs/33`, `docs/25`).
+> **Кратко:** решение владельца 12.11.2026: помощь каждой роли заново, только то, о чём спросит попутчик в своём Mini App и в боте. 7 тем, 33 вопроса. Тексты в uz-Latn, люди видят кириллицу (`docs/228`). Числа в фигурных скобках берутся из бренда и «Cheklovlar» (`docs/226`). Ответы сверены с кодом (проход 12.11.2026). Водитель: `231`. Статус: **согласовано владельцем 12.11.2026** (оплата: наличными или переводом); ждёт проверки носителем (`docs/25`).
 
 ## 1. «{brand} qanday ishlaydi»
 
@@ -8,7 +8,7 @@
 |---|---|
 | {brand} taksimi? | Yoʻq. Haydovchi oʻz ishi bilan yoʻlga chiqadi va boʻsh joylarga yoʻlovchi oladi. Yoʻl xarajatini birga boʻlasizlar. |
 | Yoʻlovchi {brand}ga pul toʻlaydimi? | Yoʻq. {brand} yoʻlovchidan pul olmaydi. |
-| Pulni qachon va kimga beraman? | Haydovchiga, safarda oʻzingiz berasiz. Qancha ekanini joy band qilishda «Jami» qatorida koʻrasiz. ⚠ Наличные или карта: ждёт ответа владельца. |
+| Pulni qachon va kimga beraman? | Haydovchiga, safarda oʻzingiz berasiz: naqd yoki pul oʻtkazish orqali, haydovchi bilan kelishib. Qancha ekanini joy band qilishda «Jami» qatorida koʻrasiz. |
 | Narxni kim belgilaydi? | Haydovchi. {brand} yoʻl xarajatiga qarab tavsiya etilgan narxni koʻrsatadi. Soʻrov qoldirsangiz, narxni oʻzingiz taklif qilasiz. |
 | Haydovchilar tekshiriladimi? | Ha. Jamoamiz har bir haydovchining yuzi, mashinasi va davlat raqami rasmini tekshiradi. Shundan keyingina u safar eʼlon qila oladi. |
 
@@ -76,9 +76,4 @@
 
 ## Найдено при проходе
 
-- Подсказка профиля попутчика «Rasm qoʻshing · Tezroq tasdiq» (`home.json` `side.photoHint`) обещает, что с фото водитель подтвердит быстрее. Но водитель фото попутчика не видит никогда (`docs/05`). Совет: «Rasm qoʻshing · Ixtiyoriy».
-
-## Что нужно от владельца
-
-- «Да» на темы, вопросы и ответы (можно поправить любую строку).
-- Ответ про оплату: наличные, карта или перевод.
+- Подсказка профиля попутчика «Rasm qoʻshing · Tezroq tasdiq» обещала, что с фото водитель подтвердит быстрее. Но водитель фото попутчика не видит никогда (`docs/05`). Решение владельца 12.11.2026: у попутчика «Rasm qoʻshing · Ixtiyoriy» (`home.side.photoOptional`); у водителя с отклонённым фото остаётся «Tezroq tasdiq».

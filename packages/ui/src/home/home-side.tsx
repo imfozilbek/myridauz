@@ -22,7 +22,8 @@ export function PassengerSide({ openProfile }: Props) {
   if (!profile.hasAvatar || profile.avatarStatus === 'rejected')
     return (
       <Side warn label={t('home.side.photo')} onClick={tap('side_photo', () => openProfile('photo'))}>
-        {t('home.side.photoHint')}
+        {/* The photo of a passenger is optional; a driver never sees it (docs/05, owner 12.11.2026). */}
+        {t('home.side.photoOptional')}
       </Side>
     );
   const { rating } = profile;
