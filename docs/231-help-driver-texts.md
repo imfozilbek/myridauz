@@ -42,14 +42,14 @@
 | Yoʻlovchi kelmasa-chi? | Avval «Men keldim»ni bosing. Keyin yoʻlovchi yonida «Kelmadi» chiqadi. Jamoa tekshirib tasdiqlasa, komissiya hamyoningizga qaytadi. |
 | Yoʻlovchilarni qanday baholayman? | «Yetib keldik»dan keyin «Safar tugadi» ochiladi: yulduzlarni bosing. {ratingDays} kun ichida. |
 | Shikoyat qilsam boʻladimi? | Ha, «Shikoyat qilish», {complaintDays} kun ichida. Yoʻlovchi kim shikoyat qilganini koʻrmaydi. |
-| Nega safarim qidiruvda koʻrinmayapti? | {windowDays} kunda turli odamlardan {hideAfter} ta shikoyat kelsa, jamoa tekshirguncha safarlaringiz qidiruvda koʻrinmaydi. |
+| Nega safarim qidiruvda koʻrinmayapti? | {complaintWindow} kunda turli odamlardan {hideAfter} ta shikoyat kelsa, jamoa tekshirguncha safarlaringiz qidiruvda koʻrinmaydi. |
 
 ## 5. «Hamyon va komissiya»
 
 | Вопрос | Ответ |
 |---|---|
 | Haydovchi uchun qancha turadi? | Bir joy narxining {percent} foizi, lekin kamida {minPerSeat}. Joy tasdiqlanganda yoki yoʻlovchi taklifingizni qabul qilganda olinadi. Yoʻlovchi pulni sizga safarda oʻzi beradi. Qanday toʻlashni oʻzingiz kelishasiz: {brand} bunga aralashmaydi. |
-| Bonus qanday ishlaydi? | Ariza tasdiqlangach {bonus} bonus beriladi. Har bir bonus {bonusDays} kun amal qiladi. Ishlatib boʻlsangiz, keyingisi keladi: dastlabki {windowDays} kunda {bonusGrants} martagacha. |
+| Bonus qanday ishlaydi? | Ariza tasdiqlangach {bonus} bonus beriladi. Har bir bonus {bonusDays} kun amal qiladi. Ishlatib boʻlsangiz, keyingisi keladi: dastlabki {bonusWindow} kunda {bonusGrants} martagacha. |
 | Hamyonni qanday toʻldiraman? | «Hamyon»da «Hisobni toʻldirish»ni bosing. Yordam boti tayyor xabar bilan ochiladi: uni yuboring, jamoamiz qanday toʻlashni yozadi. |
 | Joy bekor boʻlsa, komissiya qaytadimi? | Ha, kim bekor qilganidan qatʼi nazar, oʻsha hisobga qaytadi. |
 | Yoʻlovchi kelmasa, komissiya qaytadimi? | Ha, jamoa tekshirgandan keyin. Uchrashuvda «Men keldim», keyin «Kelmadi»ni bosing. |
