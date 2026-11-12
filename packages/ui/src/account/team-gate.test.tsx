@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError, type UsersClient } from '@platform/api-client';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -19,9 +20,9 @@ describe('TeamGate', () => {
     team(fakeClient(active));
     expect(await screen.findByText('panel')).toBeTruthy();
     team(fakeClient(new ApiError(403, 'auth.not_admin')));
-    expect(await screen.findByText(/faqat .* jamoasi uchun/)).toBeTruthy();
-    expect(screen.getByText(/^Safar uchun yoʻlovchi yoki haydovchi botini oching/)).toBeTruthy();
+    expect(await screen.findByText(/фақат .* жамоаси учун/)).toBeTruthy();
+    expect(screen.getByText(/^Сафар учун йўловчи ёки ҳайдовчи ботини очинг/)).toBeTruthy();
     team(fakeClient(new ApiError(500)));
-    expect(await screen.findByText('Qayta urinish')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Qayta urinish'))).toBeTruthy();
   });
 });

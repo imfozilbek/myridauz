@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { SoundsState } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -46,20 +47,20 @@ function open(loaded: SoundsState, pick = vi.fn(async (set: string) => state(set
 describe('Ovozlar (G54, docs/115)', () => {
   it('shows the three sets with the one in use; the owner picks another', async () => {
     const { pick } = open(state('3'));
-    await tap('Ovozlar');
-    expect(await screen.findByText('1-variant')).toBeTruthy();
-    expect(screen.getAllByText('Tanlangan')).toHaveLength(1);
-    await tap('1-variant');
+    await tap(toCyrillic('Ovozlar'));
+    expect(await screen.findByText(toCyrillic('1-variant'))).toBeTruthy();
+    expect(screen.getAllByText(toCyrillic('Tanlangan'))).toHaveLength(1);
+    await tap(toCyrillic('1-variant'));
     expect(pick).toHaveBeenCalledWith('1');
   });
 
   it('plays a set to listen to before it is picked; the set in use is not picked again', async () => {
     const { pick, files } = open(state('3'));
-    await tap('Ovozlar');
-    const rings = await screen.findAllByText('Qoʻngʻiroq');
+    await tap(toCyrillic('Ovozlar'));
+    const rings = await screen.findAllByText(toCyrillic('Qoʻngʻiroq'));
     fireEvent.click(rings[1] ?? document.body);
     await waitFor(() => expect(files.at(-1)).toMatch(/sounds\/2-ring\.wav$/u));
-    await tap('3-variant');
+    await tap(toCyrillic('3-variant'));
     expect(pick).not.toHaveBeenCalled();
   });
 });

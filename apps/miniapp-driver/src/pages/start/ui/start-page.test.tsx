@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { DriverGate } from '@platform/ui';
 import { renderInShell, testClients } from '@platform/ui/testing';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
@@ -39,9 +40,9 @@ const renderApp = (clients = driver) =>
 describe('StartPage', () => {
   it('opens the main screen of an approved driver: four tiles and the block with two buttons (G76)', async () => {
     const { tracked } = renderApp();
-    expect(await screen.findByRole('button', { name: 'Safar eʼlon qilish' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Soʻrovlarni koʻrish' })).toBeTruthy();
-    for (const tile of ['Mening safarlarim', 'Suhbatlar', 'Hamyon', 'Yordam'])
+    expect(await screen.findByRole('button', { name: toCyrillic('Safar eʼlon qilish') })).toBeTruthy();
+    expect(screen.getByRole('button', { name: toCyrillic('Soʻrovlarni koʻrish') })).toBeTruthy();
+    for (const tile of ['Mening safarlarim', 'Suhbatlar', 'Hamyon', 'Yordam'].map((name) => toCyrillic(name)))
       expect(screen.getByText(tile)).toBeTruthy();
     // The screen view is sent by an effect after the screen is drawn.
     await waitFor(() =>
@@ -53,12 +54,12 @@ describe('StartPage', () => {
 
   it('opens a section and comes back', async () => {
     renderApp();
-    fireEvent.click(await screen.findByText('Mening safarlarim'));
-    expect(await screen.findByText('Hali safarlaringiz yoʻq')).toBeTruthy();
-    fireEvent.click(screen.getByText('Orqaga'));
-    fireEvent.click(await screen.findByRole('button', { name: 'Safar eʼlon qilish' }));
+    fireEvent.click(await screen.findByText(toCyrillic('Mening safarlarim')));
+    expect(await screen.findByText(toCyrillic('Hali safarlaringiz yoʻq'))).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Orqaga')));
+    fireEvent.click(await screen.findByRole('button', { name: toCyrillic('Safar eʼlon qilish') }));
     // The route opens on its first empty end (G79 В8).
-    expect(await screen.findByText('Qayerdan yoʻlga chiqasiz?')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Qayerdan yoʻlga chiqasiz?'))).toBeTruthy();
   });
 
   it('asks a new driver to fill the application in the block (G62, G76)', async () => {
@@ -69,7 +70,7 @@ describe('StartPage', () => {
         bookings: { driverBookings: async () => [], driverOffers: async () => [] },
       }),
     );
-    fireEvent.click(await screen.findByRole('button', { name: 'Arizani toʻldirish' }));
-    expect(await screen.findByText('Mashinangiz')).toBeTruthy();
+    fireEvent.click(await screen.findByRole('button', { name: toCyrillic('Arizani toʻldirish') }));
+    expect(await screen.findByText(toCyrillic('Mashinangiz'))).toBeTruthy();
   });
 });

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket } from '../market/market-test-kit';
@@ -29,8 +30,8 @@ describe('the chat 24 hours after the trip (G60, docs/129)', () => {
       });
     });
     expect(screen.getByText('Rahmat')).toBeTruthy();
-    expect(screen.getByText('Suhbat yopildi')).toBeTruthy();
-    expect(screen.queryByLabelText('Xabar')).toBeNull();
+    expect(screen.getByText(toCyrillic('Suhbat yopildi'))).toBeTruthy();
+    expect(screen.queryByLabelText(toCyrillic('Xabar'))).toBeNull();
   });
 
   it('offers the new trips of the driver under the closed chat (mockup g60/6)', async () => {
@@ -49,7 +50,7 @@ describe('the chat 24 hours after the trip (G60, docs/129)', () => {
         canWrite: false,
       });
     });
-    screen.getByText('Jasurning yangi safarlari').click();
+    screen.getByText(`Jasurning ${toCyrillic('yangi safarlari')}`).click();
     expect(onAgain).toHaveBeenCalled();
   });
 });

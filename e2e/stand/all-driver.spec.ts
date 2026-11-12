@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { expect, test } from '../crash-guard';
 import { openNewTrip, openRequests, TEXT } from '../apps';
 import { openFromList, openOwnTrip } from '../market';
@@ -77,10 +78,10 @@ test('android: publish a trip on one screen up to «Eʼlon qilish»', async ({ p
   await openHome(page, 'driver', SHERZOD, 'android');
   await openNewTrip(page);
   await openFromList(page);
-  await page.getByAltText('Toshkent shahri').click();
-  await page.getByText('Chilonzor').click();
-  await page.getByAltText('Samarqand viloyati').click();
-  await page.getByText('Samarqand shahri', { exact: true }).click();
+  await page.getByAltText(toCyrillic('Toshkent shahri')).click();
+  await page.getByText(toCyrillic('Chilonzor')).click();
+  await page.getByAltText(toCyrillic('Samarqand viloyati')).click();
+  await page.getByText(toCyrillic('Samarqand shahri'), { exact: true }).click();
   await expect(mainButton(page)).toHaveText(TEXT.publish);
   await shot(page, 'android', 'da40-publish');
   await page.getByText(t('way.trip.mode.door')).click();

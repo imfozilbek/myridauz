@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { MINUTE_MS, MY_TRIP_LINK } from '@platform/contracts';
 import { cleanup, fireEvent, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -36,30 +37,30 @@ describe(
   () => {
     it('shows the car and its plate on the right of the head', async () => {
       driver([]);
-      expect(await screen.findByText('Cobalt, oq')).toBeTruthy();
+      expect(await screen.findByText(`Cobalt, ${toCyrillic('oq')}`)).toBeTruthy();
       expect(screen.getByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
     });
 
     it('shows the published trip: when, the seats taken, «Safarni ochish» opens it', async () => {
       driver([{ ...trip, seatsLeft: 1 }]);
-      expect(await screen.findByText('2 / 3 joy band')).toBeTruthy();
-      expect((await dock()).getByText('Ertaga 08:00')).toBeTruthy();
-      fireEvent.click(screen.getByRole('button', { name: 'Safarni ochish' }));
+      expect(await screen.findByText(toCyrillic('2 / 3 joy band'))).toBeTruthy();
+      expect((await dock()).getByText(toCyrillic('Ertaga 08:00'))).toBeTruthy();
+      fireEvent.click(screen.getByRole('button', { name: toCyrillic('Safarni ochish') }));
       expect(screen.getByText(linkOf({ name: MY_TRIP_LINK, id: trip.id }))).toBeTruthy();
     });
 
     it('opens the requests without a route: the board shows the day of the trip and what fits it', async () => {
       driver([trip]);
-      expect(await screen.findByText('0 / 3 joy band')).toBeTruthy();
-      await tap('Soʻrovlarni koʻrish');
+      expect(await screen.findByText(toCyrillic('0 / 3 joy band'))).toBeTruthy();
+      await tap(toCyrillic('Soʻrovlarni koʻrish'));
       expect(await screen.findByText('opened empty')).toBeTruthy();
     });
 
     it('puts the new requests of a trip first with «Javob berish»', async () => {
       driver([trip], [booking, { ...booking, id: 'b2' }]);
-      expect(await screen.findByRole('button', { name: 'Javob berish' })).toBeTruthy();
-      expect((await dock()).getByText('2 yangi soʻrov')).toBeTruthy();
-      expect(screen.getByText('Hozir: javob bering')).toBeTruthy();
+      expect(await screen.findByRole('button', { name: toCyrillic('Javob berish') })).toBeTruthy();
+      expect((await dock()).getByText(toCyrillic('2 yangi soʻrov'))).toBeTruthy();
+      expect(screen.getByText(toCyrillic('Hozir: javob bering'))).toBeTruthy();
     });
 
     it('on the hour of the trip: the minutes, the people, and «Yoʻlga chiqdim» as the main button', async () => {
@@ -71,16 +72,16 @@ describe(
         passenger: { ...confirmed.passenger, id: `p${n}`, firstName },
       }));
       driver([today], seats);
-      expect(await screen.findByText('3 yoʻlovchi · hammasi tasdiqlangan')).toBeTruthy();
-      expect(screen.getByText('40 daq')).toBeTruthy();
-      expect(screen.getByRole('button', { name: 'Yoʻlga chiqdim' })).toBeTruthy();
-      expect(screen.queryByRole('button', { name: 'Safar eʼlon qilish' })).toBeNull();
+      expect(await screen.findByText(toCyrillic('3 yoʻlovchi · hammasi tasdiqlangan'))).toBeTruthy();
+      expect(screen.getByText(toCyrillic('40 daq'))).toBeTruthy();
+      expect(screen.getByRole('button', { name: toCyrillic('Yoʻlga chiqdim') })).toBeTruthy();
+      expect(screen.queryByRole('button', { name: toCyrillic('Safar eʼlon qilish') })).toBeNull();
     });
 
     it('is free without a trip ahead', async () => {
       driver([{ ...trip, status: 'completed' }]);
-      expect(await screen.findByText('Joylashuvingiz boʻyicha aniqlandi')).toBeTruthy();
-      expect(screen.queryByText('2 / 3 joy band')).toBeNull();
+      expect(await screen.findByText(toCyrillic('Joylashuvingiz boʻyicha aniqlandi'))).toBeTruthy();
+      expect(screen.queryByText(toCyrillic('2 / 3 joy band'))).toBeNull();
     });
   },
 );
@@ -91,36 +92,42 @@ describe(
   () => {
     it('publishes the route of the block: «Qayerdan» where the driver stands, «Qayerga» from the list', async () => {
       const { tracked } = driver([]);
-      expect(await screen.findByText('Joylashuvingiz boʻyicha aniqlandi')).toBeTruthy();
-      await tap('Qayerga ketyapsiz?');
-      await tap('Fargʻona viloyati');
-      await tap('Fargʻona shahri');
-      expect(await screen.findByText('Fargʻona shahri')).toBeTruthy();
-      fireEvent.click(screen.getByRole('button', { name: 'Safar eʼlon qilish' }));
-      expect(screen.getByText('opened Chilonzor>Fargʻona shahri')).toBeTruthy();
+      expect(await screen.findByText(toCyrillic('Joylashuvingiz boʻyicha aniqlandi'))).toBeTruthy();
+      await tap(toCyrillic('Qayerga ketyapsiz?'));
+      await tap(toCyrillic('Fargʻona viloyati'));
+      await tap(toCyrillic('Fargʻona shahri'));
+      expect(await screen.findByText(toCyrillic('Fargʻona shahri'))).toBeTruthy();
+      fireEvent.click(screen.getByRole('button', { name: toCyrillic('Safar eʼlon qilish') }));
+      expect(
+        screen.getByText(`opened ${toCyrillic('Chilonzor')}>${toCyrillic('Fargʻona shahri')}`),
+      ).toBeTruthy();
       expect(tracked).toContainEqual(expect.objectContaining({ name: 'home_tap', target: 'main_button' }));
     });
 
     it('only «Qayerdan» is enough: publishing asks «Qayerga» there', async () => {
       driver([]);
-      await screen.findByText('Joylashuvingiz boʻyicha aniqlandi');
-      fireEvent.click(screen.getByRole('button', { name: 'Safar eʼlon qilish' }));
+      await screen.findByText(toCyrillic('Joylashuvingiz boʻyicha aniqlandi'));
+      fireEvent.click(screen.getByRole('button', { name: toCyrillic('Safar eʼlon qilish') }));
       expect(screen.getByText(/^opened from /u)).toBeTruthy();
     });
 
     it('opens the requests of passengers from «Qayerdan» to every side', async () => {
       const { tracked } = driver([]);
-      await screen.findByText('Joylashuvingiz boʻyicha aniqlandi');
-      fireEvent.click(screen.getByRole('button', { name: 'Soʻrovlarni koʻrish' }));
+      await screen.findByText(toCyrillic('Joylashuvingiz boʻyicha aniqlandi'));
+      fireEvent.click(screen.getByRole('button', { name: toCyrillic('Soʻrovlarni koʻrish') }));
       expect(tracked).toContainEqual(expect.objectContaining({ name: 'home_tap', target: 'dock_requests' }));
     });
 
     it('keeps both buttons grey with a note while the application is checked', async () => {
       driver([], [], pending);
-      expect(await screen.findByText('Tekshiruvdan keyin ochiladi. Odatda 30 daqiqagacha.')).toBeTruthy();
-      const button = screen.getByRole('button', { name: 'Safar eʼlon qilish' });
+      expect(
+        await screen.findByText(toCyrillic('Tekshiruvdan keyin ochiladi. Odatda 30 daqiqagacha.')),
+      ).toBeTruthy();
+      const button = screen.getByRole('button', { name: toCyrillic('Safar eʼlon qilish') });
       expect(button.hasAttribute('disabled')).toBe(true);
-      expect(screen.getByRole('button', { name: 'Soʻrovlarni koʻrish' }).hasAttribute('disabled')).toBe(true);
+      expect(
+        screen.getByRole('button', { name: toCyrillic('Soʻrovlarni koʻrish') }).hasAttribute('disabled'),
+      ).toBe(true);
       fireEvent.click(button);
       expect(screen.queryByText(/^opened/u)).toBeNull();
     });

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { loadBrand } from '@platform/brands';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -16,7 +17,7 @@ describe('the way out of the internal environment', () => {
       </BrandContext.Provider>,
     );
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
-    fireEvent.click(screen.getByText('Yangi botni ochish'));
+    fireEvent.click(screen.getByText(toCyrillic('Yangi botni ochish')));
     expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.driver}`);
     open.mockRestore();
   });

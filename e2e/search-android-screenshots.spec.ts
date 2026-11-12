@@ -4,6 +4,7 @@ import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, openFindTrip, publishButton, TEXT } from './apps';
 import { noSeatYet } from './bookings-mock';
 import { mapState, mockMap } from './map-mock';
+import { REGISTON } from './map-places';
 import { mapDrawn, TILES_MS } from './map-wait';
 import { chooseRoute, fromIfAsked, searchRoute } from './market';
 import { mockTelegram, telegramUrl } from './telegram-mock';
@@ -51,8 +52,8 @@ test('passenger: «Qayerga borasiz?», the trips, «Safar», the door in Toshken
   await expect(page.getByText(t('way.point.to'))).toBeVisible();
   await mapDrawn(page);
   await page.getByPlaceholder(t('way.point.search')).fill('Регистон');
-  await page.getByText('Registon maydoni', { exact: true }).click();
-  await expect(page.getByRole('status')).toHaveText('Registon maydoni yaqinida');
+  await page.getByText(REGISTON, { exact: true }).click();
+  await expect(page.getByRole('status')).toHaveText(t('way.near', { name: REGISTON }));
   await page.waitForTimeout(TILES_MS);
   await shot(page, '4-home');
   await mainButton(page)

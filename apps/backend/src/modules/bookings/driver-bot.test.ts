@@ -1,5 +1,6 @@
 import { loadBrand } from '@platform/brands';
 import { tashkentDate, tashkentDayStart, HOUR_MS, type Booking } from '@platform/contracts';
+import { toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import type { Card, Ring } from '../notifications';
 import { requestBooking } from './application/request';
@@ -55,7 +56,7 @@ describe('the driver bot about a request (G68, docs/122, mockup g68/3)', () => {
     await bot.notifier.expired(bot.booking());
     const burned = bot.shown[1]?.cards[1];
     expect(burned).toMatchObject({ editOnly: true, refresh: true });
-    expect(burned?.text).toContain('⌛ Javob muddati tugadi');
+    expect(burned?.text).toContain(toCyrillic('⌛ Javob muddati tugadi'));
     expect(bot.shown[1]?.rings).toEqual([]);
   });
 
@@ -67,7 +68,7 @@ describe('the driver bot about a request (G68, docs/122, mockup g68/3)', () => {
     bot.change({ confirmedAt: 1 });
     await bot.notifier.cancelled(bot.booking(), 'passenger');
     expect(bot.shown[1]?.rings[0]?.text).toBe(
-      '🙋 Dilnoza joyini bekor qildi. Komissiya hamyoningizga qaytdi.',
+      `🙋 Dilnoza ${toCyrillic('joyini bekor qildi. Komissiya hamyoningizga qaytdi.')}`,
     );
     expect(bot.shown[1]?.rings[0]?.quiet).toBe(false);
   });

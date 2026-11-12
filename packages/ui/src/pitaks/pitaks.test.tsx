@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { AdminPitak, PitakChange, Where } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -13,7 +14,7 @@ afterEach(() => {
 
 const QOYLIQ: AdminPitak = {
   id: 'qoyliq',
-  name: 'Qoʻyliq pitagi',
+  name: toCyrillic('Qoʻyliq pitagi'),
   hint: null,
   point: { lat: 41.2438, lng: 69.3394 },
   regionId: '1726',
@@ -32,12 +33,14 @@ const CHANGES: PitakChange[] = [
   {
     subject: 'pitak:qoyliq',
     before: '{}',
-    after: JSON.stringify({ name: 'Qoʻyliq', status: 'checked' }),
+    after: JSON.stringify({ name: toCyrillic('Qoʻyliq'), status: 'checked' }),
     by: 'Fozil',
     at: 1,
   },
 ];
-const WHERE: Where = { district: '1726269', name: { step: 'landmark', name: 'Chorsu bozori' }, area: null };
+const CHORSU = toCyrillic('Chorsu bozori');
+const NAME = toCyrillic('Pitak nomi');
+const WHERE: Where = { district: '1726269', name: { step: 'landmark', name: CHORSU }, area: null };
 
 function open() {
   const pitaks = {
@@ -65,29 +68,29 @@ function open() {
 describe('Pitaklar: the pitaks of the team (G24, docs/72)', { timeout: 20_000 }, () => {
   it('shows the directions and chooses the main pitak of one', async () => {
     const pitaks = open();
-    await tap('Pitaklar');
-    await tap('Toshkent shahri → Fargʻona viloyati');
+    await tap(toCyrillic('Pitaklar'));
+    await tap(toCyrillic('Toshkent shahri → Fargʻona viloyati'));
     // Each pitak a row with its state, the chosen one marked (G78 sheet 6).
     expect(document.querySelector('.manage-tone-success')).not.toBeNull();
-    await tap('Qoʻyliq pitagi');
+    await tap(toCyrillic('Qoʻyliq pitagi'));
     expect(pitaks.direction).toHaveBeenCalledWith({ ...DIRECTION, pitakId: 'qoyliq' });
-    expect(await screen.findByText('Barcha pitaklar')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Barcha pitaklar'))).toBeTruthy();
     // «Boshqaruv» reads them once for «64 ta», the screen once and once more after the choice.
     expect(pitaks.all).toHaveBeenCalledTimes(3);
   });
 
   it('adds a pitak with its point on the map and its status', async () => {
     const pitaks = open();
-    await tap('Pitaklar');
-    await tap('Pitak qoʻshish');
-    fireEvent.change(screen.getByLabelText('Pitak nomi'), { target: { value: 'Chorsu pitagi' } });
-    fireEvent.change(screen.getByLabelText('Moʻljal'), { target: { value: 'Metro yonida' } });
-    await tap('Joyi xaritada');
-    await screen.findByText('Chorsu bozori yaqinida', {}, { timeout: 3000 });
-    await tap('Shu yerda');
-    expect(await screen.findByText('Chorsu bozori yaqinida')).toBeTruthy();
-    await tap('Tekshirilgan');
-    await tap('Saqlash');
+    await tap(toCyrillic('Pitaklar'));
+    await tap(toCyrillic('Pitak qoʻshish'));
+    fireEvent.change(screen.getByLabelText(NAME), { target: { value: 'Chorsu pitagi' } });
+    fireEvent.change(screen.getByLabelText(toCyrillic('Moʻljal')), { target: { value: 'Metro yonida' } });
+    await tap(toCyrillic('Joyi xaritada'));
+    await screen.findByText(toCyrillic('Chorsu bozori yaqinida'), {}, { timeout: 3000 });
+    await tap(toCyrillic('Shu yerda'));
+    expect(await screen.findByText(toCyrillic('Chorsu bozori yaqinida'))).toBeTruthy();
+    await tap(toCyrillic('Tekshirilgan'));
+    await tap(toCyrillic('Saqlash'));
     expect(pitaks.add).toHaveBeenCalledWith({
       name: 'Chorsu pitagi',
       hint: 'Metro yonida',
@@ -98,14 +101,14 @@ describe('Pitaklar: the pitaks of the team (G24, docs/72)', { timeout: 20_000 },
 
   it('closes a pitak and shows the history of changes', async () => {
     const pitaks = open();
-    await tap('Pitaklar');
-    await tap('Toshkent shahri · Tanlangan, tekshirilmagan');
-    await tap('Yopilgan');
-    await tap('Saqlash');
+    await tap(toCyrillic('Pitaklar'));
+    await tap(toCyrillic('Toshkent shahri · Tanlangan, tekshirilmagan'));
+    await tap(toCyrillic('Yopilgan'));
+    await tap(toCyrillic('Saqlash'));
     expect(pitaks.change).toHaveBeenCalledWith('qoyliq', expect.objectContaining({ status: 'closed' }));
-    await tap('Oʻzgarishlar tarixi');
-    expect(await screen.findByText('Qoʻshildi: Qoʻyliq pitagi')).toBeTruthy();
-    expect(screen.getByText('Qoʻyliq · Tekshirilgan')).toBeTruthy();
+    await tap(toCyrillic('Oʻzgarishlar tarixi'));
+    expect(await screen.findByText(toCyrillic('Qoʻshildi: Qoʻyliq pitagi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Qoʻyliq · Tekshirilgan'))).toBeTruthy();
     // Who changed it (G45, docs/72).
     expect(screen.getByText(/, Kamron$/u)).toBeTruthy();
   });
@@ -113,28 +116,28 @@ describe('Pitaklar: the pitaks of the team (G24, docs/72)', { timeout: 20_000 },
   // G79 К8 (docs/170): an empty name takes the name of the place chosen on the map.
   it('names a new pitak by its place on the map', async () => {
     open();
-    await tap('Pitaklar');
-    await tap('Pitak qoʻshish');
-    await tap('Joyi xaritada');
-    await screen.findByText('Chorsu bozori yaqinida', {}, { timeout: 3000 });
-    await tap('Shu yerda');
-    expect(await screen.findByDisplayValue('Chorsu bozori')).toBeTruthy();
+    await tap(toCyrillic('Pitaklar'));
+    await tap(toCyrillic('Pitak qoʻshish'));
+    await tap(toCyrillic('Joyi xaritada'));
+    await screen.findByText(toCyrillic('Chorsu bozori yaqinida'), {}, { timeout: 3000 });
+    await tap(toCyrillic('Shu yerda'));
+    expect(await screen.findByDisplayValue(toCyrillic('Chorsu bozori'))).toBeTruthy();
   });
 
   // G49: a pitak with a name keeps it when its point moves; «Orqaga» asks before losing a change.
   it('renames a pitak, keeps the name when the point moves and asks before leaving a change', async () => {
     const pitaks = open();
-    await tap('Pitaklar');
-    await tap('Toshkent shahri · Tanlangan, tekshirilmagan');
-    fireEvent.change(screen.getByLabelText('Pitak nomi'), { target: { value: 'Qoʻyliq bozori' } });
+    await tap(toCyrillic('Pitaklar'));
+    await tap(toCyrillic('Toshkent shahri · Tanlangan, tekshirilmagan'));
+    fireEvent.change(screen.getByLabelText(NAME), { target: { value: 'Qoʻyliq bozori' } });
     asked.mockReturnValueOnce(false);
-    await tap('Orqaga');
-    expect(asked).toHaveBeenCalledWith('Oʻzgarishlar saqlanmaydi. Chiqasizmi?');
-    await tap('Joyi xaritada');
-    await screen.findByText('Chorsu bozori yaqinida', {}, { timeout: 3000 });
-    await tap('Shu yerda');
+    await tap(toCyrillic('Orqaga'));
+    expect(asked).toHaveBeenCalledWith(toCyrillic('Oʻzgarishlar saqlanmaydi. Chiqasizmi?'));
+    await tap(toCyrillic('Joyi xaritada'));
+    await screen.findByText(toCyrillic('Chorsu bozori yaqinida'), {}, { timeout: 3000 });
+    await tap(toCyrillic('Shu yerda'));
     expect(await screen.findByDisplayValue('Qoʻyliq bozori')).toBeTruthy();
-    await tap('Saqlash');
+    await tap(toCyrillic('Saqlash'));
     expect(pitaks.change).toHaveBeenCalledWith(
       'qoyliq',
       expect.objectContaining({ name: 'Qoʻyliq bozori', status: 'claude' }),

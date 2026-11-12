@@ -1,5 +1,6 @@
 import { expect, type Browser, type Page } from '@playwright/test';
 import { createChatClient, createModerationClient } from '@platform/api-client';
+import { toCyrillic } from '@platform/i18n';
 import { TEXT } from '../apps';
 import { openFromList } from '../market';
 import { fillCar } from '../driver-application';
@@ -39,11 +40,11 @@ export const liveMicrophone = (page: Page) =>
 // From Chilonzor (Toshkent shahri) to Navoiy, tomorrow, by lists.
 export async function chooseRoute(page: Page) {
   await openFromList(page);
-  await page.getByAltText('Toshkent shahri').click();
-  await page.getByText('Chilonzor').click();
+  await page.getByAltText(toCyrillic('Toshkent shahri')).click();
+  await page.getByText(toCyrillic('Chilonzor')).click();
   // «Qayerga» opens by itself, both ends go on (G40, docs/106 K1).
-  await page.getByAltText('Navoiy viloyati').click();
-  await page.getByText('Navoiy', { exact: true }).click();
+  await page.getByAltText(toCyrillic('Navoiy viloyati')).click();
+  await page.getByText(toCyrillic('Navoiy'), { exact: true }).click();
 }
 
 // One side of a chat through its socket, as the other phone writes.

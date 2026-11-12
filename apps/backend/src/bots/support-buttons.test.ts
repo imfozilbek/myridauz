@@ -1,4 +1,5 @@
 import { loadBrand } from '@platform/brands';
+import { toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import { supportButtons } from './support-card';
 
@@ -13,7 +14,7 @@ const texts = (owner: boolean) =>
 // has no button that would end on «ruxsat yoʻq».
 describe('the buttons of a support question', () => {
   it('give «Profilni ochish» to an owner only', () => {
-    expect(texts(true)).toEqual(['✍️ Javob berish', '👤 Profilni ochish']);
-    expect(texts(false)).toEqual(['✍️ Javob berish']);
+    expect(texts(true)).toEqual([toCyrillic('✍️ Javob berish'), toCyrillic('👤 Profilni ochish')]);
+    expect(texts(false)).toEqual([toCyrillic('✍️ Javob berish')]);
   });
 });

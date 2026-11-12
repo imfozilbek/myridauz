@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { WaitlistAnswers } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -24,22 +25,26 @@ describe('the questionnaire of the waitlist (G83, docs/181)', () => {
   it('goes role, pains, region, «Qachon», saves, then the channels and the result', async () => {
     const { clients, saved } = waitlistClients();
     const { tracked } = show(clients);
-    await screen.findByText('Yoʻlovchiman');
-    press(/^Yoʻlovchiman/u);
-    expect(screen.getByText('Safar davomida qanday muammolarga duch kelgansiz?')).toBeTruthy();
-    expect((screen.getByRole('button', { name: 'Davom etish' }) as HTMLButtonElement).disabled).toBe(true);
-    fireEvent.click(screen.getByRole('checkbox', { name: /Shaxsiy raqam xavfsizligi/u }));
-    fireEvent.click(screen.getByRole('checkbox', { name: /Telegram guruhlaridagi/u }));
-    press('Davom etish');
-    press(await screen.findByText('Samarqand viloyati').then(() => 'Samarqand viloyati'));
-    expect(screen.getByText('Toshkent shahri ↔ Samarqand viloyati')).toBeTruthy();
-    press('Har hafta');
-    expect(await screen.findByText('Yoʻnalishingiz kanallari')).toBeTruthy();
+    await screen.findByText(toCyrillic('Yoʻlovchiman'));
+    press(/^Йўловчиман/u);
+    expect(screen.getByText(toCyrillic('Safar davomida qanday muammolarga duch kelgansiz?'))).toBeTruthy();
+    expect(
+      (screen.getByRole('button', { name: toCyrillic('Davom etish') }) as HTMLButtonElement).disabled,
+    ).toBe(true);
+    fireEvent.click(screen.getByRole('checkbox', { name: /Шахсий рақам хавфсизлиги/u }));
+    fireEvent.click(screen.getByRole('checkbox', { name: /Telegram гуруҳларидаги/u }));
+    press(toCyrillic('Davom etish'));
+    press(
+      await screen.findByText(toCyrillic('Samarqand viloyati')).then(() => toCyrillic('Samarqand viloyati')),
+    );
+    expect(screen.getByText(toCyrillic('Toshkent shahri ↔ Samarqand viloyati'))).toBeTruthy();
+    press(toCyrillic('Har hafta'));
+    expect(await screen.findByText(toCyrillic('Yoʻnalishingiz kanallari'))).toBeTruthy();
     expect(saved).toEqual([
       { role: 'passenger', pains: ['phone', 'chats'], home: '1718', region: '1718', cadence: 'weekly' },
     ]);
-    press('Davom etish');
-    expect(await screen.findByText('Siz roʻyxatdasiz')).toBeTruthy();
+    press(toCyrillic('Davom etish'));
+    expect(await screen.findByText(toCyrillic('Siz roʻyxatdasiz'))).toBeTruthy();
     const steps = tracked
       .filter((event) => event.name === 'waitlist_step')
       .map((event) => ('step' in event ? event.step : ''));
@@ -49,19 +54,19 @@ describe('the questionnaire of the waitlist (G83, docs/181)', () => {
   it('asks a person of Toshkent shahri which region, and goes back step by step', async () => {
     const { clients, saved } = waitlistClients();
     show(clients);
-    await screen.findByText('Haydovchiman');
-    press(/^Haydovchiman/u);
-    fireEvent.click(screen.getByRole('checkbox', { name: /Pustoy/u }));
-    press('Davom etish');
-    press(await screen.findByText('Toshkent shahri').then(() => 'Toshkent shahri'));
-    expect(screen.getByText('Qaysi viloyatga qatnaysiz?')).toBeTruthy();
-    expect(screen.queryByRole('button', { name: 'Toshkent shahri' })).toBeNull();
-    press('Orqaga');
-    expect(screen.getByText('Qaysi viloyatdansiz?')).toBeTruthy();
-    press('Toshkent shahri');
-    press('Andijon viloyati');
-    expect(screen.getByText('Bu yoʻnalishda qanchalik tez-tez yurasiz?')).toBeTruthy();
-    press('Har kuni');
+    await screen.findByText(toCyrillic('Haydovchiman'));
+    press(/^Ҳайдовчиман/u);
+    fireEvent.click(screen.getByRole('checkbox', { name: /Пустой/u }));
+    press(toCyrillic('Davom etish'));
+    press(await screen.findByText(toCyrillic('Toshkent shahri')).then(() => toCyrillic('Toshkent shahri')));
+    expect(screen.getByText(toCyrillic('Qaysi viloyatga qatnaysiz?'))).toBeTruthy();
+    expect(screen.queryByRole('button', { name: toCyrillic('Toshkent shahri') })).toBeNull();
+    press(toCyrillic('Orqaga'));
+    expect(screen.getByText(toCyrillic('Qaysi viloyatdansiz?'))).toBeTruthy();
+    press(toCyrillic('Toshkent shahri'));
+    press(toCyrillic('Andijon viloyati'));
+    expect(screen.getByText(toCyrillic('Bu yoʻnalishda qanchalik tez-tez yurasiz?'))).toBeTruthy();
+    press(toCyrillic('Har kuni'));
     await waitFor(() =>
       expect(saved[0]).toMatchObject({ role: 'driver', home: '1726', region: '1703', cadence: 'daily' }),
     );
@@ -70,8 +75,8 @@ describe('the questionnaire of the waitlist (G83, docs/181)', () => {
   it('closed by the owner: a new person sees the trips instead of the questionnaire', async () => {
     const { clients } = waitlistClients({ open: false });
     show(clients);
-    expect(await screen.findByRole('button', { name: 'Safar topish' })).toBeTruthy();
-    expect(screen.queryByText('Kim boʻlib yoʻlga chiqasiz?')).toBeNull();
+    expect(await screen.findByRole('button', { name: toCyrillic('Safar topish') })).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Kim boʻlib yoʻlga chiqasiz?'))).toBeNull();
   });
 });
 
@@ -83,11 +88,11 @@ describe('«Siz roʻyxatdasiz» of the waitlist (docs/181)', () => {
       channels: ['@x'],
     });
     const { tracked } = show(clients);
-    expect(await screen.findByText('124 kishi kutmoqda')).toBeTruthy();
-    expect(screen.getByText(/^Bu yoʻnalishda\. 64 % ini ham Telegram/u)).toBeTruthy();
-    expect(screen.getByText('1 ta kanaldasiz')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('124 kishi kutmoqda'))).toBeTruthy();
+    expect(screen.getByText(/^Бу йўналишда\. 64 % ини ҳам Telegram/u)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('1 ta kanaldasiz'))).toBeTruthy();
     vi.spyOn(window, 'open').mockReturnValue(null);
-    press('Doʻstimni chaqiraman');
+    press(toCyrillic('Doʻstimni chaqiraman'));
     await waitFor(() => expect(invited).toEqual(['passenger']));
     expect(
       tracked.some(
@@ -99,22 +104,24 @@ describe('«Siz roʻyxatdasiz» of the waitlist (docs/181)', () => {
   it('changes one answer from «Oʻzgartirish» and writes the record of the other role', async () => {
     const { clients, saved } = waitlistClients({ entries: [entryOf(ANSWERS)] });
     show(clients);
-    press(await screen.findByText('Oʻzgartirish').then(() => 'Oʻzgartirish'));
-    await screen.findByText('Qachon');
-    press(/^Qachon/u);
-    press('Bir marta');
+    press(await screen.findByText(toCyrillic('Oʻzgartirish')).then(() => toCyrillic('Oʻzgartirish')));
+    await screen.findByText(toCyrillic('Qachon'));
+    press(/^Қачон/u);
+    press(toCyrillic('Bir marta'));
     await waitFor(() => expect(saved.at(-1)).toMatchObject({ role: 'passenger', cadence: 'once' }));
-    press(await screen.findByText('Oʻzgartirish').then(() => 'Oʻzgartirish'));
-    await screen.findByText(/Haydovchi sifatida/u);
-    press(/^Haydovchi sifatida/u);
-    fireEvent.click(screen.getByRole('checkbox', { name: /Qatʼiy narxlar/u }));
-    press('Davom etish');
-    press(await screen.findByText('Samarqand viloyati').then(() => 'Samarqand viloyati'));
-    press('Baʼzan');
+    press(await screen.findByText(toCyrillic('Oʻzgartirish')).then(() => toCyrillic('Oʻzgartirish')));
+    await screen.findByText(/Ҳайдовчи сифатида/u);
+    press(/^Ҳайдовчи сифатида/u);
+    fireEvent.click(screen.getByRole('checkbox', { name: /Қатъий нархлар/u }));
+    press(toCyrillic('Davom etish'));
+    press(
+      await screen.findByText(toCyrillic('Samarqand viloyati')).then(() => toCyrillic('Samarqand viloyati')),
+    );
+    press(toCyrillic('Baʼzan'));
     await waitFor(() =>
       expect(saved.at(-1)).toMatchObject({ role: 'driver', pains: ['fixed'], cadence: 'sometimes' }),
     );
-    expect(await screen.findByText('Haydovchi boʻlish')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Haydovchi boʻlish'))).toBeTruthy();
   });
 
   // G91 DRV-9: the owner closed the list: a new record of the other role is refused (waitlist.closed),
@@ -122,8 +129,8 @@ describe('«Siz roʻyxatdasiz» of the waitlist (docs/181)', () => {
   it('offers no record of the other role while the list is closed', async () => {
     const { clients } = waitlistClients({ entries: [entryOf(ANSWERS)], open: false });
     show(clients);
-    press(await screen.findByText('Oʻzgartirish').then(() => 'Oʻzgartirish'));
-    expect(await screen.findByText('Qachon')).toBeTruthy();
-    expect(screen.queryByText(/Haydovchi sifatida/u)).toBeNull();
+    press(await screen.findByText(toCyrillic('Oʻzgartirish')).then(() => toCyrillic('Oʻzgartirish')));
+    expect(await screen.findByText(toCyrillic('Qachon'))).toBeTruthy();
+    expect(screen.queryByText(/Ҳайдовчи сифатида/u)).toBeNull();
   });
 });

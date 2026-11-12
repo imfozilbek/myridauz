@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { BookingsClient } from '@platform/api-client';
 import { cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -15,7 +16,7 @@ const olim = { ...asked, id: 'r2', passenger: { ...asked.passenger, firstName: '
 const sheet = async () => within(await screen.findByRole('dialog'));
 const offerTo = (name: string) => {
   const row = screen.getByText(name).closest('.request-row') as HTMLElement;
-  fireEvent.click(within(row).getByRole('button', { name: 'Taklif yuborish' }));
+  fireEvent.click(within(row).getByRole('button', { name: toCyrillic('Taklif yuborish') }));
 };
 
 // G79 В13 (docs/170): the sheet of the next request starts from the time of the offer sent last,
@@ -28,7 +29,7 @@ describe('the time of the last offer', { timeout: 20_000 }, () => {
     offerTo('Dilnoza');
     const first = await sheet();
     fireEvent.click(first.getByRole('radio', { name: '10:00' }));
-    fireEvent.click(await first.findByRole('button', { name: 'Taklif yuborish' }));
+    fireEvent.click(await first.findByRole('button', { name: toCyrillic('Taklif yuborish') }));
     await waitFor(() => expect(sendOffer).toHaveBeenCalledWith('r1', { departAt: TEN, price: 95000 }));
     await sheetClosed();
     offerTo('Olim');

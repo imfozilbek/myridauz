@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { MyProfile } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -32,28 +33,28 @@ afterEach(() => {
 describe('FaceStatus (G58)', () => {
   it('«Rasmni almashtirish» of the bot opens the profile; a refused photo says why', async () => {
     open({ avatarStatus: 'rejected', avatarReason: 'face_not_visible' }, '/?profile=photo');
-    expect(await screen.findByText(/Rasm tekshiruvdan oʻtmadi: Yuz aniq koʻrinmaydi/)).toBeTruthy();
+    expect(await screen.findByText(/Расм текширувдан ўтмади: Юз аниқ кўринмайди/)).toBeTruthy();
     // The link opens once: going back shows the main screen.
     expect(window.location.search).toBe('');
   });
 
   it('a driver photo being checked: only the person sees it', async () => {
     open({ roles: ['passenger', 'driver'], avatarStatus: 'pending', avatarReason: null }, '/?profile=photo');
-    expect(await screen.findByText(/Hozircha uni faqat siz koʻrasiz/)).toBeTruthy();
+    expect(await screen.findByText(/Ҳозирча уни фақат сиз кўрасиз/)).toBeTruthy();
   });
 
   // A passenger photo shows at once, the team checks it after (owner decision 19.10.2026, G51).
   it('a passenger photo being checked says nothing; without a photo the link says it is optional', async () => {
     open({ hasAvatar: true, avatarStatus: 'pending', avatarReason: null }, '/?profile=photo');
-    expect(await screen.findByText('Rasmni almashtirish')).toBeTruthy();
-    expect(screen.queryByText(/tekshir/)).toBeNull();
+    expect(await screen.findByText(toCyrillic('Rasmni almashtirish'))).toBeTruthy();
+    expect(screen.queryByText(/текшир/)).toBeNull();
     cleanup();
     open({ avatarStatus: null, avatarReason: null }, '/?profile=photo');
-    expect(await screen.findByText('Rasm qoʻshish (ixtiyoriy)')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Rasm qoʻshish (ixtiyoriy)'))).toBeTruthy();
   });
 
   it('an approved photo says nothing; without the link the main screen opens', () => {
     open({ avatarStatus: 'approved', avatarReason: null });
-    expect(screen.queryByText(/tekshir/)).toBeNull();
+    expect(screen.queryByText(/текшир/)).toBeNull();
   });
 });

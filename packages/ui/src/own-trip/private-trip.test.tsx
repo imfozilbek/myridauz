@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { MarketClient } from '@platform/api-client';
 import type { Offer, Trip } from '@platform/contracts';
 import { cleanup, screen, waitFor } from '@testing-library/react';
@@ -38,26 +39,26 @@ async function open(status: Offer['status'], openTrip = vi.fn<MarketClient['open
 describe('a trip of one «Boʻsh salon kerak» request (G64, docs/118 path 7)', { timeout: 20_000 }, () => {
   it('waits for the answer of the passenger: the plate, the trip and the cancel only', async () => {
     await open('sent');
-    expect(await screen.findByText('Sardorga taklif yuborildi')).toBeTruthy();
-    expect(screen.getByText('Javobini kutyapsiz. Safar boshqalarga koʻrinmaydi.')).toBeTruthy();
-    expect(screen.getByText('Faqat butun salon · 3 joy')).toBeTruthy();
+    expect(await screen.findByText(`Sardorga ${toCyrillic('taklif yuborildi')}`)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Javobini kutyapsiz. Safar boshqalarga koʻrinmaydi.'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Faqat butun salon · 3 joy'))).toBeTruthy();
     expect(screen.getByText('285 000')).toBeTruthy();
-    expect(screen.getByText('Safarni bekor qilish')).toBeTruthy();
-    expect(screen.queryByText('Safarni hammaga ochish')).toBeNull();
-    expect(screen.queryByText('Yoʻl xaritasi')).toBeNull();
+    expect(screen.getByText(toCyrillic('Safarni bekor qilish'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Safarni hammaga ochish'))).toBeNull();
+    expect(screen.queryByText(toCyrillic('Yoʻl xaritasi'))).toBeNull();
   });
 
   it('after «Rad etish» the driver opens it for everybody', async () => {
     const openTrip = await open('declined');
-    expect(await screen.findByText('Sardor taklifni rad etdi')).toBeTruthy();
-    expect(screen.getByText('Safarni hammaga ochish yoki bekor qilish mumkin.')).toBeTruthy();
-    await tap('Safarni hammaga ochish');
+    expect(await screen.findByText(`Sardor ${toCyrillic('taklifni rad etdi')}`)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Safarni hammaga ochish yoki bekor qilish mumkin.'))).toBeTruthy();
+    await tap(toCyrillic('Safarni hammaga ochish'));
     await waitFor(() => expect(openTrip).toHaveBeenCalledWith(trip.id));
   });
 
   it('says when the offer ran out without an answer', async () => {
     await open('expired');
-    expect(await screen.findByText('Taklif muddati tugadi')).toBeTruthy();
-    expect(screen.getByText('Safarni hammaga ochish')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Taklif muddati tugadi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Safarni hammaga ochish'))).toBeTruthy();
   });
 });

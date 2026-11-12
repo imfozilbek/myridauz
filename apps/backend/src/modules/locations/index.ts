@@ -1,3 +1,4 @@
+import { DEFAULT_LOCALE } from '@platform/i18n';
 import type { MiddlewareHandler } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
 import { cachedDirectory, indexById } from './application/directory';
@@ -21,13 +22,12 @@ const locationsDeps = (env: Bindings): LocationsDeps => ({
 });
 
 const directory = cachedDirectory(DIRECTORY_TTL_MS);
-const LOCALE = 'uz-Latn';
 
 export const locationsModule = (auth: MiddlewareHandler<AppEnv>) =>
   locationRoutes({ deps: locationsDeps, directory, auth });
 
 // For other modules: the places by id, and the road km of a possible trip (docs/14, docs/48).
 export const placesOf = async (env: Bindings) =>
-  indexById((await directory(locationsDeps(env), LOCALE)).locations);
+  indexById((await directory(locationsDeps(env), DEFAULT_LOCALE)).locations);
 export const routeKm = (env: Bindings, from: string, to: string) =>
   getDistance(locationsDeps(env), directory, from, to);

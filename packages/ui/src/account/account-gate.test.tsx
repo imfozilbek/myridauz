@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError, type UsersClient } from '@platform/api-client';
 import { loadBrand } from '@platform/brands';
 import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
@@ -15,10 +16,7 @@ const permissions = vi.hoisted(() => ({
 vi.mock('../telegram/permissions', () => permissions);
 vi.mock('./profile/compress-image', () => ({ compressImage: async (file: Blob) => file }));
 
-const welcome = {
-  logo: 'logo.svg',
-  points: [{ icon: 'team', textKey: 'common.welcome.verified' }],
-} as const;
+const welcome = { logo: 'logo.svg', points: [{ icon: 'team', textKey: 'common.welcome.verified' }] } as const;
 const gate = (client: UsersClient, app: 'passenger' | 'driver' = 'passenger') =>
   renderInShell(
     <AccountGate app={app} client={client} welcome={welcome}>
@@ -36,15 +34,15 @@ describe('AccountGate', () => {
     const brand = loadBrand();
     expect(await screen.findByText(brand.slogan)).toBeTruthy();
     // What the person gets, before any question (docs/86 T11).
-    expect(screen.getByText('Haydovchilar tekshirilgan.')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Haydovchilar tekshirilgan.'))).toBeTruthy();
     await passWelcome();
     await addFace(container);
     const input = screen.getByDisplayValue('Dilnoza');
     fireEvent.change(input, { target: { value: 'Ali 998' } });
-    expect(screen.getByText(/Faqat harflardan/)).toBeTruthy();
+    expect(screen.getByText(/Фақат ҳарфлардан/)).toBeTruthy();
     fireEvent.change(input, { target: { value: '  Dilnoza ' } });
-    fireEvent.click(screen.getByText('Ayol'));
-    await act(async () => fireEvent.click(screen.getByText('Raqamni yuborish')));
+    fireEvent.click(screen.getByText(toCyrillic('Ayol')));
+    await act(async () => fireEvent.click(screen.getByText(toCyrillic('Raqamni yuborish'))));
     expect(await screen.findByText('inside')).toBeTruthy();
     expect(client.register).toHaveBeenCalledWith({
       consent: true,
@@ -71,28 +69,28 @@ describe('AccountGate', () => {
     const { container } = gate(fakeClient({ state: 'unregistered', suggestedName: 'Ali' }));
     await passWelcome();
     await addFace(container);
-    fireEvent.click(screen.getByText('Erkak'));
-    await act(async () => fireEvent.click(screen.getByText('Raqamni yuborish')));
-    expect(screen.getByText(/Raqamsiz/)).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Erkak')));
+    await act(async () => fireEvent.click(screen.getByText(toCyrillic('Raqamni yuborish'))));
+    expect(screen.getByText(/Рақамсиз/)).toBeTruthy();
     // The person can try again from the same screen.
-    expect(screen.getByText('Raqamni yuborish')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Raqamni yuborish'))).toBeTruthy();
   });
 
   // Owner, 17.10.2026: the internal environment shows anyone outside the team the way to production.
   it('shows the way out to a person outside the team of the internal environment', async () => {
     gate(fakeClient(new ApiError(403, 'auth.moved')));
-    expect(await screen.findByText('Bu ilova faqat jamoa uchun')).toBeTruthy();
-    expect(screen.getByText(/Safarlar yangi botda/u)).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Bu ilova faqat jamoa uchun'))).toBeTruthy();
+    expect(screen.getByText(/Сафарлар янги ботда/u)).toBeTruthy();
     expect(screen.queryByText('inside')).toBeNull();
   });
 
   it('shows the block with its end date, or for good', async () => {
     gate(fakeClient({ state: 'blocked', until: Date.UTC(2026, 9, 27, 12) }));
-    expect(await screen.findByText('Hisobingiz bloklangan')).toBeTruthy();
-    expect(screen.getByText(/27-oktabr/)).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Hisobingiz bloklangan'))).toBeTruthy();
+    expect(screen.getByText(/27-октябр/)).toBeTruthy();
     // A blocked person can still ask the team why (docs/86 V4).
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
-    fireEvent.click(screen.getByText('Qoʻllab-quvvatlashga yozish'));
+    fireEvent.click(screen.getByText(toCyrillic('Qoʻllab-quvvatlashga yozish')));
     expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.support}`);
     open.mockRestore();
   });
@@ -100,7 +98,7 @@ describe('AccountGate', () => {
   it('blocked on the road: the app stays open to finish the trip, a line says why (docs/158 Ж)', async () => {
     gate(fakeClient({ state: 'active', profile, block: { until: Date.UTC(2026, 9, 27, 12) } }));
     expect(await screen.findByText('inside')).toBeTruthy();
-    expect(screen.getByText('Hisobingiz bloklangan. Joriy safarni yakunlang.')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Hisobingiz bloklangan. Joriy safarni yakunlang.'))).toBeTruthy();
   });
 
   it('turns a blocked phone during registration into the block screen', async () => {
@@ -109,9 +107,9 @@ describe('AccountGate', () => {
     const { container } = gate(client);
     await passWelcome();
     await addFace(container);
-    fireEvent.click(screen.getByText('Erkak'));
-    await act(async () => fireEvent.click(screen.getByText('Raqamni yuborish')));
-    expect(await screen.findByText(/butunlay|qoʻllab-quvvatlash/)).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Erkak')));
+    await act(async () => fireEvent.click(screen.getByText(toCyrillic('Raqamni yuborish'))));
+    expect(await screen.findByText(/бутунлай|қўллаб-қувватлаш/)).toBeTruthy();
   });
 
   // A passenger goes without a photo (owner decision 19.10.2026, G51); a driver shows the face.
@@ -121,10 +119,10 @@ describe('AccountGate', () => {
     expect(await screen.findByText('inside')).toBeTruthy();
     cleanup();
     gate(fakeClient(noFace), 'driver');
-    expect(await screen.findByText('Rasmingizni qoʻshing')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Rasmingizni qoʻshing'))).toBeTruthy();
     const failing = fakeClient(new Error('offline'));
     gate(failing);
-    fireEvent.click(await screen.findByText('Qayta urinish'));
+    fireEvent.click(await screen.findByText(toCyrillic('Qayta urinish')));
     await waitFor(() => expect(failing.getMe).toHaveBeenCalledTimes(2));
   });
 
@@ -145,6 +143,6 @@ describe('AccountGate', () => {
     expect(await screen.findByText('inside')).toBeTruthy();
     client.getMe.mockResolvedValueOnce({ state: 'blocked', until: Date.UTC(2026, 9, 27, 12) });
     act(() => signal());
-    expect(await screen.findByText('Hisobingiz bloklangan')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Hisobingiz bloklangan'))).toBeTruthy();
   });
 });

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from './crash-guard';
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
 import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
@@ -46,9 +46,9 @@ test('admin: the pitaks of the directions, a direction and the history (G24)', a
   await page.goto(telegramUrl(appUrl(ADMIN.port)));
   await page.getByText(t('common.admin.management'), { exact: true }).click();
   await page.getByText(t('pitaks.title'), { exact: true }).click();
-  await expect(page.getByText('Toshkent shahri → Samarqand viloyati')).toBeVisible();
+  await expect(page.getByText(toCyrillic('Toshkent shahri → Samarqand viloyati'))).toBeVisible();
   await take('1-list');
-  await page.getByText('Toshkent shahri → Fargʻona viloyati').click();
+  await page.getByText(toCyrillic('Toshkent shahri → Fargʻona viloyati')).click();
   await expect(page.getByText(t('pitaks.withoutPitak'))).toBeVisible();
   await take('2-direction');
   await pressBack(page);
@@ -57,6 +57,8 @@ test('admin: the pitaks of the directions, a direction and the history (G24)', a
   await take('3-pitak');
   await pressBack(page);
   await page.getByText(t('pitaks.history')).click();
-  await expect(page.getByText('Qoʻshildi: Qoʻyliq pitagi · Tanlangan, tekshirilmagan')).toBeVisible();
+  // The team writes the names of the pitaks in Latin and sees them so (G98).
+  const added = `${t('pitaks.added')}: Qoʻyliq pitagi · ${t('pitaks.status.claude')}`;
+  await expect(page.getByText(added)).toBeVisible();
   await take('4-history');
 });

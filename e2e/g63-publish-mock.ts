@@ -10,6 +10,11 @@ import { PITAK } from './market-mock';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
 const { t } = createI18n(DEFAULT_LOCALE);
+// The time of the new trip on the form: «Bugun, 08:00» or «Ertaga, 08:00».
+export const WHEN = new RegExp(
+  `^(${t('market.day.today')}|${t('market.day.tomorrow')}), \\d\\d:\\d\\d$`,
+  'u',
+);
 const [, DRIVER] = MINI_APPS;
 // A man drives: «Mashinada ayol bor» is his question when he takes fewer people (docs/06).
 const MAN = {
@@ -45,7 +50,7 @@ export async function startPublish(page: Page) {
 export async function openPublish(page: Page) {
   await startPublish(page);
   const main = page.locator('#tg-main-button');
-  await page.getByText(/^(Bugun|Ertaga), \d\d:\d\d$/u).click();
+  await page.getByText(WHEN).click();
   await page.locator('.week-day').nth(1).click();
   await page.getByRole('button', { name: '08:00', exact: true }).click();
   await page.getByText(t('market.rule.title')).click();

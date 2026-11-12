@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { confirmed } from '../bookings/booking-test-kit';
@@ -31,11 +32,11 @@ describe('the details of «Qaytarildi» (G65, mockup g65/2)', () => {
       <WalletDetailScreen operation={refund} onOpen={open} onBack={() => undefined} />,
       testClients({ wallet: { detail } }),
     );
-    expect(await screen.findByText(/^\+19\s000\ssoʻm$/u)).toBeTruthy();
-    expect(screen.getByText('Qaytarildi')).toBeTruthy();
-    expect(screen.getByText('Qaysi hisobga')).toBeTruthy();
-    expect(screen.getByText('Bonus, Asosiy')).toBeTruthy();
-    screen.getByText('Safarni ochish').click();
+    expect(await screen.findByText(/^\+19\s000\sсўм$/u)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Qaytarildi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Qaysi hisobga'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Bonus, Asosiy'))).toBeTruthy();
+    screen.getByText(toCyrillic('Safarni ochish')).click();
     expect(open).toHaveBeenCalledWith({ name: 'mytrip', id: confirmed.trip.id });
   });
 
@@ -51,7 +52,7 @@ describe('the details of «Qaytarildi» (G65, mockup g65/2)', () => {
       <WalletDetailScreen operation={refund} onBack={() => undefined} />,
       testClients({ wallet: { detail } }),
     );
-    expect(await screen.findByText('Komissiya')).toBeTruthy();
-    expect(screen.queryByText('Safarni ochish')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Komissiya'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Safarni ochish'))).toBeNull();
   });
 });

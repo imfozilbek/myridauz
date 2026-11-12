@@ -1,4 +1,5 @@
 import type { Page, Route } from '@playwright/test';
+import { toCyrillic } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
 import { confirmed } from './bookings-mock';
@@ -29,7 +30,11 @@ const dilnoza = {
 };
 const car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
 const photos = { front: true };
-const pitak = { id: 'chilonzor', name: 'Chilonzor pitagi', point: { lat: 41.2856, lng: 69.2034 } };
+const pitak = {
+  id: 'chilonzor',
+  name: toCyrillic('Chilonzor pitagi'),
+  point: { lat: 41.2856, lng: 69.2034 },
+};
 
 const at = (day: string, time: string) => tashkent(`2026-10-${day}T${time}`);
 const done = (id: string, day: string) =>
@@ -81,7 +86,7 @@ export async function openDriverHome(page: Page, state: DriverState) {
   );
   await page.route('**/api/users/*/avatar', (route) => route.fulfill({ path: 'e2e/fixtures/face.jpg' }));
   await page.route('**/api/passenger/map/where?*', (route) =>
-    json(route, { district: CHILONZOR, name: { step: 'mahalla', name: 'Qatortol' }, area: null }),
+    json(route, { district: CHILONZOR, name: { step: 'mahalla', name: toCyrillic('Qatortol') }, area: null }),
   );
   await page.route('**/api/driver/trips', (route) => json(route, { trips }));
   await page.route('**/api/driver/bookings', (route) => json(route, { bookings: people(state, trips) }));

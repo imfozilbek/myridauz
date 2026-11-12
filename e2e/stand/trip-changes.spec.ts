@@ -8,7 +8,7 @@ import {
   tashkentTime,
   type Trip,
 } from '@platform/contracts';
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { answer, book, CHILONZOR, publishTrip } from './market-kit';
 import { bookingOf, MINUTE, outcome, tailOf, toldBy, wordsOf } from './g27-kit';
 import { ANVAR } from './people';
@@ -72,7 +72,7 @@ test('8, 9. the booked passenger hears the new time, never a lower price; the su
   await market.retimeTrip(trip.id, trip.departAt + 60 * MINUTE);
   await expect.poll(() => toldCount(BOOKED, wordsOf('bot.ring.retimed'))).toBe(2);
   // The booking keeps its price: its passenger never hears of a lower one (owner decision 04.10.2026).
-  expect(await toldCount(BOOKED, 'narxni tushirdi')).toBe(0);
+  expect(await toldCount(BOOKED, toCyrillic('narxni tushirdi'))).toBe(0);
   expect(await toldCount(SUBSCRIBED, tailOf('bot.news.cheaper'))).toBe(1);
 });
 

@@ -126,6 +126,8 @@ export * from './uzbekistan';
 export * from './map';
 export * from './map-search';
 export * from './search-key';
+// Uzbek Cyrillic and Russian into Uzbek Latin: map names (G48) and the hashtags of a place (G98).
+export { toLatin } from './latin';
 export * from './map-where';
 export * from './pickup';
 export * from './pitaks';

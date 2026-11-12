@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { UsersClient } from '@platform/api-client';
 import type { Location, Standing } from '@platform/contracts';
 import { vi } from 'vitest';
@@ -36,18 +37,18 @@ const place = (id: string, parentId: string | null, name: string): Location => (
   oneCity: false,
 });
 const PLACES = [
-  place('1726', null, 'Toshkent shahri'),
-  place('1703', null, 'Andijon viloyati'),
-  place('1718', null, 'Samarqand viloyati'),
-  place('1730', null, 'Fargʻona viloyati'),
-  place('1726269', '1726', 'Chilonzor'),
-  place('1703202', '1703', 'Andijon tumani'),
-  place('1718203', '1718', 'Bulungʻur tumani'),
-  place('1718233', '1718', 'Samarqand tumani'),
-  place('1718401', '1718', 'Samarqand shahri'),
-  place('1730238', '1730', 'Furqat tumani'),
-  place('1730401', '1730', 'Fargʻona shahri'),
-  place('1730405', '1730', 'Qoʻqon shahri'),
+  place('1726', null, toCyrillic('Toshkent shahri')),
+  place('1703', null, toCyrillic('Andijon viloyati')),
+  place('1718', null, toCyrillic('Samarqand viloyati')),
+  place('1730', null, toCyrillic('Fargʻona viloyati')),
+  place('1726269', '1726', toCyrillic('Chilonzor')),
+  place('1703202', '1703', toCyrillic('Andijon tumani')),
+  place('1718203', '1718', toCyrillic('Bulungʻur tumani')),
+  place('1718233', '1718', toCyrillic('Samarqand tumani')),
+  place('1718401', '1718', toCyrillic('Samarqand shahri')),
+  place('1730238', '1730', toCyrillic('Furqat tumani')),
+  place('1730401', '1730', toCyrillic('Fargʻona shahri')),
+  place('1730405', '1730', toCyrillic('Qoʻqon shahri')),
 ];
 const locations = { getLocations: async () => ({ version: '1', locations: PLACES }) };
 

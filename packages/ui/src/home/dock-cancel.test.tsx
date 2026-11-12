@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { BookingsClient } from '@platform/api-client';
 import { DAY_MS } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
@@ -27,17 +28,17 @@ describe('«Bekor qilish» in the block of a passenger (G76)', { timeout: 20_000
       bookings: async () => [seat],
       answers: { cancelMine },
     });
-    await tap('Bekor qilish');
+    await tap(toCyrillic('Bekor qilish'));
     await vi.waitFor(() => expect(asked.confirm).toHaveBeenCalledOnce());
     expect(cancelMine).not.toHaveBeenCalled();
     asked.confirm.mockResolvedValueOnce(true);
-    await tap('Bekor qilish');
+    await tap(toCyrillic('Bekor qilish'));
     await vi.waitFor(() => expect(cancelMine).toHaveBeenCalledWith(seat.id));
     expect(asked.confirm).toHaveBeenCalledWith(
-      'Joyni bekor qilasizmi? Haydovchi bu haqda xabar oladi.',
-      'Joyni bekor qilish',
+      toCyrillic('Joyni bekor qilasizmi? Haydovchi bu haqda xabar oladi.'),
+      toCyrillic('Joyni bekor qilish'),
     );
     // Why, in one tap that may be skipped (G87, docs/191).
-    expect(await screen.findByText('Nega joyni bekor qildingiz?')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Nega joyni bekor qildingiz?'))).toBeTruthy();
   });
 });

@@ -1,4 +1,5 @@
 import type { Page, Route } from '@playwright/test';
+import { toCyrillic } from '@platform/i18n';
 import { confirmed, offer } from './bookings-mock';
 import { tashkent } from './g63-after-mock';
 import { request, tripOf } from './market-mock';
@@ -26,7 +27,7 @@ export const trip = tripOf('9', 'Jasur', false, 0, {
   price: 100000,
   pitak: null,
 });
-const grand = { point: null, name: null, area: { step: 'landmark', name: 'Grand' } };
+const grand = { point: null, name: null, area: { step: 'landmark', name: toCyrillic('Grand') } };
 
 // A new request to the driver: Madina, 2 seats, near «Grand», 29 minutes to answer (screen 3).
 export const ask = (n: string, firstName: string) => ({
@@ -55,7 +56,11 @@ export const seat = {
   price: 100000,
   plate: '01A123BC',
   confirmedAt: NOW - 2 * 24 * 60 * MINUTE,
-  pickup: { point: { lat: 41.2856, lng: 69.2034 }, name: { step: 'landmark', name: 'Grand' }, area: null },
+  pickup: {
+    point: { lat: 41.2856, lng: 69.2034 },
+    name: { step: 'landmark', name: toCyrillic('Grand') },
+    area: null,
+  },
   chatKey: `b${id('b1')}`,
 };
 

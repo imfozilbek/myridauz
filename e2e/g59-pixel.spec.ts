@@ -1,10 +1,11 @@
 import type { Page } from '@playwright/test';
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { expect, test } from './crash-guard';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, openFindTrip, TEXT } from './apps';
 import { noSeatYet } from './bookings-mock';
 import { mapState, mockMap } from './map-mock';
+import { REGISTON } from './map-places';
 import { mapDrawn, TILES_MS } from './map-wait';
 import { MAN, mockupData } from './g59-pixel-mock';
 import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
@@ -43,7 +44,7 @@ test('the search and «Safar» against the journey of the mockup', async ({ page
   // The pin in Toshkent is «Grand», in Samarqand (south of 40°) «Registon maydoni».
   await page.route('**/api/passenger/map/where?*', (route) => {
     const lat = Number(new URL(route.request().url()).searchParams.get('at')?.split(',')[0]);
-    const [district, name] = lat < 40 ? [SAMARQAND, 'Registon maydoni'] : [CHILONZOR, 'Grand'];
+    const [district, name] = lat < 40 ? [SAMARQAND, REGISTON] : [CHILONZOR, toCyrillic('Grand')];
     return route.fulfill({ json: { district, name: { step: 'landmark', name }, area: null } });
   });
   await mockupData(page);
@@ -56,7 +57,7 @@ test('the search and «Safar» against the journey of the mockup', async ({ page
   await shot(page, '03');
   await page.getByText(TEXT.otherPlace).click();
   await page.getByPlaceholder(TEXT.otherPlace).fill('Urg');
-  await expect(page.getByRole('dialog').getByText('ut', { exact: false }).first()).toBeVisible();
+  await expect(page.getByRole('dialog').getByText(toCyrillic('ut'), { exact: false }).first()).toBeVisible();
   await shot(page, '04');
   await pressBack(page);
   await page.locator('.direction-card').first().click();
@@ -86,8 +87,8 @@ test('the search and «Safar» against the journey of the mockup', async ({ page
   await page.getByText(t('way.book.dropoff')).click();
   await mapDrawn(page);
   await page.getByPlaceholder(t('way.point.search')).fill('Регистон');
-  await page.getByText('Registon maydoni', { exact: true }).click();
-  await expect(page.getByRole('status')).toHaveText('Registon maydoni yaqinida');
+  await page.getByText(REGISTON, { exact: true }).click();
+  await expect(page.getByRole('status')).toHaveText(t('way.near', { name: REGISTON }));
   await page.waitForTimeout(TILES_MS);
   await shot(page, '09');
   await page.setViewportSize({ width: 360, height: 776 });

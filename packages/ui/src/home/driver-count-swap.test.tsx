@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { RequestBoard, RequestBoardQuery } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -40,8 +41,8 @@ describe('the count of requests of a free driver', { timeout: 20_000 }, () => {
       wallet: async () => ({ ...wallet, seatsLeft: 20 }),
       market: { requestBoard: boardOf },
     });
-    expect(await screen.findByText('Yoʻnalishingizda 5 ta')).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Joylarni almashtirish' }));
-    expect(await screen.findByText('Yoʻnalishingizda 2 ta')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Yoʻnalishingizda 5 ta'))).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: toCyrillic('Joylarni almashtirish') }));
+    expect(await screen.findByText(toCyrillic('Yoʻnalishingizda 2 ta'))).toBeTruthy();
   });
 });

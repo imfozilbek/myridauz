@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError } from '@platform/api-client';
 import type { RideRequest } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
@@ -24,7 +25,7 @@ describe('The requests of a passenger (G37, docs/101)', { timeout: 20_000 }, () 
       testClients({ market: { myRequests }, ...own }),
     );
     // The card of mockup g75/2 A: the day, the way, how many people (G75).
-    expect(await screen.findByText(/· Soʻrov$/u)).toBeTruthy();
+    expect(await screen.findByText(/· Сўров$/u)).toBeTruthy();
     expect(screen.queryByText('Dilnoza')).toBeNull();
   });
 
@@ -37,12 +38,12 @@ describe('The requests of a passenger (G37, docs/101)', { timeout: 20_000 }, () 
     publishRequest.mockRejectedValueOnce(new ApiError(409, 'trips.request_exists'));
     await quickRoute();
     await pickDay(1);
-    await tap('Olib ketish joyi');
-    await takePoint('Chorsu bozori yaqinida');
-    await takePoint('Yangi Margʻilon');
-    await tap('Soʻrov qoldirish');
-    expect(await screen.findByText('Bu kunga shu yoʻnalishda soʻrovingiz bor.')).toBeTruthy();
-    await tap('Soʻrovni ochish');
-    expect(await screen.findByText('Soʻrovni bekor qilish')).toBeTruthy();
+    await tap(toCyrillic('Olib ketish joyi'));
+    await takePoint(toCyrillic('Chorsu bozori yaqinida'));
+    await takePoint(toCyrillic('Yangi Margʻilon'));
+    await tap(toCyrillic('Soʻrov qoldirish'));
+    expect(await screen.findByText(toCyrillic('Bu kunga shu yoʻnalishda soʻrovingiz bor.'))).toBeTruthy();
+    await tap(toCyrillic('Soʻrovni ochish'));
+    expect(await screen.findByText(toCyrillic('Soʻrovni bekor qilish'))).toBeTruthy();
   });
 });

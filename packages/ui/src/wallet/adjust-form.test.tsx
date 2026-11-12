@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderInShell } from '../test-shell';
@@ -22,26 +23,26 @@ describe('the hand correction of a wallet', () => {
 
   it('saves only with a reason of 3 letters or more', async () => {
     const { onSave } = form();
-    await tap('Asosiy hisob');
-    await tap('Qoʻshish');
-    fireEvent.change(screen.getByLabelText('Summa, soʻm'), { target: { value: '2000' } });
-    await tap('Boshqa');
-    fireEvent.change(screen.getByLabelText('Boshqa'), { target: { value: ' ok ' } });
-    expect(screen.queryByText('Saqlash')).toBeNull();
-    fireEvent.change(screen.getByLabelText('Boshqa'), { target: { value: 'Naqd' } });
-    await tap('Saqlash');
+    await tap(toCyrillic('Asosiy hisob'));
+    await tap(toCyrillic('Qoʻshish'));
+    fireEvent.change(screen.getByLabelText(toCyrillic('Summa, soʻm')), { target: { value: '2000' } });
+    await tap(toCyrillic('Boshqa'));
+    fireEvent.change(screen.getByLabelText(toCyrillic('Boshqa')), { target: { value: ' ok ' } });
+    expect(screen.queryByText(toCyrillic('Saqlash'))).toBeNull();
+    fireEvent.change(screen.getByLabelText(toCyrillic('Boshqa')), { target: { value: 'Naqd' } });
+    await tap(toCyrillic('Saqlash'));
     expect(onSave).toHaveBeenCalledWith({ balance: 'main', amount: 2000, reason: 'Naqd' });
   });
 
   it('leaves an untouched form at once and asks before leaving a touched one', async () => {
     const { onBack } = form();
-    await tap('Orqaga');
+    await tap(toCyrillic('Orqaga'));
     expect(onBack).toHaveBeenCalledOnce();
     expect(asked).not.toHaveBeenCalled();
-    await tap('Ayirish');
+    await tap(toCyrillic('Ayirish'));
     asked.mockReturnValueOnce(false);
-    await tap('Orqaga');
-    expect(asked).toHaveBeenCalledWith('Oʻzgarishlar saqlanmaydi. Chiqasizmi?');
+    await tap(toCyrillic('Orqaga'));
+    expect(asked).toHaveBeenCalledWith(toCyrillic('Oʻzgarishlar saqlanmaydi. Chiqasizmi?'));
     expect(onBack).toHaveBeenCalledOnce();
   });
 });

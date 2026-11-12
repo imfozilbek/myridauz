@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderInShell } from '../test-shell';
@@ -31,7 +32,7 @@ describe('CameraScreen (docs/47)', () => {
     vi.spyOn(HTMLCanvasElement.prototype, 'toBlob').mockImplementation((done) => done(new Blob(['x'])));
     const { onPhoto, container, unmount } = camera(async () => ({ getTracks: () => [{ stop }] }));
     expect(container.querySelector('.camera-guide-face')).toBeTruthy();
-    const shutter = screen.getByLabelText('Rasmga olish');
+    const shutter = screen.getByLabelText(toCyrillic('Rasmga olish'));
     // No frames yet: nothing to shoot.
     expect((shutter as HTMLButtonElement).disabled).toBe(true);
     fireEvent.loadedData(container.querySelector('video') as HTMLVideoElement);
@@ -47,9 +48,9 @@ describe('CameraScreen (docs/47)', () => {
     const { onNative, onClose } = camera(async () => {
       throw new Error('denied');
     });
-    fireEvent.click(await screen.findByText('Telefon kamerasini ochish'));
+    fireEvent.click(await screen.findByText(toCyrillic('Telefon kamerasini ochish')));
     expect(onNative).toHaveBeenCalled();
-    fireEvent.click(screen.getByText('Orqaga'));
+    fireEvent.click(screen.getByText(toCyrillic('Orqaga')));
     expect(onClose).toHaveBeenCalled();
   });
 
@@ -58,8 +59,8 @@ describe('CameraScreen (docs/47)', () => {
   it('draws the car in the frame of the front photo and always offers the phone camera', async () => {
     const { onNative, container } = camera(async () => ({ getTracks: () => [{ stop }] }), 'front', true);
     expect(container.querySelector('.camera-guide-front .camera-car')).toBeTruthy();
-    expect(screen.queryByText('Orqaga')).toBeNull();
-    fireEvent.click(screen.getByText('Telefon kamerasini ochish'));
+    expect(screen.queryByText(toCyrillic('Orqaga'))).toBeNull();
+    fireEvent.click(screen.getByText(toCyrillic('Telefon kamerasini ochish')));
     expect(onNative).toHaveBeenCalled();
   });
 });

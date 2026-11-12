@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { confirmed, offer } from './bookings-mock';
 import { tashkent } from './g63-after-mock';
 import { request, tripOf } from './market-mock';
@@ -34,9 +35,9 @@ export const trip = tripOf('1', 'Jasur', false, 0, { departAt: DEPART, seatsLeft
 // Where to stand at Chilonzor pitagi, as the team writes it in the admin (G76, docs/72); both roles.
 export const pitak = {
   id: 'chilonzor',
-  name: 'Chilonzor pitagi',
+  name: toCyrillic('Chilonzor pitagi'),
   point: { lat: 41.2856, lng: 69.2034 },
-  hint: 'Metro 2-chiqish yonida',
+  hint: toCyrillic('Metro 2-chiqish yonida'),
 };
 const seat = (extra: object = {}) => ({
   ...confirmed,

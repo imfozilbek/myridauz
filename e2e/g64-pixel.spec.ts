@@ -1,4 +1,4 @@
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { expect, test, type Page } from './crash-guard';
 import { openBoard, type Board } from './g64-requests-mock';
 import { openMyTrips, openPrivateTrip } from './g64-trips-mock';
@@ -54,7 +54,7 @@ test('6-trips-1: «Mening safarlarim» of the driver', async ({ page }) => {
 });
 
 test('6-trips-2: the trips of «Pa 8»', async ({ page }) => {
-  await openMyTrips(page, 'Pa');
+  await openMyTrips(page, toCyrillic('Pa'));
   await page.getByText('2 150 000').waitFor();
   await shot(page, '6-trips-2');
 });

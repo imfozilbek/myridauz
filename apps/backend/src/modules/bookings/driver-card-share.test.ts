@@ -1,5 +1,6 @@
 import { loadBrand } from '@platform/brands';
 import { DAY_MS, type Booking } from '@platform/contracts';
+import { toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import type { Card } from '../notifications';
 import { requestBooking } from './application/request';
@@ -41,16 +42,16 @@ describe('the share button of the driver trip card', () => {
       `https://t.me/${loadBrand().bots.passenger}?startapp=trip_${booking.trip.id}__${VIA}`,
     );
     const lines = (url.searchParams.get('text') ?? '').replace(/[\u00a0\u202f]/gu, ' ').split('\n');
-    expect(lines[0]).toBe(`Safarimda ${booking.trip.seatsLeft} ta boʻsh joy bor`);
+    expect(lines[0]).toBe(toCyrillic(`Safarimda ${booking.trip.seatsLeft} ta boʻsh joy bor`));
     expect(lines.slice(1, 3)).toEqual([
-      '🟢 Chilonzor, Toshkent shahri',
-      '🔴 Samarqand shahri, Samarqand viloyati',
+      toCyrillic('🟢 Chilonzor, Toshkent shahri'),
+      toCyrillic('🔴 Samarqand shahri, Samarqand viloyati'),
     ]);
-    expect(lines[3]).toMatch(/^🗓 \d+-[a-zʻ]+ soat \d\d:\d\d$/u);
-    expect(lines[4]).toBe('💰 Bir joy 90 000 soʻm');
+    expect(lines[3]).toMatch(/^🗓 \d+-[а-яёўқғҳ]+ соат \d\d:\d\d$/u);
+    expect(lines[4]).toBe(toCyrillic('💰 Bir joy 90 000 soʻm'));
     expect(lines.slice(5)).toEqual([
       '',
-      'Raqamingiz yashirin. Telegramda ochiladi. Ilova yuklab olish shart emas.',
+      toCyrillic('Raqamingiz yashirin. Telegramda ochiladi. Ilova yuklab olish shart emas.'),
     ]);
   });
 

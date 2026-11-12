@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { expect, test, type Page } from '../crash-guard';
 import { openRequests, TEXT } from '../apps';
 import { openFromList } from '../market';
@@ -80,11 +81,11 @@ for (const platform of PLATFORMS)
     await openHome(page, 'driver', HUMOYUN, platform);
     await openRequests(page);
     await openFromList(page);
-    await page.getByAltText('Toshkent shahri').click();
-    await page.getByText('Yunusobod').click();
+    await page.getByAltText(toCyrillic('Toshkent shahri')).click();
+    await page.getByText(toCyrillic('Yunusobod')).click();
     // «Qayerga» opens by itself, both ends go on (G40, docs/106 K1).
-    await page.getByAltText('Surxondaryo viloyati').click();
-    await page.getByText('Termiz shahri', { exact: true }).click();
+    await page.getByAltText(toCyrillic('Surxondaryo viloyati')).click();
+    await page.getByText(toCyrillic('Termiz shahri'), { exact: true }).click();
     await expect(page.locator('.request-row').filter({ hasText: SEEKERS[platform].name })).toBeVisible();
     await shot('04-d-requests');
     await page.locator('.week-day').nth(1).click();

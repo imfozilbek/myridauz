@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { FeedbackClient } from '@platform/api-client';
 import type { ReviewTarget } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
@@ -23,7 +24,7 @@ afterEach(() => {
 });
 
 const TARGET: ReviewTarget = { rateeId: '7', rateeName: 'Jasur', rateeRole: 'passenger', mine: null };
-const RESTORED = 'Oldingi yozganingiz tiklandi.';
+const RESTORED = toCyrillic('Oldingi yozganingiz tiklandi.');
 const open = (param: string, feedback: Partial<FeedbackClient>) => {
   window.history.replaceState(null, '', `/?${param}=b1`);
   return renderMarket(
@@ -43,14 +44,14 @@ describe('a review and a complaint keep what was written (docs/94 F3, C1, C5)', 
     await screen.findByText('Jasur');
     expect(screen.queryByText(RESTORED)).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: '4' }));
-    await tap('+ Izoh yozish');
-    typeInto(/qisqacha/u, 'Yaxshi yoʻl');
+    await tap(toCyrillic('+ Izoh yozish'));
+    typeInto(/қисқача/u, 'Yaxshi yoʻl');
     first.unmount();
     open('review', { review });
     expect(await screen.findByText(RESTORED)).toBeTruthy();
     expect(screen.getByDisplayValue('Yaxshi yoʻl')).toBeTruthy();
     expect(screen.getByRole('button', { name: '4' }).getAttribute('aria-pressed')).toBe('true');
-    await tap('Yuborish');
+    await tap(toCyrillic('Yuborish'));
     await waitFor(() => expect(review).toHaveBeenCalledWith(expect.objectContaining({ stars: 4 })));
     // Sent from the bot: the app closes at once, no screen after it (G60).
     await waitFor(() => expect(sdk.miniApp.close.ifAvailable).toHaveBeenCalled());
@@ -64,12 +65,12 @@ describe('a review and a complaint keep what was written (docs/94 F3, C1, C5)', 
   it('a complaint comes back with its reason and comment until it is sent', async () => {
     const complain = vi.fn<FeedbackClient['complain']>(async () => undefined);
     const first = open('complain', { complain });
-    await tap('Kelmadi');
-    typeInto(/Nima boʻlganini/u, 'Bir soat kutdim');
+    await tap(toCyrillic('Kelmadi'));
+    typeInto(/Нима бўлганини/u, 'Bir soat kutdim');
     first.unmount();
     open('complain', { complain });
     expect(await screen.findByText(RESTORED)).toBeTruthy();
-    await tap('Yuborish');
+    await tap(toCyrillic('Yuborish'));
     await waitFor(() =>
       expect(complain).toHaveBeenCalledWith({
         bookingId: 'b1',
@@ -93,8 +94,8 @@ describe('a review and a complaint keep what was written (docs/94 F3, C1, C5)', 
     open('review', { review });
     await screen.findByText('Jasur');
     fireEvent.click(screen.getByRole('button', { name: '5' }));
-    await tap('Yuborish');
-    const sending = screen.getByText('Yuborish').closest('button');
+    await tap(toCyrillic('Yuborish'));
+    const sending = screen.getByText(toCyrillic('Yuborish')).closest('button');
     expect(sending?.disabled).toBe(true);
     done();
     await waitFor(() => expect(sdk.miniApp.close.ifAvailable).toHaveBeenCalledOnce());
@@ -106,10 +107,10 @@ describe('a review and a complaint keep what was written (docs/94 F3, C1, C5)', 
     const onSent = vi.fn();
     sdk.miniApp.close.ifAvailable.mockClear();
     renderMarket(<ComplaintScreen bookingId="b1" onBack={() => undefined} onSent={onSent} />, clients);
-    await tap('Boshqa');
-    await tap('Yuborish');
+    await tap(toCyrillic('Boshqa'));
+    await tap(toCyrillic('Yuborish'));
     await waitFor(() => expect(onSent).toHaveBeenCalledOnce());
-    expect(screen.queryByText('Yopish')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Yopish'))).toBeNull();
     expect(sdk.miniApp.close.ifAvailable).not.toHaveBeenCalled();
   });
 });

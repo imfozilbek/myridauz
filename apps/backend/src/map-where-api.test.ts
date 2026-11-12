@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { borderSchema, MAP_WHERE_PATH, mapBorderPath, whereSchema } from '@platform/contracts';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { app } from './app';
@@ -20,8 +21,8 @@ describe('the district and the name of a point on the map (G24, docs/69)', () =>
     expect(response.headers.get('cache-control')).toBe('private, max-age=3600');
     expect(whereSchema.parse(await response.json())).toEqual({
       district: '1726277',
-      name: { step: 'landmark', name: 'Chorsu bozori' },
-      area: { step: 'district', name: 'Shayxontohur' },
+      name: { step: 'landmark', name: toCyrillic('Chorsu bozori') },
+      area: { step: 'district', name: toCyrillic('Shayxontohur') },
     });
   });
 

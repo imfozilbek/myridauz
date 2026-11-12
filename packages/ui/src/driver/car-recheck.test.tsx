@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { DriversClient } from '@platform/api-client';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -22,9 +23,10 @@ const account = {
   onAvatarChanged: () => undefined,
   onProfileChanged: () => undefined,
 } as unknown as Account;
-const WARN =
-  'Yangi rasm mashinani qayta tekshiruvga yuboradi. Tekshiruv tugaguncha yangi safar eʼlon qila olmaysiz.';
-const LEAVE = 'Arizani yuboring, aks holda tekshiruv boshlanmaydi.';
+const WARN = toCyrillic(
+  'Yangi rasm mashinani qayta tekshiruvga yuboradi. Tekshiruv tugaguncha yangi safar eʼlon qila olmaysiz.',
+);
+const LEAVE = toCyrillic('Arizani yuboring, aks holda tekshiruv boshlanmaydi.');
 
 function openApproved() {
   const uploadPhoto = vi.fn<DriversClient['uploadPhoto']>(async () =>
@@ -53,10 +55,11 @@ describe('a new photo of an approved car', { timeout: 20_000 }, () => {
   it('is warned about before the camera, and leaving after it asks', async () => {
     const asked = vi.spyOn(window, 'confirm').mockReturnValueOnce(false);
     const { container, uploadPhoto, onClose } = openApproved();
-    await tap('Davom etish');
+    await tap(toCyrillic('Davom etish'));
     const input = container.querySelector('input[type=file][capture=environment]') as HTMLInputElement;
     const opened = vi.spyOn(input, 'click');
-    const tile = () => screen.getByText('Old tomondan', { exact: true }).closest('button') as HTMLElement;
+    const tile = () =>
+      screen.getByText(toCyrillic('Old tomondan'), { exact: true }).closest('button') as HTMLElement;
     fireEvent.click(tile());
     await waitFor(() => expect(asked).toHaveBeenCalledWith(WARN));
     expect(opened).not.toHaveBeenCalled();
@@ -66,8 +69,8 @@ describe('a new photo of an approved car', { timeout: 20_000 }, () => {
     fireEvent.change(input, { target: { files: [new File(['x'], 'car.jpg', { type: 'image/jpeg' })] } });
     await waitFor(() => expect(uploadPhoto).toHaveBeenCalledOnce());
     asked.mockReturnValueOnce(false);
-    await tap('Orqaga');
-    await tap('Orqaga');
+    await tap(toCyrillic('Orqaga'));
+    await tap(toCyrillic('Orqaga'));
     await waitFor(() => expect(asked).toHaveBeenLastCalledWith(LEAVE));
     expect(onClose).not.toHaveBeenCalled();
   });

@@ -53,6 +53,7 @@ import ads from '../locales/uz-Latn/ads.json' with { type: 'json' };
 // Why a seat, a trip or the account went: one tap after it (G87, docs/191).
 import leave from '../locales/uz-Latn/leave.json' with { type: 'json' };
 import type { Locale } from './config';
+import { cyrillicMessage } from './cyrillic-message';
 
 // uz-Latn is the reference: its keys are the only valid keys (docs/13).
 const REFERENCE = {
@@ -107,11 +108,23 @@ export type TranslationKey = {
 }[keyof Namespaces];
 
 type Catalog = Readonly<Record<string, Readonly<Record<string, string>>>>;
-export const CATALOGS: Readonly<Record<Locale, Catalog>> = { 'uz-Latn': REFERENCE };
+// The texts as they are written: one source for every language (docs/13).
+export const CATALOG: Catalog = REFERENCE;
 
 export function lookup(catalog: Catalog, key: TranslationKey): string {
   const [namespace = '', ...rest] = key.split('.');
   const message = catalog[namespace]?.[rest.join('.')];
   if (message === undefined) throw new Error(`i18n.missing_key:${key}`);
   return message;
+}
+
+const CYRILLIC = new Map<TranslationKey, string>();
+
+// A message in a language: uz-Cyrl is made from the reference once per message (G98, docs/228).
+export function messageOf(locale: Locale, key: TranslationKey): string {
+  const latin = lookup(CATALOG, key);
+  if (locale === 'uz-Latn') return latin;
+  const made = CYRILLIC.get(key) ?? cyrillicMessage(latin);
+  CYRILLIC.set(key, made);
+  return made;
 }

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { BookingsClient } from '@platform/api-client';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -34,20 +35,20 @@ describe('the note of a booking on «Qayerdan, qayerga?»', { timeout: 20_000 },
       </MapEngineContext.Provider>,
       testClients({ bookings: { book }, map: testMap() }),
     );
-    await tap('Izoh (ixtiyoriy)');
+    await tap(toCyrillic('Izoh (ixtiyoriy)'));
     // A sheet over the booking (mockup g75/3 A): the screen stays under it, the letters are counted.
-    expect(screen.getByText('Tushirish joyi')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Tushirish joyi'))).toBeTruthy();
     expect(screen.getByText('0 / 60')).toBeTruthy();
-    fireEvent.change(await screen.findByPlaceholderText('Izoh yozing'), {
+    fireEvent.change(await screen.findByPlaceholderText(toCyrillic('Izoh yozing')), {
       target: { value: 'Qizil kurtka, sumka bilan' },
     });
     expect(screen.getByText('25 / 60')).toBeTruthy();
-    await tap('Davom etish');
+    await tap(toCyrillic('Davom etish'));
     expect(await screen.findByText('Qizil kurtka, sumka bilan')).toBeTruthy();
-    fireEvent.click(screen.getByText('Tushirish joyi').closest('button') as HTMLElement);
-    await screen.findByText('Yangi Margʻilon', {}, { timeout: 3000 });
-    await tap('Shu yerda tushaman');
-    await tap('Soʻrov yuborish');
+    fireEvent.click(screen.getByText(toCyrillic('Tushirish joyi')).closest('button') as HTMLElement);
+    await screen.findByText(toCyrillic('Yangi Margʻilon'), {}, { timeout: 3000 });
+    await tap(toCyrillic('Shu yerda tushaman'));
+    await tap(toCyrillic('Soʻrov yuborish'));
     await vi.waitFor(() => expect(book).toHaveBeenCalled());
     expect(book.mock.calls[0]?.[1]).toMatchObject({ note: 'Qizil kurtka, sumka bilan' });
   });

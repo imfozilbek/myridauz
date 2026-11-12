@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { expect, test, type Locator, type Page } from '../crash-guard';
 import { openFindTrip, TEXT } from '../apps';
 import { SLOW_MS } from '../map-wait';
@@ -70,7 +71,7 @@ for (const platform of PLATFORMS)
     await first.tap(page.getByText(t('find.other')));
     await page.getByPlaceholder(t('find.other')).fill('Jizz');
     await shot('03-other-place');
-    await first.tap(page.getByRole('dialog').getByText('Jizzax', { exact: true }));
+    await first.tap(page.getByRole('dialog').getByText(toCyrillic('Jizzax'), { exact: true }));
     await expect(card(page, GAYRAT.name)).toBeVisible();
     await shot('04-results');
     await first.tap(card(page, GAYRAT.name));
@@ -103,7 +104,9 @@ for (const platform of PLATFORMS)
     await declineWaiting(GAYRAT, SEEKERS[platform]);
     await page.reload();
     await again.tap(mainButton(page).filter({ hasText: t('bookings.others') }));
-    await expect(page.getByRole('heading', { name: /→ Jizzax$/u })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: new RegExp(`→ ${toCyrillic('Jizzax')}$`, 'u') }),
+    ).toBeVisible();
     await again.tap(card(page, DOSTON.name));
     await again.tap(mainButton(page));
     await expect(page.getByText(t('way.change')).first()).toBeVisible();
@@ -124,7 +127,7 @@ for (const platform of PLATFORMS)
     await person.step(() => openFindTrip(page));
     await person.tap(page.getByText(t('find.other')));
     await page.getByPlaceholder(t('find.other')).fill('Urga');
-    await person.tap(page.getByRole('dialog').getByText('Urganch shahri', { exact: true }));
+    await person.tap(page.getByRole('dialog').getByText(toCyrillic('Urganch shahri'), { exact: true }));
     await expect(page.getByText(t('find.noTrips'))).toBeVisible();
     await shot('20-empty');
     // The route and the day of the search go into the request (K6).

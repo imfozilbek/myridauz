@@ -1,4 +1,5 @@
 import { brandForApp, loadBrand } from '@platform/brands';
+import { toCyrillic } from '@platform/i18n';
 import { expect, test } from './crash-guard';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, openFindTrip, TEXT } from './apps';
@@ -69,14 +70,14 @@ test('route: a place is chosen by region photo, search, and a trip inside the ci
   await fromIfAsked(page);
   await page.getByText(TEXT.change).click();
   await page.getByPlaceholder(TEXT.search).fill('yunus');
-  await page.getByText('Yunusobod').click();
+  await page.getByText(toCyrillic('Yunusobod')).click();
   await page.getByText(TEXT.otherPlace).click();
   await page.getByPlaceholder(TEXT.otherPlace).fill('Chilon');
-  await page.getByText('Chilonzor', { exact: true }).click();
+  await page.getByText(toCyrillic('Chilonzor'), { exact: true }).click();
   await expect(page.getByText(TEXT.insideCity)).toBeVisible();
   await page.getByText(TEXT.otherPlace).click();
   await page.getByPlaceholder(TEXT.otherPlace).fill("farg'ona sh");
-  await page.getByText('Fargʻona shahri', { exact: true }).click();
+  await page.getByText(toCyrillic('Fargʻona shahri'), { exact: true }).click();
   await expect(page.getByText(TEXT.insideCity)).toBeHidden();
   await expect(page.locator('.week-day').first()).toBeVisible();
 });

@@ -1,5 +1,6 @@
 import { loadBrand } from '@platform/brands';
 import type { Page } from '@playwright/test';
+import { toCyrillic } from '@platform/i18n';
 import locations from '../apps/backend/seed/locations.json' with { type: 'json' };
 
 type Entry = {
@@ -12,6 +13,8 @@ type Entry = {
   opened: boolean;
 };
 type Me = { open: boolean; entries: Entry[]; channels: string[] };
+// The directory as the API gives it: the names in Cyrillic (G98, docs/228).
+const directory = locations.map((place) => ({ ...place, name: toCyrillic(place.name) }));
 
 // The backend of the waitlist as the main Mini App sees it (G83, docs/181): what is saved comes back,
 // with 124 passengers and 12 drivers on Samarqand like the approved mockups.
@@ -20,7 +23,9 @@ export async function mockWaitlist(page: Page, start: Partial<Me> = {}) {
   let me: Me = { open: true, entries: [], channels: [`@${mainChannel}`, '-1003906211929'], ...start };
   const waiting = (role: string) => ({ passengers: 124, drivers: 12, share: role === 'driver' ? 0 : 64 });
   await page.route('**/api/analytics', (route) => route.fulfill({ status: 204 }));
-  await page.route('**/api/locations', (route) => route.fulfill({ json: { version: '1', locations } }));
+  await page.route('**/api/locations', (route) =>
+    route.fulfill({ json: { version: '1', locations: directory } }),
+  );
   await page.route('**/api/waitlist?*', (route) => route.fulfill({ json: me }));
   await page.route('**/api/waitlist', async (route) => {
     if (route.request().method() !== 'PUT') return route.fulfill({ json: me });

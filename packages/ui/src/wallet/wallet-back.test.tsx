@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { confirmed, wallet } from '../bookings/booking-test-kit';
@@ -52,23 +53,23 @@ function openDetails() {
 describe('the trip opened from the details of «Hamyon»', { timeout: 20_000 }, () => {
   it('«Назад» comes back to the details', async () => {
     openDetails();
-    await tap('Komissiya · Sardor, 2 joy');
-    await tap('Safarni ochish');
-    expect(await screen.findByText(/^Yoʻlovchilar \(/u)).toBeTruthy();
+    await tap(`${toCyrillic('Komissiya')} · Sardor, ${toCyrillic('2 joy')}`);
+    await tap(toCyrillic('Safarni ochish'));
+    expect(await screen.findByText(/^Йўловчилар \(/u)).toBeTruthy();
     act(pressBack);
-    expect(screen.queryByText(/^Yoʻlovchilar \(/u)).toBeNull();
-    expect(screen.getByText('Komissiya 10%')).toBeTruthy();
+    expect(screen.queryByText(/^Йўловчилар \(/u)).toBeNull();
+    expect(screen.getByText(toCyrillic('Komissiya 10%'))).toBeTruthy();
   });
 
   // The row of the passenger opens the booking itself, not the list of trips (G77).
   it('the row of the passenger opens that booking; «Назад» comes back to the details', async () => {
     const { tracked } = openDetails();
-    await tap('Komissiya · Sardor, 2 joy');
-    await screen.findByText('Komissiya 10%');
+    await tap(`${toCyrillic('Komissiya')} · Sardor, ${toCyrillic('2 joy')}`);
+    await screen.findByText(toCyrillic('Komissiya 10%'));
     fireEvent.click(document.querySelector('button.wallet-rider') as HTMLElement);
     await waitFor(() => expect(tracked.some((event) => event.screen === 'bookings.driver')).toBe(true));
-    expect(screen.queryByText(/^Faol \(/u)).toBeNull();
+    expect(screen.queryByText(/^Фаол \(/u)).toBeNull();
     act(pressBack);
-    expect(await screen.findByText('Komissiya 10%')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Komissiya 10%'))).toBeTruthy();
   });
 });

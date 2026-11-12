@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { MapClient } from '@platform/api-client';
 import type { FoundPlace, Point, Where } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
@@ -13,19 +14,24 @@ import { MapEngineContext } from './map-engine';
 export { fakeMap } from './fake-map';
 
 export const CHORSU: FoundPlace = {
-  name: 'Chorsu bozori',
+  name: toCyrillic('Chorsu bozori'),
   kind: 'market',
-  area: 'Chilonzor',
+  area: toCyrillic('Chilonzor'),
   district: '1726269',
   point: { lat: 41.3265, lng: 69.2355 },
 };
 // Anything south of 41 is Fargʻona shahri, the rest Chilonzor (the small directory of the tests).
 const whereOf = async (point: Point): Promise<Where> =>
   point.lat < 41
-    ? { district: '1730401', name: { step: 'mahalla', name: 'Yangi Margʻilon' }, area: null }
-    : { district: '1726269', name: { step: 'landmark', name: 'Chorsu bozori' }, area: null };
+    ? { district: '1730401', name: { step: 'mahalla', name: toCyrillic('Yangi Margʻilon') }, area: null }
+    : { district: '1726269', name: { step: 'landmark', name: toCyrillic('Chorsu bozori') }, area: null };
 export const FARGONA = { lat: 40.38, lng: 71.78 };
-const PITAK = { id: 'qoyliq', name: 'Qoʻyliq pitagi', point: { lat: 41.2438, lng: 69.3394 }, hint: null };
+const PITAK = {
+  id: 'qoyliq',
+  name: toCyrillic('Qoʻyliq pitagi'),
+  point: { lat: 41.2438, lng: 69.3394 },
+  hint: null,
+};
 
 type Calls = Partial<Pick<MapClient, 'search' | 'where' | 'pitakOf' | 'border' | 'near'>>;
 

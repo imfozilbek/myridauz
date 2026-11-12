@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { BookingsClient } from '@platform/api-client';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -20,7 +21,7 @@ describe('the answer goes back to the trip (docs/94 F9, owner decision 06.10.202
       </PlacesGate>,
       testClients({ bookings: { answer } }),
     );
-    await tap('Tasdiqlash');
+    await tap(toCyrillic('Tasdiqlash'));
     await vi.waitFor(() => expect(onClose).toHaveBeenCalledWith(true));
     expect(answer).toHaveBeenCalledTimes(1);
   });
@@ -37,9 +38,9 @@ describe('the map of the way goes back to the trip (docs/94 B8)', () => {
       }),
     );
     await openOwnTrip();
-    await tap('Yoʻl xaritasi');
-    await screen.findByText(/ · \d+ yoʻlovchi$/u);
-    await tap('Orqaga');
-    expect(await screen.findByText('Yoʻlovchilar (2)')).toBeTruthy();
+    await tap(toCyrillic('Yoʻl xaritasi'));
+    await screen.findByText(/ · \d+ йўловчи$/u);
+    await tap(toCyrillic('Orqaga'));
+    expect(await screen.findByText(toCyrillic('Yoʻlovchilar (2)'))).toBeTruthy();
   });
 });

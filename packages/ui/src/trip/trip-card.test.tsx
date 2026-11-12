@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { confirmed } from '../bookings/booking-test-kit';
@@ -16,12 +17,12 @@ describe('one card of a trip on the booking, the call and the review (G60, docs/
       </PlacesGate>,
       testClients({}),
     );
-    expect(await screen.findByText('Chilonzor bozori yaqinida')).toBeTruthy();
-    expect(screen.getByText(/olib ketish joyi$/u)).toBeTruthy();
-    expect(screen.getByText('Registon mahallasi')).toBeTruthy();
-    expect(screen.getByText(/^≈ .* tushirish joyi$/u)).toBeTruthy();
-    expect(screen.getByText('2 joy')).toBeTruthy();
-    expect(screen.getByText('190 000 soʻm')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Chilonzor bozori yaqinida'))).toBeTruthy();
+    expect(screen.getByText(/олиб кетиш жойи$/u)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Registon mahallasi'))).toBeTruthy();
+    expect(screen.getByText(/^≈ .* тушириш жойи$/u)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('2 joy'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('190 000 soʻm'))).toBeTruthy();
   });
 
   it('leaves the sum out where the screen does not need it (the review)', async () => {
@@ -31,8 +32,8 @@ describe('one card of a trip on the booking, the call and the review (G60, docs/
       </PlacesGate>,
       testClients({}),
     );
-    await screen.findByText('Registon mahallasi');
-    expect(screen.queryByText('2 joy')).toBeNull();
+    await screen.findByText(toCyrillic('Registon mahallasi'));
+    expect(screen.queryByText(toCyrillic('2 joy'))).toBeNull();
   });
 
   it('after the trip shows the regions and the road, without the exact places (mockup g60/7)', async () => {
@@ -43,8 +44,8 @@ describe('one card of a trip on the booking, the call and the review (G60, docs/
       </PlacesGate>,
       testClients({}),
     );
-    expect(await screen.findByText(/^≈ \d+ km · ≈ \d+ soat yoʻl$/u)).toBeTruthy();
-    expect(screen.queryByText(/olib ketish joyi$/u)).toBeNull();
-    expect(screen.queryByText(/tushirish joyi$/u)).toBeNull();
+    expect(await screen.findByText(/^≈ \d+ км · ≈ \d+ соат йўл$/u)).toBeTruthy();
+    expect(screen.queryByText(/олиб кетиш жойи$/u)).toBeNull();
+    expect(screen.queryByText(/тушириш жойи$/u)).toBeNull();
   });
 });

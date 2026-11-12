@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 import { DAY_MS, tashkentDate } from '@platform/contracts';
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { expect } from './crash-guard';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, openFindTrip } from './apps';
@@ -44,7 +44,9 @@ export async function openBookingPoints(page: Page) {
   // «Qayerdan» of the mockup: Chilonzor, Toshkent, where the phone stands.
   await page.addInitScript((id) => localStorage.setItem('here_district', id), CHILONZOR);
   await page.route('**/api/passenger/map/where?*', (route) =>
-    route.fulfill({ json: { district: CHILONZOR, name: { step: 'landmark', name: 'Grand' }, area: null } }),
+    route.fulfill({
+      json: { district: CHILONZOR, name: { step: 'landmark', name: toCyrillic('Grand') }, area: null },
+    }),
   );
   await page.route('**/api/me', (route) => route.fulfill({ json: { state: 'active', profile: MAN } }));
   await mockTelegram(page);

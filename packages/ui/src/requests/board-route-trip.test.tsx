@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { tap } from '../market/market-test-kit';
@@ -10,16 +11,16 @@ afterEach(cleanup);
 describe('«Safar eʼlon qilish» on an empty day of a board with its route', { timeout: 20_000 }, () => {
   it('takes the route of the board', async () => {
     openBoard({ board: { from: '1726269', to: '1730401' }, requestBoard: async () => board({ others: [] }) });
-    expect(await screen.findByText('Bu kunga soʻrov yoʻq')).toBeTruthy();
-    await tap('Safar eʼlon qilish');
-    expect(await screen.findByText('Chilonzor, Toshkent shahri')).toBeTruthy();
-    expect(screen.getByText('Mashinada 4 joy')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Bu kunga soʻrov yoʻq'))).toBeTruthy();
+    await tap(toCyrillic('Safar eʼlon qilish'));
+    expect(await screen.findByText(toCyrillic('Chilonzor, Toshkent shahri'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Mashinada 4 joy'))).toBeTruthy();
   });
 
   it('a whole region of the board is asked again, «Qayerdan» stays', async () => {
     openBoard({ board: { from: '1726269', to: '1730' }, requestBoard: async () => board({ others: [] }) });
-    expect(await screen.findByText('Bu kunga soʻrov yoʻq')).toBeTruthy();
-    await tap('Safar eʼlon qilish');
-    expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Bu kunga soʻrov yoʻq'))).toBeTruthy();
+    await tap(toCyrillic('Safar eʼlon qilish'));
+    expect(await screen.findByText(toCyrillic('Qayerga borasiz?'))).toBeTruthy();
   });
 });

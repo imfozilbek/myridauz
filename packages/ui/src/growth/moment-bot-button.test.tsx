@@ -22,6 +22,6 @@ describe('a moment at a launch from a button of a bot message', () => {
       </MomentGate>,
       testClients({ growth: { moment: async () => DRIVER, offered: async () => undefined } }),
     );
-    expect(await screen.findByText(/^Siz endi .+ haydovchisisiz! ✅$/u)).toBeTruthy();
+    expect(await screen.findByText(/^Сиз энди .+ ҳайдовчисисиз! ✅$/u)).toBeTruthy();
   });
 });

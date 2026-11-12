@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { ChatClient, GrowthClient } from '@platform/api-client';
 import { DAY_MS, MINUTE_MS } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
@@ -26,12 +27,12 @@ describe('the page of a confirmed seat (G60, mockup g60/1)', () => {
     vi.setSystemTime(TRIP_DAY);
     open();
     await tap('Jasur');
-    expect(screen.getByText('Joy tasdiqlandi')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Joy tasdiqlandi'))).toBeTruthy();
     expect(screen.getByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
-    expect(screen.getByText(/olib ketish joyi$/u)).toBeTruthy();
-    expect(screen.getByText('Pulni haydovchiga safarda oʻzingiz berasiz.')).toBeTruthy();
+    expect(screen.getByText(/олиб кетиш жойи$/u)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Pulni haydovchiga safarda oʻzingiz berasiz.'))).toBeTruthy();
     for (const button of ['Xabar yozish', 'Qoʻngʻiroq', 'Yaqinlarimga', 'Shikoyat', 'Joyni bekor qilish'])
-      expect(screen.getByText(button)).toBeTruthy();
+      expect(screen.getByText(toCyrillic(button))).toBeTruthy();
   });
 
   // The driver's «Keldi» puts the passenger in the car (G76, owner decision 10.10.2026, docs/43).
@@ -39,7 +40,7 @@ describe('the page of a confirmed seat (G60, mockup g60/1)', () => {
     vi.setSystemTime(TRIP_DAY);
     open();
     await tap('Jasur');
-    expect(screen.queryByText('Yetib keldim')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Yetib keldim'))).toBeNull();
     cleanup();
     const arrived = vi.fn<ChatClient['arrived']>(async () => ({
       ...confirmed,
@@ -49,26 +50,26 @@ describe('the page of a confirmed seat (G60, mockup g60/1)', () => {
     open({ ...confirmed, boardedAt: BOARDED_AT }, { arrived });
     await tap('Jasur');
     // A used seat is not cancelled (docs/35).
-    expect(screen.queryByText('Joyni bekor qilish')).toBeNull();
-    await tap('Yetib keldim');
+    expect(screen.queryByText(toCyrillic('Joyni bekor qilish'))).toBeNull();
+    await tap(toCyrillic('Yetib keldim'));
     expect(arrived).toHaveBeenCalledWith(confirmed.id);
-    expect(await screen.findByText('Yaqinlaringizga xabar berildi')).toBeTruthy();
-    expect(screen.queryByText('Yetib keldim')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Yaqinlaringizga xabar berildi'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Yetib keldim'))).toBeNull();
   });
 
   it('gives «Yetib keldim» when the driver forgot «Keldi»: the meeting minutes after the time (G76)', async () => {
     vi.setSystemTime(confirmed.trip.departAt + 31 * MINUTE_MS);
     open();
     await tap('Jasur');
-    expect(screen.getByText('Yetib keldim')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Yetib keldim'))).toBeTruthy();
   });
 
   it('keeps the steps for the day of the trip (docs/89 P7)', async () => {
     const later = { ...confirmed, trip: { ...confirmed.trip, departAt: Date.now() + 2 * DAY_MS } };
     open(later);
     await tap('Jasur');
-    expect(screen.getByText('Yaqinlarimga')).toBeTruthy();
-    expect(screen.queryByText('Yetib keldim')).toBeNull();
+    expect(screen.getByText(toCyrillic('Yaqinlarimga'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Yetib keldim'))).toBeNull();
   });
 
   it('calls a friend to the free seats of the car, only while it has some (G69, docs/123 loop 3)', async () => {
@@ -81,8 +82,8 @@ describe('the page of a confirmed seat (G60, mockup g60/1)', () => {
     const opened = vi.spyOn(window, 'open').mockReturnValue(null);
     open({ ...confirmed, trip: { ...confirmed.trip, seatsLeft: 2 } }, {}, { loopCard });
     await tap('Jasur');
-    expect(screen.getByText('Bu safarda yana 2 ta joy bor')).toBeTruthy();
-    await tap('Doʻstingni chaqir');
+    expect(screen.getByText(toCyrillic('Bu safarda yana 2 ta joy bor'))).toBeTruthy();
+    await tap(toCyrillic('Doʻstingni chaqir'));
     await vi.waitFor(() => expect(opened).toHaveBeenCalled());
     expect(loopCard).toHaveBeenCalledWith({ loop: 'seats', bookingId: confirmed.id });
     // An old Telegram gets the words of the card too (G88, docs/193).
@@ -91,6 +92,6 @@ describe('the page of a confirmed seat (G60, mockup g60/1)', () => {
     cleanup();
     open({ ...confirmed, trip: { ...confirmed.trip, seatsLeft: 0, status: 'full' } });
     await tap('Jasur');
-    expect(screen.queryByText('Doʻstingni chaqir')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Doʻstingni chaqir'))).toBeNull();
   });
 });

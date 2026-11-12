@@ -1,6 +1,6 @@
 import { expect, test, type Page } from './crash-guard';
 import { loadBrand } from '@platform/brands';
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
 import { confirmed } from './bookings-mock';
@@ -56,7 +56,7 @@ test('admin: the week of each channel', async ({ page }) => {
   await page.goto(telegramUrl(appUrl(ADMIN.port)));
   await page.getByText(t('common.admin.management'), { exact: true }).click();
   await page.getByText(t('channels.title'), { exact: true }).click();
-  await expect(page.getByText(/7 kunda: 14 kirdi/u)).toBeVisible();
+  await expect(page.getByText(new RegExp(toCyrillic('7 kunda: 14 kirdi'), 'u'))).toBeVisible();
   await shot(page)('2-channels');
 });
 

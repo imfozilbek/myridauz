@@ -1,5 +1,6 @@
 import { loadBrand } from '@platform/brands';
 import { HOUR_MS, type Booking } from '@platform/contracts';
+import { toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import type { Ring } from '../notifications';
 import { tripTimeShort, tripTimeText } from '../../shared/telegram/trip-time';
@@ -27,18 +28,20 @@ async function ranged(): Promise<Booking> {
 describe('a range of departure in the bots (G90, docs/216)', () => {
   it('says one time or the range in the words of the bots and of the channels', () => {
     expect(tripTimeText(EXACT)).toBe('08:00');
-    expect(tripTimeText(RANGE)).toBe('08:00 dan 10:00 gacha');
+    expect(tripTimeText(RANGE)).toBe(toCyrillic('08:00 dan 10:00 gacha'));
     expect(tripTimeShort(EXACT)).toBe('08:00');
     expect(tripTimeShort(RANGE)).toBe('08:00 … 10:00');
   });
 
   it('shows the range on the trip card, the old range of a moved one under it', async () => {
     const { trip } = await ranged();
-    expect(whenLines(trip, false, NOON_BEFORE)).toEqual(['<b>Ertaga, 2-oktabr · 08:00 dan 10:00 gacha</b>']);
+    expect(whenLines(trip, false, NOON_BEFORE)).toEqual([
+      toCyrillic('<b>Ertaga, 2-oktabr · 08:00 dan 10:00 gacha</b>'),
+    ]);
     const moved = { ...trip, departAt: START + HOUR_MS, departUntil: START + 3 * HOUR_MS };
     expect(whenLines(moved, false, NOON_BEFORE)).toEqual([
-      '<b>Ertaga, 2-oktabr · 09:00 dan 11:00 gacha</b>',
-      '<i>Avval 08:00 dan 10:00 gacha edi</i>',
+      toCyrillic('<b>Ertaga, 2-oktabr · 09:00 dan 11:00 gacha</b>'),
+      toCyrillic('<i>Avval 08:00 dan 10:00 gacha edi</i>'),
     ]);
   });
 
@@ -46,8 +49,10 @@ describe('a range of departure in the bots (G90, docs/216)', () => {
     const { trip } = await ranged();
     const road = (departedAt: number | null) =>
       whenLines({ ...trip, departedAt }, true, START + HOUR_MS)[0]?.replace(/\s/gu, ' ');
-    expect(road(START + HOUR_MS)).toBe('<b>Bugun 08:00 dan 10:00 gacha · ≈ 14:00 yetib borasiz</b>');
-    expect(road(null)).toBe('<b>Bugun 08:00 dan 10:00 gacha · ≈ 15:00 yetib borasiz</b>');
+    expect(road(START + HOUR_MS)).toBe(
+      toCyrillic('<b>Bugun 08:00 dan 10:00 gacha · ≈ 14:00 yetib borasiz</b>'),
+    );
+    expect(road(null)).toBe(toCyrillic('<b>Bugun 08:00 dan 10:00 gacha · ≈ 15:00 yetib borasiz</b>'));
   });
 
   it('rings «2 soat qoldi» with the window, at the pitak and at the door', async () => {
@@ -65,9 +70,9 @@ describe('a range of departure in the bots (G90, docs/216)', () => {
     await tell({ ...booking, pitak: null }, 'soon');
     await tell(booking, 'retimed');
     expect(rings.map((ring) => ring.text)).toEqual([
-      '🚏 Safarga 2 soat qoldi: 08:00 dan 10:00 gacha pitakda boʻling',
-      '🏠 Safarga 2 soat qoldi: haydovchi 08:00 dan 10:00 gacha sizni olib ketadi',
-      '⏰ Safar vaqti oʻzgardi: endi <b>08:00 dan 10:00 gacha</b>',
+      toCyrillic('🚏 Safarga 2 soat qoldi: 08:00 dan 10:00 gacha pitakda boʻling'),
+      toCyrillic('🏠 Safarga 2 soat qoldi: haydovchi 08:00 dan 10:00 gacha sizni olib ketadi'),
+      toCyrillic('⏰ Safar vaqti oʻzgardi: endi <b>08:00 dan 10:00 gacha</b>'),
     ]);
   });
 });

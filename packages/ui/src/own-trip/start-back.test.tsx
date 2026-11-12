@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { DAY_MS, MINUTE_MS, MY_TRIP_LINK } from '@platform/contracts';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -48,16 +49,16 @@ describe('a screen of a trip opened by the block', { timeout: 20_000 }, () => {
   it('the map: «Назад» goes home', async () => {
     const soon = { ...trip, departAt: Date.now() + 40 * MINUTE_MS };
     const onBack = open(soon, 'confirmed', 'map');
-    await screen.findByText(/ · \d+ yoʻlovchi$/u);
-    await tap('Orqaga');
+    await screen.findByText(/ · \d+ йўловчи$/u);
+    await tap(toCyrillic('Orqaga'));
     await waitFor(() => expect(onBack).toHaveBeenCalledOnce());
   });
 
   it('the stars: «Назад» goes home', async () => {
     const past = { ...trip, departAt: Date.now() - DAY_MS, status: 'completed' as const };
     const onBack = open(past, 'completed', 'end');
-    await screen.findByText('Safar tugadi');
-    await tap('Orqaga');
+    await screen.findByText(toCyrillic('Safar tugadi'));
+    await tap(toCyrillic('Orqaga'));
     await waitFor(() => expect(onBack).toHaveBeenCalledOnce());
   });
 
@@ -65,12 +66,12 @@ describe('a screen of a trip opened by the block', { timeout: 20_000 }, () => {
   it('the map: the chat of a meeting comes back to the meeting, the meeting to the map', async () => {
     vi.setSystemTime(MEETING_NOW);
     const onBack = open(madina.trip, 'confirmed', 'map', madina);
-    await tap('Madina · 2 joy');
-    await tap('Yozish');
+    await tap(`Madina · ${toCyrillic('2 joy')}`);
+    await tap(toCyrillic('Yozish'));
     // The line of the trip in the chat is this very trip: back where the chat came from.
     await tap('the trip line');
-    expect(await screen.findByText('Men keldim')).toBeTruthy();
-    await tap('Orqaga');
+    expect(await screen.findByText(toCyrillic('Men keldim'))).toBeTruthy();
+    await tap(toCyrillic('Orqaga'));
     await waitFor(() => expect(document.querySelector('.trip-map-title')).not.toBeNull());
     expect(onBack).not.toHaveBeenCalled();
   });

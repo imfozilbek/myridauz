@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { savedNavigator } from '../../bookings/navigator-choice';
@@ -19,13 +20,15 @@ describe('«Navigator» in «Sozlamalar»', () => {
   it('lets a driver choose the navigator; a passenger has no such row', async () => {
     renderProfile({}, { driver: approved });
     fireEvent.click(screen.getByText('Dilnoza'));
-    fireEvent.click(screen.getByText('Navigator'));
+    fireEvent.click(screen.getByText(toCyrillic('Navigator')));
     fireEvent.click(await screen.findByText('Google'));
     expect(savedNavigator()).toBe('google');
-    expect(screen.getByText('Navigator').parentElement?.textContent).toBe('NavigatorGoogle');
+    expect(screen.getByText(toCyrillic('Navigator')).parentElement?.textContent).toBe(
+      `${toCyrillic('Navigator')}Google`,
+    );
     cleanup();
     renderProfile();
     fireEvent.click(screen.getByText('Dilnoza'));
-    expect(screen.queryByText('Navigator')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Navigator'))).toBeNull();
   });
 });

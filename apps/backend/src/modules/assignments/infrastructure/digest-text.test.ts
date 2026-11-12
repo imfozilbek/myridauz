@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import { digestText } from './digest-text';
 
@@ -16,21 +17,21 @@ describe('the text of the summary of the day', () => {
     ];
     expect(digestText('2026-10-02', rows, NUMBERS, (id) => NAMES.get(id) ?? '')).toBe(
       [
-        '<b>📊 Kun yakuni · 2-oktabr</b>',
-        '24 yangi odam · 17 safar · 41 bron',
+        toCyrillic('<b>📊 Kun yakuni · 2-oktabr</b>'),
+        toCyrillic('24 yangi odam · 17 safar · 41 bron'),
         '',
-        '<b>👥 Jamoa</b>',
-        'Ali: murojaat 5/6, ariza 3',
-        'Kamron: murojaat 6/6, ariza 2',
-        'Javobsiz murojaatlar: 1',
+        toCyrillic('<b>👥 Jamoa</b>'),
+        `Ali: ${toCyrillic('murojaat 5/6, ariza 3')}`,
+        `Kamron: ${toCyrillic('murojaat 6/6, ariza 2')}`,
+        toCyrillic('Javobsiz murojaatlar: 1'),
         '',
-        '📣 Kanaldan keldi: 31 kishi',
+        toCyrillic('📣 Kanaldan keldi: 31 kishi'),
       ].join('\n'),
     );
   });
 
   it('says nothing about unanswered questions when all have an answer', () => {
     const rows = [{ memberId: 2, total: 1, answered: 1, applications: 0 }];
-    expect(digestText('2026-10-02', rows, NUMBERS, () => 'Kamron')).not.toContain('Javobsiz');
+    expect(digestText('2026-10-02', rows, NUMBERS, () => 'Kamron')).not.toContain(toCyrillic('Javobsiz'));
   });
 });

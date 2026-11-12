@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError } from '@platform/api-client';
 import type { AppLink } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
@@ -34,7 +35,7 @@ afterEach(() => {
 describe('the talk of the board (G77, C2)', { timeout: 20_000 }, () => {
   it('a trip for a whole car opened in the talk opens as from the board; «Назад» comes back to it', async () => {
     openBoard({ bookings: { openTalk: async () => 'talk-1' } });
-    fireEvent.click(await screen.findByLabelText('Xabar yozish'));
+    fireEvent.click(await screen.findByLabelText(toCyrillic('Xabar yozish')));
     await tap('the trip opened in the talk');
     await tap('mine mytrip t9');
     expect(await screen.findByText('Dilnoza')).toBeTruthy();
@@ -44,8 +45,10 @@ describe('the talk of the board (G77, C2)', { timeout: 20_000 }, () => {
   it('a talk on a request closed meanwhile says it changed and loads the board again', async () => {
     const openTalk = async () => Promise.reject(new ApiError(409, 'bookings.wrong_status'));
     const requestBoard = openBoard({ bookings: { openTalk } });
-    fireEvent.click(await screen.findByLabelText('Xabar yozish'));
-    expect(await screen.findByText('Bu soʻrov allaqachon oʻzgargan. Roʻyxatni yangilang.')).toBeTruthy();
+    fireEvent.click(await screen.findByLabelText(toCyrillic('Xabar yozish')));
+    expect(
+      await screen.findByText(toCyrillic('Bu soʻrov allaqachon oʻzgargan. Roʻyxatni yangilang.')),
+    ).toBeTruthy();
     await waitFor(() => expect(requestBoard).toHaveBeenCalledTimes(2));
   });
 });

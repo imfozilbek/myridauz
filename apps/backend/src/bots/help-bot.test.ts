@@ -1,5 +1,6 @@
 import { loadBrand } from '@platform/brands';
 import { HELP_TOPICS, helpQuestions } from '@platform/contracts';
+import { toCyrillic } from '@platform/i18n';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { botSender, fakeTelegram, textMessage } from './test-bot';
 
@@ -32,40 +33,42 @@ const lastCall = () => telegram.calls.at(-1);
 describe('the help of the bots', () => {
   it('«/yordam» shows the topics by role, «Boshqa savolim bor» leads to the support bot', async () => {
     const passenger = await reply(await send('passenger', textMessage(PERSON, '/yordam')));
-    expect(passenger).toMatchObject({ method: 'sendMessage', text: 'Savolingiz qaysi mavzuda?' });
-    expect(texts(passenger.reply_markup?.inline_keyboard)).toEqual([
-      '🔎 Safar topish',
-      '🎫 Joy band qilish',
-      '🚗 Haydovchi boʻlish',
-      '👛 Hamyon va komissiya',
-      '🔒 Hisob va xavfsizlik',
-      '✍️ Boshqa savolim bor',
-    ]);
+    expect(passenger).toMatchObject({ method: 'sendMessage', text: toCyrillic('Savolingiz qaysi mavzuda?') });
+    expect(texts(passenger.reply_markup?.inline_keyboard)).toEqual(
+      [
+        '🔎 Safar topish',
+        '🎫 Joy band qilish',
+        '🚗 Haydovchi boʻlish',
+        '👛 Hamyon va komissiya',
+        '🔒 Hisob va xavfsizlik',
+        '✍️ Boshqa savolim bor',
+      ].map((text) => toCyrillic(text)),
+    );
     expect(passenger.reply_markup?.inline_keyboard.at(-1)?.[0]?.url).toBe(
       `https://t.me/${brand.bots.support}`,
     );
     const driver = await reply(await send('driver', textMessage(PERSON, '/yordam')));
     expect(texts(driver.reply_markup?.inline_keyboard).slice(0, 2)).toEqual([
-      '🚗 Haydovchi boʻlish',
-      '👛 Hamyon va komissiya',
+      toCyrillic('🚗 Haydovchi boʻlish'),
+      toCyrillic('👛 Hamyon va komissiya'),
     ]);
     const main = await reply(await send('main', textMessage(PERSON, '/yordam')));
-    expect(main.text).toBe('Savolingiz qaysi mavzuda?');
+    expect(main.text).toBe(toCyrillic('Savolingiz qaysi mavzuda?'));
   });
 
   it('a topic and a question change the same message; the numbers come from the brand', async () => {
     await send('driver', press('help:t:wallet'));
     expect(lastCall()).toMatchObject({ method: 'editMessageText', token: 'd' });
     expect(lastCall()?.body).toMatchObject({ chat_id: PERSON, message_id: 300 });
-    expect(lastCall()?.body.text).toBe('«Hamyon va komissiya»: savolni tanlang.');
+    expect(lastCall()?.body.text).toBe(toCyrillic('«Hamyon va komissiya»: savolni tanlang.'));
     const answered = await reply(await send('driver', press('help:q:wallet.fee')));
     expect(answered.method).toBe('answerCallbackQuery');
     const fee = String(lastCall()?.body.text);
-    expect(fee).toContain('<b>Haydovchi uchun qancha turadi?</b>');
-    expect(fee).toContain(`narxining ${brand.commission.percent} foizi`);
+    expect(fee).toContain(toCyrillic('<b>Haydovchi uchun qancha turadi?</b>'));
+    expect(fee).toContain(toCyrillic(`narxining ${brand.commission.percent} foizi`));
     expect(texts((lastCall()?.body.reply_markup as Reply['reply_markup'])?.inline_keyboard)).toEqual([
-      '⬅️ Mavzular',
-      '✍️ Boshqa savolim bor',
+      toCyrillic('⬅️ Mavzular'),
+      toCyrillic('✍️ Boshqa savolim bor'),
     ]);
   });
 
@@ -88,13 +91,16 @@ describe('the help of the bots', () => {
   it('the support bot shows the topics under its welcome and waits for a question on «Boshqa savolim bor»', async () => {
     const welcome = await reply(await send('support', textMessage(PERSON, '/start')));
     expect(welcome.method).toBe('sendPhoto');
-    expect(welcome.caption).toContain('«Boshqa savolim bor»ni bosing');
+    expect(welcome.caption).toContain(toCyrillic('«Boshqa savolim bor»ni bosing'));
     expect(welcome.reply_markup?.inline_keyboard.at(-1)?.[0]?.callback_data).toBe('help:more');
     await send('support', press('help:q:find.how', 400));
     expect(lastCall()).toMatchObject({ method: 'editMessageCaption', token: 's' });
-    expect(String(lastCall()?.body.caption)).toContain('Safarni qanday topaman?');
+    expect(String(lastCall()?.body.caption)).toContain(toCyrillic('Safarni qanday topaman?'));
     const ask = await reply(await send('support', press('help:more', 400)));
-    expect(ask).toMatchObject({ method: 'sendMessage', text: expect.stringContaining('shu yerga yozing') });
+    expect(ask).toMatchObject({
+      method: 'sendMessage',
+      text: expect.stringContaining(toCyrillic('shu yerga yozing')),
+    });
     expect(lastCall()).toMatchObject({ method: 'answerCallbackQuery', body: { callback_query_id: 'q' } });
   });
 });

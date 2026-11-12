@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import { whereIs, type NameDeps } from '../application/point-name';
 import type { MapCache } from '../application/ports';
+import { NAMES_ALPHABET, shownWhere } from '../../../shared/places/shown-names';
 import { parsePoint } from './point-query';
 
 // The district and the name of a point (G24, docs/69): under the pin of the map, while a person
@@ -19,11 +20,11 @@ export function whereRoutes(deps: (env: Bindings) => WhereDeps) {
     const point = parsePoint(context.req.query('at'), POINT_DIGITS);
     if (!point) return context.json({ error: 'map.invalid_input' }, BAD_REQUEST);
     const own = deps(context.env);
-    const key = `where/${point.lat},${point.lng}`;
+    const key = `where/${NAMES_ALPHABET}/${point.lat},${point.lng}`;
     const headers = { 'content-type': JSON_TYPE, 'cache-control': KEEP_ON_PHONE };
     const cached = await own.cache.match(key);
     if (cached) return context.body(cached.bytes, 200, headers);
-    const bytes = await new Response(JSON.stringify(await whereIs(own, point))).arrayBuffer();
+    const bytes = await new Response(JSON.stringify(shownWhere(await whereIs(own, point)))).arrayBuffer();
     await own.cache.put(key, { bytes, offset: 0, size: bytes.byteLength, etag: '', type: JSON_TYPE });
     return context.body(bytes, 200, headers);
   });

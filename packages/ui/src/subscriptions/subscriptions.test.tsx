@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError, type SubscriptionsClient } from '@platform/api-client';
 import { tashkentDate, type Subscription } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
@@ -37,12 +38,12 @@ describe('"Xabar bering" (docs/24)', () => {
       </AccountContext.Provider>,
       testClients({ subscriptions: { subscribe } }),
     );
-    await tap('Xabar bering');
-    expect(screen.getByText('Shu kungi safarlar')).toBeTruthy();
+    await tap(toCyrillic('Xabar bering'));
+    expect(screen.getByText(toCyrillic('Shu kungi safarlar'))).toBeTruthy();
     expect(screen.queryByRole('radio')).toBeNull();
-    await tap('Istalgan kun');
-    expect(await screen.findByText('Obuna boʻldingiz')).toBeTruthy();
-    expect(screen.getByText('Mos eʼlon chiqsa, bot xabar beradi.')).toBeTruthy();
+    await tap(toCyrillic('Istalgan kun'));
+    expect(await screen.findByText(toCyrillic('Obuna boʻldingiz'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Mos eʼlon chiqsa, bot xabar beradi.'))).toBeTruthy();
     expect(document.querySelector('.way-row-done')).not.toBeNull();
     expect(subscribe).toHaveBeenCalledWith({ from: '1726269', to: '1730401', date: null, woman: false });
     expect(tracked.some((event) => event.name === 'route_subscribed')).toBe(true);
@@ -56,10 +57,11 @@ describe('"Xabar bering" (docs/24)', () => {
       <NotifyMe from="1726269" to="1730401" date="2026-10-02" />,
       testClients({ subscriptions: { subscribe } }),
     );
-    await tap('Xabar bering');
-    await tap(/^Faqat/);
-    expect(await screen.findByText('Obunalar soni chegaraga yetdi. Keraksizini oʻchiring.')).toBeTruthy();
-    expect(screen.getByText('Istalgan kun')).toBeTruthy();
+    await tap(toCyrillic('Xabar bering'));
+    await tap(/^Фақат/);
+    const full = toCyrillic('Obunalar soni chegaraga yetdi. Keraksizini oʻchiring.');
+    expect(await screen.findByText(full)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Istalgan kun'))).toBeTruthy();
     expect(subscribe).toHaveBeenCalledWith(expect.objectContaining({ date: '2026-10-02' }));
   });
 });
@@ -81,27 +83,27 @@ describe('"Obunalar" and the links of bots and channels (docs/15, docs/24)', () 
       </SubscriptionsLink>,
       testClients({ subscriptions: { mine, renew, remove, subscribe } }),
     );
-    expect(await screen.findByText('Obunalar')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Obunalar'))).toBeTruthy();
     // A card of its own with «Muddati tugagan · Uzaytirish» (G75, mockup g75/2 A).
-    expect(screen.getByText(/^Muddati tugagan · ayol bilan/u)).toBeTruthy();
-    await tap('Uzaytirish');
+    expect(screen.getByText(/^Муддати тугаган · аёл билан/u)).toBeTruthy();
+    await tap(toCyrillic('Uzaytirish'));
     expect(renew).toHaveBeenCalledWith('s1');
     // The list comes again after a change.
     await waitFor(() => expect(mine).toHaveBeenCalledTimes(2));
     // A removal is red, like in Telegram (docs/86 V12).
-    expect(screen.getByRole('button', { name: 'Oʻchirish' }).className).toBe('row-card-action');
+    expect(screen.getByRole('button', { name: toCyrillic('Oʻchirish') }).className).toBe('row-card-action');
     // Gone at once, no question in the native window (G78 П17).
     const asked = vi.fn(() => true);
     vi.stubGlobal('confirm', asked);
-    fireEvent.click(screen.getByRole('button', { name: 'Oʻchirish' }));
-    expect(await screen.findByText('Hali obunalar yoʻq')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: toCyrillic('Oʻchirish') }));
+    expect(await screen.findByText(toCyrillic('Hali obunalar yoʻq'))).toBeTruthy();
     expect(asked).not.toHaveBeenCalled();
     vi.unstubAllGlobals();
     // A short line says it is gone and brings it back by one tap (docs/88 L7).
-    expect(screen.getByText('Obuna oʻchirildi')).toBeTruthy();
-    await tap('Qaytarish');
+    expect(screen.getByText(toCyrillic('Obuna oʻchirildi'))).toBeTruthy();
+    await tap(toCyrillic('Qaytarish'));
     expect(subscribe).toHaveBeenCalledWith({ from: ANY.from, to: ANY.to, date: ANY.date, woman: ANY.woman });
-    expect(await screen.findByText('Obunalar')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Obunalar'))).toBeTruthy();
   });
 
   it('opens the trip of a channel post, ready to book', async () => {
@@ -113,7 +115,7 @@ describe('"Obunalar" and the links of bots and channels (docs/15, docs/24)', () 
       </TripLink>,
       testClients({ market: { trip: tripOf } }),
     );
-    expect(await screen.findByText('1 ta joy band qilish')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('1 ta joy band qilish'))).toBeTruthy();
     expect(tripOf).toHaveBeenCalledWith(trip.id);
     cleanup();
     renderMarket(
@@ -135,9 +137,9 @@ describe('"Obunalar" and the links of bots and channels (docs/15, docs/24)', () 
       testClients({ subscriptions: { subscribe } }),
     );
     // The sheet names the route of the post over the question (mockup g75/3 A phone 4).
-    expect(await screen.findByText(/\. Qaysi kunga\?$/u)).toBeTruthy();
-    await tap(/^Faqat/);
-    expect(await screen.findByText('Obuna boʻldingiz')).toBeTruthy();
+    expect(await screen.findByText(/\. Қайси кунга\?$/u)).toBeTruthy();
+    await tap(/^Фақат/);
+    expect(await screen.findByText(toCyrillic('Obuna boʻldingiz'))).toBeTruthy();
     expect(subscribe).toHaveBeenCalledWith({
       from: '1726',
       to: '1730',

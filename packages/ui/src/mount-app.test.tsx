@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { act, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { mountApp } from './mount-app';
@@ -60,7 +61,7 @@ describe('mountApp', () => {
     window.history.replaceState(null, '', '/?mytrip=0000000a-0000-4000-8000-000000000001');
     api('rejected');
     await act(async () => mountApp('driver', Page, { welcome: { logo: 'logo-driver.svg', points: [] } }));
-    await waitFor(() => expect(document.body.textContent).toContain('Ariza rad etildi'));
+    await waitFor(() => expect(document.body.textContent).toContain(toCyrillic('Ariza rad etildi')));
     window.history.replaceState(null, '', '/');
   });
 

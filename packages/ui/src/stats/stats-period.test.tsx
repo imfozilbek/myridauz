@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { Stats, StatsPeriod } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -18,7 +19,7 @@ describe('Statistika: a new period (docs/94 S4)', () => {
         : new Promise<Stats>((resolve) => (answer = resolve));
     renderMarket(<StatsScreen onBack={() => undefined} />, testClients({ stats: { get } }));
     expect(await screen.findByText('24')).toBeTruthy();
-    await tap('7 kun');
+    await tap(toCyrillic('7 kun'));
     expect(skeleton()).toBeNull();
     expect(screen.getByText('24')).toBeTruthy();
     answer(statsOf('week'));

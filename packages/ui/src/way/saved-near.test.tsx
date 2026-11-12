@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { BookPoint } from '../bookings/book-point';
@@ -28,21 +29,25 @@ const open = () => {
 describe('the start of a booking on the map (G59, docs/126)', { timeout: 20_000 }, () => {
   it('«Yaqin joylar» around the pin move the map in one tap', async () => {
     const { map, near } = open();
-    await tap('Chorsu bozori');
+    await tap(toCyrillic('Chorsu bozori'));
     await waitFor(() => expect(map.at()).toEqual(CHORSU.point));
     expect(near).toHaveBeenCalled();
   });
 
   it('«Uyim» keeps the place under the pin, and next time takes it in one tap', async () => {
     open();
-    await screen.findByText('Chilonzor', { exact: false }, { timeout: 3000 });
-    await waitFor(() => expect(screen.getByRole('status').textContent).not.toBe('Joy aniqlanmoqda…'));
-    await tap('Uyim');
+    await screen.findByText(toCyrillic('Chilonzor'), { exact: false }, { timeout: 3000 });
+    await waitFor(() =>
+      expect(screen.getByRole('status').textContent).not.toBe(toCyrillic('Joy aniqlanmoqda…')),
+    );
+    await tap(toCyrillic('Uyim'));
     cleanup();
     const { onPick } = open();
-    expect(await screen.findByText('Uyim')).toBeTruthy();
-    expect(screen.queryByText('Saqlash')?.closest('button')?.textContent).not.toContain('Uyim');
-    await tap('Uyim');
+    expect(await screen.findByText(toCyrillic('Uyim'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Saqlash'))?.closest('button')?.textContent).not.toContain(
+      toCyrillic('Uyim'),
+    );
+    await tap(toCyrillic('Uyim'));
     expect(onPick).toHaveBeenCalledWith(
       expect.objectContaining({ place: expect.objectContaining({ id: '1726269' }) }),
     );

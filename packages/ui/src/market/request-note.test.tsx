@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { tap } from './market-test-kit';
@@ -12,15 +13,15 @@ describe('the note of a request', { timeout: 20_000 }, () => {
   it('may stay empty, and goes with the request once written', async () => {
     const publishRequest = openRequest();
     await toPoints();
-    fireEvent.click(row('Izoh (ixtiyoriy)'));
+    fireEvent.click(row(toCyrillic('Izoh (ixtiyoriy)')));
     expect(screen.getByText('0 / 60')).toBeTruthy();
-    fireEvent.change(await screen.findByPlaceholderText('Izoh yozing'), {
+    fireEvent.change(await screen.findByPlaceholderText(toCyrillic('Izoh yozing')), {
       target: { value: 'Koʻk darvoza' },
     });
-    await tap('Davom etish');
+    await tap(toCyrillic('Davom etish'));
     expect(await screen.findByText('Koʻk darvoza')).toBeTruthy();
-    await tap('Soʻrov qoldirish');
-    await screen.findByText('Soʻrovni bekor qilish');
+    await tap(toCyrillic('Soʻrov qoldirish'));
+    await screen.findByText(toCyrillic('Soʻrovni bekor qilish'));
     expect(publishRequest).toHaveBeenLastCalledWith(expect.objectContaining({ note: 'Koʻk darvoza' }));
   });
 });

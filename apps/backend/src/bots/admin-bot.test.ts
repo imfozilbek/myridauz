@@ -1,5 +1,6 @@
 import { CAR_PHOTO_KINDS } from '@platform/contracts';
 import { loadBrand } from '@platform/brands';
+import { toCyrillic } from '@platform/i18n';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { call, pid, registerUser } from '../test-api';
 import { botSender, fakeTelegram, textMessage } from './test-bot';
@@ -28,7 +29,7 @@ describe('admin bot: not a support desk (docs/50)', () => {
       text: string;
       reply_markup: { inline_keyboard: { url: string }[][] };
     };
-    expect(answer.text).toContain('yordam xizmatiga yozing');
+    expect(answer.text).toContain(toCyrillic('yordam xizmatiga yozing'));
     expect(answer.reply_markup.inline_keyboard[0]?.[0]?.url).toBe(`https://t.me/${loadBrand().bots.support}`);
     expect(telegram.calls.length).toBe(before);
     // A reply of the team to a message that is no copy is silent.
@@ -44,7 +45,7 @@ describe('admin bot: «Navbat» of the team (G68, docs/122)', () => {
   const lastCard = () =>
     String(
       toOwner()
-        .filter((sent) => String(sent.body.text).includes('Navbat'))
+        .filter((sent) => String(sent.body.text).includes(toCyrillic('Navbat')))
         .at(-1)?.body.text,
     );
 
@@ -61,10 +62,10 @@ describe('admin bot: «Navbat» of the team (G68, docs/122)', () => {
       body: JSON.stringify(car),
       headers: { 'content-type': 'application/json' },
     });
-    expect(lastCard()).toContain('Navbat · 2 ta ish');
-    expect(lastCard()).toContain('1 ariza · 0 shikoyat · 1 rasm');
+    expect(lastCard()).toContain(toCyrillic('Navbat · 2 ta ish'));
+    expect(lastCard()).toContain(toCyrillic('1 ariza · 0 shikoyat · 1 rasm'));
     expect(toOwner().some((sent) => sent.method === 'pinChatMessage')).toBe(true);
-    const rings = toOwner().filter((sent) => String(sent.body.text).includes('Yangi ish keldi'));
+    const rings = toOwner().filter((sent) => String(sent.body.text).includes(toCyrillic('Yangi ish keldi')));
     expect(rings).toHaveLength(1);
     // No album and no buttons of a decision in the bot.
     expect(toOwner().some((sent) => sent.method === 'sendMediaGroup')).toBe(false);
@@ -76,10 +77,12 @@ describe('admin bot: «Navbat» of the team (G68, docs/122)', () => {
       body: JSON.stringify(decision),
       headers: { 'content-type': 'application/json' },
     });
-    expect(lastCard()).toContain('Navbat · 1 ta ish');
-    expect(lastCard()).toContain('0 ariza · 0 shikoyat · 1 rasm');
+    expect(lastCard()).toContain(toCyrillic('Navbat · 1 ta ish'));
+    expect(lastCard()).toContain(toCyrillic('0 ariza · 0 shikoyat · 1 rasm'));
     // The answer still reaches the driver in the card of the application (G68).
-    expect(telegram.sentTo(APPLICANT).at(-1)?.body.text).toBe('❌ Haydovchi arizangiz rad etildi');
+    expect(telegram.sentTo(APPLICANT).at(-1)?.body.text).toBe(
+      toCyrillic('❌ Haydovchi arizangiz rad etildi'),
+    );
   });
 
   it('an old card of an application only stops the spinner; strangers and other bots too', async () => {

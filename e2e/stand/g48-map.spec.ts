@@ -1,6 +1,7 @@
 import { loadBrand } from '@platform/brands';
 import { MY_TRIP_LINK, tripEndsAt } from '@platform/contracts';
 import type { Page } from '@playwright/test';
+import { toCyrillic } from '@platform/i18n';
 import { TEXT } from '../apps';
 import { afterSplash, expect, test } from '../crash-guard';
 import { answerOffer, askRide, bookingOf, MINUTE, moveTrip, offerOn } from './g27-kit';
@@ -11,14 +12,14 @@ import { approvedDriver, register } from './seed';
 import { openAs, outsideCalls, type Person } from './stand-kit';
 
 // G48 (docs/111) on the whole local Rida with the map of 18.10.2026: names of the map read in Uzbek
-// Latin, «Izoh» of a request that reaches the driver (docs/77 P81, P82, docs/78 D81). Each screen is
-// shot for the owner (docs/33) into screenshots/stand/g48/.
+// Cyrillic (G98, docs/228), «Izoh» of a request that reaches the driver (docs/77 P81, P82, docs/78
+// D81). Each screen is shot for the owner (docs/33) into screenshots/stand/g48/.
 test.describe.configure({ mode: 'serial' });
 test.use({ viewport: NARROW });
 test.afterEach(() => expect(outsideCalls()).toEqual([]));
 const OUT = 'screenshots/stand/g48';
 const NOTE = 'Koʻk darvoza';
-const CYRILLIC = /[Ѐ-ӿ]/u;
+const LATIN = /[A-Za-z]/u;
 const SEEKER: Person = { id: 900481, name: 'Gulnora', phone: '998901110481' };
 const WRITER: Person = { id: 900482, name: 'Feruza', phone: '998901110482' };
 const ASKER: Person = { id: 900483, name: 'Zarina', phone: '998901110483' };
@@ -44,15 +45,15 @@ test.beforeAll(async () => {
   await approvedDriver(DRIVER, '01T484SR');
 });
 
-test('P81. a name the map writes in Cyrillic is found by it and read in Uzbek Latin', async ({ page }) => {
+test('P81. a name the map writes in Cyrillic is found by it and read in Uzbek Cyrillic', async ({ page }) => {
   await toRequest(page, SEEKER);
   const start = page.getByText(t('way.point.from'));
   if (!(await start.isVisible())) await page.locator('.points-row').first().click();
   await page.getByPlaceholder(t('way.point.search')).fill('Школа 280');
-  const found = page.getByRole('button').filter({ hasText: 'Shkola' });
+  const found = page.getByRole('button').filter({ hasText: toCyrillic('Shkola') });
   await expect(found.first()).toBeVisible();
-  for (const line of await found.allInnerTexts()) expect(line).not.toMatch(CYRILLIC);
-  await shot(page, '1-search-latin');
+  for (const line of await found.allInnerTexts()) expect(line).not.toMatch(LATIN);
+  await shot(page, '1-search-cyrillic');
 });
 
 test('P82. «Izoh» of a request: the same row and sheet as on a booking', async ({ page }) => {

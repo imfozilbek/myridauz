@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError } from '@platform/api-client';
 import type { Wallet } from '@platform/contracts';
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
@@ -29,7 +30,7 @@ function openDelete(wallet?: Wallet) {
     ? renderProfile({ app: 'driver' }, { driver: approved, clients: { wallet: { mine } } })
     : renderProfile();
   fireEvent.click(screen.getByText('Dilnoza'));
-  fireEvent.click(screen.getByText('Maʼlumotlarimni oʻchirish'));
+  fireEvent.click(screen.getByText(toCyrillic('Maʼlumotlarimni oʻchirish')));
   return { ...rendered, mine };
 }
 
@@ -39,25 +40,25 @@ describe('delete my data (docs/30, docs/58)', () => {
     const reload = vi.fn();
     Object.defineProperty(window, 'location', { value: { ...window.location, reload }, configurable: true });
     const { client } = openDelete();
-    expect(screen.getByText('Maʼlumotlaringiz oʻchirilsinmi?')).toBeTruthy();
-    expect(screen.getByText('Buni qaytarib boʻlmaydi.')).toBeTruthy();
-    expect(screen.getByText('Ism, telefon va rasm')).toBeTruthy();
-    expect(screen.getByText('Chatlar va mashina maʼlumotlari')).toBeTruthy();
-    expect(screen.getByText('Faol safarlar va band qilingan joylar bekor boʻladi')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Maʼlumotlaringiz oʻchirilsinmi?'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Buni qaytarib boʻlmaydi.'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Ism, telefon va rasm'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Chatlar va mashina maʼlumotlari'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Faol safarlar va band qilingan joylar bekor boʻladi'))).toBeTruthy();
     // A passenger has no wallet: nothing to warn about.
-    expect(screen.queryByText(/^Hamyonda/u)).toBeNull();
-    expect(screen.getByText('Oʻchirish').closest('.danger-button')).not.toBeNull();
+    expect(screen.queryByText(/^Ҳамёнда/u)).toBeNull();
+    expect(screen.getByText(toCyrillic('Oʻchirish')).closest('.danger-button')).not.toBeNull();
     client.deleteMe.mockRejectedValueOnce(new Error('offline'));
-    await act(async () => fireEvent.click(screen.getByText('Oʻchirish')));
-    expect(screen.getByText(/qayta urinib/)).toBeTruthy();
-    await act(async () => fireEvent.click(screen.getByText('Oʻchirish')));
+    await act(async () => fireEvent.click(screen.getByText(toCyrillic('Oʻchirish'))));
+    expect(screen.getByText(/қайта уриниб/)).toBeTruthy();
+    await act(async () => fireEvent.click(screen.getByText(toCyrillic('Oʻchirish'))));
     expect(client.deleteMe).toHaveBeenCalledTimes(2);
-    expect(screen.getByText('Maʼlumotlaringiz oʻchirildi')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Maʼlumotlaringiz oʻchirildi'))).toBeTruthy();
     // Why, in one tap that may be skipped (G87, docs/191); then the app starts again.
-    expect(screen.getByText('Nega maʼlumotlaringizni oʻchirdingiz?')).toBeTruthy();
-    fireEvent.click(screen.getByText('Kerakli safar topilmadi'));
-    expect(screen.queryByText('Nega maʼlumotlaringizni oʻchirdingiz?')).toBeNull();
-    fireEvent.click(screen.getByText('Yopish'));
+    expect(screen.getByText(toCyrillic('Nega maʼlumotlaringizni oʻchirdingiz?'))).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Kerakli safar topilmadi')));
+    expect(screen.queryByText(toCyrillic('Nega maʼlumotlaringizni oʻchirdingiz?'))).toBeNull();
+    fireEvent.click(screen.getByText(toCyrillic('Yopish')));
     expect(reload).toHaveBeenCalled();
   });
 
@@ -68,42 +69,40 @@ describe('delete my data (docs/30, docs/58)', () => {
     client.deleteMe.mockImplementationOnce(
       () => new Promise<undefined>((resolve) => (answer = () => resolve(undefined))),
     );
-    fireEvent.click(screen.getByText('Oʻchirish'));
-    fireEvent.click(screen.getByText('Oʻchirish'));
+    fireEvent.click(screen.getByText(toCyrillic('Oʻchirish')));
+    fireEvent.click(screen.getByText(toCyrillic('Oʻchirish')));
     expect(client.deleteMe).toHaveBeenCalledTimes(1);
     await act(async () => answer());
-    expect(screen.getByText('Maʼlumotlaringiz oʻchirildi')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Maʼlumotlaringiz oʻchirildi'))).toBeTruthy();
     cleanup();
     const again = openDelete();
     again.client.deleteMe.mockRejectedValueOnce(new ApiError(409, 'users.not_registered'));
-    await act(async () => fireEvent.click(screen.getByText('Oʻchirish')));
-    expect(screen.getByText('Maʼlumotlaringiz oʻchirildi')).toBeTruthy();
+    await act(async () => fireEvent.click(screen.getByText(toCyrillic('Oʻchirish'))));
+    expect(screen.getByText(toCyrillic('Maʼlumotlaringiz oʻchirildi'))).toBeTruthy();
   });
 
   it('«Bekor qilish» goes back to «Profil» and removes nothing', () => {
     const { client } = openDelete();
-    fireEvent.click(screen.getByRole('button', { name: 'Bekor qilish' }));
-    expect(screen.getByText('Maʼlumotlarimni oʻchirish')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: toCyrillic('Bekor qilish') }));
+    expect(screen.getByText(toCyrillic('Maʼlumotlarimni oʻchirish'))).toBeTruthy();
     expect(client.deleteMe).not.toHaveBeenCalled();
   });
 
   it('warns a driver that the bonus of the wallet goes too', async () => {
     openDelete(money(473_000, 0));
     expect(
-      await screen.findByText(/^Hamyonda 473.000 soʻm bonus bor\. U ham oʻchadi va qaytmaydi\.$/u),
+      await screen.findByText(/^Ҳамёнда 473.000 сўм бонус бор\. У ҳам ўчади ва қайтмайди\.$/u),
     ).toBeTruthy();
   });
 
   it('warns a driver about the money of the wallet, the bonus with it', async () => {
     openDelete(money(20_000, 50_000));
-    expect(
-      await screen.findByText(/^Hamyonda 70.000 soʻm bor\. U ham oʻchadi va qaytmaydi\.$/u),
-    ).toBeTruthy();
+    expect(await screen.findByText(/^Ҳамёнда 70.000 сўм бор\. У ҳам ўчади ва қайтмайди\.$/u)).toBeTruthy();
   });
 
   it('says nothing of an empty wallet', async () => {
     const { mine } = openDelete(money(0, 0));
     await vi.waitFor(() => expect(mine).toHaveBeenCalled());
-    expect(screen.queryByText(/^Hamyonda/u)).toBeNull();
+    expect(screen.queryByText(/^Ҳамёнда/u)).toBeNull();
   });
 });

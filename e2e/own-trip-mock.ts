@@ -1,5 +1,6 @@
 import { channelOf, loadBrand } from '@platform/brands';
 import type { Page, Route } from '@playwright/test';
+import { toCyrillic } from '@platform/i18n';
 
 // The own trip of a driver from the publishing to the way back (G63): one passenger asks, the
 // driver confirms, leaves, arrives and rates. The server keeps the trip the app published
@@ -44,8 +45,8 @@ export async function mockOwnTrip(page: Page, published: Trip[]) {
     expiresAt: Date.now() + HOUR,
     mode: 'door',
     pitak: null,
-    pickup: { point: null, name: null, area: { step: 'mahalla', name: 'Qatortol' } },
-    dropoff: { point: null, name: null, area: { step: 'district', name: 'Samarqand shahri' } },
+    pickup: { point: null, name: null, area: { step: 'mahalla', name: toCyrillic('Qatortol') } },
+    dropoff: { point: null, name: null, area: { step: 'district', name: toCyrillic('Samarqand shahri') } },
     extraKm: 2,
     plate: null,
     chatKey: `b${SEAT}`,

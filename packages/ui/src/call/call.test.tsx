@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError, type CallsClient } from '@platform/api-client';
 import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -46,26 +47,26 @@ async function openChat() {
 describe('a voice call in the chat (docs/08, G13)', () => {
   it('calls after the confirmation, shows the ring, and goes back to the chat when nobody answers', async () => {
     const { socket, sent } = await openChat();
-    fireEvent.click(screen.getByLabelText('Qoʻngʻiroq'));
+    fireEvent.click(screen.getByLabelText(toCyrillic('Qoʻngʻiroq')));
     await waitFor(() => expect(sent()).toContainEqual({ type: 'call', action: 'ring' }));
     expect(getUserMedia).toHaveBeenCalledTimes(1);
     act(() => socket.receive({ type: 'call', call: { status: 'ringing', caller: 'me' } }));
-    expect(screen.getByText('Qoʻngʻiroq qilinmoqda…')).toBeTruthy();
-    expect(screen.getByText('Ilovani yopmang: qoʻngʻiroq uziladi.')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Qoʻngʻiroq qilinmoqda…'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Ilovani yopmang: qoʻngʻiroq uziladi.'))).toBeTruthy();
     act(() => {
       socket.receive({ type: 'call', call: null });
       socket.receive({ type: 'callEnded', reason: 'missed' });
     });
-    expect(screen.getByText('Javob berilmadi')).toBeTruthy();
-    fireEvent.click(screen.getByText('Chatga yozish'));
-    expect(screen.queryByText('Javob berilmadi')).toBeNull();
+    expect(screen.getByText(toCyrillic('Javob berilmadi'))).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Chatga yozish')));
+    expect(screen.queryByText(toCyrillic('Javob berilmadi'))).toBeNull();
   });
 
   it('answers an incoming call, starts the voice and hangs up', async () => {
     const { socket, sent } = await openChat();
     act(() => socket.receive({ type: 'call', call: { status: 'ringing', caller: 'other' } }));
-    expect(screen.getByText('Sizga qoʻngʻiroq qilishyapti')).toBeTruthy();
-    fireEvent.click(screen.getByText('Javob berish'));
+    expect(screen.getByText(toCyrillic('Sizga qoʻngʻiroq qilishyapti'))).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Javob berish')));
     await waitFor(() => expect(sent()).toContainEqual({ type: 'call', action: 'accept' }));
     act(() => socket.receive({ type: 'call', call: { status: 'connecting', caller: 'other' } }));
     await waitFor(() => expect(sent().some((event) => event.type === 'callTrack')).toBe(true));
@@ -73,9 +74,9 @@ describe('a voice call in the chat (docs/08, G13)', () => {
     expect(sent()).toContainEqual({ type: 'call', action: 'connected' });
     act(() => socket.receive({ type: 'call', call: { status: 'active', caller: 'other' } }));
     expect(screen.getByText('00:00')).toBeTruthy();
-    fireEvent.click(screen.getByText('Ovozni oʻchirish'));
-    expect(screen.getByText('Ovozni yoqish')).toBeTruthy();
-    fireEvent.click(screen.getByText('Tugatish'));
+    fireEvent.click(screen.getByText(toCyrillic('Ovozni oʻchirish')));
+    expect(screen.getByText(toCyrillic('Ovozni yoqish'))).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Tugatish')));
     expect(sent()).toContainEqual({ type: 'call', action: 'end' });
   });
 
@@ -85,7 +86,7 @@ describe('a voice call in the chat (docs/08, G13)', () => {
       .mockRejectedValue(new ApiError(503, 'calls.unavailable'));
     const { socket, sent } = await openChat();
     act(() => socket.receive({ type: 'call', call: { status: 'ringing', caller: 'other' } }));
-    fireEvent.click(screen.getByText('Javob berish'));
+    fireEvent.click(screen.getByText(toCyrillic('Javob berish')));
     await waitFor(() => expect(sent()).toContainEqual({ type: 'call', action: 'accept' }));
     act(() => socket.receive({ type: 'call', call: { status: 'connecting', caller: 'other' } }));
     await waitFor(() => expect(sent()).toContainEqual({ type: 'call', action: 'failed' }));
@@ -93,7 +94,7 @@ describe('a voice call in the chat (docs/08, G13)', () => {
       socket.receive({ type: 'call', call: null });
       socket.receive({ type: 'callEnded', reason: 'failed' });
     });
-    expect(screen.getByText('Qoʻngʻiroq hozir ishlamayapti. Chatda yozing.')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Qoʻngʻiroq hozir ishlamayapti. Chatda yozing.'))).toBeTruthy();
     ice.mockRestore();
   });
 
@@ -101,8 +102,8 @@ describe('a voice call in the chat (docs/08, G13)', () => {
     getUserMedia.mockRejectedValueOnce(new Error('denied'));
     const { socket, sent } = await openChat();
     act(() => socket.receive({ type: 'call', call: { status: 'ringing', caller: 'other' } }));
-    fireEvent.click(screen.getByText('Javob berish'));
+    fireEvent.click(screen.getByText(toCyrillic('Javob berish')));
     await waitFor(() => expect(sent()).toContainEqual({ type: 'call', action: 'decline' }));
-    expect(screen.getByText('Mikrofonga ruxsat bering. Hozircha chatda yozing.')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Mikrofonga ruxsat bering. Hozircha chatda yozing.'))).toBeTruthy();
   });
 });

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import { PLACES, TRIP } from './channels-fixtures';
 import { channelPost } from './infrastructure/post-text';
@@ -61,10 +62,10 @@ describe('the trip card of a direction group (G94, docs/223)', () => {
     const cancelled = inGroup({ ...TRIP, status: 'cancelled' });
     expect(cancelled.text).toContain('Сафар бекор қилинди');
     expect(cancelled.remove).toBe(true);
-    expect(render(TRIP, PLACES, BEFORE, '@ch_samarqand').text).toContain('🆕 Yangi safar');
+    expect(render(TRIP, PLACES, BEFORE, '@ch_samarqand').text).toContain(toCyrillic('🆕 Yangi safar'));
   });
 
   it('without a look of its own a group gets the channel post', () => {
-    expect(channelPost('test_bot')(TRIP, PLACES, BEFORE, GROUP).text).toContain('🆕 Yangi safar');
+    expect(channelPost('test_bot')(TRIP, PLACES, BEFORE, GROUP).text).toContain(toCyrillic('🆕 Yangi safar'));
   });
 });

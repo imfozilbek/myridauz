@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { MY_TRIP_LINK, OFFER_LINK } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { useState, type ReactNode } from 'react';
@@ -31,7 +32,7 @@ describe('the lists of «Mening safarlarim»', () => {
         bookings: { myBookings, myOffers: async () => [] },
       }),
     );
-    expect(await screen.findByText('Joy tasdiqlandi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Joy tasdiqlandi'))).toBeTruthy();
   });
 
   it('of a driver come from the main screen, shown while they refresh', async () => {
@@ -46,7 +47,7 @@ describe('the lists of «Mening safarlarim»', () => {
         bookings: { driverBookings, driverOffers: async () => [] },
       }),
     );
-    expect(await screen.findByText('Faol (1)')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Faol (1)'))).toBeTruthy();
   });
 
   // «Safar» of a trip asks whether a seat of it is asked already: from the same lists (G77).
@@ -64,7 +65,7 @@ describe('the lists of «Mening safarlarim»', () => {
         bookings: { myBookings, myOffers: async () => [] },
       }),
     );
-    expect(await screen.findByText('Bu safarda joyingiz bor.')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Bu safarda joyingiz bor.'))).toBeTruthy();
   });
 
   // The person's own step sends no signal: the screen refreshes the lists as it opens (G77).
@@ -87,7 +88,7 @@ describe('the lists of «Mening safarlarim»', () => {
     );
     await waitFor(() => expect(myTrips).toHaveBeenCalledOnce());
     fireEvent.click(await screen.findByText('open'));
-    expect(await screen.findByText(/^Yoʻlovchilar \(/u)).toBeTruthy();
+    expect(await screen.findByText(/^Йўловчилар \(/u)).toBeTruthy();
     expect(myTrips).toHaveBeenCalledTimes(2);
   });
 
@@ -129,6 +130,6 @@ describe('the link of an offer that ended', () => {
         },
       }),
     );
-    expect(await screen.findByText(/ · Rad etildi$/u)).toBeTruthy();
+    expect(await screen.findByText(/ · Рад этилди$/u)).toBeTruthy();
   });
 });

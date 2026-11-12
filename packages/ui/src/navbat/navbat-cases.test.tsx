@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { sheetClosed } from '../home/sheet-closed';
@@ -15,15 +16,15 @@ describe('the cases of «Navbat»', () => {
     renderNavbat({ filter: 'face', kind: 'face', id: MADINA.id }, [MADINA], {
       moderation: { facePhoto: async () => new Blob(['x']), decideFace },
     });
-    expect(await screen.findByText('Madina · yoʻlovchi')).toBeTruthy();
-    expect(screen.getByText('10 daqiqa kutmoqda')).toBeTruthy();
-    const face = screen.getByRole('checkbox', { name: 'Yuz aniq koʻrinadi' });
+    expect(await screen.findByText(`Madina · ${toCyrillic('yoʻlovchi')}`)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('10 daqiqa kutmoqda'))).toBeTruthy();
+    const face = screen.getByRole('checkbox', { name: toCyrillic('Yuz aniq koʻrinadi') });
     fireEvent.click(face);
     expect(face.getAttribute('aria-checked')).toBe('true');
-    expect(screen.getAllByText('Mos emas')).toHaveLength(3);
-    const one = screen.getByRole('group', { name: 'Bitta odam' });
-    fireEvent.click(within(one).getByText('Mos emas'));
-    expect(await screen.findByText('Hammasi koʻrildi')).toBeTruthy();
+    expect(screen.getAllByText(toCyrillic('Mos emas'))).toHaveLength(3);
+    const one = screen.getByRole('group', { name: toCyrillic('Bitta odam') });
+    fireEvent.click(within(one).getByText(toCyrillic('Mos emas')));
+    expect(await screen.findByText(toCyrillic('Hammasi koʻrildi'))).toBeTruthy();
     // The photo of the case is the one decided (G89 M8).
     expect(decideFace).toHaveBeenCalledWith(MADINA.id, {
       action: 'reject',
@@ -53,9 +54,9 @@ describe('the cases of «Navbat»', () => {
     renderNavbat({ filter: 'face', kind: 'face', id: MADINA.id }, [MADINA], {
       moderation: { facePhoto: async () => new Blob(['x']), telegramAccount },
     });
-    expect(await screen.findByText('Telegram: username yoʻq')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Telegram: username yoʻq'))).toBeTruthy();
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
-    fireEvent.click(screen.getByText('Profilni ochish'));
+    fireEvent.click(screen.getByText(toCyrillic('Profilni ochish')));
     expect(open.mock.calls[0]?.[0]).toBe(profileLink);
     open.mockRestore();
   });
@@ -64,17 +65,17 @@ describe('the cases of «Navbat»', () => {
     const decide = vi.fn(async () => undefined);
     const feedback = { complaint: async () => COMPLAINT_DETAIL, decide };
     renderNavbat({ filter: 'all', kind: 'complaint', id: COMPLAINT.id }, [COMPLAINT], { feedback });
-    expect(await screen.findByText('Madina → Jasur (haydovchi)')).toBeTruthy();
-    expect(screen.getByText('Kelmadi')).toBeTruthy();
-    expect(screen.getByText('Madinaning soʻzi')).toBeTruthy();
-    expect(screen.getByText('2 soat oldin')).toBeTruthy();
+    expect(await screen.findByText(`Madina → Jasur (${toCyrillic('haydovchi')})`)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Kelmadi'))).toBeTruthy();
+    expect(screen.getByText(`Madinaning ${toCyrillic('soʻzi')}`)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('2 soat oldin'))).toBeTruthy();
     // A passenger's «Kelmadi» about the driver: no commission of the driver to give back (G89 A11).
-    expect(screen.queryByText('Haydovchiga komissiyani qaytarish')).toBeNull();
-    fireEvent.click(screen.getByText('Bloklash'));
+    expect(screen.queryByText(toCyrillic('Haydovchiga komissiyani qaytarish'))).toBeNull();
+    fireEvent.click(screen.getByText(toCyrillic('Bloklash')));
     vi.stubGlobal('confirm', () => true);
-    fireEvent.click(await screen.findByText('7 kun'));
+    fireEvent.click(await screen.findByText(toCyrillic('7 kun')));
     vi.unstubAllGlobals();
-    expect(await screen.findByText('Bloklandi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Bloklandi'))).toBeTruthy();
     expect(decide).toHaveBeenCalledWith('c1', { action: 'block', days: 7, refund: false });
     await sheetClosed();
   });
@@ -87,16 +88,16 @@ describe('the cases of «Navbat»', () => {
     renderNavbat({ filter: 'all', kind: 'support', id: KAMOLA.id }, [KAMOLA], {
       team: { support: async () => ({ name: 'Kamola', appeal: true, talk }), answer },
     });
-    expect(await screen.findByText('Kamola · murojaat')).toBeTruthy();
-    expect(screen.getByText('Blok haqida')).toBeTruthy();
+    expect(await screen.findByText(`Kamola · ${toCyrillic('murojaat')}`)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Blok haqida'))).toBeTruthy();
     expect(screen.getByText('Nega bloklandim?')).toBeTruthy();
-    expect(screen.queryByText('Javob yuborish')).toBeNull();
-    fireEvent.change(screen.getByPlaceholderText('Javobingizni yozing'), {
+    expect(screen.queryByText(toCyrillic('Javob yuborish'))).toBeNull();
+    fireEvent.change(screen.getByPlaceholderText(toCyrillic('Javobingizni yozing')), {
       target: { value: ' Tekshiramiz ' },
     });
-    fireEvent.click(screen.getByText('Javob yuborish'));
-    expect(await screen.findByText('Hammasi koʻrildi')).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Javob yuborish')));
+    expect(await screen.findByText(toCyrillic('Hammasi koʻrildi'))).toBeTruthy();
     expect(answer).toHaveBeenCalledWith(KAMOLA.id, 'Tekshiramiz');
-    expect(within(document.body).getByText('Javob yuborildi')).toBeTruthy();
+    expect(within(document.body).getByText(toCyrillic('Javob yuborildi'))).toBeTruthy();
   });
 });

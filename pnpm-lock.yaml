@@ -292,6 +292,9 @@ importers:
 
   packages/i18n:
     dependencies:
+      '@formatjs/icu-messageformat-parser':
+        specifier: 3.5.20
+        version: 3.5.20
       intl-messageformat:
         specifier: 12.1.2
         version: 12.1.2

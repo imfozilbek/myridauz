@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { approvedDriver, json, read } from './bookings-test-api';
 import { botEnv, botSender, fakeTelegram, textMessage } from './bots/test-bot';
@@ -55,22 +56,20 @@ describe('the card of a support question (G68)', () => {
     const text = String(card?.body.text);
     expect(card?.body.parse_mode).toBe('HTML');
     expect(card?.body).not.toHaveProperty('disable_notification');
-    expect(text).toContain('💬 <b>Yangi murojaat</b>');
-    expect(text).toMatch(/<b>.+ · yoʻlovchi<\/b>/u);
-    expect(text).toContain('📌 Faol bron: ');
-    expect(text).toContain('ertaga 08:00');
+    expect(text).toContain(toCyrillic('💬 <b>Yangi murojaat</b>'));
+    expect(text).toMatch(/<b>.+ · йўловчи<\/b>/u);
+    expect(text).toContain(toCyrillic('📌 Faol bron: '));
+    expect(text).toContain(toCyrillic('ertaga 08:00'));
     expect(text).toContain('«Haydovchi telefonni olmayapti»');
-    expect(text).toMatch(/<i>.+ bilan 1 kun · 0 safar<\/i>/u);
+    expect(text).toMatch(/<i>.+ билан 1 кун · 0 сафар<\/i>/u);
     expect(text).not.toMatch(new RegExp(`\\b${PASSENGER}\\b`, 'u'));
     const buttons = buttonsOf(card?.body.reply_markup);
     // Q8 of docs/111 (G45): the public id and «Profilni ochish» in «Odamlar» of the owner.
     const id = await pid(PASSENGER);
     expect(text).toContain(`ID <code>${id}</code>`);
-    expect(buttons.map((button) => button.text)).toEqual([
-      '✍️ Javob berish',
-      '📋 Bronni ochish',
-      '👤 Profilni ochish',
-    ]);
+    expect(buttons.map((button) => button.text)).toEqual(
+      ['✍️ Javob berish', '📋 Bronni ochish', '👤 Profilni ochish'].map((text) => toCyrillic(text)),
+    );
     expect(JSON.stringify(buttons[1])).toContain(`open=trips&trip=${tripId}`);
     expect(JSON.stringify(buttons[2])).toContain(`open=people&person=${id}`);
   });
@@ -82,9 +81,11 @@ describe('the card of a support question (G68)', () => {
     night.message.from = { id: GUEST, first_name: 'Vali' };
     await send('support', night, 'hook', botEnv);
     const card = copyOf('Qanday yozilaman?');
-    expect(String(card?.body.text)).toContain('<b>Vali · roʻyxatdan oʻtmagan</b>');
+    expect(String(card?.body.text)).toContain(`<b>Vali · ${toCyrillic('roʻyxatdan oʻtmagan')}</b>`);
     expect(String(card?.body.text)).not.toContain('ID ');
-    expect(buttonsOf(card?.body.reply_markup).map((button) => button.text)).toEqual(['✍️ Javob berish']);
+    expect(buttonsOf(card?.body.reply_markup).map((button) => button.text)).toEqual([
+      toCyrillic('✍️ Javob berish'),
+    ]);
     expect(String(card?.body.text)).not.toMatch(new RegExp(`\\b${GUEST}\\b`, 'u'));
     expect(card?.body.disable_notification).toBe(true);
   });
@@ -100,9 +101,11 @@ describe('the card of a support question (G68)', () => {
     const answerer = Number(second?.body.chat_id);
     const other = TEAM.find((id) => id !== answerer) ?? 0;
     const sent = await send('admin', fromMember(answerer, 'Haydovchi yoʻlda', second?.id), 'hook', botEnv);
-    expect(((await sent.json()) as { text?: string }).text).toBe('Javob yuborildi.');
+    expect(((await sent.json()) as { text?: string }).text).toBe(toCyrillic('Javob yuborildi.'));
     const news = telegram.sentTo(other).at(-1);
-    expect(news?.body.text).toBe(`✅ Operator ${answerer === 7 ? 'Aziz' : 'Laylo'} javob berdi`);
+    expect(news?.body.text).toBe(
+      `✅ ${toCyrillic('Operator')} ${answerer === 7 ? 'Aziz' : 'Laylo'} ${toCyrillic('javob berdi')}`,
+    );
     expect(news?.body.disable_notification).toBe(true);
     expect(news?.body.reply_parameters).toMatchObject({ message_id: first?.id });
   });

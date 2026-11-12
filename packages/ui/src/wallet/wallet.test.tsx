@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { loadBrand } from '@platform/brands';
 import { ApiError, type WalletClient } from '@platform/api-client';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
@@ -25,6 +26,7 @@ const approved: Driver = {
 // «Hamyon» opens from its tile on the main screen of an approved driver (docs/118 path 9).
 const { Screen: WalletFlow } = WALLET_ACTION;
 
+const RULE = toCyrillic('Har tasdiqlangan joy uchun komissiya: joy narxining 10%. Avval bonusdan olinadi.');
 describe('"Hamyon" of a driver (docs/12, G65 mockups g65/1, g65/2)', () => {
   const profile = () => (
     <DriverContext.Provider value={approved}>
@@ -34,29 +36,27 @@ describe('"Hamyon" of a driver (docs/12, G65 mockups g65/1, g65/2)', () => {
 
   it('shows the sum, «≈ N joyga yetadi», the bonus and its end, the history', async () => {
     const { tracked } = renderMarket(profile(), testClients({ wallet: { mine: async () => wallet } }));
-    expect(await screen.findByText(/^481\s000\ssoʻm$/u)).toBeTruthy();
-    expect(screen.getByText(/^≈.53 joyga yetadi$/u)).toBeTruthy();
-    expect(screen.getByText(/gacha$/)).toBeTruthy();
-    expect(screen.getByText('Boshlash bonusi')).toBeTruthy();
-    expect(
-      screen.getByText('Har tasdiqlangan joy uchun komissiya: joy narxining 10%. Avval bonusdan olinadi.'),
-    ).toBeTruthy();
-    expect(screen.getByText('Komissiya · Sardor, 2 joy')).toBeTruthy();
+    expect(await screen.findByText(/^481\s000\sсўм$/u)).toBeTruthy();
+    expect(screen.getByText(/^≈.53 жойга етади$/u)).toBeTruthy();
+    expect(screen.getByText(/гача$/)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Boshlash bonusi'))).toBeTruthy();
+    expect(screen.getByText(RULE)).toBeTruthy();
+    expect(screen.getByText(`${toCyrillic('Komissiya')} · Sardor, ${toCyrillic('2 joy')}`)).toBeTruthy();
     expect(screen.getByText(/^\u221219\s000$/u)).toBeTruthy();
     expect(screen.getByText(/^\+500\s000$/u)).toBeTruthy();
     expect(tracked.some((event) => event.name === 'wallet_open')).toBe(true);
     // «Hisobni toʻldirish»: the support chat with the ready words at once, as on the sheet of the
     // sum short (G77, mockup g75/4 B); no screen between.
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
-    await tap('Hisobni toʻldirish');
-    const words = encodeURIComponent('Salom! Hamyonimni toʻldirmoqchiman.');
+    await tap(toCyrillic('Hisobni toʻldirish'));
+    const words = encodeURIComponent(toCyrillic('Salom! Hamyonimni toʻldirmoqchiman.'));
     expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.support}?text=${words}`);
     open.mockRestore();
   });
 
   it('turns red below 5 seats and asks to top up', async () => {
     renderMarket(profile(), testClients({ wallet: { mine: async () => ({ ...wallet, seatsLeft: 4 }) } }));
-    expect(await screen.findByText(/^≈.4 joyga yetadi · toʻldiring$/u)).toBeTruthy();
+    expect(await screen.findByText(/^≈.4 жойга етади · тўлдиринг$/u)).toBeTruthy();
     expect(document.querySelector('.wallet-card-low')).toBeTruthy();
   });
 
@@ -69,14 +69,14 @@ describe('"Hamyon" of a driver (docs/12, G65 mockups g65/1, g65/2)', () => {
       booking: { ...confirmed, seats: 2, price: 95_000, commission: 19_000 },
     }));
     renderMarket(profile(), testClients({ wallet: { mine: async () => wallet, detail } }));
-    await tap('Komissiya · Sardor, 2 joy');
-    expect(await screen.findByText(/^\u221219\s000\ssoʻm$/u)).toBeTruthy();
+    await tap(`${toCyrillic('Komissiya')} · Sardor, ${toCyrillic('2 joy')}`);
+    expect(await screen.findByText(/^\u221219\s000\sсўм$/u)).toBeTruthy();
     expect(detail).toHaveBeenCalledWith('w2');
-    expect(screen.getByText('Komissiya 10%')).toBeTruthy();
-    expect(screen.getByText('Yoʻlovchi toʻlaydi')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Komissiya 10%'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Yoʻlovchi toʻlaydi'))).toBeTruthy();
     expect(screen.getByText(/^190\s000$/u)).toBeTruthy();
-    expect(screen.getByText('Qaysi hisobdan')).toBeTruthy();
-    expect(screen.getByText('Safarni ochish')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Qaysi hisobdan'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Safarni ochish'))).toBeTruthy();
   });
 
   it('is not in the profile, not even of a driver (mockup g65/3)', () => {
@@ -86,7 +86,7 @@ describe('"Hamyon" of a driver (docs/12, G65 mockups g65/1, g65/2)', () => {
       </DriverContext.Provider>,
       testClients({}),
     );
-    expect(screen.queryByText('Hamyon')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Hamyon'))).toBeNull();
   });
 });
 
@@ -101,23 +101,23 @@ describe('"Hamyonlar" for the team (docs/12)', () => {
         wallet: { all: async () => ({ wallets: [owner], more: false }), of: async () => wallet, adjust },
       }),
     );
-    await tap('Hamyonlar');
+    await tap(toCyrillic('Hamyonlar'));
     await tap('Jasur');
-    await tap('Hamyonni tuzatish');
-    const amount = screen.getByLabelText('Summa, soʻm');
+    await tap(toCyrillic('Hamyonni tuzatish'));
+    const amount = screen.getByLabelText(toCyrillic('Summa, soʻm'));
     // The name is over the box, never a placeholder that goes away (G27).
     expect(amount.getAttribute('placeholder')).toBeNull();
     fireEvent.change(amount, { target: { value: '100000' } });
     // The sum is read in groups of three while typed (G78 sheet 4).
     expect((amount as HTMLInputElement).value).toMatch(/^100\s000$/u);
-    await tap('Boshqa');
-    fireEvent.change(screen.getByLabelText('Boshqa'), { target: { value: 'Yoʻlovchi kelmadi' } });
+    await tap(toCyrillic('Boshqa'));
+    fireEvent.change(screen.getByLabelText(toCyrillic('Boshqa')), { target: { value: 'Yoʻlovchi kelmadi' } });
     // Adding or taking away is a choice, not a minus to remember (docs/86 V2).
-    expect(screen.queryByText('Saqlash')).toBeNull();
-    await tap('Qoʻshish');
-    expect(screen.getByText('Yangi balans')).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Saqlash'))).toBeNull();
+    await tap(toCyrillic('Qoʻshish'));
+    expect(screen.getByText(toCyrillic('Yangi balans'))).toBeTruthy();
     expect(screen.getByText(/^581\s000/)).toBeTruthy();
-    await tap('Saqlash');
+    await tap(toCyrillic('Saqlash'));
     expect(adjust).toHaveBeenCalledWith('00000000000000000000000000000007', {
       balance: 'bonus',
       amount: 100000,
@@ -135,16 +135,16 @@ describe('"Hamyonlar" for the team (docs/12)', () => {
         wallet: { all: async () => ({ wallets: [owner], more: false }), of: async () => wallet, adjust },
       }),
     );
-    await tap('Hamyonlar');
+    await tap(toCyrillic('Hamyonlar'));
     await tap('Jasur');
-    await tap('Hamyonni tuzatish');
-    await tap('Asosiy hisob');
-    await tap('Ayirish');
-    fireEvent.change(screen.getByLabelText('Summa, soʻm'), { target: { value: '5000' } });
-    await tap('Xato yechilgan komissiya');
+    await tap(toCyrillic('Hamyonni tuzatish'));
+    await tap(toCyrillic('Asosiy hisob'));
+    await tap(toCyrillic('Ayirish'));
+    fireEvent.change(screen.getByLabelText(toCyrillic('Summa, soʻm')), { target: { value: '5000' } });
+    await tap(toCyrillic('Xato yechilgan komissiya'));
     expect(screen.getByText(/^-5\s000/)).toBeTruthy();
-    await tap('Saqlash');
-    expect(await screen.findByText('Buni faqat loyiha egasi qila oladi.')).toBeTruthy();
+    await tap(toCyrillic('Saqlash'));
+    expect(await screen.findByText(toCyrillic('Buni faqat loyiha egasi qila oladi.'))).toBeTruthy();
     expect(adjust.mock.calls[0]?.[1]).toMatchObject({ balance: 'main', amount: -5000 });
   });
 });

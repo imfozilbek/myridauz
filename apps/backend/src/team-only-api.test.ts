@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { loadBrand } from '@platform/brands';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { app } from './app';
@@ -45,12 +46,14 @@ describe('the internal environment is for the team only', () => {
   it('answers a person outside the team with the same bot of production', async () => {
     const internal = { ...botEnv, ...INTERNAL };
     const moved = await reply(await send('driver', textMessage(OUTSIDER, '/start'), 'hook', internal));
-    expect(moved.text).toBe('Bu bot faqat jamoa uchun. Safarlar yangi botda: pastdagi tugmani bosing.');
+    expect(moved.text).toBe(
+      toCyrillic('Bu bot faqat jamoa uchun. Safarlar yangi botda: pastdagi tugmani bosing.'),
+    );
     expect(moved.reply_markup?.inline_keyboard[0]?.[0]?.url).toBe(`https://t.me/${loadBrand().bots.driver}`);
     const team = await reply(await send('driver', textMessage(7, '/start'), 'hook', internal));
-    expect(JSON.stringify(team)).not.toContain('faqat jamoa');
+    expect(JSON.stringify(team)).not.toContain(toCyrillic('faqat jamoa'));
     const people = await reply(await send('driver', textMessage(OUTSIDER, '/start')));
-    expect(JSON.stringify(people)).not.toContain('faqat jamoa');
+    expect(JSON.stringify(people)).not.toContain(toCyrillic('faqat jamoa'));
   });
 
   it('takes a person outside the team out of a channel of the team, nobody else', async () => {

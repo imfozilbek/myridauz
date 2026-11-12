@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { MarketClient } from '@platform/api-client';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -21,12 +22,12 @@ describe('the places of a region with their trips', { timeout: 20_000 }, () => {
       testClients({ market: { ...searchMarket([0, 3, 1]), searchTrips: async () => [] } }),
     );
     await findRoute(true);
-    await tap('Fargʻonaning qaysi joyi? Tuman tanlash');
-    expect(await screen.findByText('Fargʻonaning qaysi joyi?')).toBeTruthy();
+    await tap(toCyrillic('Fargʻonaning qaysi joyi? Tuman tanlash'));
+    expect(await screen.findByText(toCyrillic('Fargʻonaning qaysi joyi?'))).toBeTruthy();
     const whole = document.querySelector('.district-whole');
-    expect(whole?.textContent).toBe('Butun viloyat4 ta safar');
+    expect(whole?.textContent).toBe(toCyrillic('Butun viloyat4 ta safar'));
     const rows = [...document.querySelectorAll('.district-row')].map((row) => row.textContent);
-    expect(rows).toEqual(['Fargʻona shahri4 ta safar']);
+    expect(rows).toEqual([toCyrillic('Fargʻona shahri4 ta safar')]);
   });
 
   // G79 П15 (docs/170): a district chosen keeps the day of the results, 1 tap → 0.
@@ -41,8 +42,8 @@ describe('the places of a region with their trips', { timeout: 20_000 }, () => {
     await pickDay(2);
     const third = weekOf([0, 3, 1]).days[2]?.date;
     await waitFor(() => expect(searchTrips.mock.calls.at(-1)?.[0].date).toBe(third));
-    await tap('Fargʻonaning qaysi joyi? Tuman tanlash');
-    await tap('Fargʻona shahri');
+    await tap(toCyrillic('Fargʻonaning qaysi joyi? Tuman tanlash'));
+    await tap(toCyrillic('Fargʻona shahri'));
     await waitFor(() =>
       expect(document.querySelectorAll('.week-day')[2]?.getAttribute('aria-pressed')).toBe('true'),
     );

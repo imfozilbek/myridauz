@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { FeedbackClient } from '@platform/api-client';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -23,7 +24,7 @@ describe('the reviews of a driver on a bad network (G43, docs/65 B3)', () => {
       undefined,
       testClients({ feedback: { reviewsOf } }),
     );
-    await tap('Qayta urinish');
+    await tap(toCyrillic('Qayta urinish'));
     expect(await screen.findByText('Dilnoza')).toBeTruthy();
   });
 });

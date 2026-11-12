@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { BOOKING_LINK, REQUEST_LINK, type AppLink } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { useState } from 'react';
@@ -47,7 +48,7 @@ describe('a bot button opens its booking (docs/65 B5)', () => {
     );
     expect(await screen.findByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
     // One tap: what a bot or the block opened goes straight home (G77, owner decision 11.10.2026).
-    await tap('Orqaga');
+    await tap(toCyrillic('Orqaga'));
     expect(await screen.findByText('main screen')).toBeTruthy();
     expect(window.location.search).toBe('');
   });
@@ -74,8 +75,8 @@ describe('a bot button opens its booking (docs/65 B5)', () => {
         bookings: { driverBookings: async () => [booked], driverOffers: async () => [] },
       }),
     );
-    expect(await screen.findByText(/^Yoʻlovchilar \(/u)).toBeTruthy();
-    await tap('Orqaga');
+    expect(await screen.findByText(/^Йўловчилар \(/u)).toBeTruthy();
+    await tap(toCyrillic('Orqaga'));
     expect(await screen.findByText('main screen')).toBeTruthy();
     expect(window.location.search).toBe('');
   });
@@ -91,9 +92,9 @@ describe('a bot button opens its booking (docs/65 B5)', () => {
         bookings: { myBookings: async () => [], myOffers: async () => [] },
       }),
     );
-    expect(await screen.findByText('Soʻrovni bekor qilish')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Soʻrovni bekor qilish'))).toBeTruthy();
     expect(screen.queryByText('main screen')).toBeNull();
-    await tap('Orqaga');
+    await tap(toCyrillic('Orqaga'));
     expect(await screen.findByText('main screen')).toBeTruthy();
   });
 
@@ -120,10 +121,10 @@ describe('a bot button opens its booking (docs/65 B5)', () => {
         bookings: { myBookings: async () => [booked], myOffers: async () => [] },
       }),
     );
-    expect(await screen.findByText('Soʻrovni bekor qilish')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Soʻrovni bekor qilish'))).toBeTruthy();
     await tap('a chat opens the seat');
     expect(await screen.findByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
-    await tap('Orqaga');
+    await tap(toCyrillic('Orqaga'));
     expect(await screen.findByText('main screen')).toBeTruthy();
     expect(window.location.search).toBe('');
   });

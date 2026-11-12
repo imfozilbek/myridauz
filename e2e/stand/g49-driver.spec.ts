@@ -1,5 +1,6 @@
 import { createMarketClient } from '@platform/api-client';
 import { MY_TRIP_LINK, type Trip } from '@platform/contracts';
+import { toCyrillic } from '@platform/i18n';
 import { expect, test } from '../crash-guard';
 import { publishButton, TEXT } from '../apps';
 import { confirmedSeat, MINUTE, moveTrip, SAMARQAND, wordsOf } from './g27-kit';
@@ -53,9 +54,9 @@ test('D02, D04. a computer: a car of «Boshqa» typed with its seats, then the p
   // The button of Telegram is a part of the page on the stand, over the sheet; on a phone it is not.
   await sheet.getByText(t('drivers.other.add', { name: 'Isuzu Grafter' })).dispatchEvent('click');
   await expect(page.getByText('Isuzu Grafter')).toBeVisible();
-  await page.getByRole('button', { name: 'Oshirish' }).click();
+  await page.getByRole('button', { name: t('market.price.more') }).click();
   await expect(page.getByText('5', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Oq', exact: true }).click();
+  await page.getByRole('button', { name: TEXT.white, exact: true }).click();
   await page.getByLabel(TEXT.plateField).fill('01g911oy');
   await mainButton(page).click();
   await expect(page.getByText(TEXT.photos)).toBeVisible();
@@ -96,7 +97,7 @@ test('D29. the last route of the driver fills the one screen of a new trip from 
   await openAs(page, 'driver', BOTIR);
   await publishButton(page).click();
   await expect(mainButton(page)).toHaveText(TEXT.publish);
-  await expect(page.getByText(/Samarqand/u).first()).toBeVisible();
+  await expect(page.getByText(toCyrillic('Samarqand')).first()).toBeVisible();
 });
 
 // The doors of the day in the order of the road (docs/68, mockup g68/3): the nearest next, whoever
@@ -118,9 +119,10 @@ test('D48. «Yoʻl tartibi» of the trip day goes door by nearest door', async (
     (await botMessages())
       .filter((m) => m.bot === 'driver' && m.chatId === OLIM.id && m.text.includes(wordsOf('bot.dcard.road')))
       .at(-1)?.text ?? '';
-  await expect.poll(road).toContain(`${RIDERS[2]?.name ?? ''}, 1 joy`);
+  const seatOf = (name = '') => `${name}, 1 ${toCyrillic('joy')}`;
+  await expect.poll(road).toContain(seatOf(RIDERS[2]?.name));
   const text = await road();
-  const [first, far, near] = RIDERS.map((rider) => text.indexOf(`${rider.name}, 1 joy`));
+  const [first, far, near] = RIDERS.map((rider) => text.indexOf(seatOf(rider.name)));
   expect(first).toBeGreaterThan(-1);
   expect(first).toBeLessThan(near ?? -1);
   expect(near).toBeLessThan(far ?? -1);

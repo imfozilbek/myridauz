@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import { useState } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -62,7 +63,7 @@ describe('the action sheet (G68, G76)', () => {
     await tap('Ha: Madina · 2 joy');
     expect(await screen.findByText('Olim · 1 joy')).toBeTruthy();
     expect(screen.getByText('2 / 2')).toBeTruthy();
-    await tap('Keyinroq');
+    await tap(toCyrillic('Keyinroq'));
     await sheetClosed();
     expect(screen.queryByText('Olim · 1 joy')).toBeNull();
   });

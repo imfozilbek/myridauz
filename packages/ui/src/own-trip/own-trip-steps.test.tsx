@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError, type FeedbackClient } from '@platform/api-client';
 import type { Trip } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
@@ -53,7 +54,7 @@ describe('«Yoʻlga chiqdim» and «Yetib keldik» on the server (G63 B1, docs/3
     );
     const { myTrips } = open(trip, { departTrip });
     await openTrip();
-    const button = await screen.findByText('Yoʻlga chiqdim');
+    const button = await screen.findByText(toCyrillic('Yoʻlga chiqdim'));
     fireEvent.click(button);
     fireEvent.click(button);
     release();
@@ -70,10 +71,10 @@ describe('«Yoʻlga chiqdim» and «Yetib keldik» on the server (G63 B1, docs/3
     });
     open(trip, { departTrip });
     await openTrip();
-    await tap('Yoʻlga chiqdim');
+    await tap(toCyrillic('Yoʻlga chiqdim'));
     expect(await screen.findByRole('alert')).toBeTruthy();
-    expect(screen.getByText(/^Hali erta\. «Yoʻlga chiqdim»/u)).toBeTruthy();
-    expect(screen.getByText('Joʻnashga 30 daqiqa')).toBeTruthy();
+    expect(screen.getByText(/^Ҳали эрта\. «Йўлга чиқдим»/u)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Joʻnashga 30 daqiqa'))).toBeTruthy();
   });
 
   // G89 U14: done from another phone or by a lost answer: the page follows the trip, no error.
@@ -84,7 +85,7 @@ describe('«Yoʻlga chiqdim» and «Yetib keldik» on the server (G63 B1, docs/3
     });
     const { myTrips } = open(trip, { departTrip });
     await openTrip();
-    await tap('Yoʻlga chiqdim');
+    await tap(toCyrillic('Yoʻlga chiqdim'));
     await vi.waitFor(() => expect(myTrips).toHaveBeenCalledTimes(2));
     expect(screen.queryByRole('alert')).toBeNull();
   });
@@ -95,12 +96,12 @@ describe('«Yoʻlga chiqdim» and «Yetib keldik» on the server (G63 B1, docs/3
     const review = vi.fn<FeedbackClient['review']>(async () => undefined);
     const { tracked } = open(left, { arriveTrip }, review);
     await openTrip();
-    await tap('Yetib keldik');
-    expect(await screen.findByText('Yoʻlovchilarni baholang')).toBeTruthy();
+    await tap(toCyrillic('Yetib keldik'));
+    expect(await screen.findByText(toCyrillic('Yoʻlovchilarni baholang'))).toBeTruthy();
     expect(arriveTrip).toHaveBeenCalledWith('t1');
     // The way back is under the stars: «Qaytish safari» sends them and publishes it (G78 В10 A).
-    expect(screen.getByText(/^Qaytishga yoʻlovchi olasizmi\? · /u)).toBeTruthy();
-    await tap('Qaytish safari');
+    expect(screen.getByText(/^Қайтишга йўловчи оласизми\? · /u)).toBeTruthy();
+    await tap(toCyrillic('Qaytish safari'));
     await vi.waitFor(() => expect(review).toHaveBeenCalledWith({ bookingId: 'b2', stars: 5 }));
     // The route the other way, today as it makes it by 22:00 (G78 В11), the seats of the trip and
     // a new comment.

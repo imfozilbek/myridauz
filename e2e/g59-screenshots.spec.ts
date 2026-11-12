@@ -1,10 +1,11 @@
 import type { Page } from '@playwright/test';
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { expect, test } from './crash-guard';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, openFindTrip, TEXT } from './apps';
 import { noSeatYet } from './bookings-mock';
 import { mapState, mockMap } from './map-mock';
+import { REGISTON } from './map-places';
 import { mapDrawn, TILES_MS } from './map-wait';
 import { fromIfAsked } from './market';
 import { HEIGHT, nothingCut, oneSize, WIDTHS } from './sizes';
@@ -39,9 +40,9 @@ for (const platform of PLATFORMS)
       await shot('01-directions');
       await page.getByText(TEXT.otherPlace).click();
       await page.getByPlaceholder(TEXT.otherPlace).fill('Samar');
-      await expect(page.getByText('Samarqand shahri', { exact: true })).toBeVisible();
+      await expect(page.getByText(toCyrillic('Samarqand shahri'), { exact: true })).toBeVisible();
       await shot('02-other-place');
-      await page.getByText('Samarqand shahri', { exact: true }).click();
+      await page.getByText(toCyrillic('Samarqand shahri'), { exact: true }).click();
       await expect(page.locator('.search-trip').first()).toBeVisible();
       await oneSize(page, '.week-day');
       await shot('03-trips');
@@ -63,8 +64,8 @@ for (const platform of PLATFORMS)
       // The map of the end opens by itself right after the start (G78 П4).
       await mapDrawn(page);
       await page.getByPlaceholder(t('way.point.search')).fill('Регистон');
-      await page.getByText('Registon maydoni', { exact: true }).click();
-      await expect(page.getByRole('status')).toHaveText('Registon maydoni yaqinida');
+      await page.getByText(REGISTON, { exact: true }).click();
+      await expect(page.getByRole('status')).toHaveText(t('way.near', { name: REGISTON }));
       await page.waitForTimeout(TILES_MS);
       await shot('07-dropoff', false);
       await mainButton(page)

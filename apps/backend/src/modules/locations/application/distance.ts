@@ -1,3 +1,4 @@
+import { DEFAULT_LOCALE } from '@platform/i18n';
 import { checkRoute, type Distance, type DistanceHistory, type RouteError } from '@platform/contracts';
 import { namer } from '../../../shared/team/who';
 import { indexById, type Directory } from './directory';
@@ -6,7 +7,6 @@ import type { LocationsDeps, Result } from './ports';
 type DistanceError = RouteError | 'locations.not_found';
 type Caller = { readonly id: number; readonly isOwner: boolean };
 
-const DEFAULT_LOCALE = 'uz-Latn';
 const LEVEL_2 = new Set(['district', 'city']);
 
 // Distances exist only between level 2 places of a possible trip (docs/14).

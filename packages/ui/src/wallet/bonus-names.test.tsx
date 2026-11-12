@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { wallet } from '../bookings/booking-test-kit';
@@ -30,8 +31,8 @@ describe('the bonuses in «Tarix» of «Hamyon»', () => {
       </DriverContext.Provider>,
       testClients({ wallet: { mine: async () => three } }),
     );
-    expect(await screen.findByText('Boshlash bonusi')).toBeTruthy();
-    expect(screen.getByText('2-oy bonusi')).toBeTruthy();
-    expect(screen.getByText('3-oy bonusi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Boshlash bonusi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('2-oy bonusi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('3-oy bonusi'))).toBeTruthy();
   });
 });

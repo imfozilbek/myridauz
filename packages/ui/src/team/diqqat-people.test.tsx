@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { CARD, PERSON } from '../manage/manage-test-kit';
@@ -23,7 +24,7 @@ describe('«Diqqat» about many people', { timeout: 20_000 }, () => {
     const { go } = renderTeamHome('owner', {
       team: { navbat: async () => NAVBAT, attention: async () => ({ signs }) },
     });
-    fireEvent.click(await screen.findByText('3 kishida reyting past'));
+    fireEvent.click(await screen.findByText(toCyrillic('3 kishida reyting past')));
     expect(go).toHaveBeenCalledWith('people', {
       people: [
         { id: PERSON, name: 'Jasur' },
@@ -47,8 +48,8 @@ describe('«Diqqat» about many people', { timeout: 20_000 }, () => {
     );
     await tap('Madina');
     expect(person).toHaveBeenCalledWith(OTHER);
-    expect(await screen.findByText('Haydovchi: 5 · yoʻlovchi: 2')).toBeTruthy();
-    await tap('Orqaga');
+    expect(await screen.findByText(toCyrillic('Haydovchi: 5 · yoʻlovchi: 2'))).toBeTruthy();
+    await tap(toCyrillic('Orqaga'));
     expect(await screen.findByText('Jasur')).toBeTruthy();
   });
 });

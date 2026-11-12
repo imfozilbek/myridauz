@@ -1,4 +1,5 @@
 import { loadBrand } from '@platform/brands';
+import { toCyrillic } from '@platform/i18n';
 import type { News } from '../../notifications';
 import { describe, expect, it } from 'vitest';
 import type { Match, SubscriptionRecord } from '../domain/subscription';
@@ -54,9 +55,11 @@ describe('the news card of a subscription (G68, docs/122 rule 4)', () => {
     await tell.cheaper(subscription, { ...match, price: 85_000 });
     const [news, cheaper] = shown;
     expect(news).toMatchObject({ bot: 'passenger', chatId: 10, route: '1726>1730' });
-    expect(news?.head.join('\n')).toContain('Toshkent → Urgut');
-    expect(plain(news?.line?.text ?? '')).toBe('Jasur · ertaga 07:30 · 2 joy · <b>90 000 soʻm</b>');
-    expect(plain(cheaper?.line?.text ?? '')).toContain('<b>85 000 soʻm</b> ↓ arzonlashdi');
+    expect(news?.head.join('\n')).toContain(toCyrillic('Toshkent → Urgut'));
+    expect(plain(news?.line?.text ?? '')).toBe(
+      `Jasur · ${toCyrillic('ertaga 07:30 · 2 joy · <b>90 000 soʻm</b>')}`,
+    );
+    expect(plain(cheaper?.line?.text ?? '')).toContain(toCyrillic('<b>85 000 soʻm</b> ↓ arzonlashdi'));
     expect(buttons(news)).toContain('?find=1726269_1730_2026-10-02');
     expect(buttons(news)).toContain('"callback_data":"news_off:s1"');
   });
@@ -67,7 +70,7 @@ describe('the news card of a subscription (G68, docs/122 rule 4)', () => {
     await tell.one(driver, { ...match, name: 'Aziz', seats: 4, wholeCar: true });
     expect(shown[0]).toMatchObject({ bot: 'driver', chatId: 10 });
     expect(plain(shown[0]?.line?.text ?? '')).toBe(
-      '🚐 Aziz · butun salon · ertaga · Chilonzor → Urgut · <b>360 000 soʻm</b>',
+      `🚐 Aziz · ${toCyrillic('butun salon · ertaga · Chilonzor → Urgut · <b>360 000 soʻm</b>')}`,
     );
     expect(buttons(shown[0])).toContain('?requests=1726269_1730_2026-10-02');
   });
@@ -75,7 +78,7 @@ describe('the news card of a subscription (G68, docs/122 rule 4)', () => {
   it('«any date» is over: the card asks to renew it and opens «Obunalar»', async () => {
     const { tell, shown } = teller();
     await tell.renew(subscription);
-    expect(shown[0]?.head[0]).toContain('muddati tugadi');
+    expect(shown[0]?.head[0]).toContain(toCyrillic('muddati tugadi'));
     expect(shown[0]?.line).toBeUndefined();
     expect(buttons(shown[0])).toContain('?subscriptions=1');
   });

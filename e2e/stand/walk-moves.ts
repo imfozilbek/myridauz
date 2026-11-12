@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { toCyrillic } from '@platform/i18n';
 import { readScreen, shape, tap, type ScreenState, type Target } from './walk-screen';
 
 // The moves of the walk (G91): the two buttons of Telegram are targets too, and the order of taps
@@ -6,7 +7,7 @@ import { readScreen, shape, tap, type ScreenState, type Target } from './walk-sc
 const MAIN: Target = { label: '⟨main⟩', nth: 0 };
 const SECOND: Target = { label: '⟨second⟩', nth: 0 };
 // Taps that change much are tried last on a screen: the rest of it is walked before them.
-const LAST = /oʻchir|bekor|blok|chiqish|rad et|tugat|yakun|oʻtkaz|yopish/iu;
+const LAST = new RegExp(toCyrillic('oʻchir|bekor|blok|chiqish|rad et|tugat|yakun|oʻtkaz|yopish'), 'iu');
 
 export const press = async (page: Page, target: Target) => {
   if (target === MAIN || target === SECOND) {

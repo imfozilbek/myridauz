@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { WaitlistDirection, WaitlistStats } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -49,14 +50,16 @@ describe('«Kutish roʻyxati» of «Boshqaruv» (G83, docs/181)', () => {
         setSwitch,
       },
     });
-    expect(await screen.findByText('Ochiq: yangi odamlar roʻyxatga yoziladi')).toBeTruthy();
-    expect(screen.getByText('4 ta havola')).toBeTruthy();
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Roʻyxatga yozish' }));
-    expect(await screen.findByText('Roʻyxatni yopasizmi?')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Ochiq: yangi odamlar roʻyxatga yoziladi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('4 ta havola'))).toBeTruthy();
+    fireEvent.click(screen.getByRole('checkbox', { name: toCyrillic('Roʻyxatga yozish') }));
+    expect(await screen.findByText(toCyrillic('Roʻyxatni yopasizmi?'))).toBeTruthy();
     expect(
-      screen.getByText('Kutayotgan 1 326 kishiga hozir xabar ketmaydi: har yoʻnalish ochilganda yozamiz.'),
+      screen.getByText(
+        toCyrillic('Kutayotgan 1 326 kishiga hozir xabar ketmaydi: har yoʻnalish ochilganda yozamiz.'),
+      ),
     ).toBeTruthy();
-    press('Yopish');
+    press(toCyrillic('Yopish'));
     await waitFor(() => expect(setSwitch).toHaveBeenCalledWith(false));
   });
 });
@@ -75,16 +78,16 @@ describe('«Kutayotganlar» and the «gold» of «Statistika» (docs/181, docs/1
       },
     });
     renderInShell(<StatsScreen onBack={() => undefined} />, false, true, waitlistPlaces, clients);
-    expect(await screen.findByText('1 240 yoʻlovchi · 86 haydovchi')).toBeTruthy();
-    expect(screen.getByText(/^Eng koʻp ogʻriq: Telegram guruh\S+ tartibsizlik$/u)).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('1 240 yoʻlovchi · 86 haydovchi'))).toBeTruthy();
+    expect(screen.getByText(/^Энг кўп оғриқ: Telegram гуруҳ\S+ тартибсизлик$/u)).toBeTruthy();
     expect(await screen.findByText('87:1')).toBeTruthy();
     expect(screen.getByText('00:00 … 06:00')).toBeTruthy();
-    press(/^Toshkent shahri ↔ Samarqand viloyati/u);
-    expect(await screen.findByText('Ariza tasdiqlangan')).toBeTruthy();
+    press(/^Тошкент шаҳри ↔ Самарқанд вилояти/u);
+    expect(await screen.findByText(toCyrillic('Ariza tasdiqlangan'))).toBeTruthy();
     const share = screen.getByText('64 %').closest('div') as HTMLElement;
-    expect(within(share).getByText(/^Telegram guruh\S+ tartibsizlik$/u)).toBeTruthy();
-    press('Yoʻnalishni ochish');
-    press(await screen.findByText('Ochish').then(() => 'Ochish'));
+    expect(within(share).getByText(/^Telegram гуруҳ\S+ тартибсизлик$/u)).toBeTruthy();
+    press(toCyrillic('Yoʻnalishni ochish'));
+    press(await screen.findByText(toCyrillic('Ochish')).then(() => toCyrillic('Ochish')));
     await waitFor(() => expect(openDirection).toHaveBeenCalledWith('1718'));
   });
 
@@ -98,10 +101,10 @@ describe('«Kutayotganlar» and the «gold» of «Statistika» (docs/181, docs/1
     renderInShell(<StatsScreen onBack={() => undefined} />, false, true, waitlistPlaces, clients);
     press(
       await screen
-        .findByText(/^Toshkent shahri ↔ Samarqand viloyati/u)
-        .then(() => /^Toshkent shahri ↔ Samarqand viloyati/u),
+        .findByText(/^Тошкент шаҳри ↔ Самарқанд вилояти/u)
+        .then(() => /^Тошкент шаҳри ↔ Самарқанд вилояти/u),
     );
-    expect(await screen.findByText('Ariza tasdiqlangan')).toBeTruthy();
-    expect(screen.queryByText('Yoʻnalishni ochish')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Ariza tasdiqlangan'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Yoʻnalishni ochish'))).toBeNull();
   });
 });

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { act, cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ErrorScreen } from '../states/error-screen';
@@ -17,28 +18,28 @@ const goOffline = (online: boolean) => {
 describe('the connection of the whole app (G43)', () => {
   it('says the network is gone above the screen and keeps the screen', () => {
     renderInShell(<p>my trips</p>);
-    expect(screen.queryByText('Internet yoʻq')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Internet yoʻq'))).toBeNull();
     goOffline(false);
-    expect(screen.getByText('Internet yoʻq')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Internet yoʻq'))).toBeTruthy();
     // A plate of the states of the mockup g75/1 A: the red tile, the words beside it (G75).
     expect(document.querySelector('.offline-banner .offline-plate .offline-tile')).toBeTruthy();
     expect(screen.getByText('my trips')).toBeTruthy();
     goOffline(true);
-    expect(screen.queryByText('Internet yoʻq')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Internet yoʻq'))).toBeNull();
   });
 
   it('an error screen without a network names the network, not a general failure', () => {
     renderInShell(<ErrorScreen onRetry={() => undefined} />);
-    expect(screen.getByText('Birozdan keyin qayta urinib koʻring.')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Birozdan keyin qayta urinib koʻring.'))).toBeTruthy();
     goOffline(false);
-    expect(screen.getByText(/Internet bilan aloqa yoʻq/u)).toBeTruthy();
+    expect(screen.getByText(/Интернет билан алоқа йўқ/u)).toBeTruthy();
   });
 
   // The last test: an old launch stays old for the rest of the app.
   it('asks to open the app again once the launch is too old', () => {
     renderInShell(<p>my trips</p>);
     act(() => markExpired());
-    expect(screen.getByText('Ilovani qayta oching')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Ilovani qayta oching'))).toBeTruthy();
     expect(screen.queryByText('my trips')).toBeNull();
   });
 });

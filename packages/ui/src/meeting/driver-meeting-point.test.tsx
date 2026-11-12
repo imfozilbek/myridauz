@@ -19,8 +19,8 @@ describe('«Uchrashuv» opened from a point of «Safar xaritasi» (mockup g63/4 
       </PlacesGate>,
       testClients({}),
     );
-    expect(await screen.findByText(/^2-nuqta/u)).toBeTruthy();
-    expect(screen.queryByText(/^1-nuqta/u)).toBeNull();
+    expect(await screen.findByText(/^2-нуқта/u)).toBeTruthy();
+    expect(screen.queryByText(/^1-нуқта/u)).toBeNull();
     expect(screen.queryByText(/^Madina/u)).toBeNull();
   });
 

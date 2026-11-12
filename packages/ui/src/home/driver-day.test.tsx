@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { ChatClient } from '@platform/api-client';
 import { MINUTE_MS } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
@@ -43,25 +44,25 @@ describe('the day of a trip of a driver (G76, mockup g76/3 states 12 and 15)', {
       },
       approved,
     );
-    expect(await screen.findByText('Yoʻlga chiqdingizmi?')).toBeTruthy();
-    await tap('Kechikyapman');
+    expect(await screen.findByText(toCyrillic('Yoʻlga chiqdingizmi?'))).toBeTruthy();
+    await tap(toCyrillic('Kechikyapman'));
     await vi.waitFor(() => expect(answer).toHaveBeenCalledTimes(2));
     // A second tap tells nobody twice.
-    await tap('Kechikyapman');
+    await tap(toCyrillic('Kechikyapman'));
     expect(answer.mock.calls).toEqual([
-      ['chat-s1', 'Kechikyapman'],
-      ['chat-s2', 'Kechikyapman'],
+      ['chat-s1', toCyrillic('Kechikyapman')],
+      ['chat-s2', toCyrillic('Kechikyapman')],
     ]);
-    expect(screen.getByRole('button', { name: 'Yoʻlga chiqdim' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: toCyrillic('Yoʻlga chiqdim') })).toBeTruthy();
   });
 
   it('a passenger waits at the pitak: where exactly, as the team wrote it', async () => {
     const soon = { ...trip, departAt: Date.now() + 5 * MINUTE_MS };
     const pitak = {
       id: 'p1',
-      name: 'Chilonzor pitagi',
+      name: toCyrillic('Chilonzor pitagi'),
       point: { lat: 41.28, lng: 69.2 },
-      hint: 'Metro yonida',
+      hint: toCyrillic('Metro yonida'),
     };
     const waits = {
       ...confirmed,
@@ -77,10 +78,10 @@ describe('the day of a trip of a driver (G76, mockup g76/3 states 12 and 15)', {
       { trips: async () => [soon], requests: async () => [waits] },
       approved,
     );
-    expect(await screen.findByText('Dilnoza joyida')).toBeTruthy();
-    expect(screen.getByText('Metro yonida')).toBeTruthy();
+    expect(await screen.findByText(`Dilnoza ${toCyrillic('joyida')}`)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Metro yonida'))).toBeTruthy();
     // She is at the point already: «Keldi» at once, no «Men keldim» first (G78 В1 … В3).
-    expect(screen.getByRole('button', { name: 'Keldi' })).toBeTruthy();
-    expect(screen.queryByRole('button', { name: 'Men keldim' })).toBeNull();
+    expect(screen.getByRole('button', { name: toCyrillic('Keldi') })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: toCyrillic('Men keldim') })).toBeNull();
   });
 });

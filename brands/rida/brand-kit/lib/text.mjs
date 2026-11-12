@@ -2,6 +2,8 @@
 import { C } from './palette.mjs';
 // Families: rubik (brand) and roboto (Telegram on Android, for app screens).
 import opentype from 'opentype.js';
+import { toCyrillic } from '../../../../packages/i18n/src/cyrillic.ts';
+import { loadBrand } from '../../../index.ts';
 
 const FAMILIES = { rubik: ['Rubik', [500, 600, 800]], roboto: ['Roboto', [400, 500, 700]] };
 const FONTS = {};
@@ -9,6 +11,12 @@ for (const [key, [name, weights]] of Object.entries(FAMILIES)) {
   for (const w of weights) FONTS[`${key}-${w}`] = opentype.loadSync(new URL(`../fonts/${key}/${name}-${w}.ttf`, import.meta.url).pathname);
 }
 const CAP = 0.7; // cap height / em for Rubik
+
+// The pictures speak Uzbek Cyrillic as the product does (owner, 11.11.2026; G98, docs/228): their texts
+// stay written in Latin here and the program of the texts writes them in Cyrillic; the brand stays.
+const KEEP = [loadBrand().name, loadBrand('rida', 'internal').name];
+// Rubik has no «ҳ»: that letter comes from Roboto of the nearest weight.
+const FALLBACK = { 500: 'roboto-500', 600: 'roboto-700', 800: 'roboto-700' };
 
 // No U+02BB in either font (Rubik also lacks U+02BC): draw look-alike quote glyphs.
 const SUBST = { 'ʻ': '‘', 'ʼ': '’' };
@@ -27,17 +35,26 @@ function arrow(key, font, weight) {
   return (ARROWS[key] = new opentype.Glyph({ name: 'arrowright', unicode: 0x2192, advanceWidth: em * 0.96, path }));
 }
 
-export function layout(str, { family = 'rubik', weight = 800, size = 100, spacing = 0 } = {}) {
+function glyphOf(c, key, font, weight) {
+  if (c === '→') return { g: arrow(key, font, weight), font };
+  const g = font.charToGlyph(SUBST[c] || c);
+  const other = FONTS[FALLBACK[weight]];
+  return g.index === 0 && other && key.startsWith('rubik') ? { g: other.charToGlyph(c), font: other } : { g, font };
+}
+
+export function layout(latin, { family = 'rubik', weight = 800, size = 100, spacing = 0 } = {}) {
   const key = `${family}-${weight}`, font = FONTS[key];
   const scale = size / font.unitsPerEm;
-  const glyphs = Array.from(str).map((c) => (c === '→' ? arrow(key, font, weight) : font.charToGlyph(SUBST[c] || c)));
+  const str = toCyrillic(latin, KEEP);
+  const glyphs = Array.from(str).map((c) => glyphOf(c, key, font, weight));
   let x = 0;
   const parts = [];
-  glyphs.forEach((g, i) => {
+  glyphs.forEach(({ g, font: own }, i) => {
     parts.push({ g, x });
-    let adv = g.advanceWidth * scale;
+    let adv = g.advanceWidth * (size / own.unitsPerEm);
     const next = glyphs[i + 1];
-    if (next) adv += (g.index >= 0 && next.index >= 0 ? font.getKerningValue(g, next) * scale : 0) + spacing * size;
+    const kern = next && next.font === own && g.index >= 0 && next.g.index >= 0 ? own.getKerningValue(g, next.g) * scale : 0;
+    if (next) adv += kern + spacing * size;
     x += adv;
   });
   return { font, scale, parts, width: x, size };

@@ -55,16 +55,16 @@ describe('the channels of the brand', () => {
 
 describe('channelOf', () => {
   it('gives the channel that names a place, not one that only passes it', () => {
-    expect(channelOf(brand, QOQON)?.title).toBe('Qamchiq, Furqat, Qoʻqon');
-    expect(channelOf(brand, SAMARQAND_SHAHRI)?.title).toBe('Samarqand shahri, Samarqand tumani');
+    expect(channelOf(brand, QOQON)?.title).toBe('Қамчиқ, Фурқат, Қўқон');
+    expect(channelOf(brand, SAMARQAND_SHAHRI)?.title).toBe('Самарқанд шаҳри, Самарқанд тумани');
   });
 
   it('gives the first channel of a place every channel only passes', () => {
-    expect(channelOf(brand, SHEROBOD)?.title).toBe('Sherobod, Muzrabot, Termiz');
+    expect(channelOf(brand, SHEROBOD)?.title).toBe('Шеробод, Музработ, Термиз');
   });
 
   it('takes the next place when a place has no channel', () => {
-    expect(channelOf(brand, '1726262', QOQON)?.title).toBe('Qamchiq, Furqat, Qoʻqon');
+    expect(channelOf(brand, '1726262', QOQON)?.title).toBe('Қамчиқ, Фурқат, Қўқон');
     expect(channelOf(brand, '1726262')).toBeUndefined();
   });
 });

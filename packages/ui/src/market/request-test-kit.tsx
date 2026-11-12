@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { MapClient, MarketClient } from '@platform/api-client';
 import type { Location, RideRequest, RideRequestInput } from '@platform/contracts';
 import { fireEvent, screen } from '@testing-library/react';
@@ -80,10 +81,10 @@ export const row = (label: string) => screen.getByText(label).closest('button') 
 export async function toPoints() {
   await quickRoute();
   await pickDay(1);
-  expect(await screen.findByText('Qayerdan, qayerga?')).toBeTruthy();
-  fireEvent.click(row('Olib ketish joyi'));
-  await takePoint('Chorsu bozori yaqinida');
-  expect(await screen.findByText('Qayerda tushasiz?')).toBeTruthy();
-  await takePoint('Yangi Margʻilon');
-  await screen.findByText('Qayerdan, qayerga?');
+  expect(await screen.findByText(toCyrillic('Qayerdan, qayerga?'))).toBeTruthy();
+  fireEvent.click(row(toCyrillic('Olib ketish joyi')));
+  await takePoint(toCyrillic('Chorsu bozori yaqinida'));
+  expect(await screen.findByText(toCyrillic('Qayerda tushasiz?'))).toBeTruthy();
+  await takePoint(toCyrillic('Yangi Margʻilon'));
+  await screen.findByText(toCyrillic('Qayerdan, qayerga?'));
 }

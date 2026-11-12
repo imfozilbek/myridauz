@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { BookingsClient, MarketClient } from '@platform/api-client';
 import { DAY_MS, HOUR_MS, MINUTE_MS, MY_TRIP_LINK } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
@@ -26,7 +27,7 @@ describe('the buttons of a trip in the block of a driver', { timeout: 20_000 }, 
   it('«Yoʻl xaritasi» opens the map of the trip, not its page', async () => {
     const soon = { ...trip, departAt: Date.now() + 40 * MINUTE_MS };
     home(soon, [{ ...confirmed, trip: soon }]);
-    await tap('Yoʻl xaritasi');
+    await tap(toCyrillic('Yoʻl xaritasi'));
     expect(screen.getByText(opened('map'))).toBeTruthy();
   });
 
@@ -39,19 +40,24 @@ describe('the buttons of a trip in the block of a driver', { timeout: 20_000 }, 
       { trips: async () => [road], requests: async () => [{ ...confirmed, trip: road }], answers: { meet } },
       approved,
     );
-    expect(await screen.findByText('Keyingi: Chilonzor bozori yaqinida')).toBeTruthy();
-    expect(screen.queryByRole('button', { name: 'Yetib keldik' })).toBeNull();
-    await tap('Men keldim');
+    expect(await screen.findByText(toCyrillic('Keyingi: Chilonzor bozori yaqinida'))).toBeTruthy();
+    expect(screen.queryByRole('button', { name: toCyrillic('Yetib keldik') })).toBeNull();
+    await tap(toCyrillic('Men keldim'));
     await vi.waitFor(() => expect(meet).toHaveBeenCalledWith(confirmed.id, 'came'));
   });
 
   it('at a pitak on the way the card names the people who wait there, not the pitak twice', async () => {
     const road = { ...trip, departAt: Date.now() + 10 * MINUTE_MS, departedAt: Date.now() - MINUTE_MS };
-    const pitak = { id: 'qoyliq', name: 'Qoʻyliq pitagi', point: { lat: 41.2438, lng: 69.3394 }, hint: null };
+    const pitak = {
+      id: 'qoyliq',
+      name: toCyrillic('Qoʻyliq pitagi'),
+      point: { lat: 41.2438, lng: 69.3394 },
+      hint: null,
+    };
     home(road, [{ ...confirmed, trip: road, mode: 'pitak' as const, pitak }]);
-    expect(await screen.findByText('Keyingi: Qoʻyliq pitagi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Keyingi: Qoʻyliq pitagi'))).toBeTruthy();
     expect(screen.getByText(confirmed.passenger.firstName)).toBeTruthy();
-    expect(screen.getAllByText(/Qoʻyliq pitagi/u)).toHaveLength(1);
+    expect(screen.getAllByText(/Қўйлиқ питаги/u)).toHaveLength(1);
   });
 
   it('«Yetib keldik» marks the arrival, then «Safar tugadi» with its stars and «Qaytish»', async () => {
@@ -59,7 +65,7 @@ describe('the buttons of a trip in the block of a driver', { timeout: 20_000 }, 
     const arriveTrip = vi.fn<MarketClient['arriveTrip']>(async () => ({ ...road, arrivedAt: Date.now() }));
     // Everybody is in the car: the dropoffs lead.
     home(road, [{ ...confirmed, trip: road, boardedAt: road.departAt }], { arriveTrip });
-    await tap('Yetib keldik');
+    await tap(toCyrillic('Yetib keldik'));
     expect(await screen.findByText(opened('end'))).toBeTruthy();
     expect(arriveTrip).toHaveBeenCalledWith(trip.id);
   });
@@ -67,14 +73,16 @@ describe('the buttons of a trip in the block of a driver', { timeout: 20_000 }, 
   it('«Qaytish safari» opens the way back with the answers of the trip, counted once out', async () => {
     const past = { ...trip, departAt: Date.now() - DAY_MS, status: 'completed' as const };
     home(past, [{ ...confirmed, trip: past, status: 'completed' as const }]);
-    await tap('Qaytish safari');
-    expect(screen.getByText('opened Fargʻona shahri>Chilonzor again 3')).toBeTruthy();
+    await tap(toCyrillic('Qaytish safari'));
+    expect(
+      screen.getByText(`opened ${toCyrillic('Fargʻona shahri')}>${toCyrillic('Chilonzor')} again 3`),
+    ).toBeTruthy();
   });
 
   it('«Baho berish» opens the stars at once, not the past trip a tap before them', async () => {
     const past = { ...trip, departAt: Date.now() - DAY_MS, status: 'completed' as const };
     home(past, [{ ...confirmed, trip: past, status: 'completed' as const }]);
-    await tap('Baho berish');
+    await tap(toCyrillic('Baho berish'));
     expect(screen.getByText(opened('end'))).toBeTruthy();
   });
 });

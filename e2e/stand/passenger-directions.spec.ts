@@ -1,4 +1,5 @@
 import { DIRECTION_CARDS } from '@platform/contracts';
+import { toCyrillic } from '@platform/i18n';
 import { expect, test, type Page } from '../crash-guard';
 import { TEXT } from '../apps';
 import { mainButton, NARROW, openHome, shot, t } from './screen-tour';
@@ -25,7 +26,7 @@ async function openLastCard(page: Page, person: Person) {
   await expect(asked.or(page.getByText(t('find.title')))).toBeVisible();
   if (await asked.isVisible()) {
     // Toshkent shahri is taken whole in one tap (G78 П9).
-    await page.getByAltText('Toshkent shahri').click();
+    await page.getByAltText(toCyrillic('Toshkent shahri')).click();
   }
   const cards = page.locator('.direction-card');
   await expect(cards).toHaveCount(DIRECTION_CARDS);

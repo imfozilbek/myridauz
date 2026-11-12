@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError, type BookingsClient, type MarketClient } from '@platform/api-client';
 import { REQUEST_LINK } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
@@ -30,14 +31,14 @@ function open(bookings: Partial<BookingsClient> = {}, market: Partial<MarketClie
 describe('«Mening soʻrovim» (G61, docs/118 path 4, mockup 3-offers A)', () => {
   it('the request on one line, then the offers with the driver, the car, the plate, the time and the price', async () => {
     open({}, {}, true);
-    expect(await screen.findByText(/^Chilonzor → Fargʻona shahri/u)).toBeTruthy();
-    expect(screen.getByText('2 kishi · bir joy 95 000 · Boʻsh salon kerak')).toBeTruthy();
-    expect(screen.getByText('Takliflar (1)')).toBeTruthy();
+    expect(await screen.findByText(/^Чилонзор → Фарғона шаҳри/u)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('2 kishi · bir joy 95 000 · Boʻsh salon kerak'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Takliflar (1)'))).toBeTruthy();
     const jasur = card('Jasur');
-    expect(jasur.textContent).toContain('Cobalt, Oq');
+    expect(jasur.textContent).toContain(`Cobalt, ${toCyrillic('Oq')}`);
     expect(within(jasur).getByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
     expect(jasur.textContent).toMatch(/95\s000/u);
-    expect(screen.getByText('Soʻrovni bekor qilish')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Soʻrovni bekor qilish'))).toBeTruthy();
   });
 
   it('«Qabul qilish» in the card opens the page of the confirmed seat (G60)', async () => {
@@ -48,17 +49,17 @@ describe('«Mening soʻrovim» (G61, docs/118 path 4, mockup 3-offers A)', () =>
       bookingId: 'b1',
     }));
     open({ answerOffer, myBookings });
-    await tap(/· Soʻrov$/u);
-    fireEvent.click(await screen.findByRole('button', { name: 'Qabul qilish' }));
-    expect(await screen.findByText('Joy tasdiqlandi')).toBeTruthy();
+    await tap(/· Сўров$/u);
+    fireEvent.click(await screen.findByRole('button', { name: toCyrillic('Qabul qilish') }));
+    expect(await screen.findByText(toCyrillic('Joy tasdiqlandi'))).toBeTruthy();
     expect(answerOffer).toHaveBeenCalledWith('o1', 'accept');
   });
 
   it('«Rad etish» in the card answers no', async () => {
     const answerOffer = vi.fn<BookingsClient['answerOffer']>(async () => ({ ...offer, status: 'declined' }));
     open({ answerOffer });
-    await tap(/· Soʻrov$/u);
-    fireEvent.click(await screen.findByRole('button', { name: 'Rad etish' }));
+    await tap(/· Сўров$/u);
+    fireEvent.click(await screen.findByRole('button', { name: toCyrillic('Rad etish') }));
     await vi.waitFor(() => expect(answerOffer).toHaveBeenCalledWith('o1', 'decline'));
   });
 
@@ -68,18 +69,18 @@ describe('«Mening soʻrovim» (G61, docs/118 path 4, mockup 3-offers A)', () =>
       status: 'cancelled',
     }));
     open({ myOffers: async () => [] }, { cancelRequest });
-    await tap(/· Soʻrov$/u);
-    expect(await screen.findByText('Kutayotganda')).toBeTruthy();
-    expect(screen.getByText('Kanalga qoʻshilish')).toBeTruthy();
+    await tap(/· Сўров$/u);
+    expect(await screen.findByText(toCyrillic('Kutayotganda'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Kanalga qoʻshilish'))).toBeTruthy();
     // Asked first (docs/65 B4): «No» keeps the request with its offers, «Yes» cancels it (G77).
     const asked = vi.spyOn(window, 'confirm').mockReturnValueOnce(false).mockReturnValueOnce(true);
-    await tap('Soʻrovni bekor qilish');
+    await tap(toCyrillic('Soʻrovni bekor qilish'));
     await vi.waitFor(() => expect(asked).toHaveBeenCalledOnce());
     expect(asked).toHaveBeenCalledWith(
-      'Soʻrovni bekor qilasizmi? Haydovchilar uni endi koʻrmaydi, kelgan takliflar yopiladi.',
+      toCyrillic('Soʻrovni bekor qilasizmi? Haydovchilar uni endi koʻrmaydi, kelgan takliflar yopiladi.'),
     );
     expect(cancelRequest).not.toHaveBeenCalled();
-    await tap('Soʻrovni bekor qilish');
+    await tap(toCyrillic('Soʻrovni bekor qilish'));
     await vi.waitFor(() => expect(cancelRequest).toHaveBeenCalledWith('r1'));
     asked.mockRestore();
   });
@@ -90,11 +91,11 @@ describe('«Mening soʻrovim» (G61, docs/118 path 4, mockup 3-offers A)', () =>
       callsOff: true,
     }));
     open({}, { setRequestCalls });
-    await tap(/· Soʻrov$/u);
+    await tap(/· Сўров$/u);
     const calls = (await screen.findByLabelText(
-      'Haydovchilar qoʻngʻiroq qilishi mumkin',
+      toCyrillic('Haydovchilar qoʻngʻiroq qilishi mumkin'),
     )) as HTMLInputElement;
-    expect(screen.getByText('Oʻchirsangiz, haydovchilar faqat yozadi.')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Oʻchirsangiz, haydovchilar faqat yozadi.'))).toBeTruthy();
     expect(calls.checked).toBe(true);
     fireEvent.click(calls);
     expect(setRequestCalls).toHaveBeenCalledWith('r1', false);
@@ -106,9 +107,9 @@ describe('«Mening soʻrovim» (G61, docs/118 path 4, mockup 3-offers A)', () =>
       throw new ApiError(409, 'trips.wrong_status');
     });
     open({}, { setRequestCalls });
-    await tap(/· Soʻrov$/u);
+    await tap(/· Сўров$/u);
     const calls = (await screen.findByLabelText(
-      'Haydovchilar qoʻngʻiroq qilishi mumkin',
+      toCyrillic('Haydovchilar qoʻngʻiroq qilishi mumkin'),
     )) as HTMLInputElement;
     fireEvent.click(calls);
     await waitFor(() => expect(calls.checked).toBe(true));
@@ -120,15 +121,17 @@ describe('«Mening soʻrovim» (G61, docs/118 path 4, mockup 3-offers A)', () =>
   it('the card opens the offer in the sheet of the main screen and accepts it there', async () => {
     const answerOffer = vi.fn<BookingsClient['answerOffer']>(async () => ({ ...offer, status: 'declined' }));
     open({ answerOffer });
-    await tap(/· Soʻrov$/u);
+    await tap(/· Сўров$/u);
     await tap('Jasur');
-    expect(await screen.findByText('Yangi taklif')).toBeTruthy();
-    expect(screen.getByText('Takliflar (1)')).toBeTruthy();
-    expect(screen.getByText(/^Bir joy 95.000$/u)).toBeTruthy();
-    expect(screen.queryByText(/^Barcha takliflar/u)).toBeNull();
-    fireEvent.click(screen.getAllByRole('button', { name: 'Qabul qilish' }).at(-1) as HTMLElement);
+    expect(await screen.findByText(toCyrillic('Yangi taklif'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Takliflar (1)'))).toBeTruthy();
+    expect(screen.getByText(/^Бир жой 95.000$/u)).toBeTruthy();
+    expect(screen.queryByText(/^Барча таклифлар/u)).toBeNull();
+    fireEvent.click(
+      screen.getAllByRole('button', { name: toCyrillic('Qabul qilish') }).at(-1) as HTMLElement,
+    );
     await waitFor(() => expect(answerOffer).toHaveBeenCalledWith('o1', 'accept'));
-    await waitFor(() => expect(screen.queryByText('Yangi taklif')).toBeNull());
+    await waitFor(() => expect(screen.queryByText(toCyrillic('Yangi taklif'))).toBeNull());
   });
 
   it('keeps the sheet and says why when the answer fails', async () => {
@@ -136,10 +139,12 @@ describe('«Mening soʻrovim» (G61, docs/118 path 4, mockup 3-offers A)', () =>
       throw new ApiError(409, 'bookings.too_many');
     });
     open({ answerOffer });
-    await tap(/· Soʻrov$/u);
+    await tap(/· Сўров$/u);
     await tap('Jasur');
-    fireEvent.click((await screen.findAllByRole('button', { name: 'Qabul qilish' })).at(-1) as HTMLElement);
+    fireEvent.click(
+      (await screen.findAllByRole('button', { name: toCyrillic('Qabul qilish') })).at(-1) as HTMLElement,
+    );
     expect(await screen.findByRole('alert')).toBeTruthy();
-    expect(screen.getByText('Yangi taklif')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Yangi taklif'))).toBeTruthy();
   });
 });

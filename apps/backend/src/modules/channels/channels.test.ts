@@ -1,4 +1,5 @@
 import { HOUR_MS as HOUR } from '@platform/contracts';
+import { toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import { closeDeparted, closePosts, postTrip, refreshPosts, rememberPost } from './application/channels';
 import { channelsOf } from './domain/route-channels';
@@ -85,7 +86,7 @@ describe('posting and editing through the queue (docs/15)', () => {
     change({ seatsLeft: 2 });
     await rememberPost(deps, { tripId: 'trip-1', channel: '@ch_samarqand', messageId: 7 }, 'active 3 true');
     expect(sent).toHaveLength(1);
-    expect(sent[0]?.text).toContain('🟩🟩⬜⬜ 2 ta boʻsh joy');
+    expect(sent[0]?.text).toContain(toCyrillic('🟩🟩⬜⬜ 2 ta boʻsh joy'));
   });
 
   it('posts nothing while autoposting is off, nor a trip that is not active', async () => {
@@ -107,7 +108,7 @@ describe('posting and editing through the queue (docs/15)', () => {
     await closeDeparted(deps);
     await closeDeparted(deps);
     expect(sent).toHaveLength(1);
-    expect(sent[0]?.text.startsWith('<b>🚗 Yoʻlga chiqdi</b>')).toBe(true);
+    expect(sent[0]?.text.startsWith(toCyrillic('<b>🚗 Yoʻlga chiqdi</b>'))).toBe(true);
     expect(JSON.stringify(sent[0]?.markup)).not.toContain('startapp=trip_');
   });
 
@@ -116,7 +117,7 @@ describe('posting and editing through the queue (docs/15)', () => {
     await rememberPost(deps, { tripId: 'trip-1', channel: '@ch_samarqand', messageId: 7 }, 'active 3 true');
     change({ departedAt: BEFORE });
     await closePosts(deps, 'trip-1');
-    expect(sent[0]?.text.startsWith('<b>🚗 Yoʻlga chiqdi</b>')).toBe(true);
+    expect(sent[0]?.text.startsWith(toCyrillic('<b>🚗 Yoʻlga chiqdi</b>'))).toBe(true);
     later(TRIP.departAt);
     await closeDeparted(deps);
     expect(sent).toHaveLength(1);
@@ -133,6 +134,6 @@ describe('posting and editing through the queue (docs/15)', () => {
     later(TRIP.departAt + HOUR);
     await closeDeparted(deps);
     expect(sent).toHaveLength(1);
-    expect(sent[0]?.text.startsWith('<b>🚗 Yoʻlga chiqdi</b>')).toBe(true);
+    expect(sent[0]?.text.startsWith(toCyrillic('<b>🚗 Yoʻlga chiqdi</b>'))).toBe(true);
   });
 });

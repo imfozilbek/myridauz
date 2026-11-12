@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { approved, renderProfile } from './profile-test-kit';
@@ -16,6 +17,6 @@ describe('«Profil» in the driver app', () => {
     const pending = { ...approved, application: { ...approved.application, status: 'pending' as const } };
     renderProfile({}, { driver: pending });
     fireEvent.click(screen.getByText('Dilnoza'));
-    expect(screen.queryByText('Haydovchi boʻling')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Haydovchi boʻling'))).toBeNull();
   });
 });

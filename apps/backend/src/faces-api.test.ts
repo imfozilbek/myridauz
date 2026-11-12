@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { loadBrand } from '@platform/brands';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { fakeTelegram } from './bots/test-bot';
@@ -29,14 +30,14 @@ describe('the face photo check over HTTP (docs/118, G51)', () => {
     const card = telegram.calls.find((sent) => sent.method === 'sendPhoto' && sent.body.chat_id === OWNER);
     expect(card?.body).toMatchObject({
       photo: 'file',
-      caption: expect.stringContaining('Yangi yuz rasmi: Ali'),
+      caption: expect.stringContaining(`${toCyrillic('Yangi yuz rasmi')}: Ali`),
       parse_mode: 'HTML',
     });
     // Who the person is in Telegram, with the link to the profile through the bot the person knows
     // (owner, 17.10 and 18.10.2026).
     const link = `https://t.me/${loadBrand().bots.passenger}?start=profile_${await pid(PERSON)}`;
     expect(String(card?.body.caption)).toContain(
-      `Telegram: username yoʻq · <a href="${link}">Profilni ochish</a>`,
+      toCyrillic(`Telegram: username yoʻq · <a href="${link}">Profilni ochish</a>`),
     );
     expect(String(card?.body.reply_markup)).toMatch(
       new RegExp(`"callback_data":"face:${PERSON}:[0-9a-z]+:ok"`, 'u'),
@@ -65,7 +66,7 @@ describe('the face photo check over HTTP (docs/118, G51)', () => {
     );
     const told = telegram.sentTo(PERSON).at(-1);
     expect(told?.token).toBe('1:passenger');
-    expect(told?.body.text).toContain('Sababi: Yuz aniq koʻrinmaydi.');
+    expect(told?.body.text).toContain(toCyrillic('Sababi: Yuz aniq koʻrinmaydi.'));
     expect(JSON.stringify(told?.body.reply_markup)).toContain('?profile=photo');
     expect(await profileOf(PERSON)).toMatchObject({
       avatarStatus: 'rejected',

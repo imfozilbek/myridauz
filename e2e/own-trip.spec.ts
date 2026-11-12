@@ -1,4 +1,4 @@
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { expect, test } from './crash-guard';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
@@ -25,7 +25,8 @@ test('driver: publishes, confirms, leaves, arrives, rates and publishes the way 
   // The channel of the direction posted the trip by its name in Telegram without the brand, three
   // people opened it (docs/119, docs/176).
   await expect(page.getByText(t('driverTrip.channel.title'))).toBeVisible();
-  const views = t('driverTrip.channel.views', { channel: 'Samarqand shahri | Samarqand tumani', count: '3' });
+  const channel = toCyrillic('Samarqand shahri | Samarqand tumani');
+  const views = t('driverTrip.channel.views', { channel, count: '3' });
   await expect(page.getByText(views, { exact: true })).toBeVisible();
   await expect(page.getByText(t('driverTrip.channel.share'))).toBeVisible();
   // A passenger asks: the personal channel brings the request to the open page (docs/64).
@@ -53,8 +54,8 @@ test('driver: publishes, confirms, leaves, arrives, rates and publishes the way 
   await page.locator('#tg-secondary-button', { hasText: t('driverAfter.back.trip') }).click();
   // The one screen of the publishing with the route the other way and the answers of the trip.
   await expect(main).toHaveText(TEXT.publish);
-  await expect(page.locator('.points-value').nth(0)).toContainText('Samarqand shahri');
-  await expect(page.locator('.points-value').nth(1)).toContainText('Chilonzor');
+  await expect(page.locator('.points-value').nth(0)).toContainText(toCyrillic('Samarqand shahri'));
+  await expect(page.locator('.points-value').nth(1)).toContainText(toCyrillic('Chilonzor'));
   // Back from the one screen: the trip is past at once, the server has not closed it yet (lead decision).
   await pressBack(page);
   await expect(page.getByText(t('driverAfter.past.after'))).toBeVisible();

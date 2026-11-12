@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { apiHost, loadBrand } from '@platform/brands';
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import { escape } from './html';
 import type { RegionName } from './map-data';
@@ -77,8 +77,8 @@ describe('landing (G15)', () => {
 
   it('asks the public API for prices and gives the script templates, not texts', () => {
     expect(home).toContain(`data-api="https://api.${brand.domain}/public/price"`);
-    expect(home).toContain('data-money="{amount}\u00a0soʻm"');
-    expect(home).toContain('data-km="≈\u00a0{km}\u00a0km"');
+    expect(home).toContain('data-money="{amount}\u00a0сўм"');
+    expect(home).toContain('data-km="≈\u00a0{km}\u00a0км"');
   });
 
   it('takes the name, the slogan, the domain, the numbers and the colors from the brand config', () => {
@@ -87,14 +87,14 @@ describe('landing (G15)', () => {
     expect(home).toContain(`https://${brand.domain}/og-image.png`);
     expect(home).toContain(`--strong:${brand.theme.colors.brandStrong}`);
     expect(home).toContain(`--driver:${brand.theme.apps.driver?.brandStrong}`);
-    expect(home).toContain(`${brand.commission.percent} foizi`);
+    expect(home).toContain(toCyrillic(`${brand.commission.percent} foizi`));
     expect(home).toContain('© 2027');
   });
 
   it('shows each document with its edition and every section, no placeholder left', () => {
     const offer = site['offer/index.html'] ?? '';
     expect(offer).toContain(escape(t('legal.offer.title')));
-    expect(offer).toContain('Tahrir 1.10');
+    expect(offer).toContain(toCyrillic('Tahrir 1.10'));
     expect(offer).toContain(`12. ${escape(t('legal.offer.12.title'))}`);
     // Built without the requisites: the brand name; the script fills what the owner saved (G34).
     expect(offer).toContain(`<span data-company>${escape(brand.name)}</span>`);

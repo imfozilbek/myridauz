@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket, tap } from '../market/market-test-kit';
@@ -22,12 +23,14 @@ describe('the states of a booking page (docs/124 А, Б)', () => {
   it('a refused seat says why and leads to the trips of the same route', async () => {
     vi.setSystemTime(confirmed.trip.departAt - 5 * HOUR);
     open({ ...confirmed, status: 'declined', plate: null });
-    await tap('Oʻtgan');
+    await tap(toCyrillic('Oʻtgan'));
     await tap(/^Jasur/u);
-    expect(screen.getByText('Haydovchi joy bera olmadi.')).toBeTruthy();
-    expect(document.querySelector('.outcome-plate-off')?.textContent).toContain('joy bera olmadi');
-    await tap('Oʻxshash safarlar');
-    expect(screen.queryByText('Haydovchi joy bera olmadi.')).toBeNull();
+    expect(screen.getByText(toCyrillic('Haydovchi joy bera olmadi.'))).toBeTruthy();
+    expect(document.querySelector('.outcome-plate-off')?.textContent).toContain(
+      toCyrillic('joy bera olmadi'),
+    );
+    await tap(toCyrillic('Oʻxshash safarlar'));
+    expect(screen.queryByText(toCyrillic('Haydovchi joy bera olmadi.'))).toBeNull();
   });
 
   it('a moved trip shows the old and the new time and a free «Rozi emasman»', async () => {
@@ -35,8 +38,8 @@ describe('the states of a booking page (docs/124 А, Б)', () => {
     const trip = { ...confirmed.trip, firstDepartAt: confirmed.trip.departAt - HOUR };
     open({ ...confirmed, trip });
     await tap('Jasur');
-    expect(screen.getByText(/^Vaqt oʻzgardi: \d{2}:\d{2} → \d{2}:\d{2}$/u)).toBeTruthy();
-    expect(screen.getByText('Rozi emasman')).toBeTruthy();
+    expect(screen.getByText(/^Вақт ўзгарди: \d{2}:\d{2} → \d{2}:\d{2}$/u)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Rozi emasman'))).toBeTruthy();
   });
 
   it('an expired request says so on the same plate, with why', async () => {
@@ -48,8 +51,8 @@ describe('the states of a booking page (docs/124 А, Б)', () => {
       }),
     );
     // In «Faol» with «Muddati oʻtdi» (G75, docs/158 Е): the card opens the request.
-    await tap('Muddati oʻtdi');
+    await tap(toCyrillic('Muddati oʻtdi'));
     const plate = await vi.waitFor(() => document.querySelector('.outcome-plate-off') as HTMLElement);
-    expect(plate.textContent).toContain('Shu kunga haydovchi topilmadi.');
+    expect(plate.textContent).toContain(toCyrillic('Shu kunga haydovchi topilmadi.'));
   });
 });

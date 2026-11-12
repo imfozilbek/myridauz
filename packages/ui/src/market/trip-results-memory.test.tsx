@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { MarketClient } from '@platform/api-client';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -28,7 +29,7 @@ describe('Search results after «Назад» from a trip (docs/94 F2)', { timeo
     await screen.findByText(DRIVER);
     at(700);
     await tap(DRIVER);
-    await tap('Orqaga');
+    await tap(toCyrillic('Orqaga'));
     // The same trips without a skeleton, the same place, no second search event.
     expect(busy()).toBeNull();
     expect(screen.getByText(DRIVER)).toBeTruthy();
@@ -40,7 +41,7 @@ describe('Search results after «Назад» from a trip (docs/94 F2)', { timeo
     });
     // A quiet refresh in the background.
     await waitFor(() => expect(searchTrips).toHaveBeenCalledTimes(2));
-    await tap('Orqaga');
+    await tap(toCyrillic('Orqaga'));
     scrollTo.mockClear();
     await findTo();
     expect(busy()).not.toBeNull();

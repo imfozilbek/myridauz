@@ -18,7 +18,7 @@ export async function fillCar(page: Page, shot: Shot = async () => undefined) {
   await expect(page.getByText(TEXT.carTitle)).toBeVisible();
   await shot('2-car-empty');
   await page.getByRole('button', { name: 'Damas', exact: true }).click();
-  await page.getByRole('button', { name: 'Oq', exact: true }).click();
+  await page.getByRole('button', { name: TEXT.white, exact: true }).click();
   await page.getByLabel(TEXT.plateField).fill('01a1');
   await shot('2-car-typing');
   await page.getByLabel(TEXT.plateField).fill('011');

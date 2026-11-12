@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import { pid, registerUser } from '../test-api';
 import { botSender, fakeTelegram, textMessage } from './test-bot';
@@ -27,7 +28,7 @@ describe('the Telegram profile of a person for the team', () => {
     expect([sent?.method, sent?.token, sent?.body.text]).toEqual([
       'sendMessage',
       'd',
-      'Telegram profili: Ali',
+      `${toCyrillic('Telegram profili')}: Ali`,
     ]);
     expect(JSON.stringify(sent?.body.reply_markup)).toContain(`"url":"tg://user?id=${PERSON}"`);
   });
@@ -36,10 +37,10 @@ describe('the Telegram profile of a person for the team', () => {
     const telegram = hidingTelegram();
     const send = botSender(telegram.fetch);
     await send('passenger', start(OWNER, await pid(PERSON)));
-    const closed = 'Ali: Telegram bu profilni ochishga ruxsat bermadi.';
+    const closed = `Ali: ${toCyrillic('Telegram bu profilni ochishga ruxsat bermadi.')}`;
     expect(telegram.sentTo(OWNER).at(-1)?.body.text).toBe(closed);
     await send('passenger', start(OWNER, 'f'.repeat(32)));
-    expect(telegram.sentTo(OWNER).at(-1)?.body.text).toBe('Odam topilmadi.');
+    expect(telegram.sentTo(OWNER).at(-1)?.body.text).toBe(toCyrillic('Odam topilmadi.'));
   });
 
   it('greets anyone else as always', async () => {

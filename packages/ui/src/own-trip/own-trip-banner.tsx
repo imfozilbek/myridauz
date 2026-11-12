@@ -1,4 +1,5 @@
 import { roadArrival, type Trip } from '@platform/contracts';
+import { placeEnd } from '@platform/i18n';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 import { usePlaces } from '../market/places-gate';
@@ -40,7 +41,7 @@ export function OwnTripBanner({ trip, stage, riders, now }: Props) {
               // The text picks the ending of the place by its last letter: «Oltiariqqa», «Samarqandga».
               t('driverTrip.onWay.sub', {
                 place,
-                last: place.slice(-1),
+                last: placeEnd(place),
                 time: formatTime(new Date(roadArrival(trip))),
               }),
             ]

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { ErrorRow } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -28,8 +29,8 @@ const refusal: ErrorRow = {
 describe('the rows of «Xatolar»', () => {
   it('names the Mini App of the waitlist and a closed link of «Ulashish»', () => {
     renderInShell(<ErrorsSections errors={[crash, refusal]} />);
-    expect(screen.getByText('Kutish roʻyxati · waitlist_done')).toBeTruthy();
-    expect(screen.getByText('Bu safar endi koʻrinmaydi')).toBeTruthy();
+    expect(screen.getByText(`${toCyrillic('Kutish roʻyxati')} · waitlist_done`)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Bu safar endi koʻrinmaydi'))).toBeTruthy();
     expect(screen.queryByText('shares.not_found')).toBeNull();
   });
 });

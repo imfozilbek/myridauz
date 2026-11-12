@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { WalletClient } from '@platform/api-client';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -18,7 +19,7 @@ describe('the wallets of the team in fewer taps', { timeout: 20_000 }, () => {
     const all = async () => ({ wallets: [owner('Jasur', '7'), owner('Madina', '8')], more: false });
     renderMarket(<TeamWalletsScreen onBack={() => undefined} />, testClients({ wallet: { all } }));
     expect(await screen.findByText('Jasur')).toBeTruthy();
-    fireEvent.change(screen.getByLabelText('Qidirish'), { target: { value: 'mad' } });
+    fireEvent.change(screen.getByLabelText(toCyrillic('Qidirish')), { target: { value: 'mad' } });
     expect(screen.queryByText('Jasur')).toBeNull();
     expect(screen.getByText('Madina')).toBeTruthy();
   });
@@ -26,36 +27,36 @@ describe('the wallets of the team in fewer taps', { timeout: 20_000 }, () => {
   it('opens the wallet of a driver from the card in «Odamlar»', async () => {
     const of = vi.fn<WalletClient['of']>(async () => wallet);
     renderManagement({ wallet: { of } });
-    await tap('Odamlar');
-    fireEvent.change(screen.getByLabelText('ID raqami'), { target: { value: PERSON } });
-    await tap('Ochish');
-    await tap('Hamyon');
+    await tap(toCyrillic('Odamlar'));
+    fireEvent.change(screen.getByLabelText(toCyrillic('ID raqami')), { target: { value: PERSON } });
+    await tap(toCyrillic('Ochish'));
+    await tap(toCyrillic('Hamyon'));
     await waitFor(() => expect(of).toHaveBeenCalledWith(CARD.id));
-    expect(await screen.findByText('Hamyonni tuzatish')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Hamyonni tuzatish'))).toBeTruthy();
   });
 
   it('takes a ready reason in one tap; «Boshqa» opens the box to type', async () => {
     const adjust = vi.fn<WalletClient['adjust']>(async () => wallet);
     renderManagement({ wallet: { of: async () => wallet, adjust } });
-    await tap('Odamlar');
-    fireEvent.change(screen.getByLabelText('ID raqami'), { target: { value: PERSON } });
-    await tap('Ochish');
-    await tap('Hamyon');
-    await tap('Hamyonni tuzatish');
+    await tap(toCyrillic('Odamlar'));
+    fireEvent.change(screen.getByLabelText(toCyrillic('ID raqami')), { target: { value: PERSON } });
+    await tap(toCyrillic('Ochish'));
+    await tap(toCyrillic('Hamyon'));
+    await tap(toCyrillic('Hamyonni tuzatish'));
     // «Boshqa» opens the box to type the reason; a ready one is one tap (G78 sheet 4).
-    expect(screen.queryByLabelText('Boshqa')).toBeNull();
-    fireEvent.click(screen.getByRole('radio', { name: 'Boshqa' }));
-    expect(document.activeElement).toBe(screen.getByLabelText('Boshqa'));
-    fireEvent.change(screen.getByLabelText('Boshqa'), { target: { value: 'Oʻzim yozdim' } });
-    await tap('Kelmadi: komissiya qaytarildi');
-    expect(screen.queryByLabelText('Boshqa')).toBeNull();
-    fireEvent.change(screen.getByLabelText('Summa, soʻm'), { target: { value: '9000' } });
-    await tap('Qoʻshish');
-    await tap('Saqlash');
+    expect(screen.queryByLabelText(toCyrillic('Boshqa'))).toBeNull();
+    fireEvent.click(screen.getByRole('radio', { name: toCyrillic('Boshqa') }));
+    expect(document.activeElement).toBe(screen.getByLabelText(toCyrillic('Boshqa')));
+    fireEvent.change(screen.getByLabelText(toCyrillic('Boshqa')), { target: { value: 'Oʻzim yozdim' } });
+    await tap(toCyrillic('Kelmadi: komissiya qaytarildi'));
+    expect(screen.queryByLabelText(toCyrillic('Boshqa'))).toBeNull();
+    fireEvent.change(screen.getByLabelText(toCyrillic('Summa, soʻm')), { target: { value: '9000' } });
+    await tap(toCyrillic('Qoʻshish'));
+    await tap(toCyrillic('Saqlash'));
     expect(adjust).toHaveBeenCalledWith(CARD.id, {
       balance: 'bonus',
       amount: 9000,
-      reason: 'Kelmadi: komissiya qaytarildi',
+      reason: toCyrillic('Kelmadi: komissiya qaytarildi'),
     });
   });
 });

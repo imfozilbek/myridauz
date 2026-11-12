@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { DriverApplication } from '@platform/contracts';
 import { act, cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -26,8 +27,8 @@ describe('the application status of a driver stays fresh (docs/65 B2, lesson 36)
       clients,
     );
     // «Rad etish» is the last word (G75, docs/120): no «Tuzatish», only the support.
-    await screen.findByText('Qoʻllab-quvvatlashga yozish');
-    expect(screen.queryByText('Tuzatish')).toBeNull();
+    await screen.findByText(toCyrillic('Qoʻllab-quvvatlashga yozish'));
+    expect(screen.queryByText(toCyrillic('Tuzatish'))).toBeNull();
     expect(screen.queryByTestId('driver-home')).toBeNull();
     current = application({ status: 'approved', car });
     act(() => listener());

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { renderInShell, testClients } from '@platform/ui/testing';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -10,6 +11,6 @@ describe('StartPage', () => {
   it('opens the questionnaire for a new person', async () => {
     const waitlist = { open: async () => ({ open: true, entries: [], channels: [] }) };
     renderInShell(<StartPage />, false, true, undefined, testClients({ waitlist }));
-    expect(await screen.findByText('Kim boʻlib yoʻlga chiqasiz?')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Kim boʻlib yoʻlga chiqasiz?'))).toBeTruthy();
   });
 });

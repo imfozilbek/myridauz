@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError } from '@platform/api-client';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -15,7 +16,7 @@ describe('a complaint in «Navbat»', () => {
   it('names every reason the person ticked, the gravest first (owner decision 10.10.2026)', async () => {
     const both = { ...COMPLAINT_DETAIL, reasons: ['harassment' as const, 'no_show' as const] };
     renderNavbat(open, [COMPLAINT], { feedback: { complaint: async () => both } });
-    expect(await screen.findByText('Haqorat, tahdid yoki bezovta qilish, Kelmadi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Haqorat, tahdid yoki bezovta qilish, Kelmadi'))).toBeTruthy();
   });
 
   // G45 (docs/17): both sides with their trips and complaints, the complaints before against the same
@@ -24,20 +25,20 @@ describe('a complaint in «Navbat»', () => {
     const past = [{ id: 'c0', reasons: ['no_show' as const], decision: 'warning' as const, at: 1 }];
     const known = { ...COMPLAINT_DETAIL, past, against: { ...COMPLAINT_DETAIL.against, complaints: 2 } };
     renderNavbat(open, [COMPLAINT], { feedback: { complaint: async () => known } });
-    expect(await screen.findByText('Avvalgi shikoyatlar: Jasur')).toBeTruthy();
-    expect(screen.getByText('Kelmadi · Ogohlantirildi')).toBeTruthy();
-    expect(screen.getByText('3 safar · 0 shikoyat')).toBeTruthy();
-    expect(screen.getByText('3 safar · 2 shikoyat')).toBeTruthy();
+    expect(await screen.findByText(`${toCyrillic('Avvalgi shikoyatlar')}: Jasur`)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Kelmadi · Ogohlantirildi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('3 safar · 0 shikoyat'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('3 safar · 2 shikoyat'))).toBeTruthy();
   });
 
   it('reads the chat only on demand, then comes back', async () => {
     const chat = vi.fn(async () => lines);
     renderNavbat(open, [COMPLAINT], { feedback: { complaint: async () => COMPLAINT_DETAIL, chat } });
-    fireEvent.click(await screen.findByText('Suhbatni koʻrish'));
+    fireEvent.click(await screen.findByText(toCyrillic('Suhbatni koʻrish')));
     expect(await screen.findByText('Tezroq chiq')).toBeTruthy();
     expect(chat).toHaveBeenCalledWith('c1');
-    fireEvent.click(screen.getByText('Orqaga'));
-    expect(await screen.findByText('Madina → Jasur (haydovchi)')).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Orqaga')));
+    expect(await screen.findByText(`Madina → Jasur (${toCyrillic('haydovchi')})`)).toBeTruthy();
   });
 
   // The driver's «Kelmadi» about the passenger: only then the commission goes back (G89 A1, A11).
@@ -51,24 +52,24 @@ describe('a complaint in «Navbat»', () => {
     const { tracked } = renderNavbat(open, [COMPLAINT], {
       feedback: { complaint: async () => noShow, decide },
     });
-    fireEvent.click(await screen.findByLabelText('Haydovchiga komissiyani qaytarish'));
-    fireEvent.click(screen.getByText('Ogohlantirish'));
+    fireEvent.click(await screen.findByLabelText(toCyrillic('Haydovchiga komissiyani qaytarish')));
+    fireEvent.click(screen.getByText(toCyrillic('Ogohlantirish')));
     await waitFor(() => expect(decide).toHaveBeenCalledWith('c1', { action: 'warning', refund: true }));
     expect(tracked.some((event) => event.name === 'complaint_decided')).toBe(true);
   });
 
   it('offers no refund when a passenger says the driver did not come', async () => {
     renderNavbat(open, [COMPLAINT], { feedback: { complaint: async () => COMPLAINT_DETAIL } });
-    expect(await screen.findByText('Ogohlantirish')).toBeTruthy();
-    expect(screen.queryByLabelText('Haydovchiga komissiyani qaytarish')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Ogohlantirish'))).toBeTruthy();
+    expect(screen.queryByLabelText(toCyrillic('Haydovchiga komissiyani qaytarish'))).toBeNull();
   });
 
   it('keeps the complaint with the reason when the decision did not go through (G43)', async () => {
     const decide = vi.fn(async () => Promise.reject(new ApiError(0, 'network.failed')));
     renderNavbat(open, [COMPLAINT], { feedback: { complaint: async () => COMPLAINT_DETAIL, decide } });
-    fireEvent.click(await screen.findByText('Buzilish yoʻq'));
+    fireEvent.click(await screen.findByText(toCyrillic('Buzilish yoʻq')));
     await waitFor(() => expect(screen.getByRole('alert').textContent).not.toBe(''));
-    expect(screen.getByText('Ogohlantirish')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Ogohlantirish'))).toBeTruthy();
   });
 
   // G91 ADM-8: another member decided it meanwhile: the reason stays, its decisions go (they would fail
@@ -76,20 +77,20 @@ describe('a complaint in «Navbat»', () => {
   it('decided by another member: says so and leads on', async () => {
     const decide = vi.fn(async () => Promise.reject(new ApiError(409, 'complaints.wrong_status')));
     renderNavbat(open, [COMPLAINT], { feedback: { complaint: async () => COMPLAINT_DETAIL, decide } });
-    fireEvent.click(await screen.findByText('Buzilish yoʻq'));
-    expect(await screen.findByText(/Bu shikoyat allaqachon koʻrib chiqilgan/u)).toBeTruthy();
-    expect(screen.queryByText('Ogohlantirish')).toBeNull();
-    fireEvent.click(screen.getByText('Davom etish'));
-    expect(await screen.findByText('Hammasi koʻrildi')).toBeTruthy();
+    fireEvent.click(await screen.findByText(toCyrillic('Buzilish yoʻq')));
+    expect(await screen.findByText(/Бу шикоят аллақачон кўриб чиқилган/u)).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Ogohlantirish'))).toBeNull();
+    fireEvent.click(screen.getByText(toCyrillic('Davom etish')));
+    expect(await screen.findByText(toCyrillic('Hammasi koʻrildi'))).toBeTruthy();
   });
 
   // G91 ADM-7: an urgent complaint of a bot link decided already says so.
   it('a complaint decided already says so and leads on', async () => {
     const resolved = { ...COMPLAINT_DETAIL, status: 'resolved' as const };
     renderNavbat(open, [], { feedback: { complaint: async () => resolved } });
-    expect(await screen.findByText('Hal qilindi')).toBeTruthy();
-    expect(screen.queryByText('Ogohlantirish')).toBeNull();
-    expect(screen.getByText('Davom etish')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Hal qilindi'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Ogohlantirish'))).toBeNull();
+    expect(screen.getByText(toCyrillic('Davom etish'))).toBeTruthy();
   });
 
   // G91 (review of ADM-7): a refund waits for the owner: its answer is the decision, not «Davom etish».
@@ -105,8 +106,8 @@ describe('a complaint in «Navbat»', () => {
         me: async () => ({ id: null, firstName: 'Fozil', hasAvatar: false, role: 'owner' as const }),
       },
     });
-    expect(await screen.findByText('Qaytarishni tasdiqlash')).toBeTruthy();
-    expect(screen.queryByText('Davom etish')).toBeNull();
-    expect(screen.queryByText('Hal qilindi')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Qaytarishni tasdiqlash'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Davom etish'))).toBeNull();
+    expect(screen.queryByText(toCyrillic('Hal qilindi'))).toBeNull();
   });
 });

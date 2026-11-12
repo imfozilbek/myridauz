@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { json, OWNER, approvedDriver, read } from './bookings-test-api';
 import { botSender } from './bots/test-bot';
@@ -102,7 +103,7 @@ describe('ratings and complaints through the API (docs/17, docs/24)', () => {
     // The urgent complaint rings under «Navbat» of the team (G68); the team sees the public id,
     // never the Telegram ID (docs/65 A3).
     const ring = telegram.find(
-      (item) => item.body.chat_id === OWNER && String(item.body.text).includes('Muhim shikoyat'),
+      (item) => item.body.chat_id === OWNER && String(item.body.text).includes(toCyrillic('Muhim shikoyat')),
     );
     expect(ring?.body.reply_parameters).toBeDefined();
     expect(ring?.body).not.toHaveProperty('disable_notification');

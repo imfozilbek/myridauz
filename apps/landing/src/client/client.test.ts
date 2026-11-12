@@ -67,10 +67,10 @@ describe('landing script (docs/59)', () => {
     expect(asked).toEqual([`https://api.${brand.domain}/public/price?from=1726273&to=1718401`]);
     expect(text('[data-name=from]')).toBe('Toshkent');
     expect(text('[data-name=to]')).toBe('Samarqand');
-    expect(text('[data-km-value]')).toMatch(/^≈\s300\skm$/u);
-    expect(text('[data-price]')).toMatch(/^≈\s90\s000\ssoʻm$/u);
+    expect(text('[data-km-value]')).toMatch(/^≈\s300\sкм$/u);
+    expect(text('[data-price]')).toMatch(/^≈\s90\s000\sсўм$/u);
     click('[data-more]');
-    expect(text('[data-total]')).toMatch(/^≈\s360\s000\ssoʻm$/u);
+    expect(text('[data-total]')).toMatch(/^≈\s360\s000\sсўм$/u);
     click('[data-less]');
     click('[data-less]');
     expect(text('[data-seats-label]')).toContain('2');
@@ -110,7 +110,7 @@ describe('landing script (docs/59)', () => {
     online = true;
     click('[data-swap]');
     click('[data-swap]');
-    await vi.waitFor(() => expect(text('[data-price]')).toMatch(/^≈\s90\s000\ssoʻm$/u));
+    await vi.waitFor(() => expect(text('[data-price]')).toMatch(/^≈\s90\s000\sсўм$/u));
   });
 
   it('puts only codes into the links', async () => {

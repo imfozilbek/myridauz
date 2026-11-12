@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { MINUTE_MS, type Booking } from '@platform/contracts';
 import { confirmed } from '../bookings/booking-test-kit';
 
@@ -8,8 +9,8 @@ export const madina: Booking = {
   passenger: { ...confirmed.passenger, firstName: 'Madina' },
   pickup: {
     point: { lat: 41.2856, lng: 69.2045 },
-    name: { step: 'landmark', name: 'Grand' },
-    area: { step: 'mahalla', name: 'Qatortol' },
+    name: { step: 'landmark', name: toCyrillic('Grand') },
+    area: { step: 'mahalla', name: toCyrillic('Qatortol') },
   },
 };
 export const akmal: Booking = {

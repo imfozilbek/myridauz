@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { AdminReviews, Journal, SoundsState } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -15,8 +16,8 @@ afterEach(cleanup);
 
 const down = async () => Promise.reject(new Error('down'));
 const back = () => undefined;
-const RETRY = 'Qayta urinish';
-const SAID = 'Birozdan keyin qayta urinib koʻring.';
+const RETRY = toCyrillic('Qayta urinish');
+const SAID = toCyrillic('Birozdan keyin qayta urinib koʻring.');
 
 // G91 ADM-10: a failure of the team screens is said with «Qayta urinish», never an endless skeleton,
 // an empty list or a tap that does nothing.
@@ -43,14 +44,14 @@ describe('a failure on a screen of the team', { timeout: 20_000 }, () => {
       changedAt: null,
     });
     renderMarket(<SoundsScreen onBack={back} />, testClients({ sounds: { state, pick: down } }));
-    fireEvent.click(await screen.findByText('2-variant'));
+    fireEvent.click(await screen.findByText(toCyrillic('2-variant')));
     expect(await screen.findByText(SAID)).toBeTruthy();
     cleanup();
     const entry = { at: 1, member: 'Ali', kind: 'block' as const, subject: 'x', action: 'block:7' };
     let calls = 0;
     const journal = async (): Promise<Journal> => (calls++ === 0 ? { entries: [entry] } : down());
     renderMarket(<JournalScreen onBack={back} />, testClients({ team: { journal } }));
-    fireEvent.click(await screen.findByText('Yana'));
+    fireEvent.click(await screen.findByText(toCyrillic('Yana')));
     expect(await screen.findByText(SAID)).toBeTruthy();
     cleanup();
     const review = {
@@ -67,7 +68,7 @@ describe('a failure on a screen of the team', { timeout: 20_000 }, () => {
     const teamReviews = async (): Promise<AdminReviews> =>
       asked++ === 0 ? { reviews: [review], more: true } : down();
     renderMarket(<TeamReviewsScreen onBack={back} />, testClients({ feedback: { teamReviews } }));
-    fireEvent.click(await screen.findByText('Yana'));
+    fireEvent.click(await screen.findByText(toCyrillic('Yana')));
     expect(await screen.findByText(SAID)).toBeTruthy();
   });
 

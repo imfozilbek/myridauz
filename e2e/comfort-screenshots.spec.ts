@@ -52,7 +52,7 @@ test('admin: the median of real prices as a hint', async ({ page }) => {
   await page.getByText(TEXT.management).click();
   await page.getByText(TEXT.pricing, { exact: true }).click();
   await page
-    .getByText(/^Formula: /u)
+    .getByText(new RegExp(`^${t('pricing.formula', { price: '' })}`, 'u'))
     .first()
     .click();
   await expect(page.getByText(t('pricing.median'))).toBeVisible();

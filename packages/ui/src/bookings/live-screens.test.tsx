@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError, type BookingsClient, type MarketClient } from '@platform/api-client';
 import type { Booking } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
@@ -32,7 +33,7 @@ describe('an open booking stays fresh and clear (docs/65 B2, B3, B4)', () => {
     expect(screen.getByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
     mine = [{ ...confirmed, status: 'cancelled_by_driver' }];
     channel.fire();
-    expect(await screen.findByText('Haydovchi bekor qildi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Haydovchi bekor qildi'))).toBeTruthy();
   });
 
   it('hides the tools of a confirmed seat once the driver cancels it', async () => {
@@ -50,12 +51,12 @@ describe('an open booking stays fresh and clear (docs/65 B2, B3, B4)', () => {
       }),
     );
     await tap('Jasur');
-    expect(screen.getByText('Yetib keldim')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Yetib keldim'))).toBeTruthy();
     mine = [{ ...confirmed, status: 'cancelled_by_driver' }];
     channel.fire();
-    await screen.findByText('Haydovchi bekor qildi');
+    await screen.findByText(toCyrillic('Haydovchi bekor qildi'));
     // «Yetib keldim» is only for a seat that still goes (docs/65 B2).
-    expect(screen.queryByText('Yetib keldim')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Yetib keldim'))).toBeNull();
   });
 
   it('asks before a cancel and keeps the seat on "no"', async () => {
@@ -69,7 +70,7 @@ describe('an open booking stays fresh and clear (docs/65 B2, B3, B4)', () => {
       }),
     );
     await tap('Jasur');
-    await tap('Joyni bekor qilish');
+    await tap(toCyrillic('Joyni bekor qilish'));
     expect(cancelMine).not.toHaveBeenCalled();
     expect(screen.getByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
   });
@@ -87,9 +88,9 @@ describe('an open booking stays fresh and clear (docs/65 B2, B3, B4)', () => {
       }),
     );
     await tap('Jasur');
-    await tap('Joyni bekor qilish');
+    await tap(toCyrillic('Joyni bekor qilish'));
     expect(await screen.findByRole('alert')).toBeTruthy();
-    expect(screen.getByText('Bu soʻrov allaqachon oʻzgargan. Roʻyxatni yangilang.')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Bu soʻrov allaqachon oʻzgargan. Roʻyxatni yangilang.'))).toBeTruthy();
     expect(screen.getByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
   });
 
@@ -104,9 +105,9 @@ describe('an open booking stays fresh and clear (docs/65 B2, B3, B4)', () => {
       }),
     );
     await openOwnTrip();
-    await tap('Safarni bekor qilish');
+    await tap(toCyrillic('Safarni bekor qilish'));
     expect(cancelTrip).toHaveBeenCalledWith(trip.id);
-    expect(await screen.findByText('Birozdan keyin qayta urinib koʻring.')).toBeTruthy();
-    expect(screen.getByText('Safarni bekor qilish')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Birozdan keyin qayta urinib koʻring.'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Safarni bekor qilish'))).toBeTruthy();
   });
 });

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { Subscription } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -33,12 +34,12 @@ describe('"Obunalar" of a driver', () => {
   it('tells a driver about the new requests', async () => {
     open('driver');
     expect(
-      await screen.findByText('Yoʻnalishingizda yangi soʻrov chiqsa, botda xabar beramiz.'),
+      await screen.findByText(toCyrillic('Yoʻnalishingizda yangi soʻrov chiqsa, botda xabar beramiz.')),
     ).toBeTruthy();
   });
 
   it('tells a passenger about the new trips', async () => {
     open('passenger');
-    expect(await screen.findByText('Yangi safar chiqsa, botda xabar beramiz.')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Yangi safar chiqsa, botda xabar beramiz.'))).toBeTruthy();
   });
 });

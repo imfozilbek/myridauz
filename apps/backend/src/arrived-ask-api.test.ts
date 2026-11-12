@@ -1,4 +1,5 @@
 import { arrivedAskAt, MINUTE_MS } from '@platform/contracts';
+import { toCyrillic } from '@platform/i18n';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { app } from './app';
 import { approvedDriver, json, OWNER, read } from './bookings-test-api';
@@ -55,7 +56,9 @@ const seatOf = async (passenger: number, id: string) =>
     (seat) => seat.id === id,
   );
 const questions = (passenger: number) =>
-  telegram.sentTo(passenger).filter((sent) => String(sent.body.text).includes('Yetib keldingizmi?'));
+  telegram
+    .sentTo(passenger)
+    .filter((sent) => String(sent.body.text).includes(toCyrillic('Yetib keldingizmi?')));
 const answer = (passenger: number, id: string, value: 'yes' | 'no') =>
   press(
     'passenger',
@@ -93,7 +96,7 @@ describe('the bot asks a passenger who did not say she arrived', () => {
       .sentTo(PASSENGER)
       .filter((sent) => sent.method === 'editMessageText')
       .at(-1);
-    expect(String(edit?.body.text)).toContain('Yaqinlaringiz ham bilib oladi');
+    expect(String(edit?.body.text)).toContain(toCyrillic('Yaqinlaringiz ham bilib oladi'));
   });
 
   it('«Hali yoʻldaman» changes nothing; the link stays', async () => {

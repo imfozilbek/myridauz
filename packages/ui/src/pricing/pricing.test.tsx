@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError } from '@platform/api-client';
 import type { Direction, PricingState, PricingVariables } from '@platform/contracts';
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
@@ -55,91 +56,91 @@ function setup() {
 describe('Narxlar: the price engine for the team (docs/23)', () => {
   it('changes the formula with the new prices on the same screen (G78 sheet 4)', async () => {
     const pricing = setup();
-    await tap('Narxlar');
+    await tap(toCyrillic('Narxlar'));
     // Who changed a version: the name, never the Telegram ID (docs/65 A3, G45).
     expect(await screen.findByText(/, Fozil$/u)).toBeTruthy();
     expect(document.body.textContent).not.toMatch(/#\d/u);
-    await tap('Formulani oʻzgartirish');
+    await tap(toCyrillic('Formulani oʻzgartirish'));
     // Every field is named on every platform, not only by a header iOS hides (G27).
-    fireEvent.change(screen.getByLabelText('Stavka (1 km uchun)'), { target: { value: '400' } });
-    expect(screen.getByLabelText('Eng koʻp narx')).toHaveProperty('value', '600000');
+    fireEvent.change(screen.getByLabelText(toCyrillic('Stavka (1 km uchun)')), { target: { value: '400' } });
+    expect(screen.getByLabelText(toCyrillic('Eng koʻp narx'))).toHaveProperty('value', '600000');
     // The prices follow the typing; the new price of a changed direction is marked (docs/86 V13).
-    expect(await screen.findByText('Narxlar qanday oʻzgaradi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Narxlar qanday oʻzgaradi'))).toBeTruthy();
     expect(pricing.preview).toHaveBeenLastCalledWith({ ...V, ratePerKm: 400 });
     expect(screen.getByText(/^130.000$/u).className).toBe('manage-changed');
     expect(screen.getByText(/^90.000 → 90.000$/u)).toBeTruthy();
-    await tap('Saqlash');
+    await tap(toCyrillic('Saqlash'));
     expect(pricing.save).toHaveBeenCalledWith({ ...V, ratePerKm: 400 });
   });
 
   it('says what is wrong with the numbers and saves nothing', async () => {
     setup();
-    await tap('Narxlar');
-    await tap('Formulani oʻzgartirish');
-    fireEvent.change(screen.getByLabelText('Eng kam narx'), { target: { value: '700000' } });
-    expect(screen.getByText(/^Qiymatlarni tekshiring/u)).toBeTruthy();
-    expect(screen.queryByText('Saqlash')).toBeNull();
+    await tap(toCyrillic('Narxlar'));
+    await tap(toCyrillic('Formulani oʻzgartirish'));
+    fireEvent.change(screen.getByLabelText(toCyrillic('Eng kam narx')), { target: { value: '700000' } });
+    expect(screen.getByText(/^Қийматларни текширинг/u)).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Saqlash'))).toBeNull();
   });
 
   it('sets a price for a direction, refuses one out of the bounds and rolls back a version', async () => {
     const pricing = setup();
     pricing.setDirection.mockRejectedValueOnce(new ApiError(422, 'pricing.out_of_bounds'));
-    await tap('Narxlar');
-    await tap(/^Formula: 95/);
+    await tap(toCyrillic('Narxlar'));
+    await tap(/^Формула: 95/);
     fireEvent.change(screen.getByDisplayValue('95000'), { target: { value: '700000' } });
-    await tap('Narxni saqlash');
-    expect(await screen.findByText('Narx ruxsat etilgan chegarada boʻlsin.')).toBeTruthy();
+    await tap(toCyrillic('Narxni saqlash'));
+    expect(await screen.findByText(toCyrillic('Narx ruxsat etilgan chegarada boʻlsin.'))).toBeTruthy();
     fireEvent.change(screen.getByDisplayValue('700000'), { target: { value: '100000' } });
-    await tap('Narxni saqlash');
+    await tap(toCyrillic('Narxni saqlash'));
     expect(pricing.setDirection).toHaveBeenLastCalledWith({ from: '1726269', to: '1730401', price: 100000 });
-    await tap('Shu versiyaga qaytish');
+    await tap(toCyrillic('Shu versiyaga qaytish'));
     expect(pricing.rollback).toHaveBeenCalledWith(1);
   });
 
   it('tells a moderator only the owner sets a price, not that it is out of bounds (docs/83 N05)', async () => {
     const pricing = setup();
     pricing.setDirection.mockRejectedValueOnce(new ApiError(403, 'auth.not_owner'));
-    await tap('Narxlar');
-    await tap(/^Formula: 95/);
-    await tap('Narxni saqlash');
-    expect(await screen.findByText('Buni faqat loyiha egasi qila oladi.')).toBeTruthy();
-    expect(screen.queryByText('Narx ruxsat etilgan chegarada boʻlsin.')).toBeNull();
+    await tap(toCyrillic('Narxlar'));
+    await tap(/^Формула: 95/);
+    await tap(toCyrillic('Narxni saqlash'));
+    expect(await screen.findByText(toCyrillic('Buni faqat loyiha egasi qila oladi.'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Narx ruxsat etilgan chegarada boʻlsin.'))).toBeNull();
   });
 
   it('Back with changes asks before the typed numbers go (docs/94 F3)', async () => {
     setup();
     const asked = vi.spyOn(window, 'confirm').mockReturnValueOnce(false).mockReturnValueOnce(true);
-    await tap('Narxlar');
-    await tap('Formulani oʻzgartirish');
-    fireEvent.change(screen.getByLabelText('Stavka (1 km uchun)'), { target: { value: '400' } });
-    await act(async () => fireEvent.click(screen.getByText('Orqaga')));
-    expect(asked).toHaveBeenCalledWith('Oʻzgarishlar saqlanmaydi. Chiqasizmi?');
-    expect(screen.getByLabelText('Stavka (1 km uchun)')).toHaveProperty('value', '400');
-    await act(async () => fireEvent.click(screen.getByText('Orqaga')));
-    expect(await screen.findByText('Formulani oʻzgartirish')).toBeTruthy();
+    await tap(toCyrillic('Narxlar'));
+    await tap(toCyrillic('Formulani oʻzgartirish'));
+    fireEvent.change(screen.getByLabelText(toCyrillic('Stavka (1 km uchun)')), { target: { value: '400' } });
+    await act(async () => fireEvent.click(screen.getByText(toCyrillic('Orqaga'))));
+    expect(asked).toHaveBeenCalledWith(toCyrillic('Oʻzgarishlar saqlanmaydi. Chiqasizmi?'));
+    expect(screen.getByLabelText(toCyrillic('Stavka (1 km uchun)'))).toHaveProperty('value', '400');
+    await act(async () => fireEvent.click(screen.getByText(toCyrillic('Orqaga'))));
+    expect(await screen.findByText(toCyrillic('Formulani oʻzgartirish'))).toBeTruthy();
     asked.mockRestore();
   });
 
   // G79 К7 (docs/170): the median of real prices is taken as the price in one tap, not typed.
   it('takes the median of real prices as the price in one tap', async () => {
     const pricing = setup();
-    await tap('Narxlar');
-    await tap(/^Formula: 95/);
-    fireEvent.click(await screen.findByText(/^90.000 soʻm$/u));
+    await tap(toCyrillic('Narxlar'));
+    await tap(/^Формула: 95/);
+    fireEvent.click(await screen.findByText(/^90.000 сўм$/u));
     expect(screen.getByDisplayValue('90000')).toBeTruthy();
-    await tap('Narxni saqlash');
+    await tap(toCyrillic('Narxni saqlash'));
     expect(pricing.setDirection).toHaveBeenCalledWith(expect.objectContaining({ price: 90000 }));
   });
 
   // G45 (docs/48): the owner corrects the road km; who corrected it, before and after, stay under it.
   it('corrects the distance of a direction and shows its history', async () => {
     const pricing = setup();
-    await tap('Narxlar');
-    await tap(/^Formula: 95/);
-    expect(await screen.findByText('300 km → 320 km')).toBeTruthy();
-    await tap('320 km');
+    await tap(toCyrillic('Narxlar'));
+    await tap(/^Формула: 95/);
+    expect(await screen.findByText(toCyrillic('300 km → 320 km'))).toBeTruthy();
+    await tap(toCyrillic('320 km'));
     fireEvent.change(screen.getByDisplayValue('320'), { target: { value: '305' } });
-    await tap('Saqlash');
+    await tap(toCyrillic('Saqlash'));
     expect(pricing.setDistance).toHaveBeenCalledWith({ from: '1726269', to: '1730401', km: 305 });
   });
 });

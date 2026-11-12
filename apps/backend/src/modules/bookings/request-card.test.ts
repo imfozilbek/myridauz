@@ -1,4 +1,5 @@
 import { loadBrand } from '@platform/brands';
+import { toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import { PLACES } from './card-places';
 import { firstOfferRing, requestCard } from './infrastructure/request-card';
@@ -20,21 +21,21 @@ describe('the request card of the passenger bot (G68, docs/122)', () => {
   it('an open request: drivers see it, the day, the route, the seats; on top of the chat', () => {
     const shown = card('open', 0);
     expect(shown.text.split('\n').slice(0, 2)).toEqual([
-      '<b>⏳ Soʻrovingizni haydovchilar koʻrmoqda</b>',
-      '<b>Ertaga, 2-oktabr</b>',
+      toCyrillic('<b>⏳ Soʻrovingizni haydovchilar koʻrmoqda</b>'),
+      toCyrillic('<b>Ertaga, 2-oktabr</b>'),
     ]);
     expect(shown.text).toContain('<blockquote>🟢 <b>Chilonzor</b>, Toshkent shahri</blockquote>');
-    expect(shown.text).toMatch(/💺 2 joy · <b>180\s000\ssoʻm<\/b>/u);
+    expect(shown.text).toMatch(/💺 2 жой · <b>180\s000\sсўм<\/b>/u);
     expect(buttons(shown)).toContain('?request=r1');
     expect(shown.pin).toBe(true);
   });
 
   it('counts the offers and opens them; a burned request has no button and leaves the top', () => {
     const offered = card('open', 2);
-    expect(offered.text.split('\n')[0]).toBe('<b>📨 Soʻrovingizga 2 ta taklif keldi</b>');
-    expect(buttons(offered)).toContain('Takliflarni koʻrish');
+    expect(offered.text.split('\n')[0]).toBe(toCyrillic('<b>📨 Soʻrovingizga 2 ta taklif keldi</b>'));
+    expect(buttons(offered)).toContain(toCyrillic('Takliflarni koʻrish'));
     const burned = card('expired', 2);
-    expect(burned.text.split('\n')[0]).toBe('<b>⌛ Soʻrov muddati tugadi</b>');
+    expect(burned.text.split('\n')[0]).toBe(toCyrillic('<b>⌛ Soʻrov muddati tugadi</b>'));
     expect(burned.markup).toEqual({ inline_keyboard: [] });
     expect(burned.pin).toBe(false);
   });
@@ -48,7 +49,7 @@ describe('the request card of the passenger bot (G68, docs/122)', () => {
       driver: { firstName: 'Jasur' },
     };
     const ring = firstOfferRing(loadBrand(), fakeRequest('r1'), offer as never, false);
-    expect(ring.text).toMatch(/^📨 Soʻrovingizga taklif keldi: Jasur, \d\d:\d\d, 95\s000\ssoʻm$/u);
+    expect(ring.text).toMatch(/^📨 Сўровингизга таклиф келди: Jasur, \d\d:\d\d, 95\s000\sсўм$/u);
     expect(ring.card).toBe('request:r1');
     expect(JSON.stringify(ring.markup)).toContain('?sheet=o1');
   });

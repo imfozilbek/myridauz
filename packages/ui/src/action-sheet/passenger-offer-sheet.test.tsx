@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { BOOKING_LINK, REQUEST_LINK, type RideRequest } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -34,31 +35,31 @@ describe('the sheet of a new offer (G68)', { timeout: 20_000 }, () => {
     passenger([{ ...offer, id: 'o11' }]);
     // The block says the sum without «soʻm», as on the mockup g76/2 state 5.
     expect(await screen.findByText(/^Jasur · 95.000$/u)).toBeTruthy();
-    await tap('Takliflarni koʻrish');
-    expect(await screen.findByText('Yangi taklif')).toBeTruthy();
+    await tap(toCyrillic('Takliflarni koʻrish'));
+    expect(await screen.findByText(toCyrillic('Yangi taklif'))).toBeTruthy();
     expect(screen.getByText('Jasur · ★ 4,8')).toBeTruthy();
-    expect(screen.getByText('Oq Chevrolet Cobalt')).toBeTruthy();
+    expect(screen.getByText(`${toCyrillic('Oq')} Chevrolet Cobalt`)).toBeTruthy();
     expect(screen.getByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
-    expect(screen.getByText('Ertaga 08:00 · Chilonzor → Fargʻona')).toBeTruthy();
-    expect(screen.getByText('Uyingizdan olib ketadi')).toBeTruthy();
-    expect(screen.getByText('2 joy')).toBeTruthy();
-    expect(screen.getByText(/^Bir joy 95.000$/u)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Ertaga 08:00 · Chilonzor → Fargʻona'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Uyingizdan olib ketadi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('2 joy'))).toBeTruthy();
+    expect(screen.getByText(/^Бир жой 95.000$/u)).toBeTruthy();
     expect(screen.getByText(/^190.000$/u)).toBeTruthy();
     // The block at the bottom stays under the sheet (G76, lesson 199); its buttons step aside.
     expect(document.querySelector('.home-dock')).not.toBeNull();
-    expect(screen.queryByRole('button', { name: 'Takliflarni koʻrish' })).toBeNull();
-    await tap('Keyinroq');
+    expect(screen.queryByRole('button', { name: toCyrillic('Takliflarni koʻrish') })).toBeNull();
+    await tap(toCyrillic('Keyinroq'));
     await sheetClosed();
-    expect(await screen.findByRole('button', { name: 'Takliflarni koʻrish' })).toBeTruthy();
+    expect(await screen.findByRole('button', { name: toCyrillic('Takliflarni koʻrish') })).toBeTruthy();
   });
 
   it('«Qabul qilish» books the seat in one tap, says so on top and opens the seat', async () => {
     const accepted = vi.fn(async () => ({ ...offer, status: 'accepted' as const, bookingId: 'b12' }));
     const { answerOffer } = passenger([{ ...offer, id: 'o12' }], accepted);
-    await tap('Takliflarni koʻrish');
-    await tap('Qabul qilish');
+    await tap(toCyrillic('Takliflarni koʻrish'));
+    await tap(toCyrillic('Qabul qilish'));
     expect(answerOffer).toHaveBeenCalledWith('o12', 'accept');
-    expect(await screen.findByText('Taklif qabul qilindi. Joyingiz band.')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Taklif qabul qilindi. Joyingiz band.'))).toBeTruthy();
     // As «Mening soʻrovim» does (G77): the seat of the accepted offer opens.
     expect(screen.getByText(`opened ${BOOKING_LINK}:b12`)).toBeTruthy();
     await sheetClosed();
@@ -68,9 +69,9 @@ describe('the sheet of a new offer (G68)', { timeout: 20_000 }, () => {
   it('«Rad etish» does nothing while «Qabul qilish» runs', async () => {
     const pending = vi.fn(() => new Promise<never>(() => undefined));
     const { answerOffer } = passenger([{ ...offer, id: 'o15' }], pending);
-    await tap('Takliflarni koʻrish');
-    await tap('Qabul qilish');
-    await tap('Rad etish');
+    await tap(toCyrillic('Takliflarni koʻrish'));
+    await tap(toCyrillic('Qabul qilish'));
+    await tap(toCyrillic('Rad etish'));
     expect(answerOffer).toHaveBeenCalledTimes(1);
     expect(answerOffer).toHaveBeenCalledWith('o15', 'accept');
   });
@@ -80,11 +81,11 @@ describe('the sheet of a new offer (G68)', { timeout: 20_000 }, () => {
       { ...offer, id: 'o13' },
       { ...offer, id: 'o14' },
     ]);
-    await tap('Takliflarni koʻrish');
+    await tap(toCyrillic('Takliflarni koʻrish'));
     // One request is one thing to answer: no «1 / 2» (mockup g68/8 «Taklif»).
-    expect(await screen.findByText('Barcha takliflar (2)')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Barcha takliflar (2)'))).toBeTruthy();
     expect(screen.queryByText('1 / 2')).toBeNull();
-    await tap('Barcha takliflar (2)');
+    await tap(toCyrillic('Barcha takliflar (2)'));
     expect(await screen.findByText(`opened ${REQUEST_LINK}:r1`)).toBeTruthy();
     await sheetClosed();
   });
@@ -101,11 +102,11 @@ describe('the sheet of a new offer (G68)', { timeout: 20_000 }, () => {
       },
       { ...offer, id: '0000000c-0000-4000-8000-000000000001' },
     ]);
-    expect(await screen.findByText('Yangi taklif')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Yangi taklif'))).toBeTruthy();
     expect(screen.getByText('Jasur · ★ 4,8')).toBeTruthy();
-    expect(screen.getByText('Barcha takliflar (2)')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Barcha takliflar (2)'))).toBeTruthy();
     window.history.replaceState(null, '', '/');
-    await tap('Keyinroq');
+    await tap(toCyrillic('Keyinroq'));
     await sheetClosed();
   });
 });

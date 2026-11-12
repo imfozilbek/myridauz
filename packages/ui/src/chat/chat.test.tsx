@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { ChatClient } from '@platform/api-client';
 import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -23,7 +24,7 @@ describe('the chat screen (docs/07)', () => {
     );
     // While connecting the chat says nothing: «no messages yet» never flashes before the history (G41).
     await waitFor(() => expect(FakeSocket.last).toBeTruthy());
-    expect(screen.queryByText('Hali xabar yoʻq. Birinchi boʻlib yozing.')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Hali xabar yoʻq. Birinchi boʻlib yozing.'))).toBeNull();
     const socket = FakeSocket.last;
     if (!socket) throw new Error('no socket');
     act(() => {
@@ -37,18 +38,23 @@ describe('the chat screen (docs/07)', () => {
         canCall: false,
       });
     });
-    expect(screen.getByText('Joy soʻraldi')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Joy soʻraldi'))).toBeTruthy();
     expect(screen.getByText('Salom')).toBeTruthy();
     // Not confirmed yet: no call button (docs/08).
-    expect(screen.queryByText('Qoʻngʻiroq')).toBeNull();
-    expect(screen.getByLabelText('Xabar').tagName).toBe('TEXTAREA');
+    expect(screen.queryByText(toCyrillic('Qoʻngʻiroq'))).toBeNull();
+    expect(screen.getByLabelText(toCyrillic('Xabar')).tagName).toBe('TEXTAREA');
     // One line like Telegram; it grows with the text.
-    expect(screen.getByLabelText('Xabar').getAttribute('rows')).toBe('1');
-    fireEvent.change(screen.getByLabelText('Xabar'), { target: { value: 'Qayerda uchrashamiz?' } });
+    expect(screen.getByLabelText(toCyrillic('Xabar')).getAttribute('rows')).toBe('1');
+    fireEvent.change(screen.getByLabelText(toCyrillic('Xabar')), {
+      target: { value: 'Qayerda uchrashamiz?' },
+    });
     // Send is an arrow like in Telegram; a screen reader still says «Yuborish» (docs/88 L10).
-    expect(screen.queryByText('Yuborish')).toBeNull();
-    fireEvent.click(screen.getByRole('button', { name: 'Yuborish' }));
-    expect(JSON.parse(socket.sent[0] ?? '{}')).toEqual({ type: 'send', text: 'Qayerda uchrashamiz?' });
+    expect(screen.queryByText(toCyrillic('Yuborish'))).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: toCyrillic('Yuborish') }));
+    expect(JSON.parse(socket.sent[0] ?? '{}')).toEqual({
+      type: 'send',
+      text: 'Qayerda uchrashamiz?',
+    });
     act(() => {
       socket.receive({
         type: 'message',
@@ -58,7 +64,9 @@ describe('the chat screen (docs/07)', () => {
     });
     expect(screen.getByText('Raqam ***')).toBeTruthy();
     // The grey line with a lock says it louder, never a red text (G60, mockup g60/2).
-    expect(screen.getByText('Raqam va havolalar yashiriladi.').className).toContain('chat-lock-warned');
+    expect(screen.getByText(toCyrillic('Raqam va havolalar yashiriladi.')).className).toContain(
+      'chat-lock-warned',
+    );
     expect(tracked.map((event) => event.name)).toEqual(
       expect.arrayContaining(['chat_open', 'chat_first_message']),
     );
@@ -70,8 +78,8 @@ describe('the chat screen (docs/07)', () => {
       <ChatScreen chatKey={KEY} onBack={() => undefined} />,
       testClients({ chat: { socketUrl: failing } }),
     );
-    expect(await screen.findByText('Chatga ulanib boʻlmadi')).toBeTruthy();
-    fireEvent.click(screen.getByText('Qayta urinish'));
+    expect(await screen.findByText(toCyrillic('Chatga ulanib boʻlmadi'))).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Qayta urinish')));
     expect(failing).toHaveBeenCalledTimes(2);
   });
 
@@ -88,7 +96,7 @@ describe('the chat screen (docs/07)', () => {
       });
       first?.close();
     });
-    expect(screen.queryByText('Chatga ulanib boʻlmadi')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Chatga ulanib boʻlmadi'))).toBeNull();
     expect(screen.getByText('Salom')).toBeTruthy();
     await act(async () => void (await vi.advanceTimersByTimeAsync(1000)));
     expect(FakeSocket.last).not.toBe(first);
@@ -99,8 +107,8 @@ describe('the chat screen (docs/07)', () => {
     const onBack = vi.fn();
     const failing = vi.fn<ChatClient['socketUrl']>(async () => Promise.reject(new Error('down')));
     renderMarket(<ChatScreen chatKey={KEY} onBack={onBack} />, testClients({ chat: { socketUrl: failing } }));
-    await screen.findByText('Chatga ulanib boʻlmadi');
-    fireEvent.click(screen.getByText('Orqaga'));
+    await screen.findByText(toCyrillic('Chatga ulanib boʻlmadi'));
+    fireEvent.click(screen.getByText(toCyrillic('Orqaga')));
     expect(onBack).toHaveBeenCalled();
   });
 });

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { loadBrand } from '@platform/brands';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -17,8 +18,8 @@ describe('TelegramOnly (G52, docs/112)', () => {
       </TelegramOnly>,
     );
     expect(screen.queryByText('ilova')).toBeNull();
-    expect(screen.getByText('Telegramda oching')).toBeTruthy();
-    fireEvent.click(screen.getByText('Telegramda ochish'));
+    expect(screen.getByText(toCyrillic('Telegramda oching'))).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Telegramda ochish')));
     expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.driver}?startapp`);
   });
 
@@ -42,6 +43,6 @@ describe('TelegramOnly (G52, docs/112)', () => {
       </TelegramContext.Provider>,
     );
     expect(screen.queryByText('ilova')).toBeNull();
-    expect(screen.getByText('Telegramda oching')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Telegramda oching'))).toBeTruthy();
   });
 });

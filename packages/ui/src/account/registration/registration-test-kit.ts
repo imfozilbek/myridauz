@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { act, fireEvent, screen } from '@testing-library/react';
 import { vi } from 'vitest';
 
@@ -9,8 +10,8 @@ export const FACE = new File(['face'], 'face.jpg', { type: 'image/jpeg' });
 // Screen 1 like a person: both ticks, then «Davom etish» (G58).
 export async function passWelcome() {
   for (const box of await screen.findAllByRole('checkbox')) fireEvent.click(box);
-  fireEvent.click(screen.getByText('Davom etish'));
-  await screen.findByText('Siz haqingizda');
+  fireEvent.click(screen.getByText(toCyrillic('Davom etish')));
+  await screen.findByText(toCyrillic('Siz haqingizda'));
 }
 
 // The phone sheet gives a photo from the camera or the gallery.

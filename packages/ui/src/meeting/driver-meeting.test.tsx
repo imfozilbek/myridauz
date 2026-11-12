@@ -1,5 +1,5 @@
-import type { BookingsClient } from '@platform/api-client';
-import { ApiError } from '@platform/api-client';
+import { toCyrillic } from '@platform/i18n';
+import { ApiError, type BookingsClient } from '@platform/api-client';
 import type { Booking } from '@platform/contracts';
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import { useState } from 'react';
@@ -59,13 +59,13 @@ const twice = async (text: string) => {
 describe('«Uchrashuv» of the driver (docs/126, mockup g63/4 screen 13)', () => {
   it('shows each point: the passenger who came, the place by the rule of docs/121, who waits', async () => {
     open([{ ...madina, cameAt: MEETING_NOW }, akmal], vi.fn());
-    expect(await screen.findByText('Madina keldi: uchrashuv joyida')).toBeTruthy();
-    expect(screen.getByText(/^1-nuqta · /u)).toBeTruthy();
-    expect(screen.getByText(/^2-nuqta · /u)).toBeTruthy();
-    expect(screen.getByText('Grand yaqinida')).toBeTruthy();
-    expect(screen.getAllByText('Chilonzor, Toshkent shahri')).toHaveLength(2);
-    expect(screen.getByText('Madina · 2 joy')).toBeTruthy();
-    expect(screen.getAllByText('Xaritada ochish')).toHaveLength(2);
+    expect(await screen.findByText(`Madina ${toCyrillic('keldi: uchrashuv joyida')}`)).toBeTruthy();
+    expect(screen.getByText(/^1-нуқта · /u)).toBeTruthy();
+    expect(screen.getByText(/^2-нуқта · /u)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Grand yaqinida'))).toBeTruthy();
+    expect(screen.getAllByText(toCyrillic('Chilonzor, Toshkent shahri'))).toHaveLength(2);
+    expect(screen.getByText(`Madina · ${toCyrillic('2 joy')}`)).toBeTruthy();
+    expect(screen.getAllByText(toCyrillic('Xaritada ochish'))).toHaveLength(2);
     // The first point not answered yet is in the colour of the app.
     expect(document.querySelectorAll('.meet-card-now')).toHaveLength(1);
   });
@@ -76,16 +76,16 @@ describe('«Uchrashuv» of the driver (docs/126, mockup g63/4 screen 13)', () =>
       .mockImplementationOnce(marked(madina, { driverCameAt: MEETING_NOW }))
       .mockImplementationOnce(marked(madina, { driverCameAt: MEETING_NOW, metAt: MEETING_NOW }));
     const { tracked } = open([madina], meet);
-    await tap('Men keldim');
+    await tap(toCyrillic('Men keldim'));
     expect(meet).toHaveBeenLastCalledWith('m1', 'came');
     // The refusal on the left, the main action on the right (docs/121).
-    await screen.findByText('Keldi');
+    await screen.findByText(toCyrillic('Keldi'));
     const pair = [...document.querySelectorAll('.meet-answer button')].map((button) => button.textContent);
-    expect(pair).toEqual(['Kelmadi', 'Keldi']);
-    await tap('Keldi');
+    expect(pair).toEqual([toCyrillic('Kelmadi'), toCyrillic('Keldi')]);
+    await tap(toCyrillic('Keldi'));
     expect(meet).toHaveBeenLastCalledWith('m1', 'met');
-    expect(await screen.findByText('Keldi')).toBeTruthy();
-    expect(screen.queryByText('Kelmadi')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Keldi'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Kelmadi'))).toBeNull();
     // «Keldi» is the passenger in the car: the step «boarded» of the funnel (G76, docs/29).
     expect(tracked.filter((event) => event.name === 'boarded')).toHaveLength(1);
   });
@@ -95,12 +95,12 @@ describe('«Uchrashuv» of the driver (docs/126, mockup g63/4 screen 13)', () =>
     const meet = vi.fn<BookingsClient['meet']>(marked(came, { noShowAt: MEETING_NOW }));
     open([came], meet);
     asked.mockReturnValueOnce(false);
-    await tap('Kelmadi');
+    await tap(toCyrillic('Kelmadi'));
     expect(meet).not.toHaveBeenCalled();
     asked.mockReturnValueOnce(true);
-    await tap('Kelmadi');
+    await tap(toCyrillic('Kelmadi'));
     expect(meet).toHaveBeenCalledWith('a1', 'no_show');
-    expect(await screen.findByText(/^Kelmadi · qaytarish 9.500 kutilmoqda$/u)).toBeTruthy();
+    expect(await screen.findByText(/^Келмади · қайтариш 9.500 кутилмоқда$/u)).toBeTruthy();
   });
 
   it('says why a mark did not go and keeps the button', async () => {
@@ -108,16 +108,16 @@ describe('«Uchrashuv» of the driver (docs/126, mockup g63/4 screen 13)', () =>
       throw new ApiError(409, 'bookings.not_meeting_time');
     });
     open([madina], meet);
-    await tap('Men keldim');
-    expect(await screen.findByText(/^Hozir uchrashuv vaqti emas/u)).toBeTruthy();
-    expect(screen.getByText('Men keldim')).toBeTruthy();
+    await tap(toCyrillic('Men keldim'));
+    expect(await screen.findByText(/^Ҳозир учрашув вақти эмас/u)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Men keldim'))).toBeTruthy();
   });
 
   it('opens the chat and the call of the passenger', async () => {
     const onChat = vi.fn();
     open([madina], vi.fn(), onChat);
-    await tap('Yozish');
-    await tap('Qoʻngʻiroq');
+    await tap(toCyrillic('Yozish'));
+    await tap(toCyrillic('Qoʻngʻiroq'));
     expect(onChat).toHaveBeenCalledTimes(2);
   });
 
@@ -128,7 +128,7 @@ describe('«Uchrashuv» of the driver (docs/126, mockup g63/4 screen 13)', () =>
       () => new Promise((resolve) => (release = () => resolve(answer))),
     );
     openStale([madina], meet);
-    const button = await twice('Men keldim');
+    const button = await twice(toCyrillic('Men keldim'));
     await act(async () => release());
     fireEvent.click(button);
     expect(meet).toHaveBeenCalledOnce();
@@ -140,7 +140,7 @@ describe('«Uchrashuv» of the driver (docs/126, mockup g63/4 screen 13)', () =>
     asked.mockClear();
     asked.mockReturnValueOnce(true);
     openStale([came], meet);
-    const button = await twice('Kelmadi');
+    const button = await twice(toCyrillic('Kelmadi'));
     await vi.waitFor(() => expect(meet).toHaveBeenCalledWith('a1', 'no_show'));
     await act(async () => undefined);
     fireEvent.click(button);

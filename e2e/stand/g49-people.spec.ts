@@ -64,7 +64,9 @@ test('S75. «Men ham yoʻlga chiqaman» on the card of a close one leads into th
   const { link } = await createChatClient(await signedAs('passenger', ZUHRA)).share(seat.id);
   const token = link.split('follow_')[1] ?? '';
   await openAs(page, 'passenger', KAMOL, { search: `?follow=${token}` });
-  await expect(page.getByText(new RegExp(`^${ZUHRA.name}ning safari`, 'u'))).toBeVisible();
+  await expect(
+    page.getByText(new RegExp(`^${t('share.follow.title', { name: ZUHRA.name })}`, 'u')),
+  ).toBeVisible();
   await page.getByText(t('share.follow.join')).click();
   await expect(page.getByText(TEXT.offerLink)).toBeVisible();
 });

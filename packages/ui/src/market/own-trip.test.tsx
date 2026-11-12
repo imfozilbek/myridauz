@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { booking } from '../bookings/booking-test-kit';
@@ -17,12 +18,12 @@ describe('the own trip of a driver (docs/86 V11)', () => {
       }),
     );
     await openOwnTrip();
-    expect(await screen.findByText('Safar eʼlon qilindi')).toBeTruthy();
-    expect(screen.queryByText('Haydovchi')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Safar eʼlon qilindi'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Haydovchi'))).toBeNull();
     expect(screen.queryByText('Jasur')).toBeNull();
     // The passengers first, then the trip and its tiles (mockup g63/3).
-    const passengers = screen.getByText('Yoʻlovchilar (0)');
-    const family = screen.getByText('Yaqinlarimga');
+    const passengers = screen.getByText(toCyrillic('Yoʻlovchilar (0)'));
+    const family = screen.getByText(toCyrillic('Yaqinlarimga'));
     expect(passengers.compareDocumentPosition(family) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 

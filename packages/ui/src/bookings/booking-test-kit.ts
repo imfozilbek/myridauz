@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { Booking, Offer, Wallet } from '@platform/contracts';
 import { trip } from '../market/market-test-kit';
 
@@ -17,8 +18,8 @@ export const booking: Booking = {
   mode: 'door',
   pitak: null,
   // Before the confirmation the driver sees the area only (docs/70).
-  pickup: { point: null, name: null, area: { step: 'mahalla', name: 'Qatortol' } },
-  dropoff: { point: null, name: null, area: { step: 'district', name: 'Samarqand shahri' } },
+  pickup: { point: null, name: null, area: { step: 'mahalla', name: toCyrillic('Qatortol') } },
+  dropoff: { point: null, name: null, area: { step: 'district', name: toCyrillic('Samarqand shahri') } },
   note: null,
   extraKm: 2,
   plate: null,
@@ -42,13 +43,13 @@ export const confirmed: Booking = {
   confirmedAt: Date.parse('2026-10-01T05:00:00Z'),
   pickup: {
     point: { lat: 41.2856, lng: 69.2045 },
-    name: { step: 'landmark', name: 'Chilonzor bozori' },
-    area: { step: 'mahalla', name: 'Qatortol' },
+    name: { step: 'landmark', name: toCyrillic('Chilonzor bozori') },
+    area: { step: 'mahalla', name: toCyrillic('Qatortol') },
   },
   dropoff: {
     point: { lat: 39.6547, lng: 66.9758 },
-    name: { step: 'mahalla', name: 'Registon mahallasi' },
-    area: { step: 'mahalla', name: 'Registon mahallasi' },
+    name: { step: 'mahalla', name: toCyrillic('Registon mahallasi') },
+    area: { step: 'mahalla', name: toCyrillic('Registon mahallasi') },
   },
   extraKm: null,
   plate: '01A123BC',

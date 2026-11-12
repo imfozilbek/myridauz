@@ -1,4 +1,5 @@
 import { channelsOnly, groupChats, loadBrand, type BrandConfig } from '@platform/brands';
+import { toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import type { Bindings } from '../../env';
 import { looksDeps } from './looks-deps';
@@ -30,8 +31,8 @@ describe('the looks of an environment', () => {
     for (const environment of ['internal', 'production']) {
       const own: BrandConfig = loadBrand(brand.id, environment);
       const faces = facesOf(environment);
-      expect(faces[0]?.look).toEqual({ name: `${own.name} | poster` });
-      expect(faces[1]?.look.name).toBe(`${own.name} | Oʻzbekiston`);
+      expect(faces[0]?.look).toEqual({ name: `${own.name} | ${toCyrillic('poster')}` });
+      expect(faces[1]?.look.name).toBe(`${own.name} | ${toCyrillic('Oʻzbekiston')}`);
       expect(faces[1]?.look.description).toContain(`@${own.bots.passenger}`);
       expect(faces[1]?.look.avatar).toBe(`https://${own.domain}/channel/main-avatar.jpg`);
     }

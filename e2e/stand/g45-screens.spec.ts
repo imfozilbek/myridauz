@@ -1,5 +1,6 @@
 import { createFeedbackClient, createUsersClient } from '@platform/api-client';
 import type { Page } from '@playwright/test';
+import { toCyrillic } from '@platform/i18n';
 import { afterSplash, expect, test } from '../crash-guard';
 import { say } from './bot-kit';
 import { confirmedSeat } from './g27-kit';
@@ -89,7 +90,7 @@ test('Q8. the support copy has the public id and «Profilni ochish»; the link o
 test('G45. a complaint carries the history of both sides', async ({ page }) => {
   const [complaint] = standRows(`SELECT id FROM complaints WHERE booking_id = '${seatId}'`);
   await openAs(page, 'admin', OWNER, { search: `?complaint=${String(complaint?.['id'])}` });
-  await expect(page.getByText(/^\d+ safar · 1 shikoyat$/u)).toBeVisible();
+  await expect(page.getByText(new RegExp(`^\\d+ ${toCyrillic('safar · 1 shikoyat')}$`, 'u'))).toBeVisible();
   await shot(page, '4-complaint');
 });
 
@@ -108,19 +109,19 @@ test('Q5. the team cancels the trip with a reason; both sides hear it', async ({
       .poll(async () => (await botMessages()).some((m) => m.chatId === chat && m.text.includes(words)))
       .toBe(true);
   await heard(DRIVER.id, 'Haydovchi hujjatlari tekshirilmoqda');
-  await heard(PASSENGER.id, 'jamoa bekor qildi');
+  await heard(PASSENGER.id, toCyrillic('jamoa bekor qildi'));
 });
 
 test('G45. the distance, a limit and the period before, as the owner sees them', async ({ page }) => {
   await management(page, t('pricing.title'));
   await page
-    .getByText(/^Formula: /u)
+    .getByText(new RegExp(`^${t('pricing.formula', { price: '' })}`, 'u'))
     .first()
     .click();
   await expect(page.getByText(t('pricing.distance'), { exact: true })).toBeVisible();
   await shot(page, '6-direction-distance');
   await page
-    .getByText(/^\d+\skm$/u)
+    .getByText(new RegExp(`^\\d+\\s${toCyrillic('km')}$`, 'u'))
     .first()
     .click();
   await shot(page, '7-distance-sheet');

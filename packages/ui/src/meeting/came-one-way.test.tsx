@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { loadBrand } from '@platform/brands';
 import { MINUTE_MS } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
@@ -32,7 +33,7 @@ describe('«Men keldim» of a passenger, one way (G77 C7)', { timeout: 20_000 },
     const departAt = soon();
     const seat = { ...confirmed, trip: { ...trip, departAt, firstDepartAt: departAt } };
     renderHome((go) => <PassengerHome go={go} />, PASSENGER_ACTIONS, { bookings: async () => [seat] });
-    await tap('Men keldim');
+    await tap(toCyrillic('Men keldim'));
     expect(told).toHaveBeenCalledWith('home', seat.id);
   });
 
@@ -46,8 +47,8 @@ describe('«Men keldim» of a passenger, one way (G77 C7)', { timeout: 20_000 },
       }),
     );
     await tap('Jasur');
-    await tap('Men keldim');
+    await tap(toCyrillic('Men keldim'));
     expect(told).toHaveBeenCalledWith('bookings.passenger', confirmed.id);
-    expect(screen.queryByText('Xatolik yuz berdi')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Xatolik yuz berdi'))).toBeNull();
   });
 });

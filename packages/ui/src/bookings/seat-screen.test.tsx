@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { Booking } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -24,34 +25,34 @@ describe('the seat of a passenger', () => {
   it('puts the passenger first with how many and the last step', async () => {
     open(confirmed);
     expect(await screen.findByText('Dilnoza')).toBeTruthy();
-    expect(screen.getByText('2 kishi')).toBeTruthy();
-    expect(document.querySelector('.seat-state-done')?.textContent).toBe('Joy tasdiqlandi');
+    expect(screen.getByText(toCyrillic('2 kishi'))).toBeTruthy();
+    expect(document.querySelector('.seat-state-done')?.textContent).toBe(toCyrillic('Joy tasdiqlandi'));
   });
 
   it('shows the points of the seat on the route, the end under them unless they name it', async () => {
     open(confirmed);
-    expect(await screen.findByText('Chilonzor bozori yaqinida')).toBeTruthy();
-    expect(screen.getByText('Toshkent shahri')).toBeTruthy();
-    expect(screen.getByText('Registon mahallasi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Chilonzor bozori yaqinida'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Toshkent shahri'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Registon mahallasi'))).toBeTruthy();
   });
 
   it('before the confirmation says the area with the extra km, the state in amber', async () => {
     open(booking);
-    expect(await screen.findByText('Qatortol atrofi · +2 km')).toBeTruthy();
-    expect(screen.getByText('Chilonzor, Toshkent shahri')).toBeTruthy();
-    expect(screen.getByText(/^Samarqand shahri atrofi/u)).toBeTruthy();
-    expect(document.querySelector('.seat-state-asked')?.textContent).toBe('Joy soʻraldi');
+    expect(await screen.findByText(toCyrillic('Qatortol atrofi · +2 km'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Chilonzor, Toshkent shahri'))).toBeTruthy();
+    expect(screen.getByText(/^Самарқанд шаҳри атрофи/u)).toBeTruthy();
+    expect(document.querySelector('.seat-state-asked')?.textContent).toBe(toCyrillic('Joy soʻraldi'));
     // No call before the seat is confirmed.
-    expect(screen.queryByText('Qoʻngʻiroq')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Qoʻngʻiroq'))).toBeNull();
   });
 
   it('offers the chat, the call and the complaint of a confirmed seat, the steps as rows', async () => {
     open(confirmed);
-    expect(await screen.findByText('Xabar yozish')).toBeTruthy();
-    expect(screen.getByText('Qoʻngʻiroq')).toBeTruthy();
-    expect(screen.getByText('Shikoyat qilish')).toBeTruthy();
-    expect(screen.getAllByText('Joy tasdiqlandi')).toHaveLength(2);
-    expect(screen.getByText('Joy soʻraldi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Xabar yozish'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Qoʻngʻiroq'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Shikoyat qilish'))).toBeTruthy();
+    expect(screen.getAllByText(toCyrillic('Joy tasdiqlandi'))).toHaveLength(2);
+    expect(screen.getByText(toCyrillic('Joy soʻraldi'))).toBeTruthy();
   });
 });
 
@@ -61,7 +62,7 @@ describe('a seat the driver cannot cancel any more', () => {
   it('has no «Joyni bekor qilish» after «Keldi», «Kelmadi» or the departure', async () => {
     const { departAt } = confirmed.trip;
     open(confirmed);
-    expect(await screen.findByText('Joyni bekor qilish')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Joyni bekor qilish'))).toBeTruthy();
     cleanup();
     for (const seat of [
       { ...confirmed, metAt: departAt - 60_000 },
@@ -70,7 +71,7 @@ describe('a seat the driver cannot cancel any more', () => {
     ]) {
       open(seat);
       expect(await screen.findByText('Dilnoza')).toBeTruthy();
-      expect(screen.queryByText('Joyni bekor qilish')).toBeNull();
+      expect(screen.queryByText(toCyrillic('Joyni bekor qilish'))).toBeNull();
       cleanup();
     }
   });

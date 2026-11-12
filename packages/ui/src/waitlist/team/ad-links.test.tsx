@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderManagement } from '../../manage/manage-test-kit';
@@ -19,25 +20,25 @@ describe('«Reklama havolalari»', () => {
         adLink: async () => AD,
       },
     });
-    press(await screen.findByText('Reklama havolalari').then(() => /^Reklama havolalari/u));
+    press(await screen.findByText(toCyrillic('Reklama havolalari')).then(() => /^Реклама ҳаволалари/u));
     expect(await screen.findByText('Toshkent eʼlonlari')).toBeTruthy();
-    expect(screen.getByText('3 kun · tepada 1 soat · qadalgan 24 soat')).toBeTruthy();
-    press('Yangi havola');
-    fireEvent.change(screen.getByRole('textbox', { name: 'Nomi' }), {
+    expect(screen.getByText(toCyrillic('3 kun · tepada 1 soat · qadalgan 24 soat'))).toBeTruthy();
+    press(toCyrillic('Yangi havola'));
+    fireEvent.change(screen.getByRole('textbox', { name: toCyrillic('Nomi') }), {
       target: { value: 'Andijon yangiliklari' },
     });
-    fireEvent.click(screen.getByRole('radio', { name: 'Doimiy' }));
-    press('Havola yaratish');
+    fireEvent.click(screen.getByRole('radio', { name: toCyrillic('Doimiy') }));
+    press(toCyrillic('Havola yaratish'));
     await waitFor(() =>
       expect(createAd).toHaveBeenCalledWith(
         expect.objectContaining({ name: 'Andijon yangiliklari', days: null, target: 'passenger' }),
       ),
     );
     expect(await screen.findByText(AD.link)).toBeTruthy();
-    press('Orqaga');
+    press(toCyrillic('Orqaga'));
     press(await screen.findByText('Toshkent eʼlonlari').then(() => /^Toshkent eʼlonlari/u));
-    expect(await screen.findByText('Bitta yozilgan odam')).toBeTruthy();
-    expect(screen.getByText('88 yoʻlovchi · 8 haydovchi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Bitta yozilgan odam'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('88 yoʻlovchi · 8 haydovchi'))).toBeTruthy();
   });
 
   it('makes a link into the driver bot; a passenger bot link shows who registered', async () => {
@@ -51,18 +52,20 @@ describe('«Reklama havolalari»', () => {
         adLink: async () => TRIPS_AD,
       },
     });
-    press(await screen.findByText('Reklama havolalari').then(() => /^Reklama havolalari/u));
-    expect(await screen.findByText('3 roʻyxatdan oʻtdi')).toBeTruthy();
-    press('Yangi havola');
-    fireEvent.click(screen.getByRole('radio', { name: 'Haydovchi boti' }));
-    fireEvent.change(screen.getByRole('textbox', { name: 'Nomi' }), { target: { value: 'Bloger Aziz' } });
-    press('Havola yaratish');
+    press(await screen.findByText(toCyrillic('Reklama havolalari')).then(() => /^Реклама ҳаволалари/u));
+    expect(await screen.findByText(toCyrillic('3 roʻyxatdan oʻtdi'))).toBeTruthy();
+    press(toCyrillic('Yangi havola'));
+    fireEvent.click(screen.getByRole('radio', { name: toCyrillic('Haydovchi boti') }));
+    fireEvent.change(screen.getByRole('textbox', { name: toCyrillic('Nomi') }), {
+      target: { value: 'Bloger Aziz' },
+    });
+    press(toCyrillic('Havola yaratish'));
     await waitFor(() => expect(createAd).toHaveBeenCalledWith(expect.objectContaining({ target: 'driver' })));
-    expect(await screen.findByText(/Havola «Yoʻlovchi boti» ilovasini darhol ochadi\./u)).toBeTruthy();
-    press('Orqaga');
+    expect(await screen.findByText(/Ҳавола «Йўловчи боти» иловасини дарҳол очади\./u)).toBeTruthy();
+    press(toCyrillic('Orqaga'));
     press(await screen.findByText('Bloger Aziz').then(() => /^Bloger Aziz/u));
-    expect(await screen.findByText('Roʻyxatdan oʻtdi')).toBeTruthy();
-    expect(screen.getByText('Bitta roʻyxatdan oʻtgan odam')).toBeTruthy();
-    expect(screen.queryByText('Doʻst orqali yana yozildi')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Roʻyxatdan oʻtdi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Bitta roʻyxatdan oʻtgan odam'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Doʻst orqali yana yozildi'))).toBeNull();
   });
 });

@@ -1,6 +1,6 @@
 import { expect, test, type Page } from './crash-guard';
 import { loadBrand } from '@platform/brands';
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
 import { mockTelegram, telegramUrl } from './telegram-mock';
@@ -43,15 +43,15 @@ test('admin: the channels, a district channel with its neighbours', async ({ pag
   await page.goto(telegramUrl(appUrl(ADMIN.port)));
   await page.getByText(t('common.admin.management'), { exact: true }).click();
   await page.getByText(t('channels.title'), { exact: true }).click();
-  await expect(page.getByText('@ch_shahrisabz · 1 ta joy')).toBeVisible();
+  await expect(page.getByText(`@ch_shahrisabz · ${t('channels.places', { count: '1' })}`)).toBeVisible();
   await take('1-list');
   await page.getByText(t('channels.add')).click();
   await page.getByRole('textbox').nth(0).fill('ch_kitob');
   await page.getByRole('textbox').nth(1).fill('Kanal | Kitob');
-  await page.getByText('Qashqadaryo viloyati', { exact: true }).click();
-  await page.getByText('Kitob', { exact: true }).click();
+  await page.getByText(toCyrillic('Qashqadaryo viloyati'), { exact: true }).click();
+  await page.getByText(toCyrillic('Kitob'), { exact: true }).click();
   await page.getByText(t('channels.near')).click();
-  await expect(page.getByText('Shahrisabz', { exact: true }).first()).toBeVisible();
+  await expect(page.getByText(toCyrillic('Shahrisabz'), { exact: true }).first()).toBeVisible();
   await take('2-new');
   await page.locator('#tg-main-button').click();
   await expect.poll(() => saved.length).toBe(1);

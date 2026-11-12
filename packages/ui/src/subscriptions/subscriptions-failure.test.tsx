@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError, type SubscriptionsClient } from '@platform/api-client';
 import type { Subscription } from '@platform/contracts';
 import { cleanup, screen, fireEvent } from '@testing-library/react';
@@ -35,7 +36,7 @@ describe('"Obunalar" says why a change did not work (G43, docs/65 B3)', () => {
       </SubscriptionsLink>,
       testClients({ subscriptions: { mine: async () => [EXPIRED], renew: offline } }),
     );
-    await tap('Uzaytirish');
+    await tap(toCyrillic('Uzaytirish'));
     expect((await screen.findByRole('alert')).textContent).not.toBe('');
   });
 
@@ -49,8 +50,8 @@ describe('"Obunalar" says why a change did not work (G43, docs/65 B3)', () => {
       </SubscriptionsLink>,
       testClients({ subscriptions: { mine: async () => list, remove, subscribe: offline } }),
     );
-    fireEvent.click(await screen.findByRole('button', { name: 'Oʻchirish' }));
-    await tap('Qaytarish');
+    fireEvent.click(await screen.findByRole('button', { name: toCyrillic('Oʻchirish') }));
+    await tap(toCyrillic('Qaytarish'));
     expect((await screen.findByRole('alert')).textContent).not.toBe('');
   });
 });

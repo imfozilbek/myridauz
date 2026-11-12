@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { UsersClient } from '@platform/api-client';
 import type { Location, Trip } from '@platform/contracts';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
@@ -18,18 +19,20 @@ const place = (
   oneCity = false,
 ): Location => ({ id, parentId, type: parentId === null ? 'region' : 'district', name, lat, lng, oneCity });
 const LOCATIONS = [
-  place('1726', null, 'Toshkent shahri', TASHKENT, true),
-  place('1730', null, 'Fargʻona viloyati', FARGONA),
-  place('1726269', '1726', 'Chilonzor'),
-  place('1730401', '1730', 'Fargʻona shahri', FARGONA),
+  place('1726', null, toCyrillic('Toshkent shahri'), TASHKENT, true),
+  place('1730', null, toCyrillic('Fargʻona viloyati'), FARGONA),
+  place('1726269', '1726', toCyrillic('Chilonzor')),
+  place('1730401', '1730', toCyrillic('Fargʻona shahri'), FARGONA),
 ];
 export const locations = { getLocations: async () => ({ version: '1', locations: LOCATIONS }) };
 // Chilonzor → Fargʻona shahri, as a known route of a flow.
 export const ROUTE = {
-  from: place('1726269', '1726', 'Chilonzor'),
-  to: place('1730401', '1730', 'Fargʻona shahri', FARGONA),
+  from: place('1726269', '1726', toCyrillic('Chilonzor')),
+  to: place('1730401', '1730', toCyrillic('Fargʻona shahri'), FARGONA),
 };
 
+// The pitak as the API names it: in Cyrillic (G98).
+const PITAK_NAME = toCyrillic('Qoʻyliq pitagi');
 export const recommendation = {
   from: '1726269',
   to: '1730401',
@@ -64,7 +67,7 @@ export const trip: Trip = {
   woman: true,
   pickupMode: 'both',
   bookingRule: 'seats',
-  pitak: { id: 'qoyliq', name: 'Qoʻyliq pitagi', point: { lat: 41.2438, lng: 69.3394 }, hint: null },
+  pitak: { id: 'qoyliq', name: PITAK_NAME, point: { lat: 41.2438, lng: 69.3394 }, hint: null },
   comment: 'Katta yuk olmayman',
   status: 'active',
   departedAt: null,
@@ -73,9 +76,7 @@ export const trip: Trip = {
   views: 0,
 };
 
-const unused = async (): Promise<never> => {
-  throw new Error('test.unused');
-};
+const unused = (): Promise<never> => Promise.reject(new Error('test.unused'));
 const account = (gender: 'male' | 'female'): Account => ({
   app: 'driver',
   client: {
@@ -121,7 +122,7 @@ export async function openOwnTrip() {
   await waitFor(() => expect(document.querySelector('.driver-trip, .market-tabs')).not.toBeNull());
   // A past trip is a row of «Oʻtgan» as a live one is of «Faol» (G78 sheet 3).
   if (!document.querySelector('.driver-trip')) {
-    fireEvent.click(screen.getByText('Oʻtgan'));
+    fireEvent.click(screen.getByText(toCyrillic('Oʻtgan')));
     await waitFor(() => expect(document.querySelector('.driver-trip')).not.toBeNull());
   }
   fireEvent.click(document.querySelector('.driver-trip') as HTMLElement);
@@ -130,21 +131,20 @@ export async function openOwnTrip() {
 // From Chilonzor (Toshkent shahri) to Fargʻona shahri or the whole Fargʻona region: «Qayerdan» opens
 // at once (G79 В8), «Qayerga» by itself, both go on without «Davom etish» (G40, docs/106 K1).
 export async function chooseRoute(wholeRegion = false) {
-  for (const step of ['Toshkent shahri', 'Chilonzor', 'Fargʻona viloyati']) await tap(step);
-  await tap(wholeRegion ? 'Butun viloyat' : 'Fargʻona shahri');
+  for (const step of ['Toshkent shahri', 'Chilonzor', 'Fargʻona viloyati']) await tap(toCyrillic(step));
+  await tap(toCyrillic(wholeRegion ? 'Butun viloyat' : 'Fargʻona shahri'));
 }
 
 // The search and a request (G35, docs/97 K1): «Qayerga», then «Qayerdan»; no «Davom etish».
 export async function quickRoute(wholeRegion = false) {
-  await tap('Fargʻona viloyati');
-  await tap(wholeRegion ? 'Butun viloyat' : 'Fargʻona shahri');
-  await tap('Toshkent shahri');
-  await tap('Chilonzor');
+  await tap(toCyrillic('Fargʻona viloyati'));
+  await tap(toCyrillic(wholeRegion ? 'Butun viloyat' : 'Fargʻona shahri'));
+  for (const step of ['Toshkent shahri', 'Chilonzor']) await tap(toCyrillic(step));
 }
 
 // The name under the pin is known: «Shu yerda» takes the point (the list «Oxirgi joylar» may
 // show the same name, so the pin itself is checked).
 export async function takePoint(name: string) {
   await waitFor(() => expect(screen.getByRole('status').textContent).toBe(name), { timeout: 3000 });
-  await tap(/^Shu yerda/u);
+  await tap(/^Шу ерда/u);
 }

@@ -50,6 +50,7 @@ export const TEXT = {
   becomeDriver: t('home.dock.fill'),
   carTitle: t('drivers.car.title'),
   plateField: t('drivers.plate.title'),
+  white: t('drivers.color.white'),
   shutter: t('common.camera.shoot'),
   send: t('drivers.send'),
   resend: t('drivers.fix.send'),
@@ -68,7 +69,7 @@ export const TEXT = {
   wholeRegion: t('places.wholeRegion'),
   newTrip: t('home.publish'),
   findTrip: t('common.passenger.findTrip'),
-  tomorrow: /^Ertaga/,
+  tomorrow: new RegExp(`^${t('market.day.tomorrow')}`, 'u'),
   commentSkip: t('market.comment.skip'),
   publish: t('market.publish.send'),
   // «Mening safarim» of the trip just published (G63): its cancel link is there before the start.

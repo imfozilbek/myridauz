@@ -1,5 +1,6 @@
 import { DAY_MS, HOUR_MS, tashkentDate } from '@platform/contracts';
 import type { Page } from '@playwright/test';
+import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, openFindTrip } from './apps';
 import { noSeatYet } from './bookings-mock';
@@ -13,6 +14,7 @@ import { mockTelegram, telegramUrl } from './telegram-mock';
 
 // Pixel Perfect of «Oraliqda» (G90, lessons 141, 147): the phones of g90 at the size of the mockup
 // (360 × 760 at 2), the same data and taps as the mockup, the code as it is.
+const { t } = createI18n(DEFAULT_LOCALE);
 const [PASSENGER] = MINI_APPS;
 const OUT = 'screenshots/pixel-g90';
 test.use({ viewport: { width: 360, height: 760 }, deviceScaleFactor: 2 });
@@ -23,17 +25,18 @@ const tile = (page: Page, time: string) => page.getByRole('button', { name: time
 test('1 … 4: the driver chooses 08:00 … 10:00 tomorrow', async ({ page }) => {
   await page.clock.setFixedTime(Date.parse('2026-10-20T10:00:00+05:00'));
   await startPublish(page);
-  const when = () => page.getByText(/^(Bugun|Ertaga), \d\d:\d\d( dan \d\d:\d\d gacha)?$/u);
+  const when = () => page.getByText(/^(Бугун|Эртага), \d\d:\d\d( дан \d\d:\d\d гача)?$/u);
   await when().click();
   await page.locator('.week-day').nth(1).click();
-  await page.getByText('Oraliqda', { exact: true }).click();
-  await expect(page.getByText('Qaysi soatdan? Toshkent vaqti bilan')).toBeVisible();
+  await page.getByText(t('market.when.range'), { exact: true }).click();
+  await expect(page.getByText(t('market.when.rangeFrom'))).toBeVisible();
   await shot(page, '1-from');
   await tile(page, '08:00').click();
-  await expect(page.getByText('08:00 dan qaysi soatgacha? Eng koʻpi 3 soat')).toBeVisible();
+  await expect(page.getByText(t('market.when.rangeTo', { from: '08:00', hours: '3' }))).toBeVisible();
   await shot(page, '2-to');
   await tile(page, '10:00').click();
-  await expect(page.getByText('Ertaga, 08:00 dan 10:00 gacha')).toBeVisible();
+  const range = { date: t('market.day.tomorrow'), from: '08:00', to: '10:00' };
+  await expect(page.getByText(t('market.publish.dayRange', range))).toBeVisible();
   await page.mouse.move(0, 0);
   await shot(page, '4-form');
   await when().click();

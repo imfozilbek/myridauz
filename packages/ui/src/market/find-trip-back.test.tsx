@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { findRoute, searchMarket } from '../find/search-test-kit';
@@ -22,12 +23,12 @@ describe('FindTripFlow: «Orqaga» keeps what the person chose (docs/90)', { tim
     await findRoute();
     await screen.findByText(DRIVER);
     fireEvent.click(pill(/^2$/u));
-    fireEvent.click(pill(/Mashinada ayol bor/u));
+    fireEvent.click(pill(/Машинада аёл бор/u));
     await tap(DRIVER);
-    await tap('Orqaga');
+    await tap(toCyrillic('Orqaga'));
     await screen.findByText(DRIVER);
     expect(pill(/^2$/u).getAttribute('aria-pressed')).toBe('true');
-    expect(pill(/Mashinada ayol bor/u).getAttribute('aria-pressed')).toBe('true');
+    expect(pill(/Машинада аёл бор/u).getAttribute('aria-pressed')).toBe('true');
   });
 
   it('keeps «Qayerdan» when the person goes back from the trips (F-P2)', async () => {
@@ -36,9 +37,9 @@ describe('FindTripFlow: «Orqaga» keeps what the person chose (docs/90)', { tim
       testClients({ market: { ...searchMarket(), searchTrips: async () => [] } }),
     );
     await findRoute();
-    await screen.findByText('Hozircha safar yoʻq');
-    await tap('Orqaga');
-    expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
-    expect(screen.getByText(/^Toshkentdan/u)).toBeTruthy();
+    await screen.findByText(toCyrillic('Hozircha safar yoʻq'));
+    await tap(toCyrillic('Orqaga'));
+    expect(await screen.findByText(toCyrillic('Qayerga borasiz?'))).toBeTruthy();
+    expect(screen.getByText(/^Тошкентдан/u)).toBeTruthy();
   });
 });

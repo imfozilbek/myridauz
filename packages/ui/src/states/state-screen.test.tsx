@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { loadBrand } from '@platform/brands';
 import type { DriverApplication } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
@@ -18,16 +19,18 @@ const rgb = (hex: string) => `rgb(${[1, 3, 5].map((at) => parseInt(hex.slice(at,
 describe('the state screens', () => {
   it('says until when a block lasts, then whom to ask, on a red tile', () => {
     renderInShell(<BlockedScreen until={Date.parse('2026-10-14T07:00:00Z')} />);
-    expect(screen.getByText('Blok 14-oktabr kuni tugaydi.')).toBeTruthy();
-    expect(screen.getByText('Savollar boʻlsa, qoʻllab-quvvatlash xizmatiga yozing.')).toBeTruthy();
-    expect(tileOf('Hisobingiz bloklangan')?.style.background).toBe(rgb(colors.dangerTile));
+    expect(screen.getByText(toCyrillic('Blok 14-oktabr kuni tugaydi.'))).toBeTruthy();
+    expect(
+      screen.getByText(toCyrillic('Savollar boʻlsa, qoʻllab-quvvatlash xizmatiga yozing.')),
+    ).toBeTruthy();
+    expect(tileOf(toCyrillic('Hisobingiz bloklangan'))?.style.background).toBe(rgb(colors.dangerTile));
   });
 
   it('shows an error and a refused application on a red tile with one button', () => {
     const retry = vi.fn();
     renderInShell(<ErrorScreen onRetry={retry} />);
-    expect(tileOf('Xatolik yuz berdi')?.style.background).toBe(rgb(colors.dangerTile));
-    screen.getByText('Qayta urinish').click();
+    expect(tileOf(toCyrillic('Xatolik yuz berdi'))?.style.background).toBe(rgb(colors.dangerTile));
+    screen.getByText(toCyrillic('Qayta urinish')).click();
     expect(retry).toHaveBeenCalled();
     cleanup();
     const application: DriverApplication = {
@@ -37,7 +40,7 @@ describe('the state screens', () => {
       reasons: ['fake_profile'],
     };
     renderInShell(<StatusScreen application={application} />);
-    expect(screen.getByText('Qoʻllab-quvvatlashga yozish')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Qoʻllab-quvvatlashga yozish'))).toBeTruthy();
     const tile = document.querySelector<HTMLElement>('.empty-state-tile');
     expect(tile?.style.background).toBe(rgb(colors.dangerTile));
   });

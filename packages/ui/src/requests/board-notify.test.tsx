@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { SubscriptionsClient } from '@platform/api-client';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -41,10 +42,10 @@ function open(notify: typeof ROUTE | null) {
 describe('«Xabar bering» on an empty board (G78 sheet 3)', () => {
   it('subscribes to the direction of the server for the day of the board', async () => {
     const subscribe = open(ROUTE);
-    expect(await screen.findByText('Bu kunga soʻrov yoʻq')).toBeTruthy();
-    expect(screen.getByText('Shu yoʻnalishda soʻrov chiqsa, bot xabar beradi')).toBeTruthy();
-    await tap('Xabar bering');
-    fireEvent.click(await screen.findByText('Shu kungi soʻrovlar'));
+    expect(await screen.findByText(toCyrillic('Bu kunga soʻrov yoʻq'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Shu yoʻnalishda soʻrov chiqsa, bot xabar beradi'))).toBeTruthy();
+    await tap(toCyrillic('Xabar bering'));
+    fireEvent.click(await screen.findByText(toCyrillic('Shu kungi soʻrovlar')));
     await waitFor(() =>
       expect(subscribe).toHaveBeenCalledWith({ ...ROUTE, date: '2026-10-02', woman: false }),
     );
@@ -52,7 +53,7 @@ describe('«Xabar bering» on an empty board (G78 sheet 3)', () => {
 
   it('is not offered once a subscription covers every direction', async () => {
     open(null);
-    expect(await screen.findByText('Bu kunga soʻrov yoʻq')).toBeTruthy();
-    expect(screen.queryByText('Xabar bering')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Bu kunga soʻrov yoʻq'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Xabar bering'))).toBeNull();
   });
 });

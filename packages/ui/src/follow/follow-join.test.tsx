@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError, type ChatClient } from '@platform/api-client';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -18,10 +19,10 @@ describe('a close person becomes a passenger (docs/18)', () => {
       </FollowGate>,
       testClients({ chat: { sharedTrip: async () => TRIP } }),
     );
-    expect(await screen.findByText(/^Dilnozaning safari · /u)).toBeTruthy();
-    await tap('Men ham yoʻlga chiqaman');
+    expect(await screen.findByText(/^Dilnozaning сафари · /u)).toBeTruthy();
+    await tap(toCyrillic('Men ham yoʻlga chiqaman'));
     expect(screen.getByText('Roʻyxatdan oʻtish')).toBeTruthy();
-    expect(screen.queryByText(/^Dilnozaning safari/u)).toBeNull();
+    expect(screen.queryByText(/^Dilnozaning сафари/u)).toBeNull();
     expect(tracked.map((event) => event.name)).toContain('share_join');
     // The registration keeps the loop «Yaqinlarimga» and the code of the one who shared (G69).
     expect(launchArrival('android 11.2').via).toBe('follow-a1b2c3');
@@ -47,7 +48,7 @@ describe('a close person becomes a passenger (docs/18)', () => {
       </FollowGate>,
       testClients({ chat: { sharedTrip: closed } }),
     );
-    await tap('Men ham yoʻlga chiqaman');
+    await tap(toCyrillic('Men ham yoʻlga chiqaman'));
     expect(screen.getByText('Roʻyxatdan oʻtish')).toBeTruthy();
     window.history.replaceState(null, '', '/');
   });

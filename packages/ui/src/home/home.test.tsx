@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { BOOKING_LINK, DAY_MS, MINUTE_MS } from '@platform/contracts';
 import { act, cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -22,16 +23,16 @@ describe('the block at the bottom of a passenger (G76, mockup g76/2)', { timeout
       tomorrow({ ...booking, status }),
       { ...tomorrow(booking), id: 'b2', trip: at(Date.now() + 2 * DAY_MS) },
     ]);
-    expect(await screen.findByText('Javob kutilmoqda')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Javob kutilmoqda'))).toBeTruthy();
     expect(dock().getByText('Jasur')).toBeTruthy();
-    expect(dock().getByText(/^Cobalt, oq/u)).toBeTruthy();
+    expect(dock().getByText(/^Cobalt, оқ/u)).toBeTruthy();
     // Before the confirmation: the chat only, the call comes with the seat (docs/07).
-    expect(dock().queryByRole('button', { name: 'Qoʻngʻiroq' })).toBeNull();
-    expect(screen.getByRole('button', { name: 'Bekor qilish' })).toBeTruthy();
+    expect(dock().queryByRole('button', { name: toCyrillic('Qoʻngʻiroq') })).toBeNull();
+    expect(screen.getByRole('button', { name: toCyrillic('Bekor qilish') })).toBeTruthy();
     status = 'confirmed';
     act(signal);
-    expect(await screen.findByText('Joy tasdiqlandi')).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Safarni ochish' }));
+    expect(await screen.findByText(toCyrillic('Joy tasdiqlandi'))).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: toCyrillic('Safarni ochish') }));
     expect(screen.getByText(linkOf({ name: BOOKING_LINK, id: booking.id }))).toBeTruthy();
   });
 
@@ -42,9 +43,9 @@ describe('the block at the bottom of a passenger (G76, mockup g76/2)', { timeout
       bookings: async () => [tomorrow({ ...confirmed, plate: '01A123BC', unread: 2 })],
       openChat,
     });
-    expect(await screen.findByText('Cobalt, oq · 01 A 123 BC')).toBeTruthy();
+    expect(await screen.findByText(`Cobalt, ${toCyrillic('oq')} · 01 A 123 BC`)).toBeTruthy();
     expect(screen.getByTestId('home-dock').querySelector('.dock-tool-unread .dock-tool-dot')).toBeTruthy();
-    fireEvent.click(dock().getAllByRole('button', { name: 'Qoʻngʻiroq' })[0] as HTMLElement);
+    fireEvent.click(dock().getAllByRole('button', { name: toCyrillic('Qoʻngʻiroq') })[0] as HTMLElement);
     expect(tracked).toContainEqual(expect.objectContaining({ name: 'home_tap', target: 'trip_call' }));
     expect(openChat).toHaveBeenCalledWith(confirmed.chatKey, 'ring', expect.any(Function));
     act(() => openChat.mock.calls[0]?.[2]?.());
@@ -54,55 +55,57 @@ describe('the block at the bottom of a passenger (G76, mockup g76/2)', { timeout
   it('opens the meeting 30 minutes before the departure with «Men keldim» (docs/126)', async () => {
     const departAt = Date.now() + 20 * MINUTE_MS;
     passenger(async () => [{ ...confirmed, trip: at(departAt) }]);
-    expect(await screen.findByRole('button', { name: 'Men keldim' })).toBeTruthy();
-    expect(screen.getByText('Hozir: joyga boring')).toBeTruthy();
-    expect(screen.queryByRole('button', { name: 'Safar topish' })).toBeNull();
+    expect(await screen.findByRole('button', { name: toCyrillic('Men keldim') })).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Hozir: joyga boring'))).toBeTruthy();
+    expect(screen.queryByRole('button', { name: toCyrillic('Safar topish') })).toBeNull();
     // After «Men keldim» the driver's «Keldi» puts the passenger in the car: the map until then (G76).
     cleanup();
     passenger(async () => [{ ...confirmed, trip: at(departAt), cameAt: Date.now() }]);
-    expect(await screen.findByRole('button', { name: 'Xaritada ochish' })).toBeTruthy();
-    expect(screen.queryByRole('button', { name: 'Men keldim' })).toBeNull();
-    expect(screen.queryByRole('button', { name: 'Mashinaga chiqdim' })).toBeNull();
+    expect(await screen.findByRole('button', { name: toCyrillic('Xaritada ochish') })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: toCyrillic('Men keldim') })).toBeNull();
+    expect(screen.queryByRole('button', { name: toCyrillic('Mashinaga chiqdim') })).toBeNull();
   });
 
   it('says where exactly to stand at the pitak and that the driver is on the way, without minutes', async () => {
     const departAt = Date.now() + 20 * MINUTE_MS;
     const pitak = {
       id: 'p1',
-      name: 'Chilonzor pitagi',
+      name: toCyrillic('Chilonzor pitagi'),
       point: { lat: 41.28, lng: 69.2 },
-      hint: 'Metro yonida',
+      hint: toCyrillic('Metro yonida'),
     };
     const onWay = { ...at(departAt), departedAt: Date.now() };
     passenger(async () => [{ ...confirmed, mode: 'pitak', pitak, pickup: null, trip: onWay }]);
-    expect(await screen.findByText('Metro yonida · Jasur yoʻlda')).toBeTruthy();
+    expect(
+      await screen.findByText(`${toCyrillic('Metro yonida')} · Jasur ${toCyrillic('yoʻlda')}`),
+    ).toBeTruthy();
     // At the point the driver is no longer on the way: the hint alone.
     cleanup();
     const there = { ...confirmed, mode: 'pitak' as const, pitak, pickup: null, trip: onWay };
     passenger(async () => [{ ...there, driverCameAt: Date.now(), cameAt: Date.now() }]);
-    expect(await screen.findByText('Metro yonida')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Metro yonida'))).toBeTruthy();
   });
 
   it('keeps the search before the meeting, the step of the trip after it', async () => {
     // The morning of the trip day, 2 hours before: the seat is confirmed, the search is a tap away.
     vi.setSystemTime(TRIP_DAY);
     passenger(async () => [confirmed]);
-    expect(await screen.findByText('Joy tasdiqlandi')).toBeTruthy();
-    expect(screen.queryByRole('button', { name: 'Men keldim' })).toBeNull();
+    expect(await screen.findByText(toCyrillic('Joy tasdiqlandi'))).toBeTruthy();
+    expect(screen.queryByRole('button', { name: toCyrillic('Men keldim') })).toBeNull();
     cleanup();
     passenger(async () => [{ ...confirmed, boardedAt: Date.now() }]);
-    expect(await screen.findByRole('button', { name: 'Yetib keldim' })).toBeTruthy();
+    expect(await screen.findByRole('button', { name: toCyrillic('Yetib keldim') })).toBeTruthy();
   });
 
   it('is free with nothing: the head, «Qayerdan / Qayerga», «Soʻrov qoldirish» and «Safar topish»', async () => {
     const { container } = passenger(async () => []);
-    expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
-    expect(screen.getByText('Yoʻlovchi')).toBeTruthy();
-    expect(screen.getByText('Qayerdan ketasiz?')).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Safar topish' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Soʻrov qoldirish' })).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Qayerga borasiz?'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Yoʻlovchi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Qayerdan ketasiz?'))).toBeTruthy();
+    expect(screen.getByRole('button', { name: toCyrillic('Safar topish') })).toBeTruthy();
+    expect(screen.getByRole('button', { name: toCyrillic('Soʻrov qoldirish') })).toBeTruthy();
     // A new person with nothing yet is shown where to start (mockup g76/2 state 1).
-    expect(await screen.findByText('Bu yerdan boshlang')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Bu yerdan boshlang'))).toBeTruthy();
     expect(container.querySelector('nav, [role="tablist"]')).toBeNull();
   });
 
@@ -110,10 +113,10 @@ describe('the block at the bottom of a passenger (G76, mockup g76/2)', { timeout
     let fail = true;
     const { tracked } = passenger(async () => (fail ? Promise.reject(new Error('down')) : []));
     expect(await screen.findByRole('alert')).toBeTruthy();
-    expect(screen.getByText('Xatolik yuz berdi')).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Safar topish' })).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Xatolik yuz berdi'))).toBeTruthy();
+    expect(screen.getByRole('button', { name: toCyrillic('Safar topish') })).toBeTruthy();
     fail = false;
-    await tap('Qayta urinish');
+    await tap(toCyrillic('Qayta urinish'));
     await waitFor(() => expect(screen.queryByRole('alert')).toBeNull());
     expect(tracked).toContainEqual(expect.objectContaining({ name: 'home_tap', target: 'retry' }));
   });
@@ -122,8 +125,8 @@ describe('the block at the bottom of a passenger (G76, mockup g76/2)', { timeout
     // The block and the sheets load the places each: both fail.
     passenger(async () => [tomorrow(booking)], 2);
     expect(await screen.findByRole('alert')).toBeTruthy();
-    await tap('Qayta urinish');
-    expect(await screen.findByText('Javob kutilmoqda')).toBeTruthy();
+    await tap(toCyrillic('Qayta urinish'));
+    expect(await screen.findByText(toCyrillic('Javob kutilmoqda'))).toBeTruthy();
   });
 });
 
@@ -134,8 +137,8 @@ describe('a trip of a saved driver (G76, mockup g76/2 state 3)', { timeout: 20_0
       bookings: async () => [],
       favorites: async () => ({ drivers: [later.driver], trips: [later] }),
     });
-    expect(await screen.findByText('Siz uchun safar')).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Boshqa safar' }));
-    expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Siz uchun safar'))).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: toCyrillic('Boshqa safar') }));
+    expect(await screen.findByText(toCyrillic('Qayerga borasiz?'))).toBeTruthy();
   });
 });

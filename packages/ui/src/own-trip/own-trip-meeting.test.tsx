@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { loadBrand } from '@platform/brands';
 import type { BookingsClient } from '@platform/api-client';
 import { meetingStartsAt, MINUTE_MS, type Booking, type Trip } from '@platform/contracts';
@@ -59,12 +60,12 @@ describe('the meeting on «Mening safarim» (G63 C3, docs/126, docs/129)', { tim
       vi.advanceTimersByTime(3 * STEP_MS);
     });
     // No row of its own on the page, as on the mockup (screen 11).
-    expect(screen.queryByText('Uchrashuv')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Uchrashuv'))).toBeNull();
     // Before «Men keldim» the row still says where the passenger is taken (mockup g63/4 screen 11).
-    expect(screen.queryByText(/^Kelmadi/u)).toBeNull();
-    await tap('Yoʻl xaritasi');
-    await tap('Madina · 2 joy');
-    expect(await screen.findByText('Men keldim')).toBeTruthy();
+    expect(screen.queryByText(/^Келмади/u)).toBeNull();
+    await tap(toCyrillic('Yoʻl xaritasi'));
+    await tap(`Madina · ${toCyrillic('2 joy')}`);
+    expect(await screen.findByText(toCyrillic('Men keldim'))).toBeTruthy();
   });
 
   it('«Kelmadi» in the row asks first and marks without opening the booking', async () => {
@@ -72,30 +73,30 @@ describe('the meeting on «Mening safarim» (G63 C3, docs/126, docs/129)', { tim
     const meet = vi.fn<BookingsClient['meet']>(async () => ({ ...akmal, noShowAt: MEETING_NOW }));
     open(madina.trip, [{ ...akmal, driverCameAt: MEETING_NOW }], MEETING_NOW, meet);
     await openTrip();
-    const until = await screen.findByText('Kelmadi · safar tugaguncha belgilash mumkin');
+    const until = await screen.findByText(toCyrillic('Kelmadi · safar tugaguncha belgilash mumkin'));
     // The line stands beside the button of the row: never a button inside a button.
     expect(until.closest('.rider-open')).toBeNull();
     expect(document.querySelector('button button')).toBeNull();
     fireEvent.click(until);
     await vi.waitFor(() => expect(meet).toHaveBeenCalledWith('a1', 'no_show'));
-    expect(screen.queryByText('Joyni bekor qilish')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Joyni bekor qilish'))).toBeNull();
   });
 
   it('«Qoʻngʻiroq» of the meeting rings, back comes to the meeting, «Yozish» opens the chat', async () => {
     open(madina.trip, [madina], MEETING_NOW);
     await openTrip();
-    await tap('Yoʻl xaritasi');
-    await tap('Madina · 2 joy');
-    await tap('Qoʻngʻiroq');
+    await tap(toCyrillic('Yoʻl xaritasi'));
+    await tap(`Madina · ${toCyrillic('2 joy')}`);
+    await tap(toCyrillic('Qoʻngʻiroq'));
     await tap('chat Madina ring');
-    await tap('Yozish');
+    await tap(toCyrillic('Yozish'));
     expect(await screen.findByText('chat Madina')).toBeTruthy();
   });
 
   it('after «Kelmadi» the plate of the refund stands where the plate of the stage was', async () => {
     open(madina.trip, [madina, { ...akmal, noShowAt: MEETING_NOW }], MEETING_NOW);
     await openTrip();
-    expect(await screen.findByText('Akmal kelmadi')).toBeTruthy();
+    expect(await screen.findByText(`Akmal ${toCyrillic('kelmadi')}`)).toBeTruthy();
     expect(document.querySelector('.own-trip > .no-show-banner')).toBeTruthy();
     expect(document.querySelector('.own-banner')).toBeNull();
   });
@@ -105,9 +106,9 @@ describe('the meeting on «Mening safarim» (G63 C3, docs/126, docs/129)', { tim
     const done = { ...madina, trip, status: 'completed' as const };
     open(trip, [done], trip.departAt + 8 * 60 * MINUTE_MS);
     await openTrip();
-    expect(await screen.findByText('Safar tugadi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Safar tugadi'))).toBeTruthy();
     expect(document.querySelector('.own-banner')?.getAttribute('data-stage')).toBe('done');
-    await tap('Qaytishni eʼlon qilish');
+    await tap(toCyrillic('Qaytishni eʼlon qilish'));
     expect(await screen.findByText(/^publish 2026-10-0\d$/u)).toBeTruthy();
   });
 });

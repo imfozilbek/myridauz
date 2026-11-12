@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { tashkentDate } from '@platform/contracts';
 import type { MarketClient } from '@platform/api-client';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
@@ -29,10 +30,10 @@ describe('how a seat ended, in the block at the bottom', { timeout: 20_000 }, ()
       bookings: async () => [refused],
       market: { searchTrips },
     });
-    expect(await screen.findByText('Haydovchi joy bera olmadi')).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Soʻrov qoldirish' })).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Oʻxshash safarlar' }));
-    expect(await screen.findByText(/Toshkent/u)).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Haydovchi joy bera olmadi'))).toBeTruthy();
+    expect(screen.getByRole('button', { name: toCyrillic('Soʻrov qoldirish') })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: toCyrillic('Oʻxshash safarlar') }));
+    expect(await screen.findByText(/Тошкент/u)).toBeTruthy();
     // The same list as on the page of the seat: its route on the day of its trip (G77).
     await waitFor(() =>
       expect(searchTrips).toHaveBeenCalledWith(expect.objectContaining({ date: tashkentDate(departAt) })),
@@ -42,15 +43,15 @@ describe('how a seat ended, in the block at the bottom', { timeout: 20_000 }, ()
   // G79 П14 (docs/170): «Soʻrov qoldirish» takes the day of the refused trip, 1 tap → 0.
   it('leaves a request on the day of the refused trip', async () => {
     renderHome((go) => <PassengerHome go={go} />, PASSENGER_ACTIONS, { bookings: async () => [refused] });
-    expect(await screen.findByText('Haydovchi joy bera olmadi')).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Soʻrov qoldirish' }));
+    expect(await screen.findByText(toCyrillic('Haydovchi joy bera olmadi'))).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: toCyrillic('Soʻrov qoldirish') }));
     expect(await screen.findByText(new RegExp(` day ${tashkentDate(departAt)}$`, 'u'))).toBeTruthy();
   });
 
   it('forgets it once the trip left', async () => {
     const gone = { ...refused, trip: { ...refused.trip, departAt: Date.now() - HOUR } };
     renderHome((go) => <PassengerHome go={go} />, PASSENGER_ACTIONS, { bookings: async () => [gone] });
-    await screen.findByText('Soʻrov qoldirish');
-    expect(screen.queryByText('Haydovchi joy bera olmadi')).toBeNull();
+    await screen.findByText(toCyrillic('Soʻrov qoldirish'));
+    expect(screen.queryByText(toCyrillic('Haydovchi joy bera olmadi'))).toBeNull();
   });
 });

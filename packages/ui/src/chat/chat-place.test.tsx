@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { ChatMessage } from '@platform/contracts';
 import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -93,16 +94,16 @@ describe('the chat stays where the person reads (docs/94 F10, S5, C3)', () => {
 
   it('C3: the text goes only when the chat delivered it; a closed chat keeps it as a draft', async () => {
     const { socket, unmount } = await openChat();
-    const field = () => screen.getByLabelText('Xabar') as HTMLTextAreaElement;
+    const field = () => screen.getByLabelText(toCyrillic('Xabar')) as HTMLTextAreaElement;
     fireEvent.change(field(), { target: { value: 'Qayerda uchrashamiz?' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Yuborish' }));
+    fireEvent.click(screen.getByRole('button', { name: toCyrillic('Yuborish') }));
     expect(socket.sent).toHaveLength(1);
     expect(field().value).toBe('Qayerda uchrashamiz?');
     unmount();
     await openChat();
     expect(field().value).toBe('Qayerda uchrashamiz?');
     act(() => FakeSocket.last?.receive({ type: 'message', message: message(1, 'other', 'Salom') }));
-    fireEvent.click(screen.getByRole('button', { name: 'Yuborish' }));
+    fireEvent.click(screen.getByRole('button', { name: toCyrillic('Yuborish') }));
     act(() =>
       FakeSocket.last?.receive({ type: 'message', message: message(2, 'me', 'Qayerda uchrashamiz?') }),
     );

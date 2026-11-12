@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import { isRegionId, regionOf } from '../map';
 import { allPitaks, pitakHistory, removeDirection, saveDirection, savePitak } from './application/admin';
@@ -60,13 +61,16 @@ describe('pitaks and live directions (G24, docs/72)', () => {
     await savePitak(deps, MODERATOR, 'p1', input('checked'));
     expect(await pitakOfDirection(deps, TOSHKENT, SAMARQAND)).toEqual({
       id: 'p1',
-      name: 'Toshkent avtovokzali',
+      // The team writes the name in Latin, people read it in Cyrillic (G98).
+      name: toCyrillic('Toshkent avtovokzali'),
       point: AVTOVOKZAL,
       hint: null,
     });
     // Where exactly to stand, written by the team (G76); an empty one is none.
     await savePitak(deps, MODERATOR, 'p1', { ...input('checked'), hint: ' Metro 2-chiqish yonida ' });
-    expect((await pitakOfDirection(deps, TOSHKENT, SAMARQAND))?.hint).toBe('Metro 2-chiqish yonida');
+    expect((await pitakOfDirection(deps, TOSHKENT, SAMARQAND))?.hint).toBe(
+      toCyrillic('Metro 2-chiqish yonida'),
+    );
     await savePitak(deps, MODERATOR, 'p1', { ...input('checked'), hint: '' });
     expect((await pitakOfDirection(deps, TOSHKENT, SAMARQAND))?.hint).toBeNull();
     expect(await pitakOfDirection(deps, SAMARQAND, TOSHKENT)).toBeNull();

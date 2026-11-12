@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { testMap } from '../map/map-test-kit';
@@ -20,7 +21,7 @@ describe('«Qayerdan» by the place of the person (G26, docs/74)', () => {
       <RouteScreen allowWholeRegion onBack={() => undefined} onDone={() => undefined} />,
       testClients({ map: testMap() }),
     );
-    expect(await screen.findByText('Chilonzor')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Chilonzor'))).toBeTruthy();
   });
 
   it('leaves it empty when the place is not known', async () => {
@@ -29,8 +30,8 @@ describe('«Qayerdan» by the place of the person (G26, docs/74)', () => {
       <RouteScreen allowWholeRegion onBack={() => undefined} onDone={() => undefined} />,
       testClients({ map: testMap() }),
     );
-    expect(await screen.findByText('Qayerdan')).toBeTruthy();
-    expect(screen.queryByText('Chilonzor')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Qayerdan'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Chilonzor'))).toBeNull();
   });
 
   it('shows the district of last time at once, while the fresh one is asked (G41, docs/108)', async () => {
@@ -40,7 +41,7 @@ describe('«Qayerdan» by the place of the person (G26, docs/74)', () => {
       <RouteScreen allowWholeRegion onBack={() => undefined} onDone={() => undefined} />,
       testClients({ map: testMap() }),
     );
-    expect(await screen.findByText('Chilonzor')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Chilonzor'))).toBeTruthy();
   });
 
   it('remembers the district found now for the next time', async () => {
@@ -48,7 +49,7 @@ describe('«Qayerdan» by the place of the person (G26, docs/74)', () => {
       <RouteScreen allowWholeRegion onBack={() => undefined} onDone={() => undefined} />,
       testClients({ map: testMap() }),
     );
-    await screen.findByText('Chilonzor');
+    await screen.findByText(toCyrillic('Chilonzor'));
     expect(localStorage.getItem('here_district')).toBe('1726269');
   });
 
@@ -60,12 +61,12 @@ describe('«Qayerdan» by the place of the person (G26, docs/74)', () => {
       <RouteScreen allowWholeRegion quick onBack={() => undefined} onDone={() => undefined} />
     );
     renderMarket(screenOf(), testClients({ map: testMap() }));
-    expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Qayerga borasiz?'))).toBeTruthy();
     cleanup();
     localStorage.clear();
     location.herePosition.mockResolvedValueOnce(null);
     renderMarket(screenOf(), testClients({ map: testMap() }));
-    expect(await screen.findByText('Qayerdan yoʻlga chiqasiz?')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Qayerdan yoʻlga chiqasiz?'))).toBeTruthy();
   });
 
   // The place comes a moment after the screen (the first visit, nothing of last time): the screen
@@ -78,7 +79,7 @@ describe('«Qayerdan» by the place of the person (G26, docs/74)', () => {
       <RouteScreen allowWholeRegion quick onBack={() => undefined} onDone={() => undefined} />,
       testClients({ map: testMap() }),
     );
-    expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
-    expect(screen.queryByText('Qayerdan yoʻlga chiqasiz?')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Qayerga borasiz?'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Qayerdan yoʻlga chiqasiz?'))).toBeNull();
   });
 });

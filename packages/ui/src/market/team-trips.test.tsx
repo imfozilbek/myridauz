@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { DAY_MS, tashkentDate } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -15,12 +16,12 @@ describe('the trips of the team day by day (docs/90 F-A6)', () => {
       date === tashkentDate(Date.now()) || date === later ? [{ ...trip, id: date }] : [],
     );
     renderMarket(<TeamTripsScreen onBack={() => undefined} />, testClients({ market: { teamTrips } }));
-    expect(await screen.findByText(/^Bugun/u)).toBeTruthy();
+    expect(await screen.findByText(/^Бугун/u)).toBeTruthy();
     expect(teamTrips.mock.calls.map(([date]) => date)).toEqual(
       [-1, 0, 1, 2].map((days) => tashkentDate(Date.now() + days * DAY_MS)),
     );
     expect(screen.getAllByText(/Jasur/u)).toHaveLength(1);
-    fireEvent.click(screen.getByText('Yana koʻrsatish'));
+    fireEvent.click(screen.getByText(toCyrillic('Yana koʻrsatish')));
     await waitFor(() => expect(screen.getAllByText(/Jasur/u)).toHaveLength(2));
     expect(teamTrips).toHaveBeenCalledWith(later);
   });
@@ -58,12 +59,12 @@ describe('the trips of the team day by day (docs/90 F-A6)', () => {
         bookings: { tripBookings: async () => [], cancelTrip },
       }),
     );
-    fireEvent.click(await screen.findByText('Safarni bekor qilish'));
-    expect(screen.getByText(/komissiya qaytadi\.$/u)).toBeTruthy();
-    fireEvent.change(screen.getByLabelText('Sabab'), { target: { value: 'Xavfli haydovchi' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Bekor qilish' }));
+    fireEvent.click(await screen.findByText(toCyrillic('Safarni bekor qilish')));
+    expect(screen.getByText(/комиссия қайтади\.$/u)).toBeTruthy();
+    fireEvent.change(screen.getByLabelText(toCyrillic('Sabab')), { target: { value: 'Xavfli haydovchi' } });
+    fireEvent.click(screen.getByRole('button', { name: toCyrillic('Bekor qilish') }));
     await waitFor(() => expect(cancelTrip).toHaveBeenCalledWith(id, { reason: 'Xavfli haydovchi' }));
-    await waitFor(() => expect(screen.queryByText('Safarni bekor qilish')).toBeNull());
+    await waitFor(() => expect(screen.queryByText(toCyrillic('Safarni bekor qilish'))).toBeNull());
   });
 
   // G91 ADM-4: after «Keldi» or «Kelmadi» at the point the ride has begun and the server refuses the
@@ -81,7 +82,7 @@ describe('the trips of the team day by day (docs/90 F-A6)', () => {
     );
     await waitFor(() => expect(tripBookings).toHaveBeenCalled());
     expect(await screen.findByText('Jasur')).toBeTruthy();
-    expect(screen.queryByText('Safarni bekor qilish')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Safarni bekor qilish'))).toBeNull();
   });
 
   // G91 ADM-2: the card of a person is the owner's (ownerOnly): for a moderator the rows of the trip

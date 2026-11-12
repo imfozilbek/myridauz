@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { DAY_MS, tashkentDate } from '@platform/contracts';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { fakeTelegram } from './bots/test-bot';
@@ -40,7 +41,7 @@ const offer = (driver: number, requestId: string, departAt: number) =>
 const toPassenger = (person = PASSENGER) => telegram.sentTo(person);
 // «Yoʻlovchi soʻrovi yopildi» of a driver whose offer waited (G75).
 const over = (driver: number) =>
-  telegram.sentTo(driver).filter((sent) => String(sent.body.text).includes('soʻrovi yopildi'));
+  telegram.sentTo(driver).filter((sent) => String(sent.body.text).includes(toCyrillic('soʻrovi yopildi')));
 // The last form of a card: its last edit (an unpin after it carries no text).
 const lastText = (person = PASSENGER) =>
   String(
@@ -62,23 +63,30 @@ describe('the request card of the passenger bot (G68, docs/122)', () => {
     await approvedDriver(SECOND_DRIVER);
     await registerUser(PASSENGER);
     const { request, departAt } = await asked(PASSENGER, 1);
-    const card = toPassenger().find((sent) => String(sent.body.text).includes('haydovchilar koʻrmoqda'));
+    const card = toPassenger().find((sent) =>
+      String(sent.body.text).includes(toCyrillic('haydovchilar koʻrmoqda')),
+    );
     expect(card?.body.disable_notification).toBe(true);
     expect(toPassenger().some((sent) => sent.method === 'pinChatMessage')).toBe(true);
     const first = await offer(DRIVER, request.id, departAt);
-    const ring = toPassenger().find((sent) => String(sent.body.text).includes('Soʻrovingizga taklif keldi:'));
+    const ring = toPassenger().find((sent) =>
+      String(sent.body.text).includes(toCyrillic('Soʻrovingizga taklif keldi:')),
+    );
     expect(ring?.body.reply_parameters).toMatchObject({ message_id: card?.id });
     expect(ring?.body).not.toHaveProperty('disable_notification');
     const edits = () => toPassenger().filter((sent) => sent.method === 'editMessageText');
-    expect(String(edits().at(-1)?.body.text)).toContain('1 ta taklif keldi');
+    expect(String(edits().at(-1)?.body.text)).toContain(toCyrillic('1 ta taklif keldi'));
     await offer(SECOND_DRIVER, request.id, departAt);
-    expect(String(edits().at(-1)?.body.text)).toContain('2 ta taklif keldi');
-    const rings = toPassenger().filter((sent) => String(sent.body.text).includes('taklif keldi:'));
+    expect(String(edits().at(-1)?.body.text)).toContain(toCyrillic('2 ta taklif keldi'));
+    const rings = toPassenger().filter((sent) =>
+      String(sent.body.text).includes(toCyrillic('taklif keldi:')),
+    );
     expect(rings).toHaveLength(1);
     await call(`/passenger/offers/${first.id}/accept`, PASSENGER, { method: 'POST' });
     expect(
       edits().some(
-        (sent) => sent.body.message_id === card?.id && String(sent.body.text).includes('qabul qildingiz'),
+        (sent) =>
+          sent.body.message_id === card?.id && String(sent.body.text).includes(toCyrillic('qabul qildingiz')),
       ),
     ).toBe(true);
     expect(toPassenger().some((sent) => sent.method === 'unpinChatMessage')).toBe(true);
@@ -93,13 +101,13 @@ describe('the request card of the passenger bot (G68, docs/122)', () => {
     const cancelled = await asked(LATER_PASSENGER, 2);
     await offer(LATER_DRIVER, cancelled.request.id, cancelled.departAt);
     await call(`/passenger/requests/${cancelled.request.id}/cancel`, LATER_PASSENGER, { method: 'POST' });
-    expect(lastText(LATER_PASSENGER)).toContain('Bekor qilindi');
+    expect(lastText(LATER_PASSENGER)).toContain(toCyrillic('Bekor qilindi'));
     expect(over(LATER_DRIVER)).toHaveLength(1);
     // Her own cancel needs no word more; a request burned by its day rings with the search (G46).
     expect(expiredRings(LATER_PASSENGER)).toHaveLength(0);
     await asked(LATER_PASSENGER, 3);
     await expireRequests(testEnv, Date.now() + 5 * DAY_MS);
-    expect(lastText(LATER_PASSENGER)).toContain('Soʻrov muddati tugadi');
+    expect(lastText(LATER_PASSENGER)).toContain(toCyrillic('Soʻrov muddati tugadi'));
     const [ring] = expiredRings(LATER_PASSENGER);
     expect(JSON.stringify(ring?.body.reply_markup)).toContain('?find=');
   });

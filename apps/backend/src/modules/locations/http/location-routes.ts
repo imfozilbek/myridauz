@@ -1,3 +1,4 @@
+import { DEFAULT_LOCALE } from '@platform/i18n';
 import {
   ADMIN_DISTANCE_HISTORY_PATH,
   distanceQuerySchema,
@@ -23,7 +24,6 @@ const STATUS = {
 } as const satisfies Partial<Record<ApiErrorCode, number>>;
 
 const NOT_MODIFIED = 304;
-const LOCALE = 'uz-Latn';
 // Public data without personal fields: browsers and Cloudflare may keep it for an hour (docs/48).
 const DIRECTORY_CACHE = 'public, max-age=3600, stale-while-revalidate=86400';
 
@@ -38,7 +38,7 @@ export function locationRoutes({ deps, directory, auth }: Wiring) {
   return (
     new Hono<AppEnv>()
       .get(LOCATIONS_PATH, async (context) => {
-        const response = await directory(deps(context.env), LOCALE);
+        const response = await directory(deps(context.env), DEFAULT_LOCALE);
         const etag = `"${response.version}"`;
         const headers = { etag, 'cache-control': DIRECTORY_CACHE };
         if (context.req.header('if-none-match') === etag) return context.body(null, NOT_MODIFIED, headers);

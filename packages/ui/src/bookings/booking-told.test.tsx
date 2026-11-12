@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError, type ChatClient } from '@platform/api-client';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -26,7 +27,7 @@ describe('«Yaqinlarim» says why a step did not work (G43, docs/65 B3)', () => 
       }),
     );
     await tap('Jasur');
-    await tap('Yetib keldim');
+    await tap(toCyrillic('Yetib keldim'));
     expect((await screen.findByRole('alert')).textContent).not.toBe('');
   });
 });

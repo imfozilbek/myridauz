@@ -52,7 +52,7 @@ describe('a support case in the admin app', () => {
     expect(String(sent?.body.text)).toContain('Tekshiramiz');
     const after = supportCaseSchema.parse(await (await call(adminSupportPath(id), OWNER, team)).json());
     expect(after.talk.at(-1)).toMatchObject({ author: 'team', text: 'Tekshiramiz' });
-    expect(after.talk.at(-1)?.name).toMatch(/Operator/u);
+    expect(after.talk.at(-1)?.name).toMatch(/Оператор/u);
     const queue = navbatSchema.parse(await (await call(ADMIN_NAVBAT_PATH, OWNER, team)).json());
     expect(queue.items.some((item) => item.kind === 'support' && item.id === id)).toBe(false);
   });

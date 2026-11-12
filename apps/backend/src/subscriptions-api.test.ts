@@ -1,4 +1,5 @@
 import { channelOf, loadBrand } from '@platform/brands';
+import { toCyrillic } from '@platform/i18n';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { botSender } from './bots/test-bot';
 import { approvedDriver, json, read } from './bookings-test-api';
@@ -16,7 +17,6 @@ afterAll(() => vi.unstubAllGlobals());
 const send = botSender((input, init) => fetch(input, init));
 // The owner approved the post: autoposting is on in this test (docs/33).
 Object.assign(testEnv, { CHANNEL_POSTS: 'on' });
-
 // The channels of Samarqand shahri and of Nurafshon (Toshkent viloyati) in the brand config (docs/176).
 const brand = loadBrand();
 const SAMARQAND = channelOf(brand, '1718401')?.chat ?? '';
@@ -40,6 +40,7 @@ const trip = (departAt: number) =>
 const sentTo = (chatId: number | string) => telegram.filter((item) => item.body.chat_id === chatId);
 // The posts of trips in a channel, not its board of the day (G68).
 const BOARD = '<b>📋';
+const CHEAPER = toCyrillic('arzonlashdi');
 const isPost = (item: (typeof telegram)[number]) =>
   typeof item.body.text === 'string' && !item.body.text.startsWith(BOARD);
 
@@ -61,7 +62,7 @@ describe('route subscriptions and channel posts (docs/15, docs/24)', () => {
     );
     // The news card of the route of the day (G68, docs/122 rule 4): the trip as a line.
     const [told] = sentTo(PASSENGER);
-    expect(String(told?.body.text)).toContain('Bugungi yangi safarlar');
+    expect(String(told?.body.text)).toContain(toCyrillic('Bugungi yangi safarlar'));
     expect(String(told?.body.text)).toContain('Ali · ');
     expect(JSON.stringify(told?.body.reply_markup)).toContain('?find=1726273_1718401_');
     const [post] = sentTo(SAMARQAND).filter(isPost);
@@ -76,12 +77,12 @@ describe('route subscriptions and channel posts (docs/15, docs/24)', () => {
       (item) => item.method === 'editMessageText' && item.body.chat_id === SAMARQAND && isPost(item),
     );
     expect(edit?.body.chat_id).toBe(SAMARQAND);
-    expect(String(edit?.body.text)).toContain('Joy qolmadi');
+    expect(String(edit?.body.text)).toContain(toCyrillic('Joy qolmadi'));
     // G89 T10: a full trip that became cheaper is no news for the subscriber.
     telegram.length = 0;
     const lower = { app: 'driver', ...json({ price: 85_000 }) };
     expect((await call(`/driver/trips/${published.id}/price`, DRIVER, lower)).status).toBe(200);
-    expect(sentTo(PASSENGER).filter((item) => String(item.body.text).includes('arzonlashdi'))).toEqual([]);
+    expect(sentTo(PASSENGER).filter((item) => String(item.body.text).includes(CHEAPER))).toEqual([]);
   });
 
   it('tells a subscribed driver about a new request and lets a person manage the list', async () => {
@@ -98,7 +99,7 @@ describe('route subscriptions and channel posts (docs/15, docs/24)', () => {
       json({ ...route, from: '1726273', to: '1718401', seats: 1, price: 90_000, ...REQUEST_WAY }),
     );
     const [told] = sentTo(DRIVER);
-    expect(String(told?.body.text)).toContain('Yoʻnalishingizda soʻrovlar');
+    expect(String(told?.body.text)).toContain(toCyrillic('Yoʻnalishingizda soʻrovlar'));
     // The button opens the requests of that route and day, not the main screen (docs/83 N08).
     expect(JSON.stringify(told?.body.reply_markup)).toContain(`?requests=1726273_1718401_${route.date}`);
     const mine = await read<{ subscriptions: { id: string }[] }>(
@@ -135,7 +136,7 @@ describe('route subscriptions and channel posts (docs/15, docs/24)', () => {
     expect(await notice(await send('driver', press(PASSENGER)))).toBeUndefined();
     telegram.length = 0;
     expect(await notice(await send('driver', press(DRIVER)))).toBe(
-      'Bu yoʻnalish boʻyicha xabar endi kelmaydi',
+      toCyrillic('Bu yoʻnalish boʻyicha xabar endi kelmaydi'),
     );
     expect(telegram.find((item) => item.method === 'editMessageReplyMarkup')?.body).toMatchObject({
       message_id: 5,

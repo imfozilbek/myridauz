@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { afterEach, describe, expect, it } from 'vitest';
 import { recentPlaces, rememberPlace } from './recent-places';
 
@@ -5,7 +6,7 @@ afterEach(() => localStorage.clear());
 
 const chorsu = (lat: number) => ({
   point: { lat, lng: 69.2355 },
-  name: { step: 'landmark' as const, name: 'Chorsu bozori' },
+  name: { step: 'landmark' as const, name: toCyrillic('Chorsu bozori') },
   district: '1726269',
 });
 

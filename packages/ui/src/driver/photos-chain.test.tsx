@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { DriversClient } from '@platform/api-client';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -51,7 +52,9 @@ describe('the car photo', () => {
     const { container } = photosStep(true, uploadPhoto);
     const input = container.querySelector('input[type=file][capture=environment]') as HTMLInputElement;
     const opened = vi.spyOn(input, 'click');
-    fireEvent.click(screen.getByText('Old tomondan', { exact: true }).closest('button') as HTMLElement);
+    fireEvent.click(
+      screen.getByText(toCyrillic('Old tomondan'), { exact: true }).closest('button') as HTMLElement,
+    );
     expect(opened).toHaveBeenCalledOnce();
     fireEvent.change(input, { target: { files: [new File(['x'], 'car.jpg', { type: 'image/jpeg' })] } });
     await waitFor(() => expect(uploadPhoto).toHaveBeenCalledWith('front', expect.anything()));
@@ -62,9 +65,11 @@ describe('the car photo', () => {
   // D04 (docs/78): a computer has no camera; the step says to add the photo from the phone.
   it('says to add the photo from the phone where there is no camera', () => {
     const { container } = photosStep(false);
-    expect(screen.getByText('Rasmlarni telefondan qoʻshing: bu yerda kamera yoʻq.')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Rasmlarni telefondan qoʻshing: bu yerda kamera yoʻq.'))).toBeTruthy();
     expect(container.querySelector('input[capture=environment]')).toBeNull();
-    const tile = screen.getByText('Old tomondan', { exact: true }).closest('button') as HTMLButtonElement;
+    const tile = screen
+      .getByText(toCyrillic('Old tomondan'), { exact: true })
+      .closest('button') as HTMLButtonElement;
     expect(tile.disabled).toBe(true);
   });
 });

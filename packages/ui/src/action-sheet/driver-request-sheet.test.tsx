@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { MINUTE_MS } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -35,42 +36,42 @@ describe('the sheet of a new request (G68)', { timeout: 20_000 }, () => {
   it('says who, how many seats, when and where, the sum, the commission and the time to answer', async () => {
     driver();
     // The block at the bottom calls, the sheet answers (G76, docs/164).
-    await tap('Javob berish');
-    expect(await screen.findByText('Yangi soʻrov')).toBeTruthy();
-    expect(screen.getByText('Madina · 2 joy')).toBeTruthy();
-    expect(screen.getByText('★ 4,8 · 12 safar')).toBeTruthy();
-    expect(screen.getByText('Ertaga 08:00 · Chilonzor → Fargʻona')).toBeTruthy();
-    expect(screen.getByText('Olib ketish')).toBeTruthy();
-    expect(screen.getByText('Qatortol atrofi')).toBeTruthy();
-    expect(screen.getByText(/^2 joy × 95.000$/u)).toBeTruthy();
+    await tap(toCyrillic('Javob berish'));
+    expect(await screen.findByText(toCyrillic('Yangi soʻrov'))).toBeTruthy();
+    expect(screen.getByText(`Madina · ${toCyrillic('2 joy')}`)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('★ 4,8 · 12 safar'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Ertaga 08:00 · Chilonzor → Fargʻona'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Olib ketish'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Qatortol atrofi'))).toBeTruthy();
+    expect(screen.getByText(/^2 жой × 95.000$/u)).toBeTruthy();
     expect(screen.getByText(/^190.000$/u)).toBeTruthy();
-    expect(screen.getByText('Komissiya')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Komissiya'))).toBeTruthy();
     expect(screen.getByText(/^19.000$/u)).toBeTruthy();
-    expect(screen.getByText('Javob berish uchun 29 daqiqa')).toBeTruthy();
-    await tap('Keyinroq');
+    expect(screen.getByText(toCyrillic('Javob berish uchun 29 daqiqa'))).toBeTruthy();
+    await tap(toCyrillic('Keyinroq'));
     await sheetClosed();
   });
 
   // «Keyinroq» lasts the session of the Mini App: each test has its own requests.
   it('«Tasdiqlash» answers in one tap; the plaque on top says the commission', async () => {
     const { answer } = driver([{ ...asked, id: 'b3' }]);
-    await tap('Javob berish');
-    await tap('Tasdiqlash');
+    await tap(toCyrillic('Javob berish'));
+    await tap(toCyrillic('Tasdiqlash'));
     expect(answer).toHaveBeenCalledWith('b3', 'confirm');
-    expect(await screen.findByText(/^Madina tasdiqlandi · 19.000 komissiya$/u)).toBeTruthy();
+    expect(await screen.findByText(/^Madina тасдиқланди · 19.000 комиссия$/u)).toBeTruthy();
     await sheetClosed();
   });
 
   it('«Rad etish» declines; two requests show «1 / 2», then the next one', async () => {
     const olim = { ...asked, id: 'b5', passenger: { ...asked.passenger, firstName: 'Olim' } };
     const { answer } = driver([{ ...asked, id: 'b4' }, olim]);
-    await tap('Javob berish');
+    await tap(toCyrillic('Javob berish'));
     expect(await screen.findByText('1 / 2')).toBeTruthy();
-    await tap('Rad etish');
+    await tap(toCyrillic('Rad etish'));
     expect(answer).toHaveBeenCalledWith('b4', 'decline');
-    expect(await screen.findByText('Olim · 2 joy')).toBeTruthy();
+    expect(await screen.findByText(`Olim · ${toCyrillic('2 joy')}`)).toBeTruthy();
     expect(screen.getByText('2 / 2')).toBeTruthy();
-    await tap('Keyinroq');
+    await tap(toCyrillic('Keyinroq'));
     await sheetClosed();
   });
 
@@ -79,16 +80,16 @@ describe('the sheet of a new request (G68)', { timeout: 20_000 }, () => {
   it('without money for the commission says the sum short and opens the ready message', async () => {
     const { answer } = driver([{ ...asked, id: 'b6' }], undefined, 5000);
     // Short of money the block says so first; «Soʻrovlar» opens the sheet (mockup g76/3 state 8).
-    await tap('Soʻrovlar');
-    expect(await screen.findByText('Yetmaydi')).toBeTruthy();
+    await tap(toCyrillic('Soʻrovlar'));
+    expect(await screen.findByText(toCyrillic('Yetmaydi'))).toBeTruthy();
     expect(screen.getByText(/^14.000$/u)).toBeTruthy();
     const sent = vi.spyOn(window, 'open').mockReturnValue(null);
     const inSheet = screen
-      .getAllByRole('button', { name: 'Hisobni toʻldirish' })
+      .getAllByRole('button', { name: toCyrillic('Hisobni toʻldirish') })
       .find((button) => button.closest('[vaul-drawer]'));
     fireEvent.click(inSheet as HTMLElement);
     expect(decodeURIComponent(String(sent.mock.calls[0]?.[0]))).toMatch(
-      /Madinaning joyini tasdiqlash uchun 14.000.soʻm yetmayapti/u,
+      /Madinaning жойини тасдиқлаш учун 14.000.сўм етмаяпти/u,
     );
     expect(answer).not.toHaveBeenCalled();
     sent.mockRestore();

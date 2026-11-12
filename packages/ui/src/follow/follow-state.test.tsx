@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { SharedTrip } from '@platform/contracts';
 import { cleanup, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -36,47 +37,47 @@ const open = (trip: SharedTrip = TRIP) =>
 describe('the screen of the close people (G60, mockup g60/3)', () => {
   it('says big where the person is and when they arrive, with three steps', async () => {
     open();
-    expect(await screen.findByText('Madina yoʻlda')).toBeTruthy();
-    expect(screen.getByText(/^Fargʻonaga ≈ \d{2}:\d{2} da yetadi$/u)).toBeTruthy();
-    const steps = within(screen.getByRole('list', { name: 'Holati' })).getAllByRole('listitem');
+    expect(await screen.findByText(`Madina ${toCyrillic('yoʻlda')}`)).toBeTruthy();
+    expect(screen.getByText(/^Фарғонага ≈ \d{2}:\d{2} да етади$/u)).toBeTruthy();
+    const steps = within(screen.getByRole('list', { name: toCyrillic('Holati') })).getAllByRole('listitem');
     expect(steps.map((step) => step.dataset.done)).toEqual(['true', 'true', 'false']);
   });
 
   it('shows the driver with the plate, the two places and «Xabar olish»', async () => {
     open();
     expect(await screen.findByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
-    expect(screen.getByText('Uchrashuv joyi')).toBeTruthy();
-    expect(screen.getByText('Tushirish joyi')).toBeTruthy();
-    expect(screen.getByText('Xabar olish')).toBeTruthy();
-    expect(screen.getByText('Men ham yoʻlga chiqaman')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Uchrashuv joyi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Tushirish joyi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Xabar olish'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Men ham yoʻlga chiqaman'))).toBeTruthy();
   });
 
   it('tells a cancelled trip plainly, without the way (docs/124 И)', async () => {
     open({ ...TRIP, status: 'cancelled' });
-    expect(await screen.findByText('Safar bekor qilindi')).toBeTruthy();
-    expect(screen.queryByText(/da yetadi$/u)).toBeNull();
+    expect(await screen.findByText(toCyrillic('Safar bekor qilindi'))).toBeTruthy();
+    expect(screen.queryByText(/да етади$/u)).toBeNull();
     // Nothing is left to follow (G91 PAS-11).
-    expect(screen.queryByText('Xabar olish')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Xabar olish'))).toBeNull();
   });
 
   it('says when the driver moved the time and shows no arrival before the trip (docs/124 И)', async () => {
     open({ ...TRIP, status: 'waiting', firstDepartAt: TRIP.departAt - 60 * 60 * 1000 });
-    expect(await screen.findByText(/^Vaqt oʻzgardi: \d{2}:\d{2} → \d{2}:\d{2}$/u)).toBeTruthy();
+    expect(await screen.findByText(/^Вақт ўзгарди: \d{2}:\d{2} → \d{2}:\d{2}$/u)).toBeTruthy();
   });
 
   // G90 (docs/216): a range moves whole; close people see both ranges.
   it('says a moved range as ranges', async () => {
     const departUntil = TRIP.departAt + 2 * 60 * 60 * 1000;
     open({ ...TRIP, departUntil, status: 'waiting', firstDepartAt: TRIP.departAt - 60 * 60 * 1000 });
-    expect(await screen.findByText('Vaqt oʻzgardi: 07:00 … 09:00 → 08:00 … 10:00')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Vaqt oʻzgardi: 07:00 … 09:00 → 08:00 … 10:00'))).toBeTruthy();
   });
 
   it('once arrived, says where and when, and that the following ends (mockup g60/6)', async () => {
     open({ ...TRIP, status: 'arrived' });
-    expect(await screen.findByText('Madina yetib keldi')).toBeTruthy();
-    expect(screen.queryByText(/yetadi$/u)).toBeNull();
-    expect(screen.getByText(/^Fargʻona shahri · \d\d:\d\d$/u)).toBeTruthy();
-    expect(screen.getByText(/^Kuzatish tugadi, havola yopildi\.$/u)).toBeTruthy();
-    expect(screen.queryByText('Xabar olish')).toBeNull();
+    expect(await screen.findByText(`Madina ${toCyrillic('yetib keldi')}`)).toBeTruthy();
+    expect(screen.queryByText(/етади$/u)).toBeNull();
+    expect(screen.getByText(/^Фарғона шаҳри · \d\d:\d\d$/u)).toBeTruthy();
+    expect(screen.getByText(/^Кузатиш тугади, ҳавола ёпилди\.$/u)).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Xabar olish'))).toBeNull();
   });
 });

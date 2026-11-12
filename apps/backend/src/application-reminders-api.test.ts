@@ -1,4 +1,5 @@
 import { CAR_PHOTO_KINDS } from '@platform/contracts';
+import { toCyrillic } from '@platform/i18n';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { fakeTelegram } from './bots/test-bot';
 import { sendApplicationReminders } from './modules/assignments';
@@ -49,17 +50,20 @@ describe('the team answers a driver application within the hour (G34, G68)', () 
     await changeModerator(testEnv, OWNER, MODERATOR, true);
     expect((await apply(APPLICANT)).status).toBe(200);
     const received = telegram.calls.find((item) => item.token === testEnv.DRIVER_BOT_TOKEN);
-    expect(received?.body).toMatchObject({ chat_id: APPLICANT, text: expect.stringContaining('1 soat') });
+    expect(received?.body).toMatchObject({
+      chat_id: APPLICANT,
+      text: expect.stringContaining(toCyrillic('1 soat')),
+    });
     telegram.calls.length = 0;
     for (const minutes of [20, 25, 30, 40, 60]) await remindAt(minutes);
     const late = adminTexts().find((sent) => sent.text.startsWith('⏱'));
     expect([OWNER, MODERATOR]).toContain(late?.chat);
-    expect(late?.text).toBe('⏱ Ali arizasi 25 daqiqa kutmoqda: 5 daqiqa qoldi');
+    expect(late?.text).toBe(`⏱ Ali ${toCyrillic('arizasi 25 daqiqa kutmoqda: 5 daqiqa qoldi')}`);
     // The owner: a line of «Diqqat» and a ring under it (G68).
     const owner = adminTexts().filter((sent) => sent.chat === OWNER && !sent.text.startsWith('⏱'));
     expect(owner.map((sent) => sent.text)).toEqual([
-      expect.stringContaining('Diqqat · bugun'),
-      expect.stringMatching(/^⚠️ Ariza 30 daqiqadan beri tekshirilmadi: Ali\. Moderator: /u),
+      expect.stringContaining(toCyrillic('Diqqat · bugun')),
+      expect.stringMatching(/^⚠️ Ариза 30 дақиқадан бери текширилмади: Ali\. Модератор: /u),
     ]);
     // The ring answers the «Navbat» card of its moderator.
     const ring = telegram.calls.find((item) => item.body.text === late?.text);

@@ -33,7 +33,7 @@ describe('the filters over the trips (G41, G59, docs/90 F-P4, docs/118)', { time
     expect(screen.getByText(/^Sardor ★/u)).toBeTruthy();
     pill(/^4$/u);
     // Nothing fits: how many trips the filter hid, and one tap to see them (docs/89 P6).
-    expect(await screen.findByText(/2 ta safar/u)).toBeTruthy();
+    expect(await screen.findByText(/2 та сафар/u)).toBeTruthy();
   });
 
   it('«Boʻsh salon» keeps only the trips that sell the whole car and have nobody yet', async () => {
@@ -44,8 +44,8 @@ describe('the filters over the trips (G41, G59, docs/90 F-P4, docs/118)', { time
     await findRoute();
     expect(await screen.findByText(/^Sardor ★/u)).toBeTruthy();
     // The trip that sells the car says so on its card.
-    expect(screen.getByText(/Butun salon: 285\s000/u)).toBeTruthy();
-    pill(/Boʻsh salon/u);
+    expect(screen.getByText(/Бутун салон: 285\s000/u)).toBeTruthy();
+    pill(/Бўш салон/u);
     expect(screen.queryByText(/^Sardor ★/u)).toBeNull();
     expect(screen.getByText(/^Olim ★/u)).toBeTruthy();
   });

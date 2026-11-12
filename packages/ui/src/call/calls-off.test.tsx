@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { confirmed } from '../bookings/booking-test-kit';
@@ -36,8 +37,8 @@ describe('calls that are not set up', () => {
       </CallsOnContext.Provider>,
       testClients({}),
     );
-    expect(await screen.findByText('Xabar yozish')).toBeTruthy();
-    expect(screen.queryByText('Qoʻngʻiroq')).toBeNull();
+    expect(await screen.findByText(toCyrillic('Xabar yozish'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Qoʻngʻiroq'))).toBeNull();
   });
 
   // G91 PAS-12: the button under the cards of the main screen follows the same rule.
@@ -47,9 +48,9 @@ describe('calls that are not set up', () => {
         <CallButton onClick={noop} />
       </CallsOnContext.Provider>,
     );
-    expect(screen.queryByRole('button', { name: 'Qoʻngʻiroq' })).toBeNull();
+    expect(screen.queryByRole('button', { name: toCyrillic('Qoʻngʻiroq') })).toBeNull();
     cleanup();
     renderInShell(<CallButton onClick={noop} />);
-    expect(screen.getByRole('button', { name: 'Qoʻngʻiroq' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: toCyrillic('Qoʻngʻiroq') })).toBeTruthy();
   });
 });

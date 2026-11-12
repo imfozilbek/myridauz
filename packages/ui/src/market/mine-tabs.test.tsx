@@ -16,8 +16,8 @@ describe('the tabs of «Mening safarlarim»', () => {
         bookings: { myBookings: async () => [], myOffers: async () => [] },
       }),
     );
-    const active = await screen.findByRole('tab', { name: /^Faol/u });
-    const past = screen.getByRole('tab', { name: /^Oʻtgan/u });
+    const active = await screen.findByRole('tab', { name: /^Фаол/u });
+    const past = screen.getByRole('tab', { name: /^Ўтган/u });
     expect([active.getAttribute('aria-selected'), past.getAttribute('aria-selected')]).toEqual([
       'true',
       'false',

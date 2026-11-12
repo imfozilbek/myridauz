@@ -1,16 +1,18 @@
 import type { Locale } from './config';
 import { formatMessage, type MessageValues } from './format-message';
 import { createFormatters } from './formatters';
-import { CATALOGS, lookup, type TranslationKey } from './messages';
+import { messageOf, type TranslationKey } from './messages';
+import { oneAlphabet, placeIn, shownValues } from './shown-text';
 
 export function createI18n(locale: Locale) {
-  const catalog = CATALOGS[locale];
   const t = (key: TranslationKey, values?: MessageValues) =>
-    formatMessage(lookup(catalog, key), locale, values);
+    oneAlphabet(locale, formatMessage(messageOf(locale, key), locale, shownValues(locale, values)));
+
   const formatters = createFormatters(locale, t);
   return {
     locale,
     t,
+    placeName: (name: string) => placeIn(locale, name),
     formatDate: formatters.formatDate,
     formatShortDate: formatters.formatShortDate,
     formatTime: formatters.formatTime,

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError, type BookingsClient } from '@platform/api-client';
 import { act, cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -27,16 +28,16 @@ describe(
     it('chooses the first time, starts the price from the passenger and moves it by the step', async () => {
       const sendOffer = vi.fn<BookingsClient['sendOffer']>(async () => offer);
       openBoard({ bookings: { sendOffer } });
-      await tap('Taklif yuborish');
+      await tap(toCyrillic('Taklif yuborish'));
       const form = await sheet();
-      expect(form.getByText('Dilnozaga taklif')).toBeTruthy();
-      expect(form.getByText('Chilonzor → Fargʻona · bugun · 2 kishi')).toBeTruthy();
-      expect(form.getByText('Dilnoza taklifi: 95 000')).toBeTruthy();
+      expect(form.getByText(`Dilnozaga ${toCyrillic('taklif')}`)).toBeTruthy();
+      expect(form.getByText(toCyrillic('Chilonzor → Fargʻona · bugun · 2 kishi'))).toBeTruthy();
+      expect(form.getByText(`Dilnoza ${toCyrillic('taklifi: 95 000')}`)).toBeTruthy();
       expect(form.getByRole('radio', { name: '08:00' }).getAttribute('aria-checked')).toBe('true');
       fireEvent.click(form.getByRole('radio', { name: '10:00' }));
-      fireEvent.click(form.getByLabelText('Oshirish'));
+      fireEvent.click(form.getByLabelText(toCyrillic('Oshirish')));
       expect(form.getByText('100 000')).toBeTruthy();
-      fireEvent.click(await form.findByRole('button', { name: 'Taklif yuborish' }));
+      fireEvent.click(await form.findByRole('button', { name: toCyrillic('Taklif yuborish') }));
       await waitFor(() => expect(sendOffer).toHaveBeenCalledWith('r1', { departAt: TEN, price: 100000 }));
       await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
     });
@@ -44,17 +45,17 @@ describe(
     it('takes «now» at the tap: a time that became too soon on the open sheet is chosen again (G77)', async () => {
       const sendOffer = vi.fn<BookingsClient['sendOffer']>(async () => offer);
       openBoard({ bookings: { sendOffer } });
-      await tap('Taklif yuborish');
+      await tap(toCyrillic('Taklif yuborish'));
       const form = await sheet();
       expect(form.getByRole('radio', { name: '08:00' }).getAttribute('aria-checked')).toBe('true');
       // 07:10 in Tashkent: 08:00 is less than an hour away (docs/103). Never a time not seen: the
       // sheet says why and shows the next time; the next tap sends it.
       vi.setSystemTime(NOW + 70 * 60_000);
-      fireEvent.click(await form.findByRole('button', { name: 'Taklif yuborish' }));
-      expect(await form.findByText('Bu vaqt juda yaqin. Keyinroq vaqtni tanlang.')).toBeTruthy();
+      fireEvent.click(await form.findByRole('button', { name: toCyrillic('Taklif yuborish') }));
+      expect(await form.findByText(toCyrillic('Bu vaqt juda yaqin. Keyinroq vaqtni tanlang.'))).toBeTruthy();
       expect(sendOffer).not.toHaveBeenCalled();
       expect(form.getByRole('radio', { name: '10:00' }).getAttribute('aria-checked')).toBe('true');
-      fireEvent.click(form.getByRole('button', { name: 'Taklif yuborish' }));
+      fireEvent.click(form.getByRole('button', { name: toCyrillic('Taklif yuborish') }));
       await waitFor(() => expect(sendOffer).toHaveBeenCalledWith('r1', { departAt: TEN, price: 95000 }));
       await sheetClosed();
     });
@@ -62,14 +63,14 @@ describe(
     // Telegram «Назад» closes only the sheet: the board stays, the offer typed comes back (G77).
     it('«Назад» closes the sheet on the board; it opens again with the time and the price typed', async () => {
       openBoard({ inTelegram: true });
-      await tap('Taklif yuborish');
+      await tap(toCyrillic('Taklif yuborish'));
       const form = await sheet();
       fireEvent.click(form.getByRole('radio', { name: '10:00' }));
-      fireEvent.click(form.getByLabelText('Oshirish'));
+      fireEvent.click(form.getByLabelText(toCyrillic('Oshirish')));
       act(pressBack);
       await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
-      expect(screen.getByText('Yoʻlovchilar soʻrovlari')).toBeTruthy();
-      await tap('Taklif yuborish');
+      expect(screen.getByText(toCyrillic('Yoʻlovchilar soʻrovlari'))).toBeTruthy();
+      await tap(toCyrillic('Taklif yuborish'));
       const again = await sheet();
       expect(again.getByRole('radio', { name: '10:00' }).getAttribute('aria-checked')).toBe('true');
       expect(again.getByText('100 000')).toBeTruthy();
@@ -78,11 +79,11 @@ describe(
     it('«Boshqa» takes any free time of the day from the native list', async () => {
       const sendOffer = vi.fn<BookingsClient['sendOffer']>(async () => offer);
       openBoard({ bookings: { sendOffer } });
-      await tap('Taklif yuborish');
+      await tap(toCyrillic('Taklif yuborish'));
       const form = await sheet();
-      fireEvent.change(form.getByLabelText('Boshqa'), { target: { value: '15:30' } });
+      fireEvent.change(form.getByLabelText(toCyrillic('Boshqa')), { target: { value: '15:30' } });
       expect(form.getByText('15:30', { selector: 'label' })).toBeTruthy();
-      fireEvent.click(await form.findByRole('button', { name: 'Taklif yuborish' }));
+      fireEvent.click(await form.findByRole('button', { name: toCyrillic('Taklif yuborish') }));
       await waitFor(() => expect(sendOffer.mock.calls[0]?.[1].departAt).toBe(EIGHT + 7.5 * 3_600_000));
     });
 
@@ -91,9 +92,9 @@ describe(
         throw new ApiError(402, 'wallet.not_enough');
       });
       openBoard({ bookings: { sendOffer } });
-      await tap('Taklif yuborish');
-      fireEvent.click(await (await sheet()).findByRole('button', { name: 'Taklif yuborish' }));
-      expect(await screen.findByText('Hamyonda mablagʻ yetarli emas')).toBeTruthy();
+      await tap(toCyrillic('Taklif yuborish'));
+      fireEvent.click(await (await sheet()).findByRole('button', { name: toCyrillic('Taklif yuborish') }));
+      expect(await screen.findByText(toCyrillic('Hamyonda mablagʻ yetarli emas'))).toBeTruthy();
     });
   },
 );
@@ -109,19 +110,19 @@ describe(
         requestBoard: async () => board({ others: [salon], carSeats: 6 }),
         bookings: { offerSalonTrip },
       });
-      expect(await screen.findByText('Boʻsh salon kerak')).toBeTruthy();
-      await tap('Safar ochib taklif qilish');
+      expect(await screen.findByText(toCyrillic('Boʻsh salon kerak'))).toBeTruthy();
+      await tap(toCyrillic('Safar ochib taklif qilish'));
       const form = await sheet();
-      expect(form.getByText('Dilnoza uchun safar')).toBeTruthy();
-      expect(form.getByText('Bugun')).toBeTruthy();
-      expect(form.getByText('Qoʻyliq pitagi')).toBeTruthy();
-      expect(form.getByText('Faqat butun salon')).toBeTruthy();
+      expect(form.getByText(`Dilnoza ${toCyrillic('uchun safar')}`)).toBeTruthy();
+      expect(form.getByText(toCyrillic('Bugun'))).toBeTruthy();
+      expect(form.getByText(toCyrillic('Qoʻyliq pitagi'))).toBeTruthy();
+      expect(form.getByText(toCyrillic('Faqat butun salon'))).toBeTruthy();
       // Every seat of the car at the price of the request (G61).
-      expect(form.getByText('6 joy × 95 000 = 570 000')).toBeTruthy();
+      expect(form.getByText(toCyrillic('6 joy × 95 000 = 570 000'))).toBeTruthy();
       // The commission of the whole car before the offer goes (G75, docs/158 Г).
-      expect(form.getByText(/^Komissiya · 57.000 soʻm$/u)).toBeTruthy();
-      expect(form.getByText('Dilnoza rozi boʻlsa, safar unga band boʻladi.')).toBeTruthy();
-      fireEvent.click(await form.findByRole('button', { name: 'Safar ochib taklif qilish' }));
+      expect(form.getByText(/^Комиссия · 57.000 сўм$/u)).toBeTruthy();
+      expect(form.getByText(`Dilnoza ${toCyrillic('rozi boʻlsa, safar unga band boʻladi')}.`)).toBeTruthy();
+      fireEvent.click(await form.findByRole('button', { name: toCyrillic('Safar ochib taklif qilish') }));
       await waitFor(() => expect(offerSalonTrip).toHaveBeenCalledWith('r2', EIGHT));
     });
   },

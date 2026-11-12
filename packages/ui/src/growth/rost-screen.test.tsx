@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { StatsClient } from '@platform/api-client';
 import { GROWTH_LOOPS, type Rost } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
@@ -26,13 +27,13 @@ describe('«Rost»', () => {
   it('shows what each loop brought and how many searches of a direction found a trip', async () => {
     const rost = vi.fn<StatsClient['rost']>(async (period) => ({ ...ROST, period }));
     renderMarket(<RostScreen onBack={() => undefined} />, testClients({ stats: { rost } }));
-    expect(await screen.findByText('Oynadagi QR')).toBeTruthy();
-    expect(screen.getByText('6 keldi · 2 roʻyxatdan oʻtdi · 1 safarga chiqdi')).toBeTruthy();
-    expect(screen.getByText('Toshkent shahri → Fargʻona viloyati')).toBeTruthy();
-    expect(screen.getByText('7 / 10 qidiruvda safar topildi')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Oynadagi QR'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('6 keldi · 2 roʻyxatdan oʻtdi · 1 safarga chiqdi'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Toshkent shahri → Fargʻona viloyati'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('7 / 10 qidiruvda safar topildi'))).toBeTruthy();
     expect(screen.getByText('70%')).toBeTruthy();
-    expect(screen.getByText('Kelganlar soni analitika ulanganda chiqadi.')).toBeTruthy();
-    await tap('30 kun');
+    expect(screen.getByText(toCyrillic('Kelganlar soni analitika ulanganda chiqadi.'))).toBeTruthy();
+    await tap(toCyrillic('30 kun'));
     expect(rost).toHaveBeenLastCalledWith('month');
   });
 });

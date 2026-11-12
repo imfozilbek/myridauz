@@ -13,7 +13,7 @@ import { openAs, outsideCalls, type Person } from './stand-kit';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 const NAVOIY = '1712401';
-const DRAFT_BACK = 'Oldingi yozganingiz tiklandi.';
+const DRAFT_BACK = t('common.draftRestored');
 const SLOW_MS = 1500;
 const COMMENT = 'Yukxona boʻsh, konditsioner bor';
 const { mainButton, shot } = g33;

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError } from '@platform/api-client';
 import { loadBrand } from '@platform/brands';
 import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
@@ -22,7 +23,7 @@ afterEach(() => {
 });
 
 const welcome = { logo: 'logo.svg', points: [{ icon: 'team', textKey: 'common.welcome.verified' }] } as const;
-const BOOK = '2 ta joy band qilish';
+const BOOK = toCyrillic('2 ta joy band qilish');
 // A trip of another driver: the new person is not its driver.
 const other = { ...trip, driver: { ...trip.driver, id: 'another-driver' } };
 
@@ -41,15 +42,15 @@ describe('a trip of a link before the registration', { timeout: 20_000 }, () => 
       </AccountGate>,
       testClients({ market: { trip: async () => other } }),
     );
-    fireEvent.click(await screen.findByRole('button', { name: 'Oshirish' }));
+    fireEvent.click(await screen.findByRole('button', { name: toCyrillic('Oshirish') }));
     await tap(BOOK);
     expect(await screen.findByText(loadBrand().slogan)).toBeTruthy();
     await passWelcome();
     await addFace(container);
-    fireEvent.click(screen.getByText('Ayol'));
-    await act(async () => fireEvent.click(screen.getByText('Raqamni yuborish')));
-    expect(await screen.findByText('Qayerdan, qayerga?')).toBeTruthy();
-    expect(screen.getByText(/^2 joy × 95[\s.]000$/u)).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Ayol')));
+    await act(async () => fireEvent.click(screen.getByText(toCyrillic('Raqamni yuborish'))));
+    expect(await screen.findByText(toCyrillic('Qayerdan, qayerga?'))).toBeTruthy();
+    expect(screen.getByText(/^2 жой × 95[\s.]000$/u)).toBeTruthy();
     expect(screen.queryByText('inside')).toBeNull();
   });
 
@@ -59,7 +60,7 @@ describe('a trip of a link before the registration', { timeout: 20_000 }, () => 
     const onDone = vi.fn();
     const failing = vi.fn(async () => Promise.reject(new ApiError(0, 'network.failed')));
     renderMarket(<TripPreview id="t1" onDone={onDone} />, testClients({ market: { trip: failing } }));
-    fireEvent.click(await screen.findByText('Qayta urinish'));
+    fireEvent.click(await screen.findByText(toCyrillic('Qayta urinish')));
     await waitFor(() => expect(failing).toHaveBeenCalledTimes(2));
     expect(onDone).not.toHaveBeenCalled();
   });

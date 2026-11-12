@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { loadBrand } from '@platform/brands';
 import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -73,27 +74,29 @@ async function ringing() {
 describe('the sheet of a call (G68)', () => {
   it('says who calls about which trip; «Rad etish» declines it', async () => {
     const { sent } = await ringing();
-    expect(await screen.findByText(`Qoʻngʻiroq · ${loadBrand().name} orqali`)).toBeTruthy();
+    expect(
+      await screen.findByText(`${toCyrillic('Qoʻngʻiroq')} · ${loadBrand().name} ${toCyrillic('orqali')}`),
+    ).toBeTruthy();
     expect(screen.getByText('Jasur')).toBeTruthy();
-    expect(screen.getByText('Raqamlar yashirin')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Raqamlar yashirin'))).toBeTruthy();
     expect(screen.getByText('home')).toBeTruthy();
-    await tap('Rad etish');
+    await tap(toCyrillic('Rad etish'));
     await waitFor(() => expect(sent()).toContainEqual({ type: 'call', action: 'decline' }));
     await sheetClosed();
   });
 
   it('«Javob berish» opens the chat and takes the call there', async () => {
     await ringing();
-    await tap('Javob berish');
+    await tap(toCyrillic('Javob berish'));
     expect(await screen.findByText(`chat ${KEY} answer`)).toBeTruthy();
     await sheetClosed();
   });
 
   it('the caller hung up: the sheet goes by itself', async () => {
     const { socket } = await ringing();
-    await screen.findByText('Javob berish');
+    await screen.findByText(toCyrillic('Javob berish'));
     act(() => socket.receive({ type: 'call', call: null }));
-    await waitFor(() => expect(screen.queryByText('Javob berish')).toBeNull());
+    await waitFor(() => expect(screen.queryByText(toCyrillic('Javob berish'))).toBeNull());
     // The drawer closes on its own timer: the test waits for it before the window goes (lesson 203).
     await sheetClosed();
   });

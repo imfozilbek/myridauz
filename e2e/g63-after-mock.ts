@@ -1,5 +1,5 @@
 import type { Locator, Page } from '@playwright/test';
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, toCyrillic } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
 import { mapState, mockMap } from './map-mock';
@@ -45,10 +45,10 @@ export const seat = (trip: Trip, n: string, firstName: string, seats: number, ex
   pitak: null,
   pickup: {
     point: GRAND,
-    name: { step: 'landmark', name: 'Grand' },
-    area: { step: 'district', name: 'Chilonzor' },
+    name: { step: 'landmark', name: toCyrillic('Grand') },
+    area: { step: 'district', name: toCyrillic('Chilonzor') },
   },
-  dropoff: { point: null, name: null, area: { step: 'district', name: 'Samarqand shahri' } },
+  dropoff: { point: null, name: null, area: { step: 'district', name: toCyrillic('Samarqand shahri') } },
   extraKm: null,
   plate: null,
   chatKey: `b00000000-0000-4000-8000-0000000000e${n}`,

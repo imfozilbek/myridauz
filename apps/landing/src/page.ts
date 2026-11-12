@@ -38,7 +38,7 @@ export function page({ brand, i18n, year, title, path, body, script = '', ...mor
     `<a href="${telegramLink(support)}">@${support}</a>`,
   );
   return `<!doctype html>
-<html lang="uz">
+<html lang="uz-Cyrl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">

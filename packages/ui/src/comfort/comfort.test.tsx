@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError, type ComfortClient } from '@platform/api-client';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -11,7 +12,7 @@ afterEach(cleanup);
 const DRIVER = { ...trip.driver, car: trip.driver.car };
 // The switch of the review, once the saved drivers came.
 async function favorite() {
-  const box = (await screen.findByLabelText('Sevimli haydovchi')) as HTMLInputElement;
+  const box = (await screen.findByLabelText(toCyrillic('Sevimli haydovchi'))) as HTMLInputElement;
   await vi.waitFor(() => expect(box.disabled).toBe(false));
   return box;
 }
@@ -26,7 +27,7 @@ describe('"Sevimli haydovchilar" (docs/18)', () => {
     );
     fireEvent.click(await favorite());
     await vi.waitFor(() => expect(save).toHaveBeenCalledWith('00000000000000000000000000000007'));
-    expect(await screen.findByText('Uning yangi safarlari haqida xabar beramiz.')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Uning yangi safarlari haqida xabar beramiz.'))).toBeTruthy();
     expect(tracked.map((event) => event.name)).toContain('favorite_driver');
     fireEvent.click(await favorite());
     await vi.waitFor(() => expect(forget).toHaveBeenCalledWith('00000000000000000000000000000007'));
@@ -41,7 +42,7 @@ describe('"Sevimli haydovchilar" (docs/18)', () => {
       testClients({ comfort: { favorites: async () => ({ drivers: [], trips: [] }), save } }),
     );
     fireEvent.click(await favorite());
-    expect(await screen.findByText(/^Saqlangan haydovchilar soni chegaraga yetdi/)).toBeTruthy();
+    expect(await screen.findByText(/^Сақланган ҳайдовчилар сони чегарага етди/)).toBeTruthy();
   });
 
   it('lists the saved drivers with their trips, or says how to save one', async () => {
@@ -49,7 +50,7 @@ describe('"Sevimli haydovchilar" (docs/18)', () => {
       <FavoritesScreen onBack={() => undefined} />,
       testClients({ comfort: { favorites: async () => ({ drivers: [DRIVER], trips: [trip] }) } }),
     );
-    expect(await screen.findByText('Sevimli haydovchilar')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Sevimli haydovchilar'))).toBeTruthy();
     expect(screen.getByText('Jasur')).toBeTruthy();
     // Their trips are the cards of «Safarlar» (G78 sheet 2).
     expect(document.querySelectorAll('.search-trips .search-trip')).toHaveLength(1);
@@ -58,9 +59,11 @@ describe('"Sevimli haydovchilar" (docs/18)', () => {
       <FavoritesScreen onBack={() => undefined} />,
       testClients({ comfort: { favorites: async () => ({ drivers: [], trips: [] }) } }),
     );
-    expect(await screen.findByText('Hali sevimli haydovchi yoʻq')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Hali sevimli haydovchi yoʻq'))).toBeTruthy();
     // How to save one: at the rating after the trip (G91 text 8, owner 20.10.2026).
-    expect(screen.getByText('Safar tugagach, baho berishda haydovchini sevimlilarga qoʻshing.')).toBeTruthy();
+    expect(
+      screen.getByText(toCyrillic('Safar tugagach, baho berishda haydovchini sevimlilarga qoʻshing.')),
+    ).toBeTruthy();
   });
 
   // G91 PAS-4 (decision 4, text 7): a saved driver opens a sheet that takes him out.
@@ -75,8 +78,8 @@ describe('"Sevimli haydovchilar" (docs/18)', () => {
       testClients({ comfort: { favorites, forget } }),
     );
     fireEvent.click(await screen.findByText('Jasur'));
-    fireEvent.click(await screen.findByText('Sevimlilardan olib tashlash'));
+    fireEvent.click(await screen.findByText(toCyrillic('Sevimlilardan olib tashlash')));
     await vi.waitFor(() => expect(forget).toHaveBeenCalledWith(DRIVER.id));
-    expect(await screen.findByText('Hali sevimli haydovchi yoʻq')).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Hali sevimli haydovchi yoʻq'))).toBeTruthy();
   });
 });

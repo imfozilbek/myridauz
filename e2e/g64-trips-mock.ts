@@ -4,7 +4,7 @@ import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
 import { confirmed } from './bookings-mock';
 import { sardor, tashkent } from './g64-requests-mock';
-import { tripOf } from './market-mock';
+import { PITAK, tripOf } from './market-mock';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
 // «Mening safarlarim» of the mockup g64/6 with one live trip (owner decision 12.10.2026, docs/172
@@ -80,11 +80,11 @@ export async function openPrivateTrip(page: Page) {
         commission: 0,
         bookingId: null,
         chatKey: 'o1',
-        pitak: 'Qoʻyliq pitagi',
+        pitak: PITAK.name,
         createdAt: 0,
       },
     ],
   );
   await page.locator('.driver-trip').first().click();
-  await page.getByText('Sardorga taklif yuborildi').waitFor();
+  await page.getByText(t('driverTrip.private.waiting.title', { name: 'Sardor' })).waitFor();
 }

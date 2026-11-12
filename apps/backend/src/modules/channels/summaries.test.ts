@@ -1,4 +1,5 @@
 import type { Trip } from '@platform/contracts';
+import { toCyrillic } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import type { Card } from '../notifications';
 import { sendSummaries, type SummaryDeps } from './application/summaries';
@@ -30,15 +31,17 @@ const TOMORROW = [trip('e', {})];
 describe('the summaries of a channel (G68)', () => {
   it('the day at 22:00 without sound: trips, people who arrived, seats booked, tomorrow', () => {
     const card = dayCard(site)(SAMARQAND, TODAY, TOMORROW, EVENING);
-    expect(card?.text.split('\n').map((line) => line.replace(/\s/gu, ' '))).toEqual([
-      '<b>🌙 Kun yakuni: 1-oktabr</b>',
-      '<blockquote>🚗 <b>3</b> ta safar · 👥 <b>5</b> kishi yetib bordi',
-      '💺 <b>3</b> ta boʻsh joy band boʻldi</blockquote>',
-      'Ertaga allaqachon <b>1</b> ta safar bor.',
-    ]);
+    expect(card?.text.split('\n').map((line) => line.replace(/\s/gu, ' '))).toEqual(
+      [
+        '<b>🌙 Kun yakuni: 1-oktabr</b>',
+        '<blockquote>🚗 <b>3</b> ta safar · 👥 <b>5</b> kishi yetib bordi',
+        '💺 <b>3</b> ta boʻsh joy band boʻldi</blockquote>',
+        'Ertaga allaqachon <b>1</b> ta safar bor.',
+      ].map((line) => toCyrillic(line)),
+    );
     expect(card).toMatchObject({ chatId: '@ch_samarqand', key: 'day:2026-10-01', once: true });
     expect(card?.loud).toBeUndefined();
-    expect(JSON.stringify(card?.markup)).toContain('🔎 Ertangi safarlar');
+    expect(JSON.stringify(card?.markup)).toContain(toCyrillic('🔎 Ertangi safarlar'));
     expect(dayCard(site)(SAMARQAND, [], TOMORROW, EVENING)).toBeNull();
   });
 
@@ -47,17 +50,20 @@ describe('the summaries of a channel (G68)', () => {
     const week = [...TODAY, trip('f', { status: 'completed', seatsLeft: 0, driver: rated })];
     const card = weekCard(site)(SAMARQAND, week, MONDAY);
     expect(card?.text.split('\n').map((line) => line.replace(/\s/gu, ' '))).toEqual([
-      '<b>📊 Hafta: Samarqand yoʻnalishi</b>',
-      '<blockquote>🚗 <b>3</b> safar · 👥 <b>10</b> kishi',
-      '⭐ Haydovchilar oʻrtacha <b>4,8</b></blockquote>',
-      'Rahmat, yoʻl bir boʻlsin! 🤝',
+      // The title of the channel as it was given.
+      `<b>📊 ${toCyrillic('Hafta')}: Samarqand ${toCyrillic('yoʻnalishi')}</b>`,
+      ...[
+        '<blockquote>🚗 <b>3</b> safar · 👥 <b>10</b> kishi',
+        '⭐ Haydovchilar oʻrtacha <b>4,8</b></blockquote>',
+        'Rahmat, yoʻl bir boʻlsin! 🤝',
+      ].map((line) => toCyrillic(line)),
     ]);
     expect(card).toMatchObject({ key: 'week:2026-10-05', once: true, loud: true });
     expect(card?.preview).toBe('https://site.test/yonalish/toshkent-samarqand/');
-    expect(JSON.stringify(card?.markup)).toContain('📤 Doʻstlarga ulashish');
+    expect(JSON.stringify(card?.markup)).toContain(toCyrillic('📤 Doʻstlarga ulashish'));
     // The shared words end with why the brand (G88, docs/193).
     expect(decodeURIComponent(JSON.stringify(card?.markup))).toContain(
-      'ta safar\n\nTekshirilgan haydovchilar. Raqamingiz yashirin.',
+      toCyrillic('ta safar\n\nTekshirilgan haydovchilar. Raqamingiz yashirin.'),
     );
   });
 });

@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { ApiError } from '@platform/api-client';
 import { loadBrand } from '@platform/brands';
 import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
@@ -23,41 +24,41 @@ describe('«Profil» (G65, mockup g65/3)', () => {
   it('shows who the person is, the three numbers and the phone only to its owner', async () => {
     const { client } = renderProfile();
     fireEvent.click(screen.getByText('Dilnoza'));
-    expect(screen.getByText(`Yoʻlovchi · ${loadBrand().name} bilan 2 oy`)).toBeTruthy();
-    expect(screen.getByText('Haydovchilar meni qanday koʻradi ›')).toBeTruthy();
+    const since = `${toCyrillic('Yoʻlovchi')} · ${loadBrand().name} ${toCyrillic('bilan 2 oy')}`;
+    expect(screen.getByText(since)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Haydovchilar meni qanday koʻradi ›'))).toBeTruthy();
     expect(await screen.findByText('★ 4,9')).toBeTruthy();
-    expect(screen.getByText('8 baho')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('8 baho'))).toBeTruthy();
     expect(screen.getByText('12')).toBeTruthy();
     expect(screen.getByText('100%')).toBeTruthy();
-    expect(screen.getByText('vaqtida')).toBeTruthy();
-    expect(screen.getByText('8 izoh')).toBeTruthy();
-    expect(screen.getByText('+998 90 123 45 67 · faqat siz koʻrasiz')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('vaqtida'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('8 izoh'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('+998 90 123 45 67 · faqat siz koʻrasiz'))).toBeTruthy();
     // A passenger has no car and no wallet here.
-    expect(screen.queryByText('Mashinam')).toBeNull();
-    expect(screen.queryByText('Hamyon')).toBeNull();
+    for (const gone of ['Mashinam', 'Hamyon']) expect(screen.queryByText(toCyrillic(gone))).toBeNull();
     // The past trips live in «Oʻtgan» only (owner decision 10.10.2026): no «Safarlar tarixi».
-    expect(screen.queryByText('Safarlar tarixi')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Safarlar tarixi'))).toBeNull();
     await waitFor(() => expect(screen.getAllByAltText('Dilnoza').length).toBeGreaterThan(0));
     expect(client.getAvatar).toHaveBeenCalledWith(profile.id, false);
-    fireEvent.click(screen.getByText('Orqaga'));
-    expect(screen.getByLabelText('Profil va rasm')).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Orqaga')));
+    expect(screen.getByLabelText(toCyrillic('Profil va rasm'))).toBeTruthy();
   });
 
   it('says «Yangi» while nobody rated the person', async () => {
     const fresh = { rating: { average: null, count: 0 }, onTime: null, trips: 0 };
     renderProfile({}, { clients: { comfort: { standing: async () => fresh } } });
     fireEvent.click(screen.getByText('Dilnoza'));
-    expect(await screen.findAllByText('Yangi')).toHaveLength(2);
-    expect(screen.getByText('0 baho')).toBeTruthy();
+    expect(await screen.findAllByText(toCyrillic('Yangi'))).toHaveLength(2);
+    expect(screen.getByText(toCyrillic('0 baho'))).toBeTruthy();
   });
 
   it('keeps «Bot xabarlari» always on: it shows and never switches off', () => {
     renderProfile();
     fireEvent.click(screen.getByText('Dilnoza'));
-    const bot = screen.getByLabelText('Bot xabarlari') as HTMLInputElement;
+    const bot = screen.getByLabelText(toCyrillic('Bot xabarlari')) as HTMLInputElement;
     expect(bot.checked).toBe(true);
     expect(bot.disabled).toBe(true);
-    expect(screen.getByText('Doim yoqilgan: bron, chat, safar xabarlari')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Doim yoqilgan: bron, chat, safar xabarlari'))).toBeTruthy();
   });
 
   // G97 (docs/226): the answers first, «Boshqa savolim bor» opens the support bot.
@@ -65,9 +66,9 @@ describe('«Profil» (G65, mockup g65/3)', () => {
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
     renderProfile();
     fireEvent.click(screen.getByText('Dilnoza'));
-    fireEvent.click(screen.getByRole('button', { name: 'Yordam' }));
-    expect(screen.getByText('Javobni shu yerdan toping yoki jamoamizga yozing.')).toBeTruthy();
-    fireEvent.click(screen.getByText('Boshqa savolim bor'));
+    fireEvent.click(screen.getByRole('button', { name: toCyrillic('Yordam') }));
+    expect(screen.getByText(toCyrillic('Javobni shu yerdan toping yoki jamoamizga yozing.'))).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Boshqa savolim bor')));
     expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.support}`);
     open.mockRestore();
   });
@@ -76,34 +77,34 @@ describe('«Profil» (G65, mockup g65/3)', () => {
   it('opens «Obunalar» from the profile', async () => {
     renderProfile({}, { clients: { subscriptions: { mine: async () => [] } } });
     fireEvent.click(screen.getByText('Dilnoza'));
-    fireEvent.click(screen.getByRole('button', { name: 'Obunalar' }));
-    expect(await screen.findByText('Hali obunalar yoʻq')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: toCyrillic('Obunalar') }));
+    expect(await screen.findByText(toCyrillic('Hali obunalar yoʻq'))).toBeTruthy();
   });
 
   it('opens «Sizning taʼsiringiz»; only an approved driver has «Oynaga QR» (G69, docs/123)', async () => {
     const mine = async () => ({ joined: 0, rode: 0, link: 'https://t.me/b', qr: 'https://t.me/q' });
     renderProfile({}, { clients: { growth: { mine } } });
     fireEvent.click(screen.getByText('Dilnoza'));
-    expect(screen.queryByText('Oynaga QR')).toBeNull();
-    fireEvent.click(screen.getByRole('button', { name: /^Sizning taʼsiringiz/u }));
-    expect(await screen.findByText('0 kishi')).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('Oynaga QR'))).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: /^Сизнинг таъсирингиз/u }));
+    expect(await screen.findByText(toCyrillic('0 kishi'))).toBeTruthy();
     cleanup();
     renderProfile({}, { driver: approved, clients: { growth: { mine } } });
     fireEvent.click(screen.getByText('Dilnoza'));
-    expect(screen.getByText('Oynaga QR')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Oynaga QR'))).toBeTruthy();
   });
 
   it('always has «Haydovchi boʻling» for a passenger; a driver has the app already (G76)', () => {
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
     renderProfile();
     fireEvent.click(screen.getByText('Dilnoza'));
-    fireEvent.click(screen.getByText('Haydovchi boʻling'));
+    fireEvent.click(screen.getByText(toCyrillic('Haydovchi boʻling')));
     expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.driver}?startapp`);
     open.mockRestore();
     cleanup();
     renderProfile({ profile: { ...profile, roles: ['passenger', 'driver'] } });
     fireEvent.click(screen.getByText('Dilnoza'));
-    expect(screen.queryByText('Haydovchi boʻling')).toBeNull();
+    expect(screen.queryByText(toCyrillic('Haydovchi boʻling'))).toBeNull();
   });
 
   it('uploads a new photo and reports a failure in simple words', async () => {
@@ -118,18 +119,18 @@ describe('«Profil» (G65, mockup g65/3)', () => {
     expect(account.onAvatarChanged).toHaveBeenCalled();
     client.uploadAvatar.mockRejectedValueOnce(new Error('offline'));
     await act(async () => fireEvent.change(input, { target: { files: [photo] } }));
-    expect(screen.getByText('Rasmni yuklab boʻlmadi. Qayta urinib koʻring.')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Rasmni yuklab boʻlmadi. Qayta urinib koʻring.'))).toBeTruthy();
     // A photo too large says so: another try of the same photo would not help (docs/86 T5).
     client.uploadAvatar.mockRejectedValueOnce(new ApiError(413, 'users.avatar_too_large'));
     await act(async () => fireEvent.change(input, { target: { files: [photo] } }));
-    expect(screen.getByText('Rasm juda katta. Boshqa rasmni tanlang.')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Rasm juda katta. Boshqa rasmni tanlang.'))).toBeTruthy();
   });
 
   // Where our camera cannot open, the camera of the device asks for the face (G58, owner 17.10.2026).
   it('without our camera opens the camera of the device, never the gallery', () => {
     renderProfile({ app: 'driver', profile: { ...profile, hasAvatar: false } }, { hasCamera: false });
     fireEvent.click(screen.getByText('Dilnoza'));
-    expect(screen.getByText('Rasm qoʻshish')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Rasm qoʻshish'))).toBeTruthy();
     expect(document.querySelector('input[type=file]')?.getAttribute('capture')).toBe('user');
   });
 });
@@ -138,12 +139,12 @@ describe('the documents (docs/30)', () => {
   it('opens a legal document from «Hujjatlar»', async () => {
     renderProfile();
     fireEvent.click(screen.getByText('Dilnoza'));
-    expect(screen.getByText('Oferta, maxfiylik')).toBeTruthy();
-    fireEvent.click(screen.getByText('Hujjatlar'));
+    expect(screen.getByText(toCyrillic('Oferta, maxfiylik'))).toBeTruthy();
+    fireEvent.click(screen.getByText(toCyrillic('Hujjatlar')));
     // A title on top, as «Safarlar tarixi»: the list paints no gray over the gradient (docs/121 §5).
-    expect(screen.getByText('Hujjatlar').className).toContain('market-title');
-    fireEvent.click(screen.getByText('Maxfiylik siyosati'));
+    expect(screen.getByText(toCyrillic('Hujjatlar')).className).toContain('market-title');
+    fireEvent.click(screen.getByText(toCyrillic('Maxfiylik siyosati')));
     // The edition comes with the requisites from the API (G34).
-    expect(await screen.findByText(/Tahrir 1\.10/)).toBeTruthy();
+    expect(await screen.findByText(/Таҳрир 1\.10/)).toBeTruthy();
   });
 });

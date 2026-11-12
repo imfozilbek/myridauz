@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import type { GrowthClient } from '@platform/api-client';
 import type { Moment, ShareMoment } from '@platform/contracts';
 import { cleanup, screen, waitFor } from '@testing-library/react';
@@ -27,14 +28,14 @@ function open(found: Found, growth: Partial<GrowthClient> = {}) {
 describe('the celebration of a moment', () => {
   it('says what happened, why to tell and shows the card the passengers see, offered once', async () => {
     const { offered } = open(DRIVER);
-    expect(await screen.findByText(/^Siz endi .+ haydovchisisiz! ✅$/u)).toBeTruthy();
-    expect(screen.getByText(/^Doimiy yoʻlovchilaringizga ayting: endi sizni .+ da topadi\.$/u)).toBeTruthy();
-    expect(screen.getByText('Yoʻlovchilar sizni topadi.')).toBeTruthy();
-    expect(screen.getByText('Qaysi soʻz sizniki?')).toBeTruthy();
+    expect(await screen.findByText(/^Сиз энди .+ ҳайдовчисисиз! ✅$/u)).toBeTruthy();
+    expect(screen.getByText(/^Доимий йўловчиларингизга айтинг: энди сизни .+ да топади\.$/u)).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Yoʻlovchilar sizni topadi.'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Qaysi soʻz sizniki?'))).toBeTruthy();
     expect(screen.getAllByRole('radio')).toHaveLength(3);
-    expect(screen.getByText(/^«Men .+ haydovchisiman»$/u)).toBeTruthy();
+    expect(screen.getByText(/^«Мен .+ ҳайдовчисиман»$/u)).toBeTruthy();
     expect(screen.getByText('Ali')).toBeTruthy();
-    expect(screen.getByText('Keyinroq')).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Keyinroq'))).toBeTruthy();
     await waitFor(() => expect(offered).toHaveBeenCalledWith('driver'));
   });
 
@@ -46,9 +47,9 @@ describe('the celebration of a moment', () => {
     }));
     const opened = vi.spyOn(window, 'open').mockReturnValue(null);
     const { tracked } = open(DRIVER, { momentCard });
-    await tap('Viloyatga men bilan yuring');
-    expect(screen.getByText('«Viloyatga men bilan yuring»')).toBeTruthy();
-    await tap('Yoʻlovchilarimga yuborish');
+    await tap(toCyrillic('Viloyatga men bilan yuring'));
+    expect(screen.getByText(toCyrillic('«Viloyatga men bilan yuring»'))).toBeTruthy();
+    await tap(toCyrillic('Yoʻlovchilarimga yuborish'));
     await waitFor(() => expect(opened).toHaveBeenCalled());
     expect(momentCard).toHaveBeenCalledWith('driver', 2);
     expect(tracked.filter((event) => event.name.startsWith('share_'))).toMatchObject([
@@ -60,7 +61,7 @@ describe('the celebration of a moment', () => {
 
   it('goes on with «Keyinroq»', async () => {
     const { onDone } = open(DRIVER);
-    await tap('Keyinroq');
+    await tap(toCyrillic('Keyinroq'));
     expect(onDone).toHaveBeenCalled();
   });
 
@@ -79,8 +80,8 @@ describe('the celebration of a moment', () => {
     expect(moment).not.toHaveBeenCalled();
     cleanup();
     gate(true);
-    expect(await screen.findByText(/^Siz endi .+ haydovchisisiz! ✅$/u)).toBeTruthy();
-    await tap('Keyinroq');
+    expect(await screen.findByText(/^Сиз энди .+ ҳайдовчисисиз! ✅$/u)).toBeTruthy();
+    await tap(toCyrillic('Keyinroq'));
     expect(screen.getByText('Asosiy')).toBeTruthy();
     cleanup();
     gate(true);

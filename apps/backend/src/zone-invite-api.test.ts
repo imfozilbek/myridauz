@@ -1,3 +1,4 @@
+import { toCyrillic } from '@platform/i18n';
 import { channelOf, loadBrand } from '@platform/brands';
 import { channelVia, tashkentDate } from '@platform/contracts';
 import { afterAll, describe, expect, it, vi } from 'vitest';
@@ -20,7 +21,7 @@ const samarqand = channelOf(loadBrand(), '1718401');
 const search = (id: number, from: string, init: object = on) =>
   call(`/trips?from=${from}&to=1726273&date=${tashkentDate(Date.now())}`, id, init);
 const invites = (id: number) =>
-  telegram.sentTo(id).filter((sent) => String(sent.body.text).includes('kanalida har kuni'));
+  telegram.sentTo(id).filter((sent) => String(sent.body.text).includes(toCyrillic('kanalida har kuni')));
 
 async function registerFrom(id: number, via: string) {
   const contact = await signTelegramData(
