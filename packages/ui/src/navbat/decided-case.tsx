@@ -14,7 +14,6 @@ import { ScreenSkeleton } from '../states/screen-skeleton';
 import { useFailure } from '../states/use-failure';
 import { MainButton } from '../telegram/bottom-button';
 import { confirm, haptic } from '../telegram/feedback';
-import { useTeamOwner } from '../team/use-owner';
 import { ApplicationDetails } from './application-details';
 import { CaseButtons } from './case-buttons';
 import { CaseHeader } from './case-header';
@@ -25,7 +24,7 @@ type CaseProps = { readonly id: string; readonly onBack: () => void };
 
 // An application the team decided (G95, docs/224): the same photos and car as in «Navbat», the
 // decision and its day on top. Approved: «Mashinani tuzatish» by the photo, «Tuzatishga qaytarish»,
-// «Bloklash». Rejected: «Rad etishni bekor qilish» for the owner only.
+// «Bloklash». Rejected: «Rad etishni bekor qilish» for any member (owner decision 12.11.2026).
 export function DecidedCase({ id, onBack }: CaseProps) {
   const { moderation } = useApiClients();
   const { value, failed, error, reload } = useLoad(() => moderation.get(id));
@@ -43,7 +42,6 @@ type DecidedProps = {
 function Decided({ detail, onBack, onChanged }: DecidedProps) {
   const { t, formatDate } = useI18n();
   const { moderation } = useApiClients();
-  const owner = useTeamOwner();
   const [mode, setMode] = useState<Mode>('view');
   const [ticked, setTicked] = useState<readonly ModerationReason[]>([]);
   const { failure, fail, clear } = useFailure();
@@ -99,7 +97,7 @@ function Decided({ detail, onBack, onChanged }: DecidedProps) {
           <MainButton text={t('moderation.fixCar')} onClick={() => setMode('fix')} />
         </>
       ) : null}
-      {status === 'rejected' && owner ? (
+      {status === 'rejected' ? (
         <MainButton text={t('moderation.reopen')} onClick={() => void reopen()} />
       ) : null}
       <ReasonsSheet

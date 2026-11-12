@@ -2,7 +2,7 @@ import { createDriversClient, createMarketClient, createModerationClient } from 
 import { formatPlate } from '@platform/contracts';
 import { expect, test } from '../crash-guard';
 import { showChat } from './bot-chat';
-import { MINUTE, outcome } from './g27-kit';
+import { MINUTE } from './g27-kit';
 import { shootIn } from './g63-kit';
 import { answer, book, CHILONZOR, publishTrip } from './market-kit';
 import { mainButton, NARROW, t } from './screen-tour';
@@ -97,12 +97,12 @@ test('T4. a bad photo goes back for a fix; the live trip goes on', async () => {
   expect((await market.departTrip(live.id)).departedAt).not.toBe(null);
 });
 
-test('T5. a refusal goes back to «Navbat» by the owner only; the driver hears it', async () => {
+// Any member of the team, not only the owner (owner decision 12.11.2026).
+test('T5. a refusal goes back to «Navbat» by a moderator; the driver hears it', async () => {
   await apply(BOBUR, '01G095BB', 'male');
   const bobur = await idOf(BOBUR);
   await (await team(AZIZ)).decide(bobur, { action: 'reject', reasons: ['plate_not_readable'] });
-  expect(await outcome((await team(AZIZ)).reopen(bobur))).toBe('auth.not_owner');
-  await (await team(OWNER)).reopen(bobur);
+  await (await team(AZIZ)).reopen(bobur);
   expect((await (await team(OWNER)).queue()).map((one) => one.userId)).toContain(bobur);
   const reopened = t('bot.driver.reopened');
   await expect.poll(async () => (await told(BOBUR)).some((text) => text.includes(reopened))).toBe(true);

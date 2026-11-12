@@ -63,14 +63,13 @@ describe('the team fixes its own decisions', () => {
     expect([plate.status, await plate.json()]).toEqual([400, { error: 'drivers.invalid_input' }]);
   });
 
-  it('sends a refusal back to «Navbat» by the owner, never by a moderator', async () => {
+  // Any member of the team, not only the owner (owner decision 12.11.2026).
+  it('sends a refusal back to «Navbat» by a moderator too', async () => {
     expect((await apply(BOBUR)).status).toBe(200);
     const bobur = await pid(BOBUR);
     const reasons = ['plate_not_readable'];
     expect((await admin(adminDecisionPath(bobur), AZIZ, { action: 'reject', reasons })).status).toBe(200);
-    const moderator = await admin(adminReopenPath(bobur), AZIZ, {});
-    expect([moderator.status, await moderator.json()]).toEqual([403, { error: 'auth.not_owner' }]);
-    expect((await admin(adminReopenPath(bobur), OWNER, {})).status).toBe(204);
+    expect((await admin(adminReopenPath(bobur), AZIZ, {})).status).toBe(204);
     const detail = applicationDetailSchema.parse(
       await (await admin(adminApplicationPath(bobur), OWNER)).json(),
     );
