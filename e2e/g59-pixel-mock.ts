@@ -19,21 +19,11 @@ export const MAN = {
 
 // The numbers of the journey: 4 cards, the days 3, 8 and 5 trips.
 export async function mockupData(page: Page) {
-  const card = (to: string, today: number, tomorrow: number, price: number) => ({
-    to,
-    today,
-    tomorrow,
-    price,
-  });
+  const card = (to: string, today: number, tomorrow: number) => ({ to, today, tomorrow });
   await page.route('**/api/trips/directions?*', (route) =>
     route.fulfill({
       json: {
-        directions: [
-          card('1718', 3, 8, 90000),
-          card('1730', 2, 5, 100000),
-          card('1706', 1, 4, 160000),
-          card('1703', 0, 3, 110000),
-        ],
+        directions: [card('1718', 3, 8), card('1730', 2, 5), card('1706', 1, 4), card('1703', 0, 3)],
       },
     }),
   );

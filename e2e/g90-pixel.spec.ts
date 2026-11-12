@@ -68,7 +68,7 @@ test('5, 6: the passenger sees 08:00 … 10:00 without the arrival', async ({ pa
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port), 'android'));
   await openFindTrip(page);
-  await page.locator('.direction-card').first().click();
+  await page.locator('.region-tile').first().click();
   await expect(page.locator('.search-trip').first()).toBeVisible();
   await page.locator('.week-day').nth(1).click();
   await page.getByRole('button', { name: '2', exact: true }).click();

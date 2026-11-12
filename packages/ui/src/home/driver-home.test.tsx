@@ -94,7 +94,7 @@ describe(
       const { tracked } = driver([]);
       expect(await screen.findByText(toCyrillic('Joylashuvingiz boʻyicha aniqlandi'))).toBeTruthy();
       await tap(toCyrillic('Qayerga ketyapsiz?'));
-      await tap(toCyrillic('Fargʻona viloyati'));
+      await tap(toCyrillic('Fargʻona'));
       await tap(toCyrillic('Fargʻona shahri'));
       expect(await screen.findByText(toCyrillic('Fargʻona shahri'))).toBeTruthy();
       fireEvent.click(screen.getByRole('button', { name: toCyrillic('Safar eʼlon qilish') }));

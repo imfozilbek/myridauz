@@ -20,7 +20,7 @@ export const weekOf = (counts: readonly number[]): TripDays => ({
 export const searchMarket = (
   counts: readonly number[] = [1, 0],
 ): Pick<MarketClient, 'directions' | 'tripDays'> => ({
-  directions: async () => [{ to: '1730', today: 2, tomorrow: 5, price: 95000 }],
+  directions: async () => [{ to: '1730', today: 2, tomorrow: 5 }],
   tripDays: async () => weekOf(counts),
 });
 

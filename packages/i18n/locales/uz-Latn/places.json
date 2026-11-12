@@ -3,6 +3,7 @@
   "from": "Qayerdan",
   "to": "Qayerga",
   "choose": "Tanlang",
+  "districtCount": "{count} ta tuman",
   "fromTitle": "Qayerdan yoʻlga chiqasiz?",
   "toTitle": "Qayerga borasiz?",
   "search": "Viloyat, tuman yoki shahar",

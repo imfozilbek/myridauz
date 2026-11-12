@@ -48,7 +48,7 @@ test('6-1: «Samarqandning qaysi joyi?» with the trips of each place', async ({
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port)));
   await openFindTrip(page);
-  await page.locator('.direction-card').first().click();
+  await page.locator('.region-tile').first().click();
   await page.getByText(t('find.district', { region: 'Samarqand' })).click();
   await expect(page.locator('.district-whole')).toContainText('14');
   await shot(page, '6-1');

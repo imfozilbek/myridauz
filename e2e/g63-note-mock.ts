@@ -24,7 +24,7 @@ async function mockupTrip(page: Page) {
     seatsLeft: 2,
   });
   await page.route('**/api/trips/directions?*', (route) =>
-    route.fulfill({ json: { directions: [{ to: '1718', today: 0, tomorrow: 1, price: 100000 }] } }),
+    route.fulfill({ json: { directions: [{ to: '1718', today: 0, tomorrow: 1 }] } }),
   );
   const days = [0, 1].map((trips, index) => ({ date: tashkentDate(NOW + index * DAY_MS), trips }));
   await page.route('**/api/trips/days?*', (route) => route.fulfill({ json: { km: 300, days, places: [] } }));
@@ -52,7 +52,7 @@ export async function openBookingPoints(page: Page) {
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port), 'android'));
   await openFindTrip(page);
-  await page.locator('.direction-card').first().click();
+  await page.locator('.region-tile').first().click();
   await page.locator('.week-day').nth(1).click();
   await page.locator('.search-trip').first().click();
   await expect(page.getByText(t('find.seatsTitle'))).toBeVisible();

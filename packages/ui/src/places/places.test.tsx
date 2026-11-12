@@ -50,7 +50,7 @@ describe('RouteScreen (docs/14)', () => {
   it('opens the list of the end at once when the main screen asks for it (G25)', async () => {
     renderRoute(ready, false, 'to');
     expect(await screen.findByText(toCyrillic('Qayerga borasiz?'))).toBeTruthy();
-    expect(screen.getByText(toCyrillic('Fargʻona viloyati'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Fargʻona'))).toBeTruthy();
   });
 
   // The form in the look of the places of the mockup g75/6 A: two rows with a tile and the place.
@@ -67,7 +67,7 @@ describe('RouteScreen (docs/14)', () => {
   it('picks a region by photo, then a district', async () => {
     const { onDone } = renderRoute(ready);
     await choose(toCyrillic('Qayerdan'), toCyrillic('Toshkent shahri'), toCyrillic('Chilonzor'));
-    await choose(toCyrillic('Qayerga'), toCyrillic('Fargʻona viloyati'), toCyrillic('Fargʻona shahri'));
+    await choose(toCyrillic('Qayerga'), toCyrillic('Fargʻona'), toCyrillic('Fargʻona shahri'));
     expect(screen.getByText(toCyrillic('Chilonzor'))).toBeTruthy();
     fireEvent.click(screen.getByText(toCyrillic('Davom etish')));
     expect(onDone.mock.calls[0]?.[0]).toMatchObject({ from: { id: '1726269' }, to: { id: '1730401' } });

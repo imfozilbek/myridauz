@@ -18,10 +18,10 @@ export async function mockCounts(page: Page, found: readonly { departAt: number 
   await page.route('**/api/trips/directions?*', (route) =>
     json(route, {
       directions: [
-        { to: '1718', today: days[0]?.trips ?? 0, tomorrow: days[1]?.trips ?? 0, price: 90000 },
-        { to: '1730', today: 2, tomorrow: 5, price: 100000 },
-        { to: '1706', today: 1, tomorrow: 4, price: 160000 },
-        { to: '1703', today: 0, tomorrow: 3, price: 110000 },
+        { to: '1718', today: days[0]?.trips ?? 0, tomorrow: days[1]?.trips ?? 0 },
+        { to: '1730', today: 2, tomorrow: 5 },
+        { to: '1706', today: 1, tomorrow: 4 },
+        { to: '1703', today: 0, tomorrow: 3 },
       ],
     }),
   );

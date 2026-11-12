@@ -60,7 +60,7 @@ test('places: screenshots', async ({ page }) => {
   await search.fill('');
   // The places of a region by the values of the mockup g75/6 A, in the same colors on an iPhone.
   await page.getByAltText(toCyrillic('Xorazm viloyati')).click();
-  await expect(page.locator('.district-row').first()).toBeVisible();
+  await expect(page.locator('.region-tile').first()).toBeVisible();
   await noSystemBlue(page);
   await shot('3-districts');
   await pressBack(page);

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { publishTrip } from './application/publish';
 import { tripDetail } from './application/read';
 import { directionCards, tripDays } from './application/trip-counts';
+import { POPULAR_REGIONS } from './domain/popular-regions';
 import { HOUR, NOW, setup } from './test-kit';
 
 const TOMORROW = NOW + 24 * HOUR;
@@ -14,20 +15,24 @@ async function market() {
 }
 
 describe('the trips of each direction (G59, docs/118)', () => {
-  it('a card per busy direction: today, tomorrow and the cheapest seat', async () => {
+  it('a card per busy direction: its trips today and tomorrow', async () => {
     const { deps } = await market();
     const [samarqand] = await directionCards(deps, '1726273');
-    expect(samarqand).toEqual({ to: '1718', today: 1, tomorrow: 1, price: 80000 });
+    expect(samarqand).toEqual({ to: '1718', today: 1, tomorrow: 1 });
   });
 
-  it('the popular regions fill the cards with the recommended price', async () => {
+  it('the popular regions follow the busy ones', async () => {
     const { deps } = await market();
-    expect((await directionCards(deps, '1726273'))[1]).toEqual({
-      to: '1706',
-      today: 0,
-      tomorrow: 0,
-      price: 90000,
-    });
+    expect((await directionCards(deps, '1726273'))[1]).toEqual({ to: '1706', today: 0, tomorrow: 0 });
+  });
+
+  // Owner, 12.11.2026: «не всегда видны все айтемы», four cards hid nine regions.
+  it('a card for every region but the own one', async () => {
+    const { deps } = await market();
+    const regions = new Map(POPULAR_REGIONS.map((id) => [id, { id, parentId: null, oneCity: false }]));
+    const places = new Map([...(await deps.places()), ...regions]);
+    const cards = await directionCards({ ...deps, places: async () => places }, '1726273');
+    expect(cards.map((card) => card.to).sort()).toEqual(POPULAR_REGIONS.filter((id) => id !== '1726').sort());
   });
 
   it('own trips and full trips are not counted, as in the search', async () => {

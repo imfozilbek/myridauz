@@ -2,6 +2,7 @@ import type { Location, PlaceTrips } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { Icon, type IconName } from '../icons';
 import type { PlaceDirectory } from './directory';
+import { RegionTile } from './region-tile';
 import './district-list.css';
 
 const TILE_ICON = 20;
@@ -20,7 +21,7 @@ type Props = {
 };
 
 // «Samarqandning qaysi joyi?» (G75, mockup g75/6 A): the whole region in its own white card, then the
-// places in one card; with the trips of the week each says how many go there, the busiest first.
+// places as compact tiles (owner, 12.11.2026); with the trips of the week, the busiest first.
 export function DistrictList({ region, directory, allowWholeRegion, trips, onPick, onWhole }: Props) {
   const { t } = useI18n();
   const count = (to: string) => trips?.places.find((place) => place.to === to)?.trips ?? 0;
@@ -40,15 +41,18 @@ export function DistrictList({ region, directory, allowWholeRegion, trips, onPic
           />
         </div>
       ) : null}
-      <div className="district-card">
+      {/* The places as tiles of two columns, compact like the regions (owner, 12.11.2026): a place with
+          trips of the week says how many. */}
+      <div className="region-tiles">
         {places.map((place) => (
-          <PlaceRow
+          <RegionTile
             key={place.id}
-            icon="place"
-            className="district-row"
-            title={place.name}
-            hint={hint(count(place.id))}
-            onClick={() => onPick(place)}
+            region={place}
+            name={place.name}
+            hint={count(place.id) > 0 ? hint(count(place.id)) : undefined}
+            strong
+            pictured={false}
+            onOpen={() => onPick(place)}
           />
         ))}
       </div>

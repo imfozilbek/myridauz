@@ -5,15 +5,16 @@ import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 import type { PlaceDirectory } from '../places/directory';
 import { usePlaceNames } from '../places/place-names';
+import { RegionTile, useRegionWords } from '../places/region-tile';
 import { Screen } from '../screen/screen';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { useScreenBackground } from '../telegram/screen-background';
 import { brandVars } from '../theme/brand-vars';
 import { useBrand } from '../context/brand-context';
-import { DirectionCard } from './direction-card';
 import { PlaceSearchSheet } from './place-search-sheet';
 import { useDirections } from './use-directions';
+import { tripsOf } from './trips-of';
 import './find.css';
 
 type Props = {
@@ -27,13 +28,14 @@ type Props = {
 };
 
 // «Qayerga borasiz?» (owner decision 06.10.2026, docs/118 path 2, V2): «Qayerdan» in one line, the
-// search of any other place, the main directions as cards. One tap on a card opens its trips.
+// search of any other place, every region as a tile (owner, 12.11.2026). One tap opens its trips.
 export function DirectionsScreen({ directory, from, error, onBack, onChangeFrom, onPick }: Props) {
   useScreenView('market.directions');
   useScreenBackground();
   const { t } = useI18n();
   const { colors } = useBrand().theme;
   const names = usePlaceNames(directory);
+  const words = useRegionWords(directory);
   const { value: cards, failed, reload } = useDirections(from.id);
   const [searching, setSearching] = useState(false);
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
@@ -60,15 +62,19 @@ export function DirectionsScreen({ directory, from, error, onBack, onChangeFrom,
       )}
       {error ? <p className="find-error">{t(`errors.${error}`)}</p> : null}
       {cards === null ? <ScreenSkeleton /> : null}
-      <div className="direction-list">
+      {/* Every region as the same tile as «Qayerdan» (owner, 12.11.2026): its trips when there are,
+          else how many districts it has. */}
+      <div className="region-tiles">
         {cards?.map((card) => {
           const region = directory.find(card.to);
+          const trips = tripsOf(t, card);
           return region ? (
-            <DirectionCard
+            <RegionTile
               key={card.to}
-              card={card}
               region={region}
-              name={names.short(region)}
+              name={words.name(region)}
+              hint={trips ?? words.districts(region)}
+              strong={trips !== null}
               onOpen={() => onPick(region)}
             />
           ) : null;

@@ -97,14 +97,7 @@ test('the steps of the flyer: a driver publishes, a passenger finds and books, t
   await phone.getByAltText(toCyrillic('Qashqadaryo viloyati')).click();
   await phone.getByText(toCyrillic('Qarshi shahri'), { exact: true }).click();
   await seen(phone, t('find.title'));
-  // The photo of a region comes into its card a moment after the card.
-  await expect
-    .poll(() =>
-      phone
-        .locator('.direction-card')
-        .evaluateAll((cards) => cards.filter((card) => !card.querySelector('.direction-art')).length),
-    )
-    .toBe(0);
+  await expect(phone.locator('.region-tile').first()).toBeVisible();
   await shot(phone, 'passenger-2');
   await phone.getByText(toCyrillic('Toshkent'), { exact: false }).first().click();
   const chilonzor = phone.getByText(toCyrillic('Chilonzor'), { exact: true });

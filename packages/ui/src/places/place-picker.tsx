@@ -89,7 +89,7 @@ export function PlacePicker({
         />
       ) : null}
       {!results && !region ? (
-        <RegionGrid regions={directory.regions} cityAtOnce={cityAtOnce} onOpen={pick} />
+        <RegionGrid directory={directory} cityAtOnce={cityAtOnce} onOpen={pick} />
       ) : null}
     </div>
   );

@@ -131,13 +131,13 @@ export async function openOwnTrip() {
 // From Chilonzor (Toshkent shahri) to Fargʻona shahri or the whole Fargʻona region: «Qayerdan» opens
 // at once (G79 В8), «Qayerga» by itself, both go on without «Davom etish» (G40, docs/106 K1).
 export async function chooseRoute(wholeRegion = false) {
-  for (const step of ['Toshkent shahri', 'Chilonzor', 'Fargʻona viloyati']) await tap(toCyrillic(step));
+  for (const step of ['Toshkent shahri', 'Chilonzor', 'Fargʻona']) await tap(toCyrillic(step));
   await tap(toCyrillic(wholeRegion ? 'Butun viloyat' : 'Fargʻona shahri'));
 }
 
 // The search and a request (G35, docs/97 K1): «Qayerga», then «Qayerdan»; no «Davom etish».
 export async function quickRoute(wholeRegion = false) {
-  await tap(toCyrillic('Fargʻona viloyati'));
+  await tap(toCyrillic('Fargʻona'));
   await tap(toCyrillic(wholeRegion ? 'Butun viloyat' : 'Fargʻona shahri'));
   for (const step of ['Toshkent shahri', 'Chilonzor']) await tap(toCyrillic(step));
 }

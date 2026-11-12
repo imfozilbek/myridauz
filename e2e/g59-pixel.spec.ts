@@ -52,7 +52,7 @@ test('the search and «Safar» against the journey of the mockup', async ({ page
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port), 'android'));
   await openFindTrip(page);
-  await expect(page.locator('.direction-card').first()).toBeVisible();
+  await expect(page.locator('.region-tile').first()).toBeVisible();
   await page.waitForLoadState('networkidle');
   await shot(page, '03');
   await page.getByText(TEXT.otherPlace).click();
@@ -60,7 +60,7 @@ test('the search and «Safar» against the journey of the mockup', async ({ page
   await expect(page.getByRole('dialog').getByText(toCyrillic('ut'), { exact: false }).first()).toBeVisible();
   await shot(page, '04');
   await pressBack(page);
-  await page.locator('.direction-card').first().click();
+  await page.locator('.region-tile').first().click();
   await expect(page.locator('.search-trip').first()).toBeVisible();
   await page.locator('.week-day').nth(1).click();
   await page.getByRole('button', { name: '2', exact: true }).click();
