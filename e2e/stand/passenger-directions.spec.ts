@@ -1,4 +1,3 @@
-import { DIRECTION_CARDS } from '@platform/contracts';
 import { toCyrillic } from '@platform/i18n';
 import { expect, test, type Page } from '../crash-guard';
 import { TEXT } from '../apps';
@@ -11,6 +10,8 @@ import { outsideCalls, type Person } from './stand-kit';
 test.use({ viewport: NARROW });
 test.afterEach(() => expect(outsideCalls()).toEqual([]));
 
+// 14 regions: every one but Toshkent shahri, where the seeker starts.
+const REGIONS_BUT_HOME = 13;
 const SEEKER: Person = { id: 900863, name: 'Mohira', phone: '998901110863' };
 const ASKER: Person = { id: 900864, name: 'Sevara', phone: '998901110864' };
 
@@ -29,7 +30,8 @@ async function openLastCard(page: Page, person: Person) {
     await page.getByAltText(toCyrillic('Toshkent shahri')).click();
   }
   const cards = page.locator('.direction-card');
-  await expect(cards).toHaveCount(DIRECTION_CARDS);
+  // Every region but Toshkent shahri itself (owner, 12.11.2026).
+  await expect(cards).toHaveCount(REGIONS_BUT_HOME);
   return cards;
 }
 

@@ -1,7 +1,6 @@
 import {
   COUNTED_DAYS,
   DAY_MS,
-  DIRECTION_CARDS,
   tashkentDate,
   tashkentDayStart,
   type DirectionCard,
@@ -57,7 +56,8 @@ export async function tripDays(
   return { ok: true, value: { km: way.value.km, days, places: inside.sort((a, b) => b.trips - a.trips) } };
 }
 
-// «Qayerga borasiz?»: the directions with the most trips today and tomorrow, then the popular ones;
+// «Qayerga borasiz?»: every region, the directions with the most trips today and tomorrow first, then
+// the popular ones (owner, 12.11.2026: four cards hid the other regions behind the search);
 // «… soʻmdan» is the cheapest seat of those trips or the recommended price.
 export async function directionCards(
   deps: TripsDeps,
@@ -79,7 +79,7 @@ export async function directionCards(
     (region) => region !== home && places.has(region),
   );
   const cards = await Promise.all(
-    order.slice(0, DIRECTION_CARDS).map(async (to) => {
+    order.map(async (to) => {
       const trips = byRegion.get(to) ?? [];
       const cheapest = Math.min(...trips.map(({ trip }) => trip.price));
       const recommended = trips.length > 0 ? null : await deps.recommendDirection(from, to);

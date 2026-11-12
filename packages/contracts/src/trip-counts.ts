@@ -6,8 +6,6 @@ import { dateSchema } from './tashkent-time';
 // trips_from (docs/117).
 export const TRIP_DIRECTIONS_PATH = '/trips/directions';
 export const TRIP_DAYS_PATH = '/trips/days';
-// «Qayerga borasiz?» shows the main directions as cards; any other place by the search.
-export const DIRECTION_CARDS = 4;
 // «Safarlar» counts the trips of a week: today and the 6 days after it.
 export const COUNTED_DAYS = 7;
 

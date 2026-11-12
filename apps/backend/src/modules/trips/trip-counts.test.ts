@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { publishTrip } from './application/publish';
 import { tripDetail } from './application/read';
 import { directionCards, tripDays } from './application/trip-counts';
+import { POPULAR_REGIONS } from './domain/popular-regions';
 import { HOUR, NOW, setup } from './test-kit';
 
 const TOMORROW = NOW + 24 * HOUR;
@@ -28,6 +29,15 @@ describe('the trips of each direction (G59, docs/118)', () => {
       tomorrow: 0,
       price: 90000,
     });
+  });
+
+  // Owner, 12.11.2026: «не всегда видны все айтемы», four cards hid nine regions.
+  it('a card for every region but the own one', async () => {
+    const { deps } = await market();
+    const regions = new Map(POPULAR_REGIONS.map((id) => [id, { id, parentId: null, oneCity: false }]));
+    const places = new Map([...(await deps.places()), ...regions]);
+    const cards = await directionCards({ ...deps, places: async () => places }, '1726273');
+    expect(cards.map((card) => card.to).sort()).toEqual(POPULAR_REGIONS.filter((id) => id !== '1726').sort());
   });
 
   it('own trips and full trips are not counted, as in the search', async () => {
