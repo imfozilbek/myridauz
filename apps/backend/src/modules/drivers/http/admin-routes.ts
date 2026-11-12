@@ -13,7 +13,6 @@ import { applicantPhoto, applicationFor, decideApplication, queue } from '../app
 import type { DriversDeps } from '../application/ports';
 import { fail, image } from './respond';
 import { recordAction } from '../../journal';
-import { ownerOnly } from '../../../shared/auth/owner-only';
 import { fixApprovedCar, myDecisions, reopenRejected } from '../application/fixes';
 
 const ONE = `${ADMIN_APPLICATIONS_PATH}/:id{[0-9a-f]+}`;
@@ -74,7 +73,7 @@ export function adminRoutes(deps: (env: Bindings) => DriversDeps) {
         await recordAction(context.env, { ...action, action: decision.data.action });
         return context.json(result.value);
       })
-      // «Mening qarorlarim», «Mashinani tuzatish» and the owner's «Rad etishni bekor qilish» (G95).
+      // «Mening qarorlarim», «Mashinani tuzatish» and «Rad etishni bekor qilish» (G95).
       .get(ADMIN_MY_DECISIONS_PATH, async (context) =>
         context.json({ decisions: await myDecisions(deps(context.env), context.get('session').user.id) }),
       )
@@ -94,12 +93,13 @@ export function adminRoutes(deps: (env: Bindings) => DriversDeps) {
         await recordAction(context.env, { ...action, action: `car${plates}` });
         return context.json(result.value);
       })
-      .post(`${ONE}/reopen`, ownerOnly, async (context) => {
-        const owner = context.get('session').user.id;
-        const result = await reopenRejected(deps(context.env), owner, await userOf(context));
+      // Any member of the team, not only the owner (owner decision 12.11.2026).
+      .post(`${ONE}/reopen`, async (context) => {
+        const member = context.get('session').user.id;
+        const result = await reopenRejected(deps(context.env), member, await userOf(context));
         if (!result.ok) return fail(context, result.error);
         const subject = context.req.param('id') ?? '';
-        const action = { memberId: owner, kind: 'application' as const, subject, since: null };
+        const action = { memberId: member, kind: 'application' as const, subject, since: null };
         await recordAction(context.env, { ...action, action: 'reopen' });
         return context.body(null, NO_CONTENT);
       })

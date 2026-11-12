@@ -95,8 +95,9 @@ describe('«Mening qarorlarim»', () => {
     });
   });
 
-  it('shows why a refusal was given; only the owner sends it back to «Navbat», after a question', async () => {
-    const { reopen } = renderMine('owner');
+  // Any member of the team sends a refusal back (owner decision 12.11.2026; G95 had the owner only).
+  it('shows why a refusal was given; a moderator sends it back to «Navbat», after a question', async () => {
+    const { reopen } = renderMine('moderator');
     vi.spyOn(window, 'confirm').mockReturnValue(true);
     fireEvent.click(await screen.findByText('Bobur'));
     expect(await screen.findByText(toCyrillic('Raqam rasmi aniq emas'))).toBeTruthy();
@@ -105,12 +106,5 @@ describe('«Mening qarorlarim»', () => {
       toCyrillic('Rad etishni bekor qilasizmi? Ariza yana navbatga tushadi.'),
     );
     expect(reopen).toHaveBeenCalledWith(BOBUR);
-  });
-
-  it('gives a moderator no way to undo a refusal', async () => {
-    renderMine('moderator');
-    fireEvent.click(await screen.findByText('Bobur'));
-    expect(await screen.findByText(`Bobur · ${toCyrillic('ariza')}`)).toBeTruthy();
-    expect(screen.queryByText(toCyrillic('Rad etishni bekor qilish'))).toBeNull();
   });
 });

@@ -15,8 +15,8 @@ import type { DriversDeps, Result } from './ports';
 // The team finds and fixes its own decisions about driver applications (G95, docs/224).
 type FixError = 'drivers.not_found' | 'drivers.wrong_status';
 
-// «Mening qarorlarim»: the decisions of one member for 7 days, the newest first. A refusal the owner
-// sent back to the check is no decision of the member: it is not here.
+// «Mening qarorlarim»: the decisions of one member for 7 days, the newest first. A refusal sent back
+// to the check is no decision about the driver: it is not here.
 export async function myDecisions(deps: DriversDeps, memberId: number): Promise<MyDecision[]> {
   const since = deps.now() - MY_DECISIONS_DAYS * DAY_MS;
   const entries = await deps.decisions.by(memberId, since);
@@ -74,17 +74,17 @@ export async function fixApprovedCar(
   return view ? { ok: true, value: view } : { ok: false, error: 'drivers.not_found' };
 }
 
-// «Rad etishni bekor qilish» of the owner: the application waits in «Navbat» again; the driver hears
-// it will be checked once more.
+// «Rad etishni bekor qilish» of any member of the team (owner decision 12.11.2026; G95 had the owner
+// only): the application waits in «Navbat» again; the driver hears it will be checked once more.
 export async function reopenRejected(
   deps: DriversDeps,
-  ownerId: number,
+  memberId: number,
   userId: number,
 ): Promise<Result<null, FixError>> {
   const at = deps.now();
   const written = await write(deps, await deps.applications.find(userId), (read) => reopen(read, at));
   if (!written.ok) return written;
-  await deps.decisions.add({ userId, status: 'pending', reasons: [], by: ownerId, at, car: null });
+  await deps.decisions.add({ userId, status: 'pending', reasons: [], by: memberId, at, car: null });
   await deps.notify.reopened(written.value);
   return { ok: true, value: null };
 }
