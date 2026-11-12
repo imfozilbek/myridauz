@@ -1,7 +1,14 @@
 import type { BrandConfig } from '@platform/brands';
-import { helpAudienceOf, helpQuestionOf, helpTopicOf, type HelpAudience } from '@platform/contracts';
+import {
+  helpAudienceOf,
+  helpQuestionOf,
+  helpTopicOf,
+  type HelpAudience,
+  type HelpTopic,
+} from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { recordServerEvent } from '../modules/analytics';
+import { approvedCar } from '../modules/drivers';
 import { botToken } from '../shared/telegram/bot-config';
 import { callTelegram } from '../shared/telegram/telegram-api';
 import { answerQuery as answer, sendMessage, type BotContext } from './bot-context';
@@ -32,13 +39,22 @@ export const helpReply = (brand: BrandConfig, bot: HelpBot, chatId: number, audi
 const audienceOf = (bot: HelpBot, value: string): HelpAudience =>
   helpAudienceOf(value) ?? (bot === 'passenger' || bot === 'driver' ? bot : 'guest');
 
+// An approved driver has no questions of the application left but the change of the car, as in the
+// Mini App (docs/231): the bot asks only when that topic opens.
+const isApproved = async (context: BotContext, topic: HelpTopic, chatId: number | undefined) =>
+  topic === 'application' && chatId !== undefined && (await approvedCar(context.env, chatId)) !== null;
+
 // The view a button asks for, and what the analytics hear of it (docs/29).
-function viewOf(brand: BrandConfig, bot: HelpBot, data: readonly string[]) {
+async function viewOf(context: BotContext, bot: HelpBot, data: readonly string[], chatId?: number) {
+  const brand = context.brand;
   const [kind = '', value = '', whose = ''] = data;
   if (kind === 'topics') return { view: topicsView(brand, bot, audienceOf(bot, value)), code: 'topics' };
   const audience = audienceOf(bot, whose);
   const topic = kind === 't' ? helpTopicOf(value) : null;
-  if (topic) return { view: questionsView(brand, bot, topic, audience), code: topic };
+  if (topic) {
+    const approved = await isApproved(context, topic, chatId);
+    return { view: questionsView(brand, bot, topic, audience, approved), code: topic };
+  }
   const question = kind === 'q' ? helpQuestionOf(value) : null;
   return question ? { view: answerView(brand, bot, question, audience), code: question } : null;
 }
@@ -55,7 +71,7 @@ export async function onHelpCallback(context: BotContext, bot: HelpBot, query: B
       await callTelegram(context.fetch, token, 'answerCallbackQuery', { callback_query_id: query.id });
     return sendMessage(chatId, t('bot.support.ask'));
   }
-  const found = viewOf(context.brand, bot, data);
+  const found = await viewOf(context, bot, data, chatId);
   const token = botToken(context.env, bot);
   if (!found || !query.message || !token) return answer(query);
   recordServerEvent(context.env, { name: 'help_open', source: bot, code: found.code });

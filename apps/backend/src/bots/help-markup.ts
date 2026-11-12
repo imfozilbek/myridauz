@@ -61,9 +61,10 @@ export function questionsView(
   bot: HelpBot,
   topic: HelpTopic,
   audience: HelpAudience,
+  approved = false,
 ): HelpView {
   const values = valuesOf(brand);
-  const questions = helpQuestions(topic).map((question) => [
+  const questions = helpQuestions(topic, approved).map((question) => [
     button(t(`help.${question}.q`, values), `q:${question}:${audience}`),
   ]);
   return {
