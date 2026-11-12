@@ -64,6 +64,8 @@
   border: none;
   border-radius: 14px;
   background: var(--tgui--section_bg_color);
+  /* The name in the ink of the text: a button of iOS paints its words system blue by itself. */
+  color: var(--reg-ink);
   cursor: pointer;
   text-align: left;
 }

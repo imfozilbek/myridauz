@@ -1,18 +1,23 @@
 import type { Location, LocationsResponse } from '@platform/contracts';
-import { toCyrillic } from '@platform/i18n';
+import { byCyrillic, toCyrillic } from '@platform/i18n';
 import type { LocationsDeps } from './ports';
 
 type Entry = { readonly response: LocationsResponse; readonly expiresAt: number };
 
 // The names are written in Latin (docs/48); people read them in Cyrillic, made by the program of the
 // texts (G98, docs/228). The version names the alphabet: a phone that kept the Latin names loads again.
+// The regions keep the order the team gave them; the places of a region go by the Cyrillic alphabet
+// (lesson 392): the base sorts them by their Latin names.
 const SOURCE = 'uz-Latn';
+const ORDER = 'cyrl2';
 function inAlphabet(response: LocationsResponse, locale: string): LocationsResponse {
   if (locale === SOURCE) return response;
-  return {
-    version: `${response.version}.${locale}`,
-    locations: response.locations.map((location) => ({ ...location, name: toCyrillic(location.name) })),
-  };
+  const shown = response.locations.map((location) => ({ ...location, name: toCyrillic(location.name) }));
+  const regions = shown.filter((location) => location.parentId === null);
+  const places = shown
+    .filter((location) => location.parentId !== null)
+    .sort((one, other) => byCyrillic(one.name, other.name));
+  return { version: `${response.version}.${locale}.${ORDER}`, locations: [...regions, ...places] };
 }
 
 // The directory almost never changes: one read of D1 serves many requests of this Worker instance.
