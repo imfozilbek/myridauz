@@ -7,6 +7,7 @@ import { useDirectory } from '../places/use-directory';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { startFind, useDockEnds } from './dock-ends';
+import { DriverPickTo } from './driver-pick-to';
 import { useHomeRoute } from './home-route';
 
 export const DOCK_FROM = 'dock_from';
@@ -38,27 +39,6 @@ function PickFrom({ onBack, cityAtOnce = false }: Props & { readonly cityAtOnce?
 
 // A passenger takes Toshkent shahri in one tap (G78 П9), a driver publishes from a district.
 const PassengerPickFrom = ({ onBack }: Props) => <PickFrom onBack={onBack} cityAtOnce />;
-
-// «Qayerga» of a driver (G66, mockup g66/2): the list of places, the trip is published from the block.
-function PickPlaceTo({ onBack }: Props) {
-  const { t } = useI18n();
-  const { choose } = useHomeRoute();
-  const [places, retry] = useDirectory();
-  if (places.status === 'loading') return <ScreenSkeleton onBack={onBack} />;
-  if (places.status === 'error') return <ErrorScreen onRetry={retry} onBack={onBack} />;
-  return (
-    <PlacePicker
-      title={t('home.dock.toDriver')}
-      directory={places.directory}
-      allowWholeRegion
-      onPick={(to) => {
-        choose({ to });
-        onBack();
-      }}
-      onBack={onBack}
-    />
-  );
-}
 
 // «Qayerga» opens the directions with their drawings and trips (G59, docs/118); the pick opens its
 // days and trips at once and stays in the block (G78 П7, mockup 4-steps-passenger).
@@ -115,6 +95,6 @@ export const DRIVER_DOCK_SECTIONS: readonly StartAction[] = [
     tone: 'brand',
     labelKey: 'places.to',
     hintKey: 'home.dock.toDriver',
-    Screen: PickPlaceTo,
+    Screen: DriverPickTo,
   },
 ];

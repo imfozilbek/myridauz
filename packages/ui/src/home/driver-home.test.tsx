@@ -94,6 +94,9 @@ describe(
       const { tracked } = driver([]);
       expect(await screen.findByText(toCyrillic('Joylashuvingiz boʻyicha aniqlandi'))).toBeTruthy();
       await tap(toCyrillic('Qayerga ketyapsiz?'));
+      // The screen of the passenger with the requests of passengers (owner decision 12.11.2026).
+      expect(await screen.findByText(toCyrillic('Ertaga 2 ta soʻrov'))).toBeTruthy();
+      expect(screen.getByText(toCyrillic('Chilonzor, Toshkentdan'))).toBeTruthy();
       await tap(toCyrillic('Fargʻona'));
       await tap(toCyrillic('Fargʻona shahri'));
       expect(await screen.findByText(toCyrillic('Fargʻona shahri'))).toBeTruthy();

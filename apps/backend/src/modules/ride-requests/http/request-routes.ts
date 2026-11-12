@@ -1,4 +1,6 @@
 import {
+  directionsQuerySchema,
+  DRIVER_REQUEST_DIRECTIONS_PATH,
   DRIVER_REQUESTS_BOARD_PATH,
   DRIVER_REQUESTS_PATH,
   PASSENGER_REQUESTS_PATH,
@@ -16,6 +18,7 @@ import { requestBoard } from '../application/board';
 import { boardSeen } from '../application/board-seen';
 import { setRequestCalls } from '../application/calls';
 import type { RequestsDeps } from '../application/ports';
+import { requestDirections } from '../application/request-directions';
 import { cancelRequest, myRequests, publishRequest, searchRequests } from '../application/use-cases';
 
 const STATUS = {
@@ -40,47 +43,59 @@ const fail = (context: Context<AppEnv>, error: keyof typeof STATUS) => context.j
 
 // Passengers publish and cancel requests; drivers find them (docs/09).
 export function requestRoutes(deps: (env: Bindings) => RequestsDeps) {
-  return new Hono<AppEnv>()
-    .get(PASSENGER_REQUESTS_PATH, async (context) =>
-      context.json({ requests: await myRequests(deps(context.env), context.get('session').user.id) }),
-    )
-    .post(PASSENGER_REQUESTS_PATH, async (context) => {
-      const input = rideRequestInputSchema.safeParse(await context.req.json().catch(() => null));
-      if (!input.success) return fail(context, 'trips.invalid_input');
-      const result = await publishRequest(deps(context.env), context.get('session').user.id, input.data);
-      return result.ok ? context.json(result.value, 201) : fail(context, result.error);
-    })
-    .post(`${PASSENGER_REQUESTS_PATH}/${ONE}/cancel`, async (context) => {
-      const passengerId = context.get('session').user.id;
-      const result = await cancelRequest(deps(context.env), passengerId, context.req.param('id'));
-      return result.ok ? context.json(result.value) : fail(context, result.error);
-    })
-    .post(`${PASSENGER_REQUESTS_PATH}/${ONE}/calls`, async (context) => {
-      const input = requestCallsInputSchema.safeParse(await context.req.json().catch(() => null));
-      if (!input.success) return fail(context, 'trips.invalid_input');
-      const passengerId = context.get('session').user.id;
-      const result = await setRequestCalls(
-        deps(context.env),
-        passengerId,
-        context.req.param('id'),
-        input.data.on,
-      );
-      return result.ok ? context.json(result.value) : fail(context, result.error);
-    })
-    .get(DRIVER_REQUESTS_BOARD_PATH, async (context) => {
-      const query = requestBoardQuerySchema.safeParse(context.req.query());
-      if (!query.success) return fail(context, 'trips.invalid_input');
-      const driverId = context.get('session').user.id;
-      const result = await requestBoard(deps(context.env), driverId, query.data);
-      if (!result.ok) return fail(context, result.error);
-      const board = result.value;
-      if (query.data.seen) await afterResponse(context, () => boardSeen(deps(context.env), driverId, board));
-      return context.json(board);
-    })
-    .get(DRIVER_REQUESTS_PATH, async (context) => {
-      const search = requestSearchSchema.safeParse(context.req.query());
-      if (!search.success) return fail(context, 'trips.invalid_input');
-      const result = await searchRequests(deps(context.env), context.get('session').user.id, search.data);
-      return result.ok ? context.json({ requests: result.value }) : fail(context, result.error);
-    });
+  return (
+    new Hono<AppEnv>()
+      .get(PASSENGER_REQUESTS_PATH, async (context) =>
+        context.json({ requests: await myRequests(deps(context.env), context.get('session').user.id) }),
+      )
+      .post(PASSENGER_REQUESTS_PATH, async (context) => {
+        const input = rideRequestInputSchema.safeParse(await context.req.json().catch(() => null));
+        if (!input.success) return fail(context, 'trips.invalid_input');
+        const result = await publishRequest(deps(context.env), context.get('session').user.id, input.data);
+        return result.ok ? context.json(result.value, 201) : fail(context, result.error);
+      })
+      .post(`${PASSENGER_REQUESTS_PATH}/${ONE}/cancel`, async (context) => {
+        const passengerId = context.get('session').user.id;
+        const result = await cancelRequest(deps(context.env), passengerId, context.req.param('id'));
+        return result.ok ? context.json(result.value) : fail(context, result.error);
+      })
+      .post(`${PASSENGER_REQUESTS_PATH}/${ONE}/calls`, async (context) => {
+        const input = requestCallsInputSchema.safeParse(await context.req.json().catch(() => null));
+        if (!input.success) return fail(context, 'trips.invalid_input');
+        const passengerId = context.get('session').user.id;
+        const result = await setRequestCalls(
+          deps(context.env),
+          passengerId,
+          context.req.param('id'),
+          input.data.on,
+        );
+        return result.ok ? context.json(result.value) : fail(context, result.error);
+      })
+      .get(DRIVER_REQUESTS_BOARD_PATH, async (context) => {
+        const query = requestBoardQuerySchema.safeParse(context.req.query());
+        if (!query.success) return fail(context, 'trips.invalid_input');
+        const driverId = context.get('session').user.id;
+        const result = await requestBoard(deps(context.env), driverId, query.data);
+        if (!result.ok) return fail(context, result.error);
+        const board = result.value;
+        if (query.data.seen)
+          await afterResponse(context, () => boardSeen(deps(context.env), driverId, board));
+        return context.json(board);
+      })
+      // «Qayerga» of a driver: the requests of today and tomorrow by region (owner, 12.11.2026).
+      .get(DRIVER_REQUEST_DIRECTIONS_PATH, async (context) => {
+        const query = directionsQuerySchema.safeParse(context.req.query());
+        if (!query.success) return fail(context, 'trips.invalid_input');
+        const viewer = context.get('session').user.id;
+        return context.json({
+          directions: await requestDirections(deps(context.env), viewer, query.data.from),
+        });
+      })
+      .get(DRIVER_REQUESTS_PATH, async (context) => {
+        const search = requestSearchSchema.safeParse(context.req.query());
+        if (!search.success) return fail(context, 'trips.invalid_input');
+        const result = await searchRequests(deps(context.env), context.get('session').user.id, search.data);
+        return result.ok ? context.json({ requests: result.value }) : fail(context, result.error);
+      })
+  );
 }

@@ -9,6 +9,7 @@ import { useHereAsked } from '../places/use-here';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { haptic } from '../telegram/feedback';
+import { TRIP_DIRECTIONS } from './direction-kinds';
 import { DirectionsScreen } from './directions-screen';
 
 type Props = {
@@ -72,6 +73,7 @@ function FindStartForm({
   return (
     <DirectionsScreen
       key={from.id}
+      kind={TRIP_DIRECTIONS}
       directory={directory}
       from={from}
       error={error}

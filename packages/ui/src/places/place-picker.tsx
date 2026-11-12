@@ -60,7 +60,8 @@ export function PlacePicker({
   const results = query.trim() === '' ? null : directory.search(query);
   return (
     <div className="places" style={brandVars(colors)}>
-      <Screen onBack={region && !results ? () => setRegion(null) : onBack} />
+      {/* A region opened by the caller goes back to the caller, not to the regions (docs/118). */}
+      <Screen onBack={region && !results && region.id !== open?.id ? () => setRegion(null) : onBack} />
       <h1 className="places-title">
         {region && !results ? t('places.which', { region: names.short(region) }) : title}
       </h1>

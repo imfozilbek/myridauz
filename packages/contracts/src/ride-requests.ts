@@ -82,6 +82,10 @@ export type RequestSearch = z.infer<typeof requestSearchSchema>;
 // fit it («Safaringizga mos», with the extra km), then the others. known: false when the driver has
 // no direction yet (no trips, no subscriptions): the route is asked first.
 export const DRIVER_REQUESTS_BOARD_PATH = `${DRIVER_REQUESTS_PATH}/board`;
+// «Qayerga» of a driver (owner decision 12.11.2026, docs/118): the open requests of today and
+// tomorrow from the region of a place, by the region they go to; the query and the cards of
+// «Qayerga borasiz?» (directionsQuerySchema, directionCardsSchema).
+export const DRIVER_REQUEST_DIRECTIONS_PATH = `${DRIVER_REQUESTS_PATH}/directions`;
 export const requestBoardQuerySchema = z.object({
   date: dateSchema.optional(),
   from: locationIdSchema.optional(),

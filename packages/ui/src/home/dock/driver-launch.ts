@@ -9,16 +9,22 @@ import { useDriverData } from '../driver-data';
 
 export const PASSENGER_REQUESTS = 'passenger_requests';
 
+// The ends of the block of a driver: «Qayerga» of the last trip when none is chosen (G79 В4); its
+// «Qayerga» screen asks from the same «Qayerdan» (owner decision 12.11.2026).
+export function useDriverEnds(directory: PlaceDirectory | null) {
+  const trips = useDriverData().value?.[0] ?? [];
+  const [now] = useState(Date.now);
+  const last = tripToRepeat(trips, now);
+  const again = last && directory ? tomorrowTrip(last, directory) : null;
+  return { again, ends: useDockEnds(directory, again?.route ?? null) };
+}
+
 // What the block of a free driver opens (G76; G79 В4, В6а), the cards «Siz haydovchisiz!» and «Kam»
 // too: the ends of the block, «Qayerga» of the last trip when none is chosen. On the route of the
 // last trip a new trip takes its answers, tomorrow at its time, as «Ertaga shu safar» (G64); the
 // requests come from «Qayerdan» of the block.
 export function useDriverLaunch(go: HomeGo, directory: PlaceDirectory | null) {
-  const trips = useDriverData().value?.[0] ?? [];
-  const [now] = useState(Date.now);
-  const last = tripToRepeat(trips, now);
-  const again = last && directory ? tomorrowTrip(last, directory) : null;
-  const ends = useDockEnds(directory, again?.route ?? null);
+  const { again, ends } = useDriverEnds(directory);
   const { from, to } = ends;
   const same = again && from?.id === again.route.from.id && to?.id === again.route.to.id;
   const publish = () => go(NEW_TRIP_SECTION, same ? again : tripEnds(from, to));

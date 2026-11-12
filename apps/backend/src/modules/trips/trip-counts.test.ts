@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { publishTrip } from './application/publish';
 import { tripDetail } from './application/read';
 import { directionCards, tripDays } from './application/trip-counts';
-import { POPULAR_REGIONS } from './domain/popular-regions';
+import { REGION_ORDER } from '../../shared/places/region-order';
 import { HOUR, NOW, setup } from './test-kit';
 
 const TOMORROW = NOW + 24 * HOUR;
@@ -21,18 +21,22 @@ describe('the trips of each direction (G59, docs/118)', () => {
     expect(samarqand).toEqual({ to: '1718', today: 1, tomorrow: 1 });
   });
 
-  it('the popular regions follow the busy ones', async () => {
+  // Owner decision 12.11.2026 (docs/118): the fixed order follows the busy regions.
+  it('the fixed order follows the busy ones', async () => {
     const { deps } = await market();
-    expect((await directionCards(deps, '1726273'))[1]).toEqual({ to: '1706', today: 0, tomorrow: 0 });
+    const regions = new Map(REGION_ORDER.map((id) => [id, { id, parentId: null, oneCity: false }]));
+    const places = new Map([...(await deps.places()), ...regions]);
+    const cards = await directionCards({ ...deps, places: async () => places }, '1726273');
+    expect(cards.slice(0, 3).map((card) => card.to)).toEqual(['1718', '1710', '1706']);
   });
 
   // Owner, 12.11.2026: «не всегда видны все айтемы», four cards hid nine regions.
   it('a card for every region but the own one', async () => {
     const { deps } = await market();
-    const regions = new Map(POPULAR_REGIONS.map((id) => [id, { id, parentId: null, oneCity: false }]));
+    const regions = new Map(REGION_ORDER.map((id) => [id, { id, parentId: null, oneCity: false }]));
     const places = new Map([...(await deps.places()), ...regions]);
     const cards = await directionCards({ ...deps, places: async () => places }, '1726273');
-    expect(cards.map((card) => card.to).sort()).toEqual(POPULAR_REGIONS.filter((id) => id !== '1726').sort());
+    expect(cards.map((card) => card.to).sort()).toEqual(REGION_ORDER.filter((id) => id !== '1726').sort());
   });
 
   it('own trips and full trips are not counted, as in the search', async () => {

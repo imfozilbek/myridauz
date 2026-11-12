@@ -7,7 +7,7 @@ import {
   type TripDays,
 } from '@platform/contracts';
 import { placeMatches, placesMatching, regionIn } from '../../../shared/places/place-match';
-import { POPULAR_REGIONS } from '../domain/popular-regions';
+import { regionOrder } from '../../../shared/places/region-order';
 import type { TripRecord } from '../domain/trip';
 import type { Result, TripsDeps } from './ports';
 
@@ -57,7 +57,8 @@ export async function tripDays(
 }
 
 // «Qayerga borasiz?»: every region but the own one, the directions with the most trips today and
-// tomorrow first, then the popular ones (owner, 12.11.2026: all of them on one screen, no price).
+// tomorrow first, then the fixed order (owner, 12.11.2026: all of them on one screen, no price; one
+// order with the driver's «Qayerga», docs/118).
 export async function directionCards(
   deps: TripsDeps,
   from: string,
@@ -65,19 +66,13 @@ export async function directionCards(
 ): Promise<DirectionCard[]> {
   const { open, places, today, tomorrow } = await openTrips(deps, from, 2, viewer);
   const regionOf = regionIn(places);
-  const home = regionOf(from);
   const byRegion = new Map<string, Open[]>();
   for (const item of open) {
     const region = regionOf(item.trip.to);
-    if (region !== home) byRegion.set(region, [...(byRegion.get(region) ?? []), item]);
+    byRegion.set(region, [...(byRegion.get(region) ?? []), item]);
   }
-  const busiest = [...byRegion.keys()].sort(
-    (a, b) => (byRegion.get(b)?.length ?? 0) - (byRegion.get(a)?.length ?? 0),
-  );
-  const order = [...new Set([...busiest, ...POPULAR_REGIONS])].filter(
-    (region) => region !== home && places.has(region),
-  );
-  return order.map((to) => {
+  const activity = new Map([...byRegion].map(([region, trips]) => [region, trips.length]));
+  return regionOrder(activity, regionOf(from), places).map((to) => {
     const trips = byRegion.get(to) ?? [];
     const count = (date: string) => trips.filter((item) => item.date === date).length;
     return { to, today: count(today), tomorrow: count(tomorrow) };
