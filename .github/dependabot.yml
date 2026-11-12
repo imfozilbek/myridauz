@@ -8,6 +8,23 @@ updates:
     groups:
       dependencies:
         patterns: ['*']
+    # Major versions we cannot take yet (owner decision 12.11.2026, PR #347): TelegramUI needs React 18,
+    # typescript-eslint works with TypeScript below 6.1, Node is 22, opentype.js 2 breaks the logo.
+    ignore:
+      - dependency-name: react
+        update-types: [version-update:semver-major]
+      - dependency-name: react-dom
+        update-types: [version-update:semver-major]
+      - dependency-name: '@types/react'
+        update-types: [version-update:semver-major]
+      - dependency-name: '@types/react-dom'
+        update-types: [version-update:semver-major]
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+      - dependency-name: '@types/node'
+        update-types: [version-update:semver-major]
+      - dependency-name: opentype.js
+        update-types: [version-update:semver-major]
   - package-ecosystem: github-actions
     directories: [/, /.github/actions/setup]
     schedule:
