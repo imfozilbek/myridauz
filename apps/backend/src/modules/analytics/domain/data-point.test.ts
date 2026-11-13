@@ -18,6 +18,15 @@ describe('toDataPoint', () => {
     });
   });
 
+  it('keeps the address of a refused request in the place of the detail (docs/233 №5)', () => {
+    const refused = { name: 'api_error', code: 'trips.too_many', request: 'market/trips/:id' } as const;
+    expect(toDataPoint({ ...refused, ...base }, 0).blobs.slice(5)).toEqual([
+      'trips.too_many',
+      '',
+      'market/trips/:id',
+    ]);
+  });
+
   it('keeps where the person came from on the first screen (docs/89 S3)', () => {
     expect(toDataPoint({ name: 'screen_open', source: 'find', ...base }, 0).blobs.at(-1)).toBe('find');
   });

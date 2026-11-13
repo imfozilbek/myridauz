@@ -69,7 +69,8 @@ export function createAnalyticsClient(options: AnalyticsClientOptions) {
     else cancelScheduled ??= schedule(() => void flush(), FLUSH_DELAY_MS);
   }
 
-  const apiError = (code: string) => track({ name: 'api_error', screen: lastScreen, code });
+  const apiError = (code: string, request?: string) =>
+    track({ name: 'api_error', screen: lastScreen, code, ...(request ? { request } : {}) });
 
   return { track, flush, apiError };
 }

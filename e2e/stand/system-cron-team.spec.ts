@@ -4,7 +4,7 @@ import { isTeamTime, tashkentDate, tashkentTime } from '@platform/contracts';
 import { expect, test } from '../crash-guard';
 import { say } from './bot-kit';
 import { MINUTE, tailOf, wordsOf } from './g27-kit';
-import { KAMRON, OWNER } from './people';
+import { OWNER } from './people';
 import { apply, register } from './seed';
 import { signedAs, type Person } from './stand-kit';
 import { botMessages, clearBotMessages, runCron, standRows, standSql } from './stand-tools';
@@ -17,17 +17,23 @@ const NAVRUZ: Person = { id: 900901, name: 'Navruz', phone: '998901110901' };
 const SHOIRA: Person = { id: 900902, name: 'Shoira', phone: '998901110902' };
 const DAY = 24 * 60 * MINUTE;
 const SUMMARY_FROM = '21:00';
-const TEAM = [OWNER.id, KAMRON.id];
+// The whole team of the stand: other scenarios add moderators too, and a case goes to any of them.
+const team = () => [
+  OWNER.id,
+  ...standRows('SELECT user_id FROM team_members').map((row) => Number(row['user_id'])),
+];
 
 // A ring of the admin bot: an answer under the card of «Navbat» or «Diqqat» (G68), never the card itself.
-const rings = async (words: readonly string[]) =>
-  (await botMessages()).filter(
+const rings = async (words: readonly string[]) => {
+  const members = team();
+  return (await botMessages()).filter(
     (m) =>
       m.bot === 'admin' &&
       m.replyTo !== null &&
-      TEAM.includes(m.chatId ?? 0) &&
+      members.includes(m.chatId ?? 0) &&
       words.every((w) => m.text.includes(w)),
   );
+};
 // The clock of the application moves back; the reminders already sent move with it (one sending).
 const waitedFor = (person: Person, minutes: number) => {
   const at = Date.now() - minutes * MINUTE;

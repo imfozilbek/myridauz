@@ -43,8 +43,13 @@ const MAX_WHAT = 170;
 const KINDS = { client_error: 'crash', server_error: 'server' } as const;
 const kindOf = (name: string): ErrorRow['kind'] => KINDS[name as keyof typeof KINDS] ?? 'refusal';
 function whatOf(kind: ErrorRow['kind'], row: z.infer<typeof errorRow>): string {
+  // A refusal keeps the address of its request (docs/233 №5).
   const words =
-    kind === 'crash' ? [row.error, row.detail].filter(Boolean).join(': ') : kind === 'server' ? row.code : '';
+    kind === 'crash'
+      ? [row.error, row.detail].filter(Boolean).join(': ')
+      : kind === 'server'
+        ? row.code
+        : row.detail;
   return words.replace(NOT_SAFE, ' ').trim().slice(0, MAX_WHAT);
 }
 export const toErrorRow = (row: z.infer<typeof errorRow>): ErrorRow => {
