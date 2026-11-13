@@ -1,4 +1,4 @@
-import { DAY_MS, tashkentDate, type Location } from '@platform/contracts';
+import { checkRoute, DAY_MS, tashkentDate, type Location } from '@platform/contracts';
 import { useI18n } from '../../context/i18n-context';
 import { useTripDays } from '../../find/use-trip-days';
 import type { HomeGo } from '../../flow/start-action';
@@ -26,6 +26,7 @@ export function PassengerIdle({ go, directory }: Props) {
   const names = usePlaceNames(directory);
   const find = () => go('find_trip', startFind(ends));
   const ask = () => go('leave_request', { ...(from ? { from } : {}), ...(to ? { to } : {}) });
+  const counted = from && to && countable(from, to, directory);
   return (
     <>
       <RouteDock
@@ -39,7 +40,7 @@ export function PassengerIdle({ go, directory }: Props) {
         to={{
           value: to ? names.end(to) : null,
           placeholder: t('way.toEmpty'),
-          ...(from && to ? { hint: <TripCount from={from} to={to} /> } : {}),
+          ...(counted ? { hint: <TripCount from={from} to={to} /> } : {}),
           onTap: tap('dock_to', () => go(DOCK_TO)),
           ...tools.to,
         }}
@@ -50,6 +51,11 @@ export function PassengerIdle({ go, directory }: Props) {
     </>
   );
 }
+
+// Only a route a trip may take has trips to count: not two places of one city (prod errors
+// 13.11.2026: 29 answers 422 a week).
+export const countable = (from: Location, to: Location, directory: PlaceDirectory | null) =>
+  directory !== null && checkRoute(from, to, directory.find) === null;
 
 // «Bugun 3, ertaga 8 ta safar» under the chosen «Qayerga» (mockup g76/2 state 2).
 function TripCount({ from, to }: { readonly from: Location; readonly to: Location }) {
