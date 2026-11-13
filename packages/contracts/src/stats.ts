@@ -1,11 +1,13 @@
 import { z } from 'zod';
 import { TRIP_STEPS } from './analytics';
+import { arrivalsSchema } from './stats-arrivals';
 import { STATS_PERIODS } from './stats-period';
 import { complaintReasonCountSchema, leaveCountSchema, openCountSchema, ratingsSummarySchema } from './voice';
 
 // G87: what people feel (docs/191) is a part of the dashboard.
 export * from './voice';
 export * from './stats-period';
+export * from './stats-arrivals';
 
 // The dashboard of the admin Mini App (G12, docs/29): main numbers, funnels, errors.
 export const ADMIN_STATS_PATH = '/admin/stats';
@@ -75,20 +77,6 @@ export const errorRowSchema = z.object({
   count,
 });
 export type ErrorRow = z.infer<typeof errorRowSchema>;
-
-// G55 (docs/116): the new people of the period by their source and by their platform. mark: the name
-// after the kind («rida-samarqand» of a channel, «insta1» of an ad), empty for the others.
-// driver: the link a driver sent to people after the publishing (G63, docs/119). loop: a loop of growth,
-// the mark its name without the code of the author (G69, docs/123).
-export const ARRIVAL_KINDS = ['channel', 'ad', 'story', 'site', 'driver', 'loop', 'direct', 'other'] as const;
-export type ArrivalKind = (typeof ARRIVAL_KINDS)[number];
-export const PLATFORMS = ['android', 'ios', 'desktop', 'other'] as const;
-export type Platform = (typeof PLATFORMS)[number];
-export const arrivalsSchema = z.object({
-  sources: z.array(z.object({ kind: z.enum(ARRIVAL_KINDS), mark: z.string().max(21), count })),
-  platforms: z.array(z.object({ platform: z.enum(PLATFORMS), count })),
-});
-export type Arrivals = z.infer<typeof arrivalsSchema>;
 
 // G85 T1 (docs/122): the bots under load. sent: what Telegram took; limited: its 429 answers; dead:
 // the messages lost after the last try; peak: the most messages of the bot in one second. queueOps:

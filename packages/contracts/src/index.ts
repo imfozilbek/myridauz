@@ -90,6 +90,8 @@ export { HEALTH_PATH, healthResponseSchema, type HealthResponse } from './health
 export * from './users';
 // The market of G07 and G08: prices, trips, requests, bookings, offers, the wallet, Tashkent time.
 export * from './person-id';
+export * from './path-stamp';
+export * from './paths';
 export * from './launch-links';
 export * from './point';
 export * from './bookings';

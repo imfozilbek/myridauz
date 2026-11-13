@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { arrivalSchema } from './arrival';
+import { arrivalSchema, VIA_PATTERN } from './arrival';
 import { personIdSchema, type PersonId } from './person-id';
 
 // Users, registration and profile (docs/02, docs/05, docs/07, docs/17). G04.
@@ -66,6 +66,8 @@ export const myProfileSchema = z.object({
   joinedAt: z.number().int(),
   // null: no ratings yet, shown as "Yangi" (new).
   rating: z.number().nullable(),
+  // The mark of the first touch: every event of the person names it (G99, docs/234).
+  entry: z.string().regex(VIA_PATTERN).optional(),
 });
 export type MyProfile = z.infer<typeof myProfileSchema>;
 

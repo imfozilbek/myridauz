@@ -14,7 +14,8 @@ export async function getMe(deps: UsersDeps, caller: Caller): Promise<MeResponse
       ? { state: 'blocked', until: block.until }
       : { state: 'unregistered', suggestedName: caller.firstName };
   }
-  const profile = toMyProfile(user, caller.isAdmin);
+  const entry = await deps.users.entryOf(caller.id);
+  const profile = { ...toMyProfile(user, caller.isAdmin), ...(entry ? { entry } : {}) };
   const block = await checkAccess(deps, caller.id);
   if (!block) return { state: 'active', profile };
   // Blocked on the road: the trip on the way is finished first (owner decision 10.10.2026).

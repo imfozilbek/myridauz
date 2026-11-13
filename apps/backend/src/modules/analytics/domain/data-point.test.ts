@@ -27,6 +27,12 @@ describe('toDataPoint', () => {
     ]);
   });
 
+  it('keeps who, the first touch and the Telegram in blob12 … blob15 (G99, docs/234)', () => {
+    const stamp = { who: base.sessionId, entry: 'ch-yol-andijon', tg: '8.0', platform: 'android' };
+    const { blobs } = toDataPoint({ name: 'trip_open', ...base, ...stamp }, 0);
+    expect(blobs.slice(6)).toEqual(['', '', '', '', '', base.sessionId, 'ch-yol-andijon', '8.0', 'android']);
+  });
+
   it('keeps where the person came from on the first screen (docs/89 S3)', () => {
     expect(toDataPoint({ name: 'screen_open', source: 'find', ...base }, 0).blobs.at(-1)).toBe('find');
   });

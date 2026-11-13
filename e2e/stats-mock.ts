@@ -26,7 +26,7 @@ const NEW_TRIP = ['route', 'published'];
 
 const statsOf = (period: string) => {
   // «Hammasi» (owner decision 13.11.2026): the numbers of the whole time.
-  const week = { week: 7, all: 40 }[period] ?? 1;
+  const week = { week: 7, month: 30, all: 40 }[period] ?? 1;
   return {
     period,
     numbers: {

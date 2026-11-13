@@ -1,7 +1,7 @@
 import { loopOf } from '@platform/contracts';
 import type { UserRepository } from '../application/ports';
 
-type Marks = Pick<UserRepository, 'decideFace' | 'arrived' | 'claimZoneInvite'>;
+type Marks = Pick<UserRepository, 'decideFace' | 'arrived' | 'entryOf' | 'claimZoneInvite'>;
 
 // Single guarded writes on the row of a person in table users (migrations/0002, 0042, 0055).
 export const d1UserMarks = (db: D1Database): Marks => ({
@@ -27,6 +27,14 @@ export const d1UserMarks = (db: D1Database): Marks => ({
       .bind(id, source ?? null, via ?? null, client ?? null, at, code, id)
       .run();
   },
+  // The mark of the first touch (G99, docs/234): the mark, else the kind of the link, else none.
+  entryOf: async (id) =>
+    (
+      await db
+        .prepare('SELECT COALESCE(via, source) AS entry FROM user_arrivals WHERE user_id = ?')
+        .bind(id)
+        .first<{ entry: string | null }>()
+    )?.entry ?? null,
   claimZoneInvite: async (id, at) => {
     const { meta } = await db
       .prepare(

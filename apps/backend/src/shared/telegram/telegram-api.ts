@@ -96,3 +96,19 @@ export async function sendText(
   const body = (await response.json()) as { result?: { message_id?: number } };
   return body.result?.message_id;
 }
+
+// A text file (G99: the CSV for the analyst) with its caption; the UTF-8 mark lets a spreadsheet read it.
+export async function sendTextFile(
+  fetch: Fetch,
+  token: string,
+  chatId: number,
+  file: { readonly name: string; readonly text: string },
+  caption: string,
+): Promise<void> {
+  const form = new FormData();
+  form.append('chat_id', String(chatId));
+  form.append('document', new Blob(['﻿', file.text], { type: 'text/csv' }), file.name);
+  form.append('caption', caption);
+  const response = await fetch(telegramUrl(token, 'sendDocument'), { method: 'POST', body: form });
+  if (!response.ok) throw new Error(`telegram.sendDocument_${response.status}: ${await refusal(response)}`);
+}

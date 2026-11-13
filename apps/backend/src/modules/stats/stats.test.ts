@@ -29,14 +29,16 @@ const numbers = { newUsers: 3, trips: 2, activeTrips: 4, bookings: 1, driverAppl
 function setup(events: EventSource | null) {
   const told: Alert[] = [];
   let queries = 0;
-  const counting: EventSource | null = events && {
-    counters: (days, names) => ((queries += 1), events.counters(days, names)),
-    topErrors: (days) => ((queries += 1), events.topErrors(days)),
-    errorsSince: (hours) => ((queries += 1), events.errorsSince(hours)),
-    marks: (days) => ((queries += 1), events.marks(days)),
-    searches: (days) => ((queries += 1), events.searches(days)),
-    bots: (days) => ((queries += 1), events.bots(days)),
-  };
+  // Every question to Analytics Engine is counted (docs/117).
+  const counting: EventSource | null =
+    events &&
+    (Object.fromEntries(
+      Object.entries(events).map(([name, ask]: [string, (...args: never[]) => unknown]) => [
+        name,
+        (...args: never[]) => ((queries += 1), ask(...args)),
+      ]),
+    ) as EventSource);
+
   const deps: StatsDeps = {
     events: counting,
     numbers: {
@@ -46,11 +48,13 @@ function setup(events: EventSource | null) {
       arrivals: async () => [],
       riders: async () => [],
       voice: async () => ({ stars: { count: 0, total: 0, low: 0 }, tags: [], complaints: [] }),
+      pathSteps: async () => [],
     },
     cache: createMemoryCache(),
     rules: { errorGrowth: 3, minErrors: 2, dropGrowth: 20, minPeople: 2, repeatHours: 6 },
     tips: async () => [],
     tellOwners: async (alert) => void told.push(alert),
+    sendFiles: async () => undefined,
     now: () => NOW,
   };
   return { deps, told, queries: () => queries };
@@ -92,12 +96,8 @@ describe('readStats (docs/29)', () => {
   it('still shows the numbers without the analytics key or when Analytics Engine fails', async () => {
     expect(await readStats(setup(null).deps, 'day')).toMatchObject({ events: 'off', funnels: [], numbers });
     const broken: EventSource = {
+      ...memoryEvents([], () => NOW),
       counters: () => Promise.reject(new Error('stats.sql_500')),
-      topErrors: async () => [],
-      errorsSince: async () => 0,
-      marks: async () => [],
-      searches: async () => [],
-      bots: async () => ({ rows: [], peaks: [] }),
     };
     expect(await readStats(setup(broken).deps, 'day')).toMatchObject({
       events: 'failed',

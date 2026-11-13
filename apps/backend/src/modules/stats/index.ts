@@ -9,6 +9,7 @@ import { statsRoutes } from './http/stats-routes';
 import { analyticsSql } from './infrastructure/analytics-sql';
 import { CHANNEL_MARK } from './domain/arrivals';
 import { alertSign } from './infrastructure/bot-alert';
+import { sendFilesTo } from './infrastructure/bot-files';
 import { createMemoryCache, d1Cache } from './infrastructure/d1-cache';
 import { d1Numbers } from './infrastructure/d1-numbers';
 import { memoryEvents } from './infrastructure/memory-events';
@@ -41,6 +42,7 @@ const localNumbers = {
   arrivals: async () => [],
   riders: async () => [],
   voice: async () => noVoice,
+  pathSteps: async () => [],
 };
 
 const statsDeps = (env: Bindings): StatsDeps => {
@@ -52,6 +54,7 @@ const statsDeps = (env: Bindings): StatsDeps => {
     rules: brand.alerts,
     tips: (since) => tipResults(env, since),
     tellOwners: (alert) => tellOwners(env, alertSign(alert)),
+    sendFiles: (chatId, files, period) => sendFilesTo(env, chatId, files, period),
     now: Date.now,
   };
 };
