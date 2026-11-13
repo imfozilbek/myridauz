@@ -1,6 +1,7 @@
 import type { Bindings } from '../../../env';
 import { recordServerEvent } from '../../analytics';
 import { cardSent } from '../application/card-sent';
+import { staleEdit } from '../application/cards';
 import { deliver, type Delivery } from '../application/deliver';
 import type { AfterSentHandler, NotificationJob } from '../application/job';
 import { SECOND_MS } from '../application/pace';
@@ -46,11 +47,19 @@ async function quiet(env: Bindings, job: NotificationJob): Promise<boolean> {
   return blocksOf(env).has(job.bot, job.chatId);
 }
 
+// A waiting edit of a card that changed again since: the newer edit shows it, no call to Telegram
+// (G86 T5). Its message stays as it is, so nothing is remembered.
+async function stale(env: Bindings, job: NotificationJob): Promise<boolean> {
+  if (job.edit === undefined || job.after?.type !== 'card') return false;
+  return staleEdit(job, await cardsOf(env).find(job.bot, job.chatId, job.after.key));
+}
+
 export async function deliverNow(env: Bindings, job: NotificationJob): Promise<Delivery> {
   if (await quiet(env, job)) {
     recordServerEvent(env, { name: 'bot_send', source: job.bot, code: 'drop' });
     return { outcome: 'drop' };
   }
+  if (await stale(env, job)) return { outcome: 'drop' };
   let sent = await withReply(env, job);
   let delivery = await tryOnce(env, sent);
   if (delivery.outcome === 'drop' && delivery.blocked === true && typeof job.chatId === 'number')

@@ -1,43 +1,48 @@
 import type { Bindings } from '../../../env';
-import { recordServerEvent } from '../../analytics';
 import { sendSignals, signalsOf } from '../../feed';
 import type { Delivery } from '../application/deliver';
-import type { NotificationJob, QueueMessage, TimedTask } from '../application/job';
+import type { NotificationJob } from '../application/job';
 import {
+  answerWaits,
   CHANNEL_PER_MINUTE,
+  cardWait,
   coalesce,
   isChannel,
-  paceAfter,
+  massKey,
+  MASS_PER_SECOND,
+  type PauseKey,
   SECOND_MS,
   secondsUntil,
+  takeSecond,
+  waitOf,
+  type Seconds,
 } from '../application/pace';
 import { deliverNow } from './deliver-now';
+import { enqueue } from './enqueue';
 import { paceOf } from './wiring';
 
 // A few messages go straight to Telegram: each one through the queue costs operations of Queues
 // (G56, docs/117). Without the queue (tests, local runs) every message is sent at once.
 const DIRECT_LIMIT = 5;
 const RETRY = { outcome: 'retry', afterSeconds: 5 } as const;
-// One sendBatch of Queues takes at most 100 messages.
-const BATCH = 100;
 // The waits of the bots are read from D1 at most this often by one Worker (G85 T4).
 const PAUSES_FRESH_MS = 5000;
 type Waiting = { readonly body: NotificationJob; readonly delaySeconds: number };
-type Bot = NotificationJob['bot'];
 
-// Kept by the Worker between requests: the clock of the mass messages of each bot, so a loop that
-// tells many people one by one keeps the pace too (T2), and the waits of the bots read lately (T4).
-const clocks = new WeakMap<Bindings, Map<Bot, number>>();
-const pauses = new WeakMap<Bindings, { readonly at: number; readonly paused: Map<Bot, number> }>();
-function clockOf(env: Bindings): Map<Bot, number> {
+// Kept by the Worker between requests: the seconds of each bot, so a loop that tells many people one
+// by one keeps the pace too (T2, G86 T3), and the waits of the bots read lately (T4).
+type Clock = { readonly fast: Seconds; readonly mass: Seconds };
+const clocks = new WeakMap<Bindings, Clock>();
+const pauses = new WeakMap<Bindings, { readonly at: number; readonly paused: Map<PauseKey, number> }>();
+function clockOf(env: Bindings): Clock {
   const kept = clocks.get(env);
   if (kept) return kept;
-  const clock = new Map<Bot, number>();
+  const clock: Clock = { fast: new Map(), mass: new Map() };
   clocks.set(env, clock);
   return clock;
 }
 
-async function pausesOf(env: Bindings, now: number): Promise<Map<Bot, number>> {
+async function pausesOf(env: Bindings, now: number): Promise<Map<PauseKey, number>> {
   const kept = pauses.get(env);
   if (kept && now - kept.at < PAUSES_FRESH_MS) return kept.paused;
   const paused = new Map(await paceOf(env).pauses(now));
@@ -45,22 +50,13 @@ async function pausesOf(env: Bindings, now: number): Promise<Map<Bot, number>> {
   return paused;
 }
 
-// Messages and tasks into the queue, counted as its operations for the dashboard (G85 T1).
-export async function enqueue(env: Bindings, items: readonly MessageSendRequest<QueueMessage>[]) {
-  const queue = env.NOTIFICATIONS;
-  if (!queue || items.length === 0) return;
-  for (let start = 0; start < items.length; start += BATCH)
-    await queue.sendBatch(items.slice(start, start + BATCH));
-  recordServerEvent(env, { name: 'queue_ops', source: 'write', count: items.length });
-}
-
 // Sends the messages that may go now, one by one; a bot that waits (T4) keeps its messages for the
 // queue, also the ones after the 429 that made it wait.
-async function sendDirect(env: Bindings, ready: readonly Waiting[], paused: Map<Bot, number>) {
+async function sendDirect(env: Bindings, ready: readonly Waiting[], paused: Map<PauseKey, number>) {
   const later: Waiting[] = [];
   for (const item of ready) {
     const now = Date.now();
-    const until = paused.get(item.body.bot) ?? 0;
+    const until = waitOf(paused, item.body);
     if (until > now) {
       later.push({ body: item.body, delaySeconds: secondsUntil(until, now) });
       continue;
@@ -74,7 +70,12 @@ async function sendDirect(env: Bindings, ready: readonly Waiting[], paused: Map<
 }
 
 // Messages with their waits: a few that wait nothing go now, the rest through the queue.
-async function dispatch(env: Bindings, items: readonly Waiting[]) {
+async function dispatch(env: Bindings, waits: readonly Waiting[]) {
+  const at = Date.now();
+  const items = waits.map((item) => ({
+    ...item,
+    delaySeconds: Math.max(item.delaySeconds, cardWait(item.body, at)),
+  }));
   if (!env.NOTIFICATIONS) {
     for (const { body } of items) await deliverNow(env, body);
     return;
@@ -95,9 +96,13 @@ export async function notify(
 ): Promise<void> {
   if (jobs.length === 0) return;
   await sendSignals(env, signalsOf(signalled));
+  // Up to 25 a second a bot; a crowd of answers makes the mass messages wait (G86 T3).
+  const bodies = coalesce(jobs);
+  const { waits, massUntil } = answerWaits(clockOf(env).fast, bodies, Date.now());
+  for (const [bot, until] of massUntil) await paceOf(env).pause(massKey(bot), until);
   await dispatch(
     env,
-    coalesce(jobs).map((body) => ({ body, delaySeconds: 0 })),
+    bodies.map((body, index) => ({ body, delaySeconds: waits[index] ?? 0 })),
   );
 }
 
@@ -110,34 +115,22 @@ export async function notifyMass(
 ): Promise<void> {
   if (jobs.length === 0) return;
   await sendSignals(env, signalsOf(signalled));
-  const clock = clockOf(env);
+  const clock = clockOf(env).mass;
   const pace = paceOf(env);
   const now = Date.now();
   const items: Waiting[] = [];
-  for (const body of coalesce(jobs)) {
+  for (const job of coalesce(jobs)) {
+    const body = { ...job, mass: true };
     const channel = isChannel(body.chatId);
     const post = channel && body.edit === undefined;
     const slot = post ? await pace.slot(String(body.chatId), now, CHANNEL_PER_MINUTE) : null;
     const delaySeconds =
-      slot !== null ? secondsUntil(slot, now) : channel ? 0 : paceAfter(clock, body.bot, now);
+      slot !== null
+        ? secondsUntil(slot, now)
+        : channel
+          ? 0
+          : takeSecond(clock, body.bot, now, MASS_PER_SECOND);
     items.push({ body, delaySeconds });
   }
   await dispatch(env, items);
-}
-
-// Tasks that wait for their moment in the queue (G85 R3). Without the queue they run at once.
-export async function scheduleTasks(
-  env: Bindings,
-  tasks: readonly { readonly task: TimedTask; readonly at: number }[],
-  runNow: (task: TimedTask) => Promise<void>,
-): Promise<void> {
-  if (!env.NOTIFICATIONS) {
-    for (const { task } of tasks) await runNow(task);
-    return;
-  }
-  const now = Date.now();
-  await enqueue(
-    env,
-    tasks.map(({ task, at }) => ({ body: task, delaySeconds: secondsUntil(at, now) })),
-  );
 }

@@ -33,6 +33,8 @@ export type CardSent = {
   readonly pin?: boolean;
   // A message the person deleted stays gone: an answered request does not come back.
   readonly editOnly?: boolean;
+  // Not sent before this moment: one edit of a card a second (G86 T3, T5).
+  readonly notBefore?: number;
 };
 
 export type NotificationJob = {
@@ -56,6 +58,8 @@ export type NotificationJob = {
   readonly preview?: string;
   // The message `edit` names is deleted: the post of a cancelled trip (docs/122, G68).
   readonly remove?: boolean;
+  // One of many messages at once: it waits while the answers to people go first (G86 T3).
+  readonly mass?: boolean;
 };
 
 // Work done when its moment comes, not a ready message: a reminder reads the trip at its time and

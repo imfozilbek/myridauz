@@ -83,7 +83,7 @@
 | R4 Web Analytics | Сделан: автоустановка зоны уже вставляет скрипт на сайт и во все Mini App обеих сред (проверено 18.10.2026); строка в политике с редакции 1.9 (`30`, согласие владельца 18.10.2026) |
 | R5 Email Routing | Сделан 18.10.2026: `support@ridaone.uz` пересылает на почту компании (`46`) |
 | R1 | Отложен: владелец 18.10.2026 «пока нет». `maxAge` предзапросов уже 2 часа (`117`) |
-| R6 D1 read replication | В G86, после замера |
+| R6 D1 read replication | Отклонён в G86 (13.11.2026): Smart Placement уже ставит Worker рядом с основной базой (медиана API 19 мс); копии для чтения помогают Worker, который работает далеко от неё. Нужен Sessions API во всём коде D1 и закладка в Mini App, иначе человек может не увидеть свою бронь или кошелёк сразу после записи. Вернуться, если медиана API станет больше 100 мс |
 
 
 Источники: developers.cloudflare.com (Workers limits, Static Assets, R2 pricing и public buckets, Placement, Rate Limiting binding и changelog 2025-09-19, D1 read replication, Workflows, Workers AI, KV, Images, Workers Logs).

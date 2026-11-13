@@ -1,14 +1,12 @@
 import { MINUTE_MS } from '@platform/contracts';
-import type { NotificationJob } from '../application/job';
-
-type Bot = NotificationJob['bot'];
+import type { PauseKey } from '../application/pace';
 
 // The pace of the bots (G85, docs/122): a bot Telegram answered 429 waits as a whole (T4), a channel
 // takes `perMinute` new posts a minute and the next ones wait for a later minute (T7).
 export type PaceStore = {
-  // The bots that wait now, with the moment their wait ends.
-  pauses(now: number): Promise<ReadonlyMap<Bot, number>>;
-  pause(bot: Bot, until: number): Promise<void>;
+  // The bots (or their mass messages, G86 T3) that wait now, with the moment their wait ends.
+  pauses(now: number): Promise<ReadonlyMap<PauseKey, number>>;
+  pause(key: PauseKey, until: number): Promise<void>;
   // The moment a new post of the chat may go: now, or the start of the first minute with room.
   slot(chat: string, now: number, perMinute: number): Promise<number>;
 };
@@ -26,12 +24,12 @@ const MAX_MINUTES = 60;
 export const d1Pace = (db: D1Database): PaceStore => ({
   pauses: async (now) =>
     new Map(
-      (await db.prepare(PAUSES).bind(now).all<{ bot: Bot; until: number }>()).results.map(
+      (await db.prepare(PAUSES).bind(now).all<{ bot: PauseKey; until: number }>()).results.map(
         (row) => [row.bot, row.until] as const,
       ),
     ),
-  pause: async (bot, until) => {
-    await db.prepare(PAUSE).bind(bot, until).run();
+  pause: async (key, until) => {
+    await db.prepare(PAUSE).bind(key, until).run();
   },
   slot: async (chat, now, perMinute) => {
     const current = Math.floor(now / MINUTE_MS);

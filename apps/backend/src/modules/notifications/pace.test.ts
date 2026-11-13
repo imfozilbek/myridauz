@@ -1,6 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import type { NotificationJob } from './application/job';
-import { coalesce, isChannel, MASS_PER_SECOND, paceAfter, secondsUntil } from './application/pace';
+import {
+  answerWaits,
+  coalesce,
+  FAST_PER_SECOND,
+  isChannel,
+  massKey,
+  MASS_PER_SECOND,
+  secondsUntil,
+  takeSecond,
+  waitOf,
+  type Seconds,
+} from './application/pace';
 
 const to = (chatId: number | string, text: string, more: Partial<NotificationJob> = {}): NotificationJob => ({
   bot: 'passenger',
@@ -15,14 +26,32 @@ const card = (key: string, text: string, edit?: number) =>
 describe('the pace of the bots', () => {
   // The clock of a bot also paces a loop that tells people one by one (the reviewer of G85).
   it('lets each bot send MASS_PER_SECOND mass messages a second, call after call', () => {
-    const clock = new Map();
-    const waits = Array.from({ length: MASS_PER_SECOND * 2 + 1 }, () => paceAfter(clock, 'passenger', 0));
+    const clock: Seconds = new Map();
+    const mass = () => takeSecond(clock, 'passenger', 0, MASS_PER_SECOND);
+    const waits = Array.from({ length: MASS_PER_SECOND * 2 + 1 }, mass);
     expect(waits.slice(0, MASS_PER_SECOND)).toEqual(Array(MASS_PER_SECOND).fill(0));
     expect(waits.slice(MASS_PER_SECOND, MASS_PER_SECOND * 2)).toEqual(Array(MASS_PER_SECOND).fill(1));
     // The last of the passenger bot waits 2 seconds; the driver bot starts at once.
-    expect([waits.at(-1), paceAfter(clock, 'driver', 0)]).toEqual([2, 0]);
+    expect([waits.at(-1), takeSecond(clock, 'driver', 0, MASS_PER_SECOND)]).toEqual([2, 0]);
     // A quiet bot starts again from now.
-    expect(paceAfter(clock, 'passenger', 60_000)).toBe(0);
+    expect(takeSecond(clock, 'passenger', 60_000, MASS_PER_SECOND)).toBe(0);
+  });
+
+  // G86 T3 (docs/122): the answers go first, up to 25 a second a bot.
+  it('lets 5 answers a second go beside the mass ones; more of them make the mass messages wait', () => {
+    const few = answerWaits(new Map(), [to(1, 'a'), to(2, 'b'), to('@ch', 'c')], 1500);
+    expect(few).toEqual({ waits: [0, 0, 0], massUntil: new Map() });
+    const crowd = Array.from({ length: 50 }, (_, index) => to(index + 1, 'x'));
+    const { waits, massUntil } = answerWaits(new Map(), crowd, 1500);
+    expect(waits).toEqual([...Array(FAST_PER_SECOND).fill(0), ...Array(FAST_PER_SECOND).fill(1)]);
+    // The mass messages of the passenger bot wait to the end of the second of the last answer.
+    expect(massUntil).toEqual(new Map([['passenger', 3000]]));
+  });
+
+  it('holds a mass message, not an answer, while the mass lane of its bot waits', () => {
+    const paused = new Map([[massKey('passenger'), 3000]]);
+    expect([waitOf(paused, to(1, 'a')), waitOf(paused, to(1, 'a', { mass: true }))]).toEqual([0, 3000]);
+    expect(waitOf(paused, to(1, 'a', { bot: 'driver', mass: true }))).toBe(0);
   });
 
   it('knows a channel from a person and counts whole seconds', () => {

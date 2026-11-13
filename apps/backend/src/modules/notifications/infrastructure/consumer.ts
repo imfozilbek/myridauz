@@ -3,9 +3,9 @@ import { recordServerEvent } from '../../analytics';
 import { keepDead } from '../application/dead-letter';
 import type { Delivery } from '../application/deliver';
 import type { QueueMessage, TimedTask } from '../application/job';
-import { SECOND_MS, secondsUntil } from '../application/pace';
+import { SECOND_MS, secondsUntil, waitOf } from '../application/pace';
 import { deliverNow } from './deliver-now';
-import { enqueue } from './lanes';
+import { enqueue } from './enqueue';
 import { paceOf } from './wiring';
 
 // The tries of one message: max_retries of the queue (brands/<brand>/wrangler.toml).
@@ -29,7 +29,7 @@ async function failed(env: Bindings, message: Message<QueueMessage>, body: Queue
 }
 
 // The messages of a waiting bot come back spread over this many seconds, not all in its first free
-// second: a crowd at once would meet the next 429 (G85 T4). The regulator of G86 replaces it.
+// second: a crowd at once would meet the next 429 (G85 T4); also the mass ones that waited for answers (G86).
 const SPREAD_SECONDS = 30;
 const spreadOf = (id: string) => [...id].reduce((sum, sign) => sum + sign.charCodeAt(0), 0) % SPREAD_SECONDS;
 
@@ -61,7 +61,7 @@ export async function consumeNotifications(
       continue;
     }
     const now = Date.now();
-    const until = paused.get(body.bot) ?? 0;
+    const until = waitOf(paused, body);
     if (until > now) {
       wait(message, body, until, now);
       continue;
