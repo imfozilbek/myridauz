@@ -27,6 +27,10 @@ test('admin: the dashboard of a day and of a week', async ({ page }) => {
   await page.getByText(t('stats.period.week')).click();
   await expect(page.getByText('168').first()).toBeVisible();
   await take('2-week');
+  // «Hammasi»: the whole time, the funnels of the last 90 days.
+  await page.getByText(t('stats.period.all')).click();
+  await expect(page.getByText(t('stats.eventsDays', { days: 90 }))).toBeVisible();
+  await take('4-all');
   // A signal of the admin bot opens the dashboard at once.
   await page.goto(telegramUrl(`${appUrl(ADMIN.port)}?stats=day`));
   await expect(page.getByText(t('stats.funnel.passenger'))).toBeVisible();

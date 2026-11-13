@@ -1,4 +1,4 @@
-import { MAIN_NUMBERS, type Funnel, type MainNumber, type Stats } from '@platform/contracts';
+import { EVENTS_DAYS, MAIN_NUMBERS, type Funnel, type MainNumber, type Stats } from '@platform/contracts';
 import type { ReactNode } from 'react';
 import { useI18n } from '../context/i18n-context';
 import { ManageGroup, ManageNote, ManageRow } from '../manage/manage-page';
@@ -42,7 +42,13 @@ export function StatsSections({ stats, gold }: { readonly stats: Stats; readonly
           ...changeOf(key),
         }))}
       />
-      {compared ? <ManageNote>{t(`stats.compare.${stats.period}`)}</ManageNote> : null}
+      {compared && stats.period !== 'all' ? (
+        <ManageNote>{t(`stats.compare.${stats.period}`)}</ManageNote>
+      ) : null}
+      {/* «Hammasi»: the database counts all, the events only their last months (owner decision 13.11.2026). */}
+      {stats.period === 'all' && stats.events === 'on' ? (
+        <ManageNote>{t('stats.eventsDays', { days: EVENTS_DAYS })}</ManageNote>
+      ) : null}
       {stats.events === 'on' ? null : (
         <ManageNote>{t(stats.events === 'off' ? 'stats.eventsOff' : 'stats.eventsFailed')}</ManageNote>
       )}

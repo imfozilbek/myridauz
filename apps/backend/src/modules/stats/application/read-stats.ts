@@ -1,4 +1,11 @@
-import { FUNNELS, type Funnel, type Stats, type StatsPeriod } from '@platform/contracts';
+import {
+  eventDaysOf,
+  FUNNELS,
+  periodSince,
+  type Funnel,
+  type Stats,
+  type StatsPeriod,
+} from '@platform/contracts';
 import { arrivalsOf } from '../domain/arrivals';
 import { botBlocksOf, botLoadOf } from '../domain/bot-load';
 import { FUNNEL_EVENTS, funnelOf } from '../domain/funnels';
@@ -14,10 +21,8 @@ import {
 import type { StatsCache, StatsDeps } from './ports';
 
 const MINUTE = 60_000;
-const DAY = 24 * 60 * MINUTE;
 // A dashboard answer lives 10 minutes: at most 6 queries an hour per period (docs/29).
 const CACHE_MINUTES = 10;
-const PERIOD_DAYS: Readonly<Record<StatsPeriod, number>> = { day: 1, week: 7 };
 
 export async function cached<T>(
   cache: StatsCache,
@@ -34,7 +39,7 @@ export async function cached<T>(
 
 export const funnelsOf = (deps: StatsDeps, period: StatsPeriod): Promise<Funnel[]> =>
   cached(deps.cache, `funnels:${period}`, deps.now(), async () => {
-    const counters = (await deps.events?.counters(PERIOD_DAYS[period], FUNNEL_EVENTS)) ?? [];
+    const counters = (await deps.events?.counters(eventDaysOf(period), FUNNEL_EVENTS)) ?? [];
     return FUNNELS.map((id) => funnelOf(id, counters));
   });
 
@@ -60,7 +65,7 @@ const FEEL_EVENTS = [LEAVE_EVENT, FIRST_SCREEN, HELP_OPEN, HELP_MORE];
 async function eventsPart(deps: StatsDeps, period: StatsPeriod, at: number): Promise<EventsPart> {
   const { events } = deps;
   if (!events) return { events: 'off', ...NO_EVENTS };
-  const days = PERIOD_DAYS[period];
+  const days = eventDaysOf(period);
   try {
     const [funnels, errors, bots, feel] = await Promise.all([
       funnelsOf(deps, period),
@@ -84,13 +89,16 @@ async function eventsPart(deps: StatsDeps, period: StatsPeriod, at: number): Pro
 
 export async function readStats(deps: StatsDeps, period: StatsPeriod): Promise<Stats> {
   const at = deps.now();
-  const span = PERIOD_DAYS[period] * DAY;
-  const since = at - span;
+  const since = periodSince(period, at);
+  const span = at - since;
   // The main numbers count whole tables: they live in the cache too (G56, docs/117).
   const [numbers, before, arrivals, voice, part] = await Promise.all([
     cached(deps.cache, `numbers:${period}`, at, () => deps.numbers.numbers(since)),
     // The period before, to compare (G45, F-A12 of docs/90).
-    cached(deps.cache, `before:${period}`, at, () => deps.numbers.before(since - span, since)),
+    // The whole time has no period before it.
+    period === 'all'
+      ? {}
+      : cached(deps.cache, `before:${period}`, at, () => deps.numbers.before(since - span, since)),
     cached(deps.cache, `arrivals:${period}`, at, () => deps.numbers.arrivals(since)),
     // G87 (docs/191): the ratings and the complaints of the period.
     cached(deps.cache, `voice:${period}`, at, async () => {

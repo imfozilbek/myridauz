@@ -1,7 +1,7 @@
 import {
   ADMIN_WAITLIST_PATH,
   ADMIN_WAITLIST_STATS_PATH,
-  DAY_MS,
+  periodSince,
   regionSchema,
   statsQuerySchema,
   TASHKENT_CITY,
@@ -15,7 +15,6 @@ import { direction, openDirection, overview, type TeamDeps } from '../applicatio
 import { withDeps } from './with-deps';
 
 const BAD_REQUEST = 400;
-const PERIOD_DAYS = { day: 1, week: 7 } as const;
 const isDirection = (region: string) => regionSchema.safeParse(region).success && region !== TASHKENT_CITY;
 
 // What the team sees of the list (docs/181, docs/183): «Kutayotganlar», a direction and its
@@ -36,7 +35,7 @@ export const teamRoutes = (deps: (env: Bindings) => TeamDeps | null) =>
         const query = statsQuerySchema.safeParse({ period: context.req.query('period') });
         if (!query.success) return context.json({ error: 'stats.invalid_input' }, BAD_REQUEST);
         const { period } = query.data;
-        const since = found.now() - PERIOD_DAYS[period] * DAY_MS;
+        const since = periodSince(period, found.now());
         return context.json(
           await found.cached(`waitlist:${period}`, () => waitlistStats(found.reads, since)),
         );

@@ -33,7 +33,8 @@ describe('GET /admin/stats (G12, docs/29)', () => {
     ]);
   });
 
-  it('is only for the team and knows only two periods', async () => {
+  it('is only for the team and knows only its three periods', async () => {
+    expect((await call('/admin/stats?period=all', OWNER, { app: 'admin' })).status).toBe(200);
     expect((await call('/admin/stats', 77, { app: 'admin' })).status).toBe(403);
     expect((await call('/admin/stats?period=year', OWNER, { app: 'admin' })).status).toBe(400);
   });

@@ -25,7 +25,8 @@ const DRIVER = ['opened', 'started', 'submitted', 'approved', 'trip_created', 'c
 const NEW_TRIP = ['route', 'published'];
 
 const statsOf = (period: string) => {
-  const week = period === 'week' ? 7 : 1;
+  // «Hammasi» (owner decision 13.11.2026): the numbers of the whole time.
+  const week = { week: 7, all: 40 }[period] ?? 1;
   return {
     period,
     numbers: {
