@@ -12,7 +12,7 @@ const job = (chatId: number | string, bot: NotificationJob['bot'] = 'passenger')
   chatId,
   text: `x${String(chatId)}`,
 });
-const TASKS = { reminder: async () => undefined };
+const TASKS = { reminder: async () => undefined, route_news: async () => undefined };
 
 function world() {
   const queued: { body: unknown; delaySeconds?: number }[] = [];
@@ -102,7 +102,10 @@ describe('the lanes of the bot messages', () => {
       retry: () => done.push('retry'),
     });
     const ran: unknown[] = [];
-    const tasks = { reminder: async (_env: unknown, task: unknown) => void ran.push(task) };
+    const tasks = {
+      reminder: async (_env: unknown, task: unknown) => void ran.push(task),
+      route_news: async () => undefined,
+    };
     const task = { task: 'reminder', data: { tripId: 't1' } } as const;
     await consumeNotifications({ messages: [message(job(1, 'driver')), message(task)] } as never, env, tasks);
     expect(sent).toEqual([]);

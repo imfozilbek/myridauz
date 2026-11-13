@@ -68,6 +68,8 @@ queue = "rida-notifications"
 max_batch_size = 10
 max_batch_timeout = 2
 max_retries = 5
+# One consumer at a time: its count of each bot's second is the pace of every queued message (G86 T3).
+max_concurrency = 1
 
 # Workers Rate Limiting (G42, docs/111): requests of one person (or one address) per minute.
 # Actions: a booking, an offer, a chat or feed ticket; the map search; the analytics of an address.

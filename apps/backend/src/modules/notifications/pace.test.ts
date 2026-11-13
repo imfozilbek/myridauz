@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { NotificationJob } from './application/job';
 import {
+  admit,
   answerWaits,
   coalesce,
   FAST_PER_SECOND,
@@ -87,5 +88,26 @@ describe('the pace of the bots', () => {
       to(5, 'g', { html: true }),
     ];
     expect(coalesce(jobs)).toEqual(jobs);
+  });
+});
+
+describe('the gate at the call to Telegram (G86 T8)', () => {
+  const answer: NotificationJob = { bot: 'passenger', chatId: 1, text: 'a' };
+  const mass: NotificationJob = { ...answer, mass: true };
+  it('lets mass messages take MASS_PER_SECOND of a second and answers the rest up to FAST_PER_SECOND', () => {
+    const sent = new Map();
+    const at = 10_000;
+    const masses = Array.from({ length: MASS_PER_SECOND + 1 }, () => admit(sent, mass, at));
+    const answers = Array.from({ length: FAST_PER_SECOND - MASS_PER_SECOND + 1 }, () =>
+      admit(sent, answer, at),
+    );
+    expect([masses.filter(Boolean).length, answers.filter(Boolean).length]).toEqual([
+      MASS_PER_SECOND,
+      FAST_PER_SECOND - MASS_PER_SECOND,
+    ]);
+    // A place counts until Telegram answered and a second after it.
+    expect(admit(sent, mass, at + 5000)).toBeNull();
+    for (const place of [...masses, ...answers]) if (place) place.at = at;
+    expect(admit(sent, mass, at + 1000)).not.toBeNull();
   });
 });

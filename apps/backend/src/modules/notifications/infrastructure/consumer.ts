@@ -66,8 +66,12 @@ export async function consumeNotifications(
       wait(message, body, until, now);
       continue;
     }
+    // One consumer (max_concurrency = 1) waits for the second of the bot when it sends (G86 T8); a bot
+    // still full after it sends the message back to the queue, its tries kept.
     const delivery = await deliverNow(env, body).catch(() => RETRY);
     if (delivery.outcome !== 'retry') message.ack();
+    else if (delivery.full === true)
+      waiting.push({ message, copy: { body, delaySeconds: delivery.afterSeconds } });
     else if (delivery.limited === true) {
       paused.set(body.bot, now + delivery.afterSeconds * SECOND_MS);
       wait(message, body, now + delivery.afterSeconds * SECOND_MS, now);

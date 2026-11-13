@@ -65,7 +65,9 @@ export type NotificationJob = {
 // Work done when its moment comes, not a ready message: a reminder reads the trip at its time and
 // says what is true then (G85 R3). The module that owns the task runs it (src/index.ts).
 export type TimedTask = {
-  readonly task: 'reminder';
+  // route_news: the subscribers of a route hear of a new or cheaper trip after the driver's answer
+  // (G86 T8: 1 000 subscribers kept the publishing waiting over 15 seconds).
+  readonly task: 'reminder' | 'route_news';
   readonly data: Readonly<Record<string, string | number>>;
 };
 export type QueueMessage = NotificationJob | TimedTask;

@@ -50,7 +50,7 @@ export const AREAS = {
     'g90',
   ],
   team: ['team', 'team-moderation', 'screens-team', 'all-admin', 'g45-team', 'g45-screens', 'g95'],
-  bots: ['bots', 'bots-team', 'complaints-time', 'g68-bots', 'g83', 'g97'],
+  bots: ['bots', 'bots-team', 'complaints-time', 'g68-bots', 'g83', 'g86-load', 'g97'],
   channels: ['system-channels', 'system-cron', 'system-cron-team', 'system-people'],
   // The walk of the screens (G91): only on its own fresh stand, pnpm stand:walk.
   walk: ['walk-passenger', 'walk-riders', 'walk-driver', 'walk-team'],

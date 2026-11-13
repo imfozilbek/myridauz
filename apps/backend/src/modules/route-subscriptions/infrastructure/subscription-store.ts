@@ -66,8 +66,13 @@ export const d1Subscriptions = (db: D1Database): SubscriptionRepository => {
     },
     byUser: (userId, kind) =>
       many('SELECT * FROM route_subscriptions WHERE user_id = ? AND kind = ?', userId, kind),
+    // In one order: a big route is told part by part (G86 T8).
     live: (kind, now) =>
-      many('SELECT * FROM route_subscriptions WHERE kind = ? AND expired = 0 AND expires_at > ?', kind, now),
+      many(
+        'SELECT * FROM route_subscriptions WHERE kind = ? AND expired = 0 AND expires_at > ? ORDER BY id',
+        kind,
+        now,
+      ),
     overdue: (now) => many('SELECT * FROM route_subscriptions WHERE expired = 0 AND expires_at <= ?', now),
     expire: async ({ id, expiresAt }) => {
       const sql =

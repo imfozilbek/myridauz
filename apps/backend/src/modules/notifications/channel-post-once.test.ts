@@ -24,7 +24,7 @@ describe('a channel post whose bookkeeping failed', () => {
     });
     const done: string[] = [];
     const message = { body: POST, attempts: 1, ack: () => done.push('ack'), retry: () => done.push('retry') };
-    const tasks = { reminder: async () => undefined };
+    const tasks = { reminder: async () => undefined, route_news: async () => undefined };
     await consumeNotifications({ messages: [message] } as never, { POSTER_BOT_TOKEN: 'c' }, tasks);
     expect(posted).toBe(1);
     expect(done).toEqual(['ack']);

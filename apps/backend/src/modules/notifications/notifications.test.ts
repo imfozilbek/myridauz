@@ -6,7 +6,7 @@ import { consumeNotifications, handleAfterSent, notify, notifyTeam } from '.';
 const TOKENS = { passenger: 'p', driver: 'd', admin: 'a', poster: 'c', main: 'm', group: 'g' };
 const JOB: NotificationJob = { bot: 'driver', chatId: 5, text: 'Yangi xabar' };
 const answer = (status: number, body: object) => async () => Response.json(body, { status });
-const TASKS = { reminder: async () => undefined };
+const TASKS = { reminder: async () => undefined, route_news: async () => undefined };
 
 afterEach(() => vi.unstubAllGlobals());
 

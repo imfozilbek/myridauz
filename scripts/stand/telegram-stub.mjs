@@ -14,6 +14,16 @@ const FILE = /^\/file\/bot[^/]+\//u;
 // A picture of the site for the looks of the channels (docs/180): SITE_URL of the stand.
 const SITE = /^\/__site\//u;
 const KEEP_ALIVE_MS = 60 * 1000;
+// G86 T8: a load scenario turns on the limit of Telegram (POST /__limit with the messages a second
+// of one bot); a bot over it gets 429 with retry_after 1, as in production. Off by default.
+const LIMIT_PATH = '/__limit';
+const SECOND_MS = 1000;
+const tooMany = {
+  ok: false,
+  error_code: 429,
+  description: 'Too Many Requests',
+  parameters: { retry_after: 1 },
+};
 const JSON_TYPE = { 'content-type': 'application/json' };
 
 // What Telegram answers to each method, enough for the backend to go on.
@@ -52,6 +62,18 @@ export function serveTelegram(port) {
   let lastId = 0;
   const blocked = new Set();
   let refused = 0;
+  let limit = 0;
+  let limited = 0;
+  const calls = new Map();
+  const overLimit = (token) => {
+    if (limit === 0) return false;
+    const now = Date.now();
+    const recent = (calls.get(token) ?? []).filter((at) => at > now - SECOND_MS);
+    calls.set(token, recent);
+    if (recent.length >= limit) return true;
+    recent.push(now);
+    return false;
+  };
   const looks = standLooks();
   const server = createServer((incoming, outgoing) => {
     const url = incoming.url ?? '/';
@@ -67,6 +89,16 @@ export function serveTelegram(port) {
         if (incoming.method === 'POST') blocked.add(Number(raw));
         if (incoming.method === 'DELETE') blocked.clear();
         outgoing.writeHead(200, JSON_TYPE).end(JSON.stringify({ chats: [...blocked], refused }));
+      });
+      return;
+    }
+    if (url === LIMIT_PATH) {
+      let raw = '';
+      incoming.on('data', (chunk) => (raw += chunk));
+      incoming.on('end', () => {
+        if (incoming.method === 'POST') [limit, limited] = [Number(raw), 0];
+        if (incoming.method === 'DELETE') [limit, limited] = [0, 0];
+        outgoing.writeHead(200, JSON_TYPE).end(JSON.stringify({ limit, limited }));
       });
       return;
     }
@@ -89,6 +121,12 @@ export function serveTelegram(port) {
       lastId += 1;
       const id = lastId;
       const body = bodyOf(raw, incoming.headers['content-type']);
+      // The limit is of messages: a send or an edit; a pin, a delete or a question are not counted.
+      if (/^(send|edit)/u.test(method) && overLimit(token)) {
+        limited += 1;
+        outgoing.writeHead(429, JSON_TYPE).end(JSON.stringify(tooMany));
+        return;
+      }
       if (method.startsWith('send') && blocked.has(body.chat_id)) {
         refused += 1;
         outgoing.writeHead(403, JSON_TYPE).end(JSON.stringify(BLOCKED));

@@ -29,18 +29,12 @@ const RETRY = { outcome: 'retry', afterSeconds: 5 } as const;
 const PAUSES_FRESH_MS = 5000;
 type Waiting = { readonly body: NotificationJob; readonly delaySeconds: number };
 
-// Kept by the Worker between requests: the seconds of each bot, so a loop that tells many people one
-// by one keeps the pace too (T2, G86 T3), and the waits of the bots read lately (T4).
+// Kept by the Worker between requests and queue batches: the seconds of each bot when a message is
+// queued, so a loop that tells many people one by one keeps the pace too (T2, G86 T3); the waits of
+// the bots read lately (T4). The gate of each message at its call to Telegram: send-gate.ts (G86 T8).
 type Clock = { readonly fast: Seconds; readonly mass: Seconds };
-const clocks = new WeakMap<Bindings, Clock>();
+const clock: Clock = { fast: new Map(), mass: new Map() };
 const pauses = new WeakMap<Bindings, { readonly at: number; readonly paused: Map<PauseKey, number> }>();
-function clockOf(env: Bindings): Clock {
-  const kept = clocks.get(env);
-  if (kept) return kept;
-  const clock: Clock = { fast: new Map(), mass: new Map() };
-  clocks.set(env, clock);
-  return clock;
-}
 
 async function pausesOf(env: Bindings, now: number): Promise<Map<PauseKey, number>> {
   const kept = pauses.get(env);
@@ -98,11 +92,13 @@ export async function notify(
   await sendSignals(env, signalsOf(signalled));
   // Up to 25 a second a bot; a crowd of answers makes the mass messages wait (G86 T3).
   const bodies = coalesce(jobs);
-  const { waits, massUntil } = answerWaits(clockOf(env).fast, bodies, Date.now());
+  const { massUntil } = answerWaits(clock.fast, bodies, Date.now());
   for (const [bot, until] of massUntil) await paceOf(env).pause(massKey(bot), until);
+  // An answer goes now and waits for room in its second when it is sent (G86 T8); the count of the
+  // answers only makes the mass messages wait.
   await dispatch(
     env,
-    bodies.map((body, index) => ({ body, delaySeconds: waits[index] ?? 0 })),
+    bodies.map((body) => ({ body, delaySeconds: 0 })),
   );
 }
 
@@ -115,7 +111,7 @@ export async function notifyMass(
 ): Promise<void> {
   if (jobs.length === 0) return;
   await sendSignals(env, signalsOf(signalled));
-  const clock = clockOf(env).mass;
+  const seconds = clock.mass;
   const pace = paceOf(env);
   const now = Date.now();
   const items: Waiting[] = [];
@@ -129,7 +125,7 @@ export async function notifyMass(
         ? secondsUntil(slot, now)
         : channel
           ? 0
-          : takeSecond(clock, body.bot, now, MASS_PER_SECOND);
+          : takeSecond(seconds, body.bot, now, MASS_PER_SECOND);
     items.push({ body, delaySeconds });
   }
   await dispatch(env, items);
