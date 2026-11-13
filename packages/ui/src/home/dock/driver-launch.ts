@@ -35,8 +35,14 @@ export function useDriverLaunch(go: HomeGo, directory: PlaceDirectory | null) {
 
 export type DriverLaunch = ReturnType<typeof useDriverLaunch>;
 
+// A trip goes between districts or cities (docs/14): a whole region of the block, a list of requests
+// may take it, is asked again on the route (prod errors 13.11.2026: locations.not_found).
+const tripPlace = (place: Location | null) => (place?.parentId === null ? null : place);
+
 // A new trip from the ends of the block: one end is kept, the other is asked first (G79 В4).
-function tripEnds(from: Location | null, to: Location | null): Launch | undefined {
+export function tripEnds(blockFrom: Location | null, blockTo: Location | null): Launch | undefined {
+  const from = tripPlace(blockFrom);
+  const to = tripPlace(blockTo);
   if (from && to) return { route: { from, to } };
   if (from) return { from };
   return to ? { to } : undefined;

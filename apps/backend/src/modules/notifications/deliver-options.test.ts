@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { deliver } from './application/deliver';
 import type { NotificationJob } from './application/job';
 
@@ -49,5 +49,22 @@ describe('how a bot message sounds and looks (G68, docs/122)', () => {
     expect((await sent({ ...JOB, edit: 41 }, 400, deleted)).delivery).toEqual({ outcome: 'gone' });
     const old = { description: "Bad Request: message can't be edited" };
     expect((await sent({ ...JOB, edit: 41 }, 400, old)).delivery).toEqual({ outcome: 'gone' });
+  });
+
+  // Prod errors 13.11.2026: 1 200 drops a week said only «400»; the log keeps Telegram's words, no chat.
+  it('logs why Telegram refused a message, without the chat', async () => {
+    const logged = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const description = "Bad Request: can't parse entities: unsupported start tag";
+    const { delivery } = await sent(JOB, 400, { ok: false, description });
+    const entry = String(logged.mock.calls.at(-1)?.[0]);
+    logged.mockRestore();
+    expect(delivery).toEqual({ outcome: 'drop' });
+    expect(JSON.parse(entry)).toEqual({
+      event: 'notification_dropped',
+      bot: 'passenger',
+      status: 400,
+      method: 'sendMessage',
+      reason: description,
+    });
   });
 });

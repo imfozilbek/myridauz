@@ -54,8 +54,16 @@ export async function sendPhoto(
   if (card.html) form.append('parse_mode', 'HTML');
   form.append('reply_markup', JSON.stringify(card.markup));
   const response = await fetch(telegramUrl(token, 'sendPhoto'), { method: 'POST', body: form });
-  if (!response.ok) throw new Error(`telegram.sendPhoto_${response.status}`);
+  if (!response.ok) throw new Error(`telegram.sendPhoto_${response.status}: ${await refusal(response)}`);
 }
+
+// Why Telegram refused, without the chat: «chat not found», a broken tag (prod errors 13.11.2026).
+const REFUSAL_MAX = 120;
+const refusal = async (response: Response) =>
+  ((await response.json().catch(() => ({}))) as { description?: string }).description?.slice(
+    0,
+    REFUSAL_MAX,
+  ) ?? '';
 
 // A message in HTML (the card of a question, G68) and without sound at night (docs/122).
 export type SendOptions = { readonly html?: boolean; readonly quiet?: boolean };

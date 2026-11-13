@@ -22,6 +22,8 @@ const DEFAULT_RETRY_SECONDS = 5;
 const BAD_REQUEST = 400;
 const FORBIDDEN = 403;
 const NOT_MODIFIED = 'message is not modified';
+// Enough of Telegram's description to name the cause.
+const REASON_MAX = 120;
 const GONE = ['message to edit not found', "message can't be edited"];
 
 // An edit Telegram refused: the same text is done already, a deleted or old message is gone.
@@ -57,7 +59,12 @@ export async function deliver(fetch: Fetch, tokens: Tokens, job: NotificationJob
     return { outcome: 'retry', afterSeconds, limited: true };
   }
   if (response.status >= SERVER_ERROR) return { outcome: 'retry', afterSeconds: DEFAULT_RETRY_SECONDS };
-  console.warn(JSON.stringify({ event: 'notification_dropped', bot: job.bot, status: response.status }));
+  // What Telegram said, without the chat: 1 200 drops a week had only «400» (prod errors 13.11.2026).
+  const reason = (body.description ?? '').slice(0, REASON_MAX);
+  const method = methodOf(job);
+  console.warn(
+    JSON.stringify({ event: 'notification_dropped', bot: job.bot, status: response.status, method, reason }),
+  );
   // Only a person who blocked the bot (or left Telegram) is marked; one who never opened it is not:
   // the bot writes once the person allows it (G89 C8).
   const gone = /blocked by the user|user is deactivated/u.test(body.description ?? '');
