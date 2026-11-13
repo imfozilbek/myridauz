@@ -7,7 +7,7 @@ import {
 } from './modules/bookings';
 import { channelBoards, channels } from './modules/channels';
 import { tellFavoriteFans } from './modules/favorites';
-import { handleAfterSent } from './modules/notifications';
+import { handleAfterSent, scheduleTasks, type TimedTask } from './modules/notifications';
 import { tripCheaper, tripPublished } from './modules/route-subscriptions';
 import { tellTripFamily, tellTripFamilyRetimed } from './modules/shares';
 import { handleTripChange, tripForFamily, tripsOfDate, tripViewsOf } from './modules/trips';
@@ -42,10 +42,7 @@ handleTripChange(async (env, tripId, event) => {
   if (event === 'published') {
     await endOffersOfNewTrip(env, tripId);
     await tripChannels.posted(env, tripId);
-    const trip = await tripOf(env, tripId);
-    if (trip && (await inNews(env, trip.driver.id)))
-      await tripPublished(env, trip).then(() => tellFavoriteFans(env, trip));
-    return;
+    return routeNews(env, tripId, 'published');
   }
   await tripChannels.changed(env, tripId);
   const trip = await tripOf(env, tripId);
@@ -59,16 +56,35 @@ handleTripChange(async (env, tripId, event) => {
     await tellBookedOfRetime(env, tripId);
     await tellTripFamilyRetimed(env, tripId, tripForFamily);
   }
-  // A full or private trip is no news for the subscribers (G89 T10).
-  if (
-    event === 'cheaper' &&
-    trip &&
-    trip.seatsLeft > 0 &&
-    !trip.private &&
-    (await inNews(env, trip.driver.id))
-  )
-    await tripCheaper(env, trip);
+  if (event === 'cheaper') await routeNews(env, tripId, 'cheaper');
 });
+
+// The subscribers of the route (docs/24) and the fans of the driver hear of a new or cheaper trip
+// in the queue, after the driver's answer, part by part: many of them never keep the driver or the
+// queue waiting (G86 T8).
+type News = 'published' | 'cheaper';
+const PART = 50;
+const routeNews = (env: Bindings, tripId: string, news: News, from = 0) =>
+  scheduleTasks(
+    env,
+    [{ task: { task: 'route_news', data: { tripId, news, from } }, at: Date.now() }],
+    (task) => runRouteNews(env, task),
+  );
+
+export async function runRouteNews(env: Bindings, task: TimedTask): Promise<void> {
+  const tripId = String(task.data['tripId']);
+  const news = task.data['news'] === 'published' ? 'published' : 'cheaper';
+  const from = Number(task.data['from'] ?? 0);
+  const trip = await tripOf(env, tripId);
+  if (!trip || !(await inNews(env, trip.driver.id))) return;
+  // A full or private trip is no news for the subscribers (G89 T10).
+  if (news === 'cheaper' && (trip.seatsLeft === 0 || trip.private)) return;
+  const part = { from, count: PART };
+  const all =
+    news === 'published' ? await tripPublished(env, trip, part) : await tripCheaper(env, trip, part);
+  if (news === 'published' && from === 0) await tellFavoriteFans(env, trip);
+  if (from + PART < all) await routeNews(env, tripId, news, from + PART);
+}
 
 // The Cron job: channel posts of trips that left say so (docs/15); the boards of the day follow the
 // clock too (G68, docs/122).

@@ -7,6 +7,7 @@ import { consumeNotifications, type QueueMessage } from './modules/notifications
 import { runReminderTask } from './modules/reminders';
 import { useTelegramApi } from './shared/telegram/api-url';
 import { refreshLimits } from './modules/limits';
+import { runRouteNews } from './trip-events';
 
 // The chat of a booking is a Durable Object class of this Worker (docs/07).
 export { ChatRoom } from './modules/chat/infrastructure/chat-room';
@@ -20,11 +21,11 @@ export default {
     return app.fetch(request, env, context);
   },
   // The bot messages Telegram asked to wait for, and big batches, at Telegram's pace (docs/03, G56);
-  // the reminders of trips at their minute (G85 R3).
+  // the reminders of trips at their minute (G85 R3); the news of a route to its subscribers (G86 T8).
   queue: async (batch, env) => {
     useTelegramApi(env.TELEGRAM_API_URL);
     await refreshLimits(env);
-    return consumeNotifications(batch, env, { reminder: runReminderTask });
+    return consumeNotifications(batch, env, { reminder: runReminderTask, route_news: runRouteNews });
   },
   // The Cron answers when its jobs are done: the Cron of the stand too, so a scenario never meets the
   // jobs of the Cron before it (lesson 274).

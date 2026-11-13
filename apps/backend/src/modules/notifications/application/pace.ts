@@ -37,6 +37,23 @@ export function takeSecond(seconds: Seconds, bot: Bot, now: number, cap: number)
   return second - first;
 }
 
+// The gate of the moment a message goes (G86 T8): what each bot sent in the last second, the answers
+// and the mass ones together, as Telegram counts. A mass message goes while there are fewer than
+// MASS_PER_SECOND, an answer fewer than FAST_PER_SECOND: it gets its place, or null and waits. A
+// place counts from the call until a second after Telegram answered: a call the network held back
+// reaches Telegram later than it left (30 at once and 429 on the stand).
+export type Place = { at: number };
+export type Sent = Map<Bot, Place[]>;
+export function admit(sent: Sent, job: NotificationJob, now: number): Place | null {
+  const cap = job.mass ? MASS_PER_SECOND : FAST_PER_SECOND;
+  const recent = (sent.get(job.bot) ?? []).filter((place) => place.at > now - SECOND_MS);
+  sent.set(job.bot, recent);
+  if (recent.length >= cap) return null;
+  const place = { at: Number.POSITIVE_INFINITY };
+  recent.push(place);
+  return place;
+}
+
 // The answers to people: their waits, and until when the mass messages of a bot wait for them.
 export function answerWaits(seconds: Seconds, jobs: readonly NotificationJob[], now: number) {
   const massUntil = new Map<Bot, number>();

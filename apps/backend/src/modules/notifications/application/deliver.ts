@@ -10,8 +10,14 @@ export type Tokens = Readonly<Record<NotificationJob['bot'], string | undefined>
 // message to edit was deleted or is too old, a live card is sent anew (G68).
 export type Delivery =
   | { readonly outcome: 'sent'; readonly messageId: number | null }
-  // limited: Telegram said 429, the whole bot waits (G85 T4).
-  | { readonly outcome: 'retry'; readonly afterSeconds: number; readonly limited?: boolean }
+  // limited: Telegram said 429, the whole bot waits (G85 T4). full: the bot sent its share of the
+  // second, the message waits in the queue without a try (G86 T8).
+  | {
+      readonly outcome: 'retry';
+      readonly afterSeconds: number;
+      readonly limited?: boolean;
+      readonly full?: boolean;
+    }
   // blocked: the person blocked the bot or never opened it (403): it stays quiet to them (G46).
   | { readonly outcome: 'drop'; readonly blocked?: boolean }
   | { readonly outcome: 'gone' };

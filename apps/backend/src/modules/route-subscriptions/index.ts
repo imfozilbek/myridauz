@@ -13,7 +13,7 @@ import { placesOf } from '../locations';
 import { showNews } from '../notifications';
 import { peopleOf } from '../users';
 import { unsubscribe } from './application/manage';
-import { endOverdue, matchCheaper, matchNew } from './application/notify';
+import { endOverdue, matchCheaper, matchNew, type Part } from './application/notify';
 import type { SubscriptionsDeps } from './application/ports';
 import { subscriptionRoutes } from './http/subscription-routes';
 import { botTeller } from './infrastructure/bot-teller';
@@ -61,12 +61,13 @@ const tripMatch = async (env: Bindings, trip: Trip) => ({
   wholeCar: false,
 });
 
-export const tripPublished = async (env: Bindings, trip: Trip) =>
-  matchNew(subscriptionsDeps(env), 'trips', await tripMatch(env, trip));
+// One part of the subscribers at a time (G86 T8): the answer is how many there are in all.
+export const tripPublished = async (env: Bindings, trip: Trip, part?: Part) =>
+  matchNew(subscriptionsDeps(env), 'trips', await tripMatch(env, trip), part);
 
 // A trip of the route became cheaper: its passengers hear it, once a day at most (G39, docs/104).
-export const tripCheaper = async (env: Bindings, trip: Trip) =>
-  matchCheaper(subscriptionsDeps(env), await tripMatch(env, trip));
+export const tripCheaper = async (env: Bindings, trip: Trip, part?: Part) =>
+  matchCheaper(subscriptionsDeps(env), await tripMatch(env, trip), part);
 
 // A new request: drivers subscribed to its route hear about it (docs/24).
 export const requestPublished = async (env: Bindings, request: RideRequest) =>

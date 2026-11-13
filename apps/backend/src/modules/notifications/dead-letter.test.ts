@@ -21,7 +21,7 @@ describe('a message after its last try', () => {
     });
     const DB = testD1();
     const env = { DRIVER_BOT_TOKEN: 'd', DB };
-    const tasks = { reminder: async () => undefined };
+    const tasks = { reminder: async () => undefined, route_news: async () => undefined };
     await consumeNotifications({ messages: [message(1), message(MAX_ATTEMPTS)] } as never, env, tasks);
     expect(done).toEqual(['retry 1', `ack ${MAX_ATTEMPTS}`]);
     const kept = await DB.prepare('SELECT bot, chat_id, text FROM dead_notifications').all();

@@ -6,6 +6,7 @@ import { deliver, type Delivery } from '../application/deliver';
 import type { AfterSentHandler, NotificationJob } from '../application/job';
 import { SECOND_MS } from '../application/pace';
 import { blocksOf } from './bot-blocks';
+import { room, sentAt } from './send-gate';
 import { cardsOf, opsOf, paceOf, send, tokensOf } from './wiring';
 
 // What to do once a message has its id; set by the app, which knows every module (app.ts).
@@ -24,8 +25,13 @@ const withoutEdit = (job: NotificationJob): NotificationJob =>
 
 // One call to Telegram, counted by bot for the dashboard (G85 T1, docs/56). A 429 makes the whole
 // bot wait (T4): the next messages of the bot wait in the queue, not each one for itself.
+// The gate of the second of the bot is taken here, at the moment of the call (G86 T8); without the
+// queue (tests, local runs) there is nowhere to wait, everything goes at once.
+const FULL: Delivery = { outcome: 'retry', afterSeconds: 1, full: true };
 async function tryOnce(env: Bindings, job: NotificationJob): Promise<Delivery> {
-  const delivery = await deliver(send, tokensOf(env), job);
+  const place = env.NOTIFICATIONS ? await room(env, job) : undefined;
+  if (place === null) return FULL;
+  const delivery = await deliver(send, tokensOf(env), job).finally(() => sentAt(place));
   const limited = delivery.outcome === 'retry' && delivery.limited === true;
   // A failed count must never send the message once more.
   try {
