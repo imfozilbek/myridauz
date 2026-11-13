@@ -46,4 +46,4 @@
 
 > «… ilovaga nima orqali kirildi (bot xabari, menyu yoki havola), Telegram ilovasi va uning versiyasi. Statistika hisobingizga ichki raqam bilan bogʻlanadi. Unda ism, telefon raqami va xabarlar boʻlmaydi.»
 
-Статус: ждёт «да» владельца на тексты, вид (снимки `screenshots/g99-*.png`) и строку политики.
+Статус: «да» владельца 13.11.2026 на тексты, вид (снимки `screenshots/g99-*.png`, `e2e/g99-screenshots.spec.ts`) и строку политики; строка внесена в `legal.privacy.2.text`. Новую редакцию документов публикует владелец в админке (`30`). Проверка носителем: OPS-07.
