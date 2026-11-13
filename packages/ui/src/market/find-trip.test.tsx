@@ -43,6 +43,9 @@ describe('FindTripFlow: a passenger looks for a trip (G59, docs/118 path 2)', { 
     await tap(/^Jasur ★/u);
     expect(await screen.findByText(toCyrillic('Necha kishi ketadi?'))).toBeTruthy();
     expect(tracked.find((event) => event.name === 'trip_open')).toBeTruthy();
+    // «Qayerdan» and «Qayerga» are steps of the path of the passenger (G99, docs/234).
+    const way = tracked.filter((event) => event.name === 'way_step').map((event) => event.step);
+    expect(way).toEqual(expect.arrayContaining(['opened', 'from', 'to', 'done']));
   });
 
   it('finds a district by «Boshqa joy» without its region first', async () => {
