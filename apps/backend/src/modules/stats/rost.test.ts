@@ -1,7 +1,7 @@
-import { GROWTH_LOOPS } from '@platform/contracts';
+import { GROWTH_LOOPS, TIP_STEPS } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { fullScans, testD1 } from '../../test-d1';
-import { directionsOf, loopsOf } from './domain/rost';
+import { directionsOf, loopsOf, tipsOf } from './domain/rost';
 import { analyticsSql } from './infrastructure/analytics-sql';
 import { d1Numbers } from './infrastructure/d1-numbers';
 
@@ -39,6 +39,13 @@ describe('«Rost»', () => {
       { route: '1726-1703', searches: 20, found: 0 },
       { route: '1726-1718', searches: 10, found: 7 },
     ]);
+  });
+
+  it('shows every step of the tips, the ones without a tip at zero (G70a, docs/232)', () => {
+    const tips = tipsOf([{ step: 'd2', sent: 5, done: 2 }]);
+    expect(tips.map((one) => one.step)).toEqual([...TIP_STEPS]);
+    expect(tips.find((one) => one.step === 'd2')).toEqual({ step: 'd2', sent: 5, done: 2 });
+    expect(tips.find((one) => one.step === 'p2')).toEqual({ step: 'p2', sent: 0, done: 0 });
   });
 
   it('finds the new people of a mark who rode, through the index of the arrival', async () => {

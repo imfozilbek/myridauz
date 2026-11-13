@@ -59,17 +59,30 @@ describe('the reads of the Cron', () => {
     await db.exec(SEED);
     const env = { ...testEnv, DB: db } as unknown as Bindings;
     const jobs = [...cronJobs(env, NOW), ...cronJobs(env, HALF_PAST).slice(TICK_JOBS)];
-    expect(jobs).toHaveLength(31);
+    expect(jobs).toHaveLength(32);
     expect(await runJobs(jobs)).toEqual([]);
+    expect(fullScans(db)).toEqual([]);
+  });
+
+  // 12:05 in Tashkent: the tips of a step read their stops too (G70a, docs/232).
+  it('reads no growing table whole by day either', async () => {
+    const noon = NOW + 7 * HOUR;
+    vi.useFakeTimers({ toFake: ['Date'], now: noon });
+    vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    vi.stubGlobal('fetch', async () => Response.json({ ok: true, result: { message_id: 1 } }));
+    const db = testD1();
+    await db.exec(SEED);
+    const env = { ...testEnv, DB: db } as unknown as Bindings;
+    expect(await runJobs(cronJobs(env, noon))).toEqual([]);
     expect(fullScans(db)).toEqual([]);
   });
 
   it('runs the rare jobs once an hour and once a day', () => {
     const names = (at: number) => cronJobs({ ...testEnv } as unknown as Bindings, at).map(([name]) => name);
     expect(names(NOW + 15 * 60_000)).toHaveLength(TICK_JOBS);
-    expect(names(NOW + 5 * HOUR)).toEqual([...names(NOW + 15 * 60_000), ...names(NOW).slice(TICK_JOBS, 26)]);
+    expect(names(NOW + 5 * HOUR)).toEqual([...names(NOW + 15 * 60_000), ...names(NOW).slice(TICK_JOBS, 27)]);
     expect(names(HALF_PAST)).toEqual([...names(NOW + 15 * 60_000), 'keepTelegramLooks']);
-    expect(names(NOW).slice(26)).toEqual([
+    expect(names(NOW).slice(27)).toEqual([
       'grantMissedBonuses',
       'warnBonusEnd',
       'purgeSupport',
@@ -77,6 +90,6 @@ describe('the reads of the Cron', () => {
     ]);
     // The stand runs the Cron by hand at any minute: every job runs.
     const stand = { ...testEnv, CRON_TIERS: 'off' } as unknown as Bindings;
-    expect(cronJobs(stand, NOW + 15 * 60_000)).toHaveLength(31);
+    expect(cronJobs(stand, NOW + 15 * 60_000)).toHaveLength(32);
   });
 });

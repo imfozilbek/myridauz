@@ -65,5 +65,15 @@
   "rost.found": "{found} / {searches} qidiruvda safar topildi",
   "rost.noSearches": "Bu davrda qidiruv yoʻq",
   "rost.off": "Kelganlar soni analitika ulanganda chiqadi.",
-  "rost.failed": "Analitika javob bermadi: kelganlar soni keyinroq chiqadi."
+  "rost.failed": "Analitika javob bermadi: kelganlar soni keyinroq chiqadi.",
+  "rost.tips": "Maslahatlar",
+  "rost.tip.p2": "Roʻyxatdan oʻtdi, safar qidirmadi",
+  "rost.tip.p3": "Safarni koʻrdi, band qilmadi",
+  "rost.tip.p10": "Bir safardan keyin qaytmadi",
+  "rost.tip.req": "Soʻrovga taklif kelmadi",
+  "rost.tip.d1": "Arizani yubormadi",
+  "rost.tip.d2": "Tasdiqlandi, safar eʼlon qilmadi",
+  "rost.tip.d7": "Safarda yoʻlovchi yoʻq",
+  "rost.tip.d4": "21 kun safar yoʻq",
+  "rost.tipLine": "{sent} ta yuborildi · {done} kishi 72 soatda qadam qoʻydi"
 }

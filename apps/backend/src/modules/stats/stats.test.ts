@@ -49,6 +49,7 @@ function setup(events: EventSource | null) {
     },
     cache: createMemoryCache(),
     rules: { errorGrowth: 3, minErrors: 2, dropGrowth: 20, minPeople: 2, repeatHours: 6 },
+    tips: async () => [],
     tellOwners: async (alert) => void told.push(alert),
     now: () => NOW,
   };

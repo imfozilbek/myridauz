@@ -28,6 +28,7 @@
 | Помощь (G97) | `help_open`: тема или вопрос (Mini App и боты: `source` бот); `help_more`: «Boshqa savolim bor» и вопрос перед ним (`226`) |
 | Сервер | `driver_approved` |
 | Близкие (`43`) | `trip_shared`, `share_opened`, `share_follow`, `share_join`, `boarded` («Keldi» водителя, G76), `arrived` |
+| Подсказки по шагу (G70a) | Событий нет: журнал `tips` в D1. Кнопка подсказки открывает Mini App с `via` = `bot-tip-<шаг>` (`screen_open`); в «Rost» блок «Maslahatlar»: сколько ушло за период и сколько людей сделали шаг за 72 ч по базе (`232`) |
 | Петли роста (G69, G88) | `share_shown` (кнопка «поделиться» на экране) и `share_done` (карточка ушла): кнопка = петля (`qr`, `req-share`, `seats`, `follow`, `share-join` у «Yana ulashish», `share-driver` у момента нового водителя, `trip`, `story`), куда `chat` или `story`; у QR куда нет (скачивание); у «Yaqinlarimga» только `share_done` (`193`) |
 
 - Каждое событие: время, Mini App, экран, версия, ID сессии (одно открытие Mini App).

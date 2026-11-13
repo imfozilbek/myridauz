@@ -9,7 +9,8 @@ import type { WalletBooking, WalletDeps } from './application/ports';
 import { closeWallet } from './application/close';
 import { grantMissedWelcome } from './application/missed';
 import { refundNoShow as refundOnce } from './application/no-show-refund';
-import { burnExpired, canAfford, charge, grantWelcome, refund, shortage } from './application/wallet';
+import { burnExpired, canAfford, charge, grantWelcome, refund, shortage, usable } from './application/wallet';
+import { balanceOf } from './domain/ledger';
 import { warnBonusEnds } from './application/wallet-news';
 import { walletRoutes } from './http/wallet-routes';
 import { d1Wallet } from './infrastructure/d1-wallet';
@@ -86,6 +87,12 @@ export async function refundNoShow(env: Bindings, ownerId: number, driverId: num
   const result = await refundOnce(walletDeps(env), ownerId, driverId, bookingId);
   if (result === 'ok') await sendSignals(env, [{ userId: driverId, app: 'driver' }]);
   return result;
+}
+
+// The bonus a driver can still spend: the tip of a new driver names it (G70a, docs/232).
+export async function usableBonus(env: Bindings, driverId: number): Promise<number> {
+  const deps = walletDeps(env);
+  return balanceOf(usable(await deps.wallet.operations(driverId), deps.now()), 'bonus');
 }
 
 // A deleted account: both balances go to zero (docs/65 A5).
