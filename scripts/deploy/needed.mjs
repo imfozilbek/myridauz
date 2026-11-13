@@ -25,8 +25,17 @@ export async function lastDeploy(request, environment, workflow) {
 }
 
 // Whether the push of this commit passed the workflow of the gates: only such a commit is deployed.
-export async function passed(request, workflow, sha) {
+// The deploy starts the moment the gates end, and GitHub lists that run as passed a little later
+// (prod 13.11.2026: G99 skipped 3 seconds after its CI): it asks again a few times before it says no.
+const TRIES = 6;
+const PAUSE_MS = 10_000;
+const sleep = (ms) => new Promise((resume) => setTimeout(resume, ms));
+export async function passed(request, workflow, sha, pause = sleep) {
   const query = `head_sha=${sha}&event=push&status=success&per_page=1`;
-  const runs = await request(`actions/workflows/${workflow}/runs?${query}`);
-  return (runs?.total_count ?? 0) > 0;
+  for (let left = TRIES; ; left -= 1) {
+    const runs = await request(`actions/workflows/${workflow}/runs?${query}`);
+    if ((runs?.total_count ?? 0) > 0) return true;
+    if (left <= 1) return false;
+    await pause(PAUSE_MS);
+  }
 }

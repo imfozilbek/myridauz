@@ -61,9 +61,21 @@ describe('whether an environment needs a deploy', () => {
       asked.push(path);
       return { total_count: path.includes('head_sha=good') ? 1 : 0 };
     };
-    expect(await passed(request, 'ci.yml', 'good')).toBe(true);
-    expect(await passed(request, 'ci.yml', 'newer')).toBe(false);
+    const pauses = [];
+    const pause = async (ms) => void pauses.push(ms);
+    expect(await passed(request, 'ci.yml', 'good', pause)).toBe(true);
+    expect(await passed(request, 'ci.yml', 'newer', pause)).toBe(false);
     expect(asked[0]).toBe('actions/workflows/ci.yml/runs?head_sha=good&event=push&status=success&per_page=1');
+    // A newer main is asked 6 times, 10 seconds apart, before it is refused.
+    expect([asked.length, pauses]).toEqual([7, [10_000, 10_000, 10_000, 10_000, 10_000]]);
+  });
+
+  // Prod 13.11.2026: the deploy asked 3 seconds after CI ended and GitHub did not list the run yet.
+  it('asks again when GitHub lists the passed gates a moment late', async () => {
+    let asked = 0;
+    const request = async () => ({ total_count: (asked += 1) >= 3 ? 1 : 0 });
+    expect(await passed(request, 'ci.yml', 'late', async () => undefined)).toBe(true);
+    expect(asked).toBe(3);
   });
 
   it('deploys when code, brands, dependencies or the deploy script changed, not for docs or CI', () => {
