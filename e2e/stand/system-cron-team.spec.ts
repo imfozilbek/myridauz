@@ -28,6 +28,9 @@ const rings = async (words: readonly string[]) =>
       TEAM.includes(m.chatId ?? 0) &&
       words.every((w) => m.text.includes(w)),
   );
+// A ring goes through the queue of the bots, one consumer at a time (G86 T8): in a long run of the stand
+// it waits behind the messages of the scenarios before it.
+const QUEUE_WAIT = { timeout: 20_000 };
 // The clock of the application moves back; the reminders already sent move with it (one sending).
 const waitedFor = (person: Person, minutes: number) => {
   const at = Date.now() - minutes * MINUTE;
@@ -48,11 +51,11 @@ test('S76. an application waits: its moderator at 25 minutes, the owners at 30, 
     expect(await rings(late)).toHaveLength(0);
     return;
   }
-  await expect.poll(async () => (await rings(late)).length).toBe(1);
+  await expect.poll(async () => (await rings(late)).length, QUEUE_WAIT).toBe(1);
   expect(await rings(owners)).toHaveLength(0);
   waitedFor(NAVRUZ, 31);
   await runCron();
-  await expect.poll(async () => (await rings(owners)).length).toBeGreaterThan(0);
+  await expect.poll(async () => (await rings(owners)).length, QUEUE_WAIT).toBeGreaterThan(0);
   const sign = (await createTeamClient(await signedAs('admin', OWNER)).attention()).signs;
   expect(sign.some(({ sign: s }) => s.kind === 'late' && s.name === NAVRUZ.name)).toBe(true);
   // The next ticks ring no more for the same sending.
