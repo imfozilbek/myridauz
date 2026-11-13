@@ -28,6 +28,19 @@ function setup(respond: () => Promise<Response> = async () => new Response(null,
 }
 
 describe('createAnalyticsClient', () => {
+  it('names the person, the first touch and the Telegram on every event from the moment known (G99)', async () => {
+    const { client, sent } = setup();
+    client.stampWith({ who: context.sessionId, entry: 'ad-insta9', tg: '8.0', platform: 'ios' });
+    client.track({ name: 'screen_open', screen: 'welcome' });
+    client.stampWith({ who: 'a'.repeat(32), entry: 'ch-yol-andijon' });
+    client.track({ name: 'trip_open', screen: 'trip' });
+    await client.flush();
+    expect(sent[0]?.batch.events.map(({ who, entry, tg, platform }) => [who, entry, tg, platform])).toEqual([
+      [context.sessionId, 'ad-insta9', '8.0', 'ios'],
+      ['a'.repeat(32), 'ch-yol-andijon', '8.0', 'ios'],
+    ]);
+  });
+
   it('sends events in one batch after a delay, with context and time', async () => {
     const { client, sent, tasks } = setup();
     client.track({ name: 'screen_open', screen: 'welcome' });

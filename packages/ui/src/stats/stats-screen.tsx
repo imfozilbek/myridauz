@@ -1,4 +1,4 @@
-import { STATS_PERIODS, type StatsPeriod } from '@platform/contracts';
+import { STATS_PERIODS, type Path, type StatsPeriod } from '@platform/contracts';
 import { useEffect, useState } from 'react';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
@@ -11,7 +11,10 @@ import { DirectionScreen } from '../waitlist/team/direction-screen';
 import { DirectionsScreen } from '../waitlist/team/directions-screen';
 import { GoldSections } from '../waitlist/team/gold-sections';
 import { WaitingBlock } from '../waitlist/team/waiting-block';
+import { PathScreen } from './stats-path-screen';
+import { PathSections } from './stats-paths';
 import { StatsSections } from './stats-sections';
+import { usePeriodPaths } from './use-period-paths';
 import { usePeriodStats } from './use-period-stats';
 
 // "?stats=day" from a signal of the admin bot opens the dashboard at once (docs/29).
@@ -39,6 +42,10 @@ export function StatsScreen({
   // «Kutayotganlar» on top opens a direction or all of them (G83, docs/181).
   const [direction, setDirection] = useState<string | null>(null);
   const [all, setAll] = useState(false);
+  // G99 (docs/234): the paths by source and Telegram; a row opens its slice.
+  const paths = usePeriodPaths(period);
+  const [slice, setSlice] = useState<{ title: string; paths: readonly Path[] } | null>(null);
+  if (slice) return <PathScreen title={slice.title} paths={slice.paths} onBack={() => setSlice(null)} />;
   if (direction) return <DirectionScreen region={direction} onBack={() => setDirection(null)} />;
   if (all) return <DirectionsScreen onDirection={setDirection} onBack={() => setAll(false)} />;
   return (
@@ -53,7 +60,11 @@ export function StatsScreen({
       {failed ? (
         <ErrorScreen onRetry={reload} />
       ) : shown ? (
-        <StatsSections stats={shown} gold={<GoldSections period={period} />} />
+        <StatsSections
+          stats={shown}
+          gold={<GoldSections period={period} />}
+          paths={paths ? <PathSections paths={paths} period={period} onOpen={setSlice} /> : null}
+        />
       ) : (
         <ScreenSkeleton />
       )}

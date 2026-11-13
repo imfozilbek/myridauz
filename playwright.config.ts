@@ -52,6 +52,7 @@ export default defineConfig({
         'subscriptions-screenshots.spec.ts',
         'feedback-screenshots.spec.ts',
         'stats-screenshots.spec.ts',
+        'g99-screenshots.spec.ts',
         'call-screenshots.spec.ts',
         'comfort-screenshots.spec.ts',
         'legal-screenshots.spec.ts',

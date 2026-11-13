@@ -40,6 +40,7 @@ import { reportCrashes } from './states/report-crashes';
 import { TelegramOnly } from './states/telegram-only';
 import { initTelegram } from './telegram/init-telegram';
 import { markLowMotion } from './telegram/low-motion';
+import { sessionEntry, stampOfClient } from './telegram/path-stamp';
 
 const ROOT_ID = 'root';
 // Local runs talk to the backend through the same origin; deploys set VITE_API_URL (G03).
@@ -67,16 +68,23 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
   // Deploys set VITE_MAP_URL once the public map bucket answers (G57, docs/67).
   const mapUrl = import.meta.env.VITE_MAP_URL;
   const fetch = (input: string, init?: RequestInit) => window.fetch(input, init);
+  const sessionId = crypto.randomUUID();
   const analytics = createAnalyticsClient({
     baseUrl,
     fetch,
     context: {
       app,
-      sessionId: crypto.randomUUID(),
+      sessionId,
       version: import.meta.env.VITE_APP_VERSION ?? DEV_VERSION,
     },
   });
   reportCrashes(analytics, session.client);
+  // Before the profile is known the session stands for the person (G99, docs/234).
+  analytics.stampWith({
+    ...stampOfClient(session.client),
+    who: sessionId,
+    entry: sessionEntry(session.client),
+  });
   const onError = (code: string, request: string) => {
     if (code === EXPIRED) markExpired();
     if (ABOUT_PERSON.includes(code)) askAccountAgain();

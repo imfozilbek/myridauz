@@ -1,7 +1,8 @@
 import './account.css';
 import { ApiError, type UsersClient } from '@platform/api-client';
 import type { MeResponse, MiniApp } from '@platform/contracts';
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { AnalyticsContext } from '../context/analytics-context';
 import { useFeedChange } from '../feed/feed-context';
 import { useAccountAgain } from '../network/account-again';
 import { ErrorScreen } from '../states/error-screen';
@@ -41,6 +42,12 @@ export function AccountGate({ app, client, welcome, children }: AccountGateProps
       );
   }, [client]);
   useEffect(load, [load]);
+  // Every event of a known person names them and their first touch (G99, docs/234).
+  const analytics = useContext(AnalyticsContext);
+  const profile = me?.state === 'active' ? me.profile : null;
+  useEffect(() => {
+    if (profile) analytics?.stampWith({ who: profile.id, entry: profile.entry });
+  }, [analytics, profile]);
   // A decision of the team (a block, a new photo rule) shows without a reload (G43, docs/64), also
   // when it came as a refusal in the other Mini App of the person (G89 U12).
   const again = () => void client.getMe().then(setMe, () => undefined);

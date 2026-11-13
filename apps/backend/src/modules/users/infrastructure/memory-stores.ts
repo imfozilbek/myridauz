@@ -8,6 +8,7 @@ export function createMemoryUsers(): UserRepository {
   // A deleted account keeps its id block, like the row that stays in D1.
   const idBlocks = new Map<number, Block>();
   const held = new Map<number, string>();
+  const arrivals = new Map<number, string | null>();
   const log: BlockEntry[] = [];
   const invited = new Set<number>();
   return {
@@ -27,7 +28,8 @@ export function createMemoryUsers(): UserRepository {
     },
     erase: async (id) => void users.delete(id),
     // Local runs show no sources: «Statistika» reads them from D1 only (G55).
-    arrived: async () => undefined,
+    arrived: async (id, arrival) => void arrivals.set(id, arrival.via ?? arrival.source ?? null),
+    entryOf: async (id) => arrivals.get(id) ?? null,
     phoneBlock: async (phone) => phoneBlocks.get(phone) ?? null,
     blockPhone: async (phone, block) => void phoneBlocks.set(phone, block),
     idBlock: async (id) => idBlocks.get(id) ?? null,

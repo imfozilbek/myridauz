@@ -1,4 +1,5 @@
 import type { Fetch } from '../../../shared/telegram/telegram-api';
+import { analyticsPaths } from './analytics-paths';
 import { ERROR_EVENTS, NETWORK_CODES, type EventSource } from '../application/ports';
 import {
   botRow,
@@ -43,6 +44,7 @@ export function analyticsSql({ accountId, token, dataset, fetch }: Options): Eve
     return response.json();
   }
   return {
+    ...analyticsPaths(query, dataset),
     counters: async (days, names) => {
       const sql =
         `SELECT blob1 AS name, blob2 AS app, blob6 AS code, count(DISTINCT blob5) AS sessions, ` +

@@ -115,5 +115,6 @@
   "face.change": "Rasmni almashtirish",
   "driver.channel": "Safarlaringiz yoʻnalish kanallarida chiqadi, yoʻlovchilar u yerdan topadi. Barcha kanallar: t.me/{username}",
   "driver.join": "Kanalga oʻtish",
-  "driver.publish": "Safar eʼlon qilish"
+  "driver.publish": "Safar eʼlon qilish",
+  "stats.pathsFile": "📊 Tahlilchi uchun fayllar: {period}. Odamlar yoʻli va xatolar, ism va telefonsiz."
 }

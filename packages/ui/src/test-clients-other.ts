@@ -44,7 +44,7 @@ export const otherClients = (overrides: Overrides) => ({
     hideReview: NOT_USED,
     ...overrides.feedback,
   },
-  stats: { get: NOT_USED, rost: NOT_USED, ...overrides.stats },
+  stats: { get: NOT_USED, rost: NOT_USED, paths: NOT_USED, pathsFile: NOT_USED, ...overrides.stats },
   calls: { ice: NOT_USED, connect: NOT_USED, pull: NOT_USED, renegotiate: NOT_USED, ...overrides.calls },
   comfort: {
     favorites: NOT_USED,

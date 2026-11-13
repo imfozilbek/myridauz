@@ -6,6 +6,7 @@ import { shareFields } from './growth';
 import { HOME_TARGETS } from './home-targets';
 import { NAVIGATORS } from './navigator';
 import { LEAVE_KINDS, LEAVE_REASON_IDS } from './voice/leave-reasons';
+import { stampFields } from './path-stamp';
 import { waitlistStepFields } from './waitlist/person';
 
 // Product analytics events (docs/29). One place for all Mini Apps; add an event when a goal needs it.
@@ -57,6 +58,8 @@ const context = {
   at: z.number().int().positive(),
   sessionId: z.uuid(),
   version: z.string().max(32),
+  // G99: who, the first touch and the Telegram of the person (docs/234).
+  ...stampFields,
 };
 
 export const analyticsEventSchema = z.discriminatedUnion('name', [

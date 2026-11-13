@@ -1,5 +1,8 @@
 import {
+  BOT_VIA_PREFIX,
   loopOf,
+  SOURCE_BOT,
+  SOURCE_DIRECT,
   VIA_DRIVER,
   VIA_SITE,
   VIA_STORY,
@@ -19,16 +22,20 @@ export type ArrivalCount = {
 export const CHANNEL_MARK = 'ch-';
 const MARKED: readonly [string, ArrivalKind][] = [
   [CHANNEL_MARK, 'channel'],
+  ['grp-', 'group'],
   ['ad-', 'ad'],
+  [BOT_VIA_PREFIX, 'bot'],
 ];
 const PLAIN: Readonly<Record<string, ArrivalKind>> = {
+  [SOURCE_DIRECT]: 'direct',
+  [SOURCE_BOT]: 'bot',
   [VIA_STORY]: 'story',
   [VIA_SITE]: 'site',
   [VIA_DRIVER]: 'driver',
 };
 
 // «ch-rida-samarqand» is a channel named rida-samarqand; no mark is a direct visit (G55, docs/116).
-function sourceOf(via: string | null): { kind: ArrivalKind; mark: string } {
+export function sourceOf(via: string | null): { kind: ArrivalKind; mark: string } {
   if (via === null) return { kind: 'direct', mark: '' };
   const loop = loopOf(via)?.loop;
   if (loop) return { kind: 'loop', mark: loop };

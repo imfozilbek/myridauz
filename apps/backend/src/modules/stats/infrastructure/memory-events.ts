@@ -3,6 +3,7 @@ import type { DataPoint } from '../../analytics';
 import { ERROR_EVENTS, NETWORK_CODES, type EventSource } from '../application/ports';
 import type { BotRow } from '../domain/bot-load';
 import type { Counter } from '../domain/counters';
+import { memoryPaths } from './memory-paths';
 import { toErrorRow } from './sql-rows';
 
 const DAY = 24 * HOUR_MS;
@@ -23,6 +24,7 @@ export function memoryEvents(rows: readonly DataPoint[], now: () => number): Eve
     return [...groups.values()].map(make);
   };
   return {
+    ...memoryPaths(rows, now),
     counters: async (days, names) =>
       group(
         recent(days * DAY).filter((row) => names.includes(row.blobs[0] ?? '')),

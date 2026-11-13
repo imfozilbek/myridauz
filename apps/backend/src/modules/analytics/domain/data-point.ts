@@ -1,4 +1,4 @@
-import type { AnalyticsEvent } from '@platform/contracts';
+import type { AnalyticsEvent, Stamp } from '@platform/contracts';
 
 // One Analytics Engine row. Index: the Mini App (sampling key). No personal data (docs/29).
 export type DataPoint = {
@@ -55,10 +55,28 @@ export function toDataPoint(event: AnalyticsEvent, receivedAt: number): DataPoin
   const ready = event.name === 'app_ready' ? [event.ms] : [];
   return {
     indexes: [event.app],
-    blobs: [event.name, event.app, event.screen, event.version, event.sessionId, code, ...crash],
+    blobs: withStamp(
+      [event.name, event.app, event.screen, event.version, event.sessionId, code, ...crash],
+      event,
+    ),
     doubles: [event.at, receivedAt, ...ready],
   };
 }
+
+// G99 (docs/234): who, the first touch, the Telegram version and the platform stand in blob12 … blob15
+// of every row, after the detail of the event; an event of before G99 keeps its old row.
+const STAMP_AT = 11;
+const withStamp = (blobs: string[], stamp: Stamp): string[] =>
+  stamp.who || stamp.entry || stamp.tg || stamp.platform
+    ? [
+        ...blobs,
+        ...Array.from({ length: Math.max(0, STAMP_AT - blobs.length) }, () => ''),
+        stamp.who ?? '',
+        stamp.entry ?? '',
+        stamp.tg ?? '',
+        stamp.platform ?? '',
+      ]
+    : blobs;
 
 // An event of the backend itself: no Mini App, no session. A bot event names its bot and an id (G12).
 // count: how many things one row stands for, the operations of the queue (G85 T1); it is double3.

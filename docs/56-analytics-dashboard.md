@@ -52,7 +52,7 @@
 
 ## Как устроено
 
-- Backend: модуль `stats`, `GET /admin/stats?period=day|week`, только команда.
+- Backend: модуль `stats`, `GET /admin/stats?period=day|week|month|all`, только команда.
 - Analytics Engine читается через SQL API: `count(DISTINCT blob5)` даёт сессии,
   `SUM(_sample_interval)` даёт события с учётом выборки Cloudflare.
 - Кэш ответов и отправленных сигналов: таблица `stats_cache` (миграция 0013), 10 минут.
@@ -60,3 +60,4 @@
   Имя набора данных: `ANALYTICS_DATASET` в `wrangler.toml` бренда.
 - Локально без Cloudflare события берутся из памяти, цифры равны нулю.
 - Тесты: воронки, пороги сигналов, кэш, SQL, нет личных данных, доступ только команде.
+- G99 (`234`): период «30 kun»; разделы «Yoʻl manbalari», «Telegram versiyalari», «Telegram ilovalari» (люди и ошибки среза, нажатие открывает путь); «Tahlilchi uchun fayl» у владельца: два файла CSV в админ бот.

@@ -1,6 +1,7 @@
 import type { NumbersSource } from '../application/ports';
 import type { MarkCount } from '../domain/rost';
 import type { ArrivalCount } from '../domain/arrivals';
+import { d1PathSteps } from './d1-paths';
 import { d1Voice } from './d1-voice';
 
 // The main numbers of a period, straight from the tables (docs/29).
@@ -77,4 +78,5 @@ export const d1Numbers = (db: D1Database): NumbersSource => ({
     return results;
   },
   voice: d1Voice(db),
+  pathSteps: d1PathSteps(db),
 });

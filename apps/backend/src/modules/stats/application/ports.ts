@@ -1,8 +1,10 @@
-import type { CountedNumber, ErrorRow, MainNumber } from '@platform/contracts';
+import type { CountedNumber, ErrorRow, MainNumber, StatsPeriod } from '@platform/contracts';
 import type { Alert, AlertRules } from '../domain/alerts';
 import type { ArrivalCount } from '../domain/arrivals';
 import type { BotEvents } from '../domain/bot-load';
 import type { Counter } from '../domain/counters';
+import type { PathEvent, ServerStep } from '../domain/path-events';
+import type { ErrorCount } from '../domain/paths';
 import type { MarkCount, SearchCount, TipCount } from '../domain/rost';
 import type { VoiceRows } from '../domain/voice';
 
@@ -22,6 +24,10 @@ export type EventSource = {
   searches(days: number): Promise<SearchCount[]>;
   // The bots under load (G85 T1): their answers from Telegram, the queue, the busiest seconds.
   bots(days: number): Promise<BotEvents>;
+  // G99 (docs/234): the first moment of each step of each person, and the errors by first touch and
+  // Telegram (a crash of a screen, a refused request; not the network of a phone).
+  pathEvents(days: number): Promise<PathEvent[]>;
+  pathErrors(days: number): Promise<ErrorCount[]>;
 };
 
 // The main numbers come from the database: exact, no sampling.
@@ -35,6 +41,8 @@ export type NumbersSource = {
   riders(since: number): Promise<MarkCount[]>;
   // What people feel (G87, docs/191): the ratings and the reasons of the complaints since.
   voice(since: number): Promise<VoiceRows>;
+  // G99: the steps of the paths only the server sees, once per person (docs/234).
+  pathSteps(since: number): Promise<ServerStep[]>;
 };
 
 // Saved answers: Analytics Engine allows 10 000 queries a day (docs/03). Also remembers sent signals.
@@ -52,5 +60,11 @@ export type StatsDeps = {
   readonly tips: (since: number) => Promise<readonly TipCount[]>;
   // A sign in «Diqqat» of the owner (G68, docs/122).
   readonly tellOwners: (alert: Alert) => Promise<void>;
+  // G99 T6: files for the analyst to a person of the team, by the admin bot (docs/234).
+  readonly sendFiles: (
+    chatId: number,
+    files: readonly { readonly name: string; readonly text: string }[],
+    period: StatsPeriod,
+  ) => Promise<void>;
   readonly now: () => number;
 };

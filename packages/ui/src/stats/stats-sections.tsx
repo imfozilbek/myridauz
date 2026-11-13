@@ -15,7 +15,16 @@ const HIGH_DROP = 50;
 // The funnels of the waitlist (G83, docs/183) go first while the list runs, with its «gold» after them.
 const isWaitlist = (funnel: Funnel) => funnel.id.startsWith('waitlist');
 
-export function StatsSections({ stats, gold }: { readonly stats: Stats; readonly gold?: ReactNode }) {
+export function StatsSections({
+  stats,
+  gold,
+  paths,
+}: {
+  readonly stats: Stats;
+  readonly gold?: ReactNode;
+  // G99 (docs/234): the paths by source and Telegram, right after the funnels.
+  readonly paths?: ReactNode;
+}) {
   const { t, formatNumber, formatTime } = useI18n();
   // «↑ 6», «↓ 2», «±0» since the period before (G45, F-A12 of docs/90); the live trips have none.
   const changeOf = (key: MainNumber) => {
@@ -63,6 +72,7 @@ export function StatsSections({ stats, gold }: { readonly stats: Stats; readonly
       {funnels.slice(listFunnels).map((funnel, index) => (
         <FunnelSection key={funnel.id} funnel={funnel} hint={listFunnels === 0 && index === 0} />
       ))}
+      {paths}
       {stats.events === 'on' ? <ErrorsSections errors={stats.errors} /> : null}
       {stats.events === 'on' ? <BotsSection bots={stats.bots} queueOps={stats.queueOps} /> : null}
       {stats.events === 'on' ? <BlocksSection blocks={stats.blocks} /> : null}

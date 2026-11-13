@@ -1,4 +1,4 @@
-import { ANALYTICS_PATH, MAX_ANALYTICS_BATCH, type AnalyticsEvent } from '@platform/contracts';
+import { ANALYTICS_PATH, MAX_ANALYTICS_BATCH, type AnalyticsEvent, type Stamp } from '@platform/contracts';
 import type { Fetch } from './fetch';
 
 type Context = Pick<AnalyticsEvent, 'app' | 'sessionId' | 'version'>;
@@ -37,6 +37,9 @@ export function createAnalyticsClient(options: AnalyticsClientOptions) {
   let cancelScheduled: (() => void) | undefined;
   // An API error is shown on the screen that was opened last (G12, docs/29).
   let lastScreen = FIRST_SCREEN;
+  // Who, the first touch and the Telegram of the person, on every event from the moment it is known
+  // (G99, docs/234): the launch gives the Telegram, the profile gives the person.
+  let stamp: Stamp = {};
 
   // Plain text is a simple request: the browser sends no preflight, one request to the Worker, not
   // two (G56, docs/117). The server reads the JSON all the same. Analytics never breaks the app.
@@ -64,7 +67,7 @@ export function createAnalyticsClient(options: AnalyticsClientOptions) {
 
   function track(input: AnalyticsInput): void {
     lastScreen = input.screen;
-    queue.push({ ...input, ...context, at: now() } as AnalyticsEvent);
+    queue.push({ ...input, ...stamp, ...context, at: now() } as AnalyticsEvent);
     if (queue.length >= MAX_ANALYTICS_BATCH) void flush();
     else cancelScheduled ??= schedule(() => void flush(), FLUSH_DELAY_MS);
   }
@@ -72,7 +75,11 @@ export function createAnalyticsClient(options: AnalyticsClientOptions) {
   const apiError = (code: string, request?: string) =>
     track({ name: 'api_error', screen: lastScreen, code, ...(request ? { request } : {}) });
 
-  return { track, flush, apiError };
+  const stampWith = (more: Stamp) => {
+    stamp = { ...stamp, ...more };
+  };
+
+  return { track, flush, apiError, stampWith };
 }
 
 export type AnalyticsClient = ReturnType<typeof createAnalyticsClient>;
