@@ -15,7 +15,8 @@ export type { News, NewsLine } from './application/news';
 export { forgetCards, forgetOldCards } from './infrastructure/d1-cards';
 export { forgetBotBlocks } from './infrastructure/bot-blocks';
 export { handleAfterSent } from './infrastructure/deliver-now';
-export { notify, notifyMass, scheduleTasks } from './infrastructure/lanes';
+export { scheduleTasks } from './infrastructure/enqueue';
+export { notify, notifyMass } from './infrastructure/lanes';
 export { consumeNotifications, MAX_ATTEMPTS } from './infrastructure/consumer';
 
 // fast: the answer to a person's own step, at once and first; mass: one of many messages at once,

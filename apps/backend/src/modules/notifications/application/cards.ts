@@ -43,14 +43,26 @@ export type Ring = {
   readonly quiet: boolean;
 };
 
-export type CardRow = { readonly messageId: number; readonly hash: string; readonly pinned: boolean };
+export type CardRow = {
+  readonly messageId: number;
+  readonly hash: string;
+  readonly pinned: boolean;
+  // G86 T5: the newest state an edit was made for, and when the card was last sent.
+  readonly wanted?: string | null;
+  readonly updatedAt?: number;
+};
 
 export type CardStore = {
   readonly find: (bot: BotName, chatId: ChatId, key: string) => Promise<CardRow | null>;
   readonly save: (bot: BotName, chatId: ChatId, key: string, row: CardRow, now: number) => Promise<void>;
   // The first message of a card takes its place; false: another one took it a moment before.
   readonly claim: (bot: BotName, chatId: ChatId, key: string, row: CardRow, now: number) => Promise<boolean>;
+  // The newest state of a card that has a message: an older edit still waiting is not sent (G86 T5).
+  readonly want: (bot: BotName, chatId: ChatId, key: string, hash: string) => Promise<void>;
 };
+
+// One person gets at most one edit of a card a second (Telegram: 1 message a second to a person).
+const CARD_GAP_MS = 1000;
 
 const FNV_OFFSET = 0x811c9dc5;
 const FNV_PRIME = 0x01000193;
@@ -67,12 +79,19 @@ function hashOf(card: Card): string {
 }
 
 // The message that shows the card now: a new one, an edit of the old one, or nothing to do.
-export async function cardJob(store: CardStore, card: Card): Promise<NotificationJob | null> {
+export async function cardJob(
+  store: CardStore,
+  card: Card,
+  now = Date.now(),
+): Promise<NotificationJob | null> {
   const hash = hashOf(card);
   const row = await store.find(card.bot, card.chatId, card.key);
   if ((card.editOnly && !row) || (card.once && row)) return null;
   const pinned = card.pin === undefined || card.pin === row?.pinned;
   if (row && row.hash === hash && pinned) return null;
+  if (row) await store.want(card.bot, card.chatId, card.key, hash);
+  // A card edited less than a second ago waits for its next second (G86 T3, T5).
+  const notBefore = row?.updatedAt === undefined ? 0 : row.updatedAt + CARD_GAP_MS;
   return {
     bot: card.bot,
     chatId: card.chatId,
@@ -89,9 +108,17 @@ export async function cardJob(store: CardStore, card: Card): Promise<Notificatio
       hash,
       ...(card.pin === undefined ? {} : { pin: card.pin }),
       ...(card.editOnly ? { editOnly: true } : {}),
+      ...(notBefore > now ? { notBefore } : {}),
     },
   };
 }
+
+// A queued edit of a card whose newest state is another one: a later edit shows it (G86 T5).
+export const staleEdit = (job: NotificationJob, row: CardRow | null): boolean =>
+  job.edit !== undefined &&
+  job.after?.type === 'card' &&
+  typeof row?.wanted === 'string' &&
+  row.wanted !== job.after.hash;
 
 export const ringJob = (ring: Ring): NotificationJob => ({
   bot: ring.bot,

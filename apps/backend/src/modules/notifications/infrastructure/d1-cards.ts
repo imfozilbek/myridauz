@@ -2,9 +2,12 @@ import { DAY_MS } from '@platform/contracts';
 import type { Bindings } from '../../../env';
 import type { CardRow, CardStore, ChatId } from '../application/cards';
 
-type Row = { message_id: number; hash: string; pinned: number };
+type Row = { message_id: number; hash: string; pinned: number; wanted: string | null; updated_at: number };
 
-const FIND = 'SELECT message_id, hash, pinned FROM bot_cards WHERE bot = ?1 AND chat_id = ?2 AND card = ?3';
+const FIND =
+  'SELECT message_id, hash, pinned, wanted, updated_at FROM bot_cards WHERE bot = ?1 AND chat_id = ?2 AND card = ?3';
+// Through the primary key; the next save (INSERT OR REPLACE) clears it (G86 T5).
+const WANT = 'UPDATE bot_cards SET wanted = ?4 WHERE bot = ?1 AND chat_id = ?2 AND card = ?3';
 const SAVE =
   'INSERT OR REPLACE INTO bot_cards (bot, chat_id, card, message_id, hash, pinned, updated_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)';
 const CLAIM =
@@ -22,7 +25,9 @@ const OLD_NEWS_DAYS = 2;
 export const d1Cards = (db: D1Database): CardStore => ({
   find: async (bot, chatId, key) => {
     const row = await db.prepare(FIND).bind(bot, chatId, key).first<Row>();
-    return row ? { messageId: row.message_id, hash: row.hash, pinned: row.pinned === 1 } : null;
+    if (!row) return null;
+    const { message_id: messageId, hash, pinned, wanted, updated_at: updatedAt } = row;
+    return { messageId, hash, pinned: pinned === 1, wanted, updatedAt };
   },
   save: async (bot, chatId, key, row, now) => {
     await db
@@ -37,6 +42,9 @@ export const d1Cards = (db: D1Database): CardStore => ({
         .bind(bot, chatId, key, row.messageId, row.hash, row.pinned ? 1 : 0, now)
         .run()
     ).meta.changes === 1,
+  want: async (bot, chatId, key, hash) => {
+    await db.prepare(WANT).bind(bot, chatId, key, hash).run();
+  },
 });
 
 // In memory: tests and local runs without D1.
@@ -45,11 +53,16 @@ export function createMemoryCards(): CardStore {
   const id = (bot: string, chatId: ChatId, key: string) => `${bot}|${chatId}|${key}`;
   return {
     find: async (bot, chatId, key) => rows.get(id(bot, chatId, key)) ?? null,
-    save: async (bot, chatId, key, row) => void rows.set(id(bot, chatId, key), row),
-    claim: async (bot, chatId, key, row) => {
+    save: async (bot, chatId, key, row, now) =>
+      void rows.set(id(bot, chatId, key), { ...row, updatedAt: now }),
+    claim: async (bot, chatId, key, row, now) => {
       if (rows.has(id(bot, chatId, key))) return false;
-      rows.set(id(bot, chatId, key), row);
+      rows.set(id(bot, chatId, key), { ...row, updatedAt: now });
       return true;
+    },
+    want: async (bot, chatId, key, hash) => {
+      const row = rows.get(id(bot, chatId, key));
+      if (row) rows.set(id(bot, chatId, key), { ...row, wanted: hash });
     },
   };
 }
