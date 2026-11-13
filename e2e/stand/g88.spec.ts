@@ -71,18 +71,22 @@ test('the driver: the card of the trip in the bot and the app, and the story', a
     await register('passenger', passenger, 'female');
     const { trip } = await confirmedSeat(driver, passenger);
     // The live card of the driver bot: «🔗 Havolani yuborish» carries the words and the code.
-    const shared = (await botMessages())
-      .flatMap((message) => message.buttons)
-      .findLast((button) => (button.url ?? '').includes(encodeURIComponent(`trip_${trip.id}__trip-`)));
-    const words = new URL(shared?.url ?? 'https://t.me').searchParams.get('text') ?? '';
-    expect(words).toMatch(/^Сафаримда \d та бўш жой бор\n🟢 .+\n🔴 .+\n🗓 .+\n💰 Бир жой .+\n\n.+$/u);
-    keep(`1-bot-words-${platform}.txt`, words);
+    const botWords = async () => {
+      const shared = (await botMessages())
+        .flatMap((message) => message.buttons)
+        .findLast((button) => (button.url ?? '').includes(encodeURIComponent(`trip_${trip.id}__trip-`)));
+      return new URL(shared?.url ?? 'https://t.me').searchParams.get('text') ?? '';
+    };
     const page = await phone(browser);
     await openAs(page, 'driver', driver, { platform, search: `?${MY_TRIP_LINK}=${trip.id}` });
     await page.getByText(t('driverTrip.channel.share')).click();
     await expect.poll(async () => (await cardOf(`trip_${trip.id}__trip-`))?.['type']).toBe('photo');
     const card = await cardOf(`trip_${trip.id}__trip-`);
-    expect(String(card?.['caption'])).toBe(words);
+    // An edit of the card a moment after the last one waits for its second (G86, docs/122).
+    await expect.poll(botWords).toBe(String(card?.['caption']));
+    const words = await botWords();
+    expect(words).toMatch(/^Сафаримда \d та бўш жой бор\n🟢 .+\n🔴 .+\n🗓 .+\n💰 Бир жой .+\n\n.+$/u);
+    keep(`1-bot-words-${platform}.txt`, words);
     await keepPicture(`2-trip-card-${platform}.jpg`, String(card?.['photo_url']));
     await shot(page, `2-my-trip-${platform}`);
     await page.getByText(t('driverTrip.tile.story')).click();
