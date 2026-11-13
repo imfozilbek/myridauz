@@ -4,7 +4,7 @@ import { isTeamTime, tashkentDate, tashkentTime } from '@platform/contracts';
 import { expect, test } from '../crash-guard';
 import { say } from './bot-kit';
 import { MINUTE, tailOf, wordsOf } from './g27-kit';
-import { KAMRON, OWNER } from './people';
+import { OWNER } from './people';
 import { apply, register } from './seed';
 import { signedAs, type Person } from './stand-kit';
 import { botMessages, clearBotMessages, runCron, standRows, standSql } from './stand-tools';
@@ -17,20 +17,23 @@ const NAVRUZ: Person = { id: 900901, name: 'Navruz', phone: '998901110901' };
 const SHOIRA: Person = { id: 900902, name: 'Shoira', phone: '998901110902' };
 const DAY = 24 * 60 * MINUTE;
 const SUMMARY_FROM = '21:00';
-const TEAM = [OWNER.id, KAMRON.id];
+// The whole team of the stand: other scenarios add moderators too, and a case goes to any of them.
+const team = () => [
+  OWNER.id,
+  ...standRows('SELECT user_id FROM team_members').map((row) => Number(row['user_id'])),
+];
 
 // A ring of the admin bot: an answer under the card of «Navbat» or «Diqqat» (G68), never the card itself.
-const rings = async (words: readonly string[]) =>
-  (await botMessages()).filter(
+const rings = async (words: readonly string[]) => {
+  const members = team();
+  return (await botMessages()).filter(
     (m) =>
       m.bot === 'admin' &&
       m.replyTo !== null &&
-      TEAM.includes(m.chatId ?? 0) &&
+      members.includes(m.chatId ?? 0) &&
       words.every((w) => m.text.includes(w)),
   );
-// A ring goes through the queue of the bots, one consumer at a time (G86 T8): in a long run of the stand
-// it waits behind the messages of the scenarios before it.
-const QUEUE_WAIT = { timeout: 20_000 };
+};
 // The clock of the application moves back; the reminders already sent move with it (one sending).
 const waitedFor = (person: Person, minutes: number) => {
   const at = Date.now() - minutes * MINUTE;
@@ -51,11 +54,11 @@ test('S76. an application waits: its moderator at 25 minutes, the owners at 30, 
     expect(await rings(late)).toHaveLength(0);
     return;
   }
-  await expect.poll(async () => (await rings(late)).length, QUEUE_WAIT).toBe(1);
+  await expect.poll(async () => (await rings(late)).length).toBe(1);
   expect(await rings(owners)).toHaveLength(0);
   waitedFor(NAVRUZ, 31);
   await runCron();
-  await expect.poll(async () => (await rings(owners)).length, QUEUE_WAIT).toBeGreaterThan(0);
+  await expect.poll(async () => (await rings(owners)).length).toBeGreaterThan(0);
   const sign = (await createTeamClient(await signedAs('admin', OWNER)).attention()).signs;
   expect(sign.some(({ sign: s }) => s.kind === 'late' && s.name === NAVRUZ.name)).toBe(true);
   // The next ticks ring no more for the same sending.
