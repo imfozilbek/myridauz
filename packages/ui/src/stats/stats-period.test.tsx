@@ -25,4 +25,14 @@ describe('Statistika: a new period (docs/94 S4)', () => {
     answer(statsOf('week'));
     expect(await screen.findByText('158')).toBeTruthy();
   });
+
+  it('«Hammasi»: the numbers of the whole time with no arrows, the funnels of the last 90 days', async () => {
+    const get = (period: StatsPeriod) =>
+      Promise.resolve(period === 'all' ? { ...statsOf('week'), period, before: {} } : statsOf(period));
+    renderMarket(<StatsScreen onBack={() => undefined} />, testClients({ stats: { get } }));
+    expect(await screen.findByText('24')).toBeTruthy();
+    await tap(toCyrillic('Hammasi'));
+    expect(await screen.findByText(toCyrillic('Voronkalar: oxirgi 90 kun'))).toBeTruthy();
+    expect(screen.queryByText(toCyrillic('↑ ↓ oldingi 7 kunga nisbatan'))).toBeNull();
+  });
 });

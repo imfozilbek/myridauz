@@ -1,14 +1,14 @@
 import { z } from 'zod';
 import { TRIP_STEPS } from './analytics';
+import { STATS_PERIODS } from './stats-period';
 import { complaintReasonCountSchema, leaveCountSchema, openCountSchema, ratingsSummarySchema } from './voice';
 
 // G87: what people feel (docs/191) is a part of the dashboard.
 export * from './voice';
+export * from './stats-period';
 
 // The dashboard of the admin Mini App (G12, docs/29): main numbers, funnels, errors.
 export const ADMIN_STATS_PATH = '/admin/stats';
-export const STATS_PERIODS = ['day', 'week'] as const;
-export type StatsPeriod = (typeof STATS_PERIODS)[number];
 export const FUNNELS = [
   'passenger',
   'driver',

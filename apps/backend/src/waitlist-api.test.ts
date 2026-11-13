@@ -77,6 +77,7 @@ describe('the waitlist of the team (docs/181, docs/183, docs/184)', () => {
     expect((await admin('/admin/waitlist/1726')).status).toBe(400);
     const gold = await read<{ sources: { source: string }[] }>(admin('/admin/waitlist-stats?period=week'));
     expect(gold.sources).toEqual(expect.arrayContaining([{ source: 'ad', opened: 1, listed: 1 }]));
+    expect((await admin('/admin/waitlist-stats?period=all')).status).toBe(200);
     expect((await admin('/admin/waitlist-stats?period=year')).status).toBe(400);
   });
 

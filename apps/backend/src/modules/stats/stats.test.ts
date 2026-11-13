@@ -1,4 +1,4 @@
-import { DAY_MS } from '@platform/contracts';
+import { DAY_MS, EVENTS_DAYS } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import type { DataPoint } from '../analytics';
 import { checkAlerts } from './application/check-alerts';
@@ -104,6 +104,22 @@ describe('readStats (docs/29)', () => {
       errors: [],
       numbers,
     });
+  });
+
+  it('«Hammasi» counts the database from the start, with no period before; the events of 90 days', async () => {
+    const events = memoryEvents(rows, () => NOW);
+    const { deps } = setup(events);
+    const since: number[] = [];
+    const days: number[] = [];
+    const all = await readStats(
+      {
+        ...deps,
+        numbers: { ...deps.numbers, numbers: async (from) => (since.push(from), numbers) },
+        events: { ...events, counters: (n, names) => (days.push(n), events.counters(n, names)) },
+      },
+      'all',
+    );
+    expect([since, days[0], all.before, all.period]).toEqual([[0], EVENTS_DAYS, {}, 'all']);
   });
 });
 

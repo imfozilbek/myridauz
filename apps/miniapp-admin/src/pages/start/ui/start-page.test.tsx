@@ -45,7 +45,7 @@ describe('StartPage', () => {
   it('opens the dashboard at once from a signal of the admin bot (G12)', async () => {
     window.history.replaceState(null, '', '/?stats=week');
     const periods: string[] = [];
-    const get = (period: 'day' | 'week') => (periods.push(period), new Promise<never>(() => undefined));
+    const get = (period: string) => (periods.push(period), new Promise<never>(() => undefined));
     renderInShell(<StartPage />, false, true, undefined, owner({ stats: { get } }));
     expect(await screen.findByText(toCyrillic('7 kun'))).toBeTruthy();
     expect(periods).toEqual(['week']);

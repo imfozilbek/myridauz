@@ -2,6 +2,8 @@
   "title": "Statistika",
   "period.day": "24 soat",
   "period.week": "7 kun",
+  "period.all": "Hammasi",
+  "eventsDays": "Voronkalar: oxirgi {days} kun",
   "numbers": "Asosiy raqamlar",
   "number.newUsers": "Yangi foydalanuvchilar",
   "number.trips": "Eʼlon qilingan safarlar",
