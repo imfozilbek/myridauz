@@ -77,10 +77,10 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
     },
   });
   reportCrashes(analytics, session.client);
-  const onError = (code: string) => {
+  const onError = (code: string, request: string) => {
     if (code === EXPIRED) markExpired();
     if (ABOUT_PERSON.includes(code)) askAccountAgain();
-    if (!QUIET_API_ERRORS.includes(code)) analytics.apiError(code);
+    if (!QUIET_API_ERRORS.includes(code)) analytics.apiError(code, request);
   };
   const signed = { baseUrl, fetch, app, initData: session.initData, onError };
   const users = createUsersClient(signed);

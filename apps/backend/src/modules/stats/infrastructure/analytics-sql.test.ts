@@ -58,7 +58,7 @@ describe('analyticsSql (docs/29)', () => {
           screen: 'market.review',
           code: 'trips.too_many',
           error: '',
-          detail: '',
+          detail: 'market/trips/:id/bookings',
           count: '2',
         },
       ],
@@ -81,7 +81,15 @@ describe('analyticsSql (docs/29)', () => {
         what: 'cron:burnBonuses',
         count: 1,
       },
-      { kind: 'refusal', app: 'driver', screen: 'market.review', code: 'trips.too_many', what: '', count: 2 },
+      // A refusal names its request (docs/233 №5).
+      {
+        kind: 'refusal',
+        app: 'driver',
+        screen: 'market.review',
+        code: 'trips.too_many',
+        what: 'market/trips/:id/bookings',
+        count: 2,
+      },
     ]);
     expect(errors.asked[0]?.body).toContain("blob1 IN ('client_error', 'server_error', 'api_error')");
     const total = setup({ data: [{ count: '5' }] });

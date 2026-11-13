@@ -29,6 +29,9 @@ export async function counted<T>(run: () => Promise<T>): Promise<T> {
   }
 }
 
+// A request started now is quiet: nobody waits for it on the screen.
+export const isQuiet = () => quiet > 0;
+
 // Every request started while this work runs is quiet.
 export async function quietly<T>(run: () => Promise<T>): Promise<T> {
   quiet += 1;

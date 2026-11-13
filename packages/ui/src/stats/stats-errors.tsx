@@ -27,7 +27,9 @@ export function ErrorsSections({ errors }: { readonly errors: readonly ErrorRow[
         key={`${item.kind}:${item.app}:${item.screen}:${item.code}:${item.what}`}
         icon="error"
         title={title}
-        hint={`${app ? t(app) : item.app} · ${item.screen}`}
+        hint={[app ? t(app) : item.app, item.screen, item.kind === 'refusal' ? item.what : '']
+          .filter(Boolean)
+          .join(' · ')}
         value={formatNumber(item.count)}
       />
     );

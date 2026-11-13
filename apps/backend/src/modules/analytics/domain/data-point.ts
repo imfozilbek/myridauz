@@ -46,9 +46,11 @@ export function toDataPoint(event: AnalyticsEvent, receivedAt: number): DataPoin
         ? ['', '', event.client ?? '', '', event.via ?? '']
         : event.name === 'app_ready'
           ? ['', '', event.client ?? '']
-          : event.name === 'trip_search' && event.route
-            ? [event.route] // G69: the direction of the search for «Rost» (docs/123)
-            : [];
+          : event.name === 'api_error' && event.request
+            ? ['', event.request] // the address of the request in the place of the detail (docs/233 №5)
+            : event.name === 'trip_search' && event.route
+              ? [event.route] // G69: the direction of the search for «Rost» (docs/123)
+              : [];
   // The time of the first screen is a number of its own (G72, docs/121 §4).
   const ready = event.name === 'app_ready' ? [event.ms] : [];
   return {

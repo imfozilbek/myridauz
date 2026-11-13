@@ -50,6 +50,7 @@ export const QUIET_API_ERRORS: readonly string[] = QUIET;
 
 // Screens and codes are ids, never free text: no personal data can get in (docs/29).
 const id = z.string().regex(/^[a-z][a-z0-9_.]{0,47}$/);
+const REQUEST = z.string().regex(/^[a-z:][a-z:/-]{0,63}$/);
 const context = {
   app: z.enum(MINI_APPS),
   screen: id,
@@ -72,8 +73,9 @@ export const analyticsEventSchema = z.discriminatedUnion('name', [
   z.object({ name: z.literal('client_error'), code: id, ...crash, ...context }),
   // G72: the time from the tap to the ready first screen, by Mini App and platform (docs/121 §4).
   z.object({ name: z.literal('app_ready'), ...ready, ...context }),
-  // An answer of the API with an error (G12): its code and the last opened screen.
-  z.object({ name: z.literal('api_error'), code: id, ...context }),
+  // An answer of the API with an error (G12): its code, the last opened screen and the address of the
+  // request without its ids (docs/233 №5).
+  z.object({ name: z.literal('api_error'), code: id, request: REQUEST.optional(), ...context }),
   // Registration funnel (G04): one event per finished step, to see where people stop.
   z.object({ name: z.literal('registration_step'), step: z.enum(REGISTRATION_STEPS), ...context }),
   // Driver funnel (G06): one event per finished step of the application, up to "submitted".

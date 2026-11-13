@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
+import { quietly } from './activity';
 import { ApiError } from './api-error';
 import { RETRY_DELAY_MS } from './network';
+import { requestOf } from './request-path';
 import { signedRequest } from './signed-request';
 
 const BASE_URL = 'https://api.test';
@@ -57,14 +59,14 @@ describe('signedRequest on a bad network (G43)', () => {
     const { api, fetchSpy, onError } = client(offline);
     await expect(api.post('/trips', {})).rejects.toEqual(new ApiError(0, 'network.failed'));
     expect(fetchSpy).toHaveBeenCalledTimes(1);
-    expect(onError).toHaveBeenCalledWith('network.failed');
+    expect(onError).toHaveBeenCalledWith('network.failed', 'trips');
   });
 
   it('gives up a read that hangs and says so', async () => {
     const { api, fetchSpy, onError } = client(never, 5);
     await expect(api.request('/me')).rejects.toEqual(new ApiError(0, 'network.timeout'));
     expect(fetchSpy).toHaveBeenCalledTimes(2);
-    expect(onError).toHaveBeenCalledWith('network.timeout');
+    expect(onError).toHaveBeenCalledWith('network.timeout', 'me');
   });
 
   it('keeps the error code of the API when the network works', async () => {
@@ -82,5 +84,27 @@ describe('signedRequest on a bad network (G43)', () => {
     await expect(client(answer('rate.limited', 429)).api.post('/x', {})).rejects.toEqual(
       new ApiError(429, 'rate.limited'),
     );
+  });
+});
+
+// Prod 13.11.2026: 242 «no network» a week on «Boshqaruv» came from refreshes nobody waited for.
+describe('the error the analytics hears (docs/233 №5)', () => {
+  it('names the request without its ids', async () => {
+    const { api, onError } = client(async () => Response.json({ error: 'trips.not_found' }, { status: 404 }));
+    await expect(api.request('/team/person/u_9f3a?tab=1')).rejects.toBeInstanceOf(ApiError);
+    expect(onError).toHaveBeenCalledWith('trips.not_found', 'team/person/:id');
+    expect(requestOf('/market/trips/123/bookings')).toBe('market/trips/:id/bookings');
+  });
+
+  it('keeps quiet about a refresh nobody waited for that met no network', async () => {
+    const { api, onError } = client(offline);
+    await expect(quietly(() => api.post('/trips', {}))).rejects.toBeInstanceOf(ApiError);
+    expect(onError).not.toHaveBeenCalled();
+  });
+
+  it('still counts an error answer of a quiet refresh', async () => {
+    const { api, onError } = client(async () => Response.json({ error: 'trips.not_found' }, { status: 500 }));
+    await expect(quietly(() => api.request('/me'))).rejects.toBeInstanceOf(ApiError);
+    expect(onError).toHaveBeenCalledWith('trips.not_found', 'me');
   });
 });
