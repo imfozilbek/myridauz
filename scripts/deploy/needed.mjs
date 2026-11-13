@@ -25,16 +25,17 @@ export async function lastDeploy(request, environment, workflow) {
 }
 
 // Whether the push of this commit passed the workflow of the gates: only such a commit is deployed.
-// The deploy starts the moment the gates end, and GitHub lists that run as passed a little later
-// (prod 13.11.2026: G99 skipped 3 seconds after its CI): it asks again a few times before it says no.
+// The filter «status=success» of GitHub knows a fresh run only minutes later (prod 13.11.2026: G99
+// skipped twice, 3 seconds and 10 minutes after its green CI): the runs of the push are read whole and
+// their conclusion checked here; a run listed late is asked again a few times before the answer no.
 const TRIES = 6;
 const PAUSE_MS = 10_000;
 const sleep = (ms) => new Promise((resume) => setTimeout(resume, ms));
 export async function passed(request, workflow, sha, pause = sleep) {
-  const query = `head_sha=${sha}&event=push&status=success&per_page=1`;
+  const query = `head_sha=${sha}&event=push&per_page=${PAGE}`;
   for (let left = TRIES; ; left -= 1) {
     const runs = await request(`actions/workflows/${workflow}/runs?${query}`);
-    if ((runs?.total_count ?? 0) > 0) return true;
+    if ((runs?.workflow_runs ?? []).some((run) => run.conclusion === 'success')) return true;
     if (left <= 1) return false;
     await pause(PAUSE_MS);
   }
