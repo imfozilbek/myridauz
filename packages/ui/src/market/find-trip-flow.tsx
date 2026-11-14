@@ -62,12 +62,7 @@ function FindTrip({ onBack, initial, route: recent, day, pick, from, to }: Omit<
   );
   const [now] = useState(Date.now);
   const [filters, setFilters] = useState<TripFilters>(NO_FILTERS);
-  const step = (name: 'opened' | 'from' | 'to' | 'done') =>
-    track({ name: 'way_step', screen: 'market.route', step: name });
-  useEffect(() => {
-    if (!known) step('opened');
-    // Once, when the search opens.
-  }, []);
+  const step = (name: 'done') => track({ name: 'way_step', screen: 'market.route', step: name });
   // Back from the results, or the search closed: the next results open fresh (docs/94 F2).
   useEffect(() => {
     if (screen.step !== 'results') forgetList(RESULTS);

@@ -11,6 +11,16 @@ export type PlaceDirectory = {
   readonly search: (query: string) => readonly Location[];
 };
 
+// The list of one end without the other end: «Qayerdan» and «Qayerga» are never one place (G96).
+export function without(directory: PlaceDirectory, id: string): PlaceDirectory {
+  const keep = (place: Location) => place.id !== id;
+  return {
+    ...directory,
+    inside: (regionId) => directory.inside(regionId).filter(keep),
+    search: (query) => directory.search(query).filter(keep),
+  };
+}
+
 // Enough to fill a phone screen: a longer query narrows the list.
 const MAX_RESULTS = 30;
 

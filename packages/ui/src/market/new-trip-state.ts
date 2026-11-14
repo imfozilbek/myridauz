@@ -20,6 +20,8 @@ const offRoute = (answer: TripAnswer) =>
 
 const isScreen = (value: unknown): value is TripScreen => SCREENS.some((screen) => screen === value);
 const isPlace = (value: unknown) => typeof asRecord(value)?.['id'] === 'string';
+// A trip goes between districts or cities (docs/14): a draft with a whole region is asked again.
+const isRegion = (value: unknown) => asRecord(value)?.['parentId'] === null;
 
 // The draft of an older version of the app is dropped when its screen or its route does not fit.
 function checkSaved(value: unknown): Saved | null {
@@ -29,6 +31,13 @@ function checkSaved(value: unknown): Saved | null {
   const route = answer['route'];
   if (route !== undefined && !(isPlace(asRecord(route)?.['from']) && isPlace(asRecord(route)?.['to'])))
     return null;
+  const ends = asRecord(route);
+  if (isRegion(ends?.['from']) || isRegion(ends?.['to'])) {
+    const rest = Object.fromEntries(
+      Object.entries(offRoute(answer as TripAnswer)).filter(([key]) => key !== 'route'),
+    );
+    return { screen: 'route', answer: rest as TripAnswer };
+  }
   return saved as Saved;
 }
 

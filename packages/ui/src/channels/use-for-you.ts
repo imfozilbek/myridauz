@@ -15,10 +15,15 @@ export function useForYouCandidates(): Candidates | null {
   const brand = useBrand();
   const channel = routeChannel(brand, usePlaces());
   const { comfort, market } = useApiClients();
-  const driver = useDriver() !== null;
+  const status = useDriver()?.application.status;
   const { value } = useLoad<Candidates>(async () => {
-    if (driver) {
-      const [trips, board] = await Promise.all([market.myTrips(), market.requestBoard({})]);
+    if (status !== undefined) {
+      // Requests are seen once the application is approved (docs/04): before, none is asked
+      // (prod 14.11.2026: «arizangiz tasdiqlangan boʻlishi kerak» on «Kanallar», G96).
+      const [trips, board] = await Promise.all([
+        market.myTrips(),
+        status === 'approved' ? market.requestBoard({}) : { fits: [], others: [] },
+      ]);
       const [last] = [...trips].sort((a, b) => b.departAt - a.departAt);
       return [
         [mostOf(trips, channel), 'drives'],

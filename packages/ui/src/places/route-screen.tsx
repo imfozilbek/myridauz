@@ -4,7 +4,7 @@ import { useI18n } from '../context/i18n-context';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { haptic } from '../telegram/feedback';
-import type { PlaceDirectory } from './directory';
+import { without, type PlaceDirectory } from './directory';
 import { PlacePicker } from './place-picker';
 import { RouteView } from './route-form-view';
 import { useHereAsked } from './use-here';
@@ -65,10 +65,13 @@ function RouteForm({
   here,
 }: Known & { readonly here: Location | null }) {
   const { t } = useI18n();
+  // A trip does not take a whole region: one given from before is asked again (G96, prod 14.11.2026).
+  const fit = (place: Location | null | undefined) =>
+    !allowWholeRegion && place?.parentId === null ? null : (place ?? null);
   // «Qayerdan» fills itself where the person stands, when they allowed it before (G26, docs/74).
-  const [chosenFrom, setFrom] = useState<Location | null>(initial?.from ?? known ?? null);
-  const from = chosenFrom ?? here;
-  const [to, setTo] = useState<Location | null>(initial?.to ?? knownTo ?? null);
+  const [chosenFrom, setFrom] = useState<Location | null>(fit(initial?.from ?? known));
+  const from = chosenFrom ?? fit(here);
+  const [to, setTo] = useState<Location | null>(fit(initial?.to ?? knownTo));
   const [picking, setPicking] = useState<'from' | 'to' | null>(pick ?? null);
   // Back from a long list, the form shows «Qayerdan» again (docs/83 N22).
   useOpenAtTop(picking);
@@ -95,11 +98,12 @@ function RouteForm({
     setPicking(!from ? 'from' : 'to');
   }, [from, to, error, onDone]);
   if (picking) {
+    const other = picking === 'from' ? to : from;
     return (
       <PlacePicker
         key={picking}
         title={t(picking === 'from' ? 'places.fromTitle' : 'places.toTitle')}
-        directory={directory}
+        directory={other ? without(directory, other.id) : directory}
         allowWholeRegion={allowWholeRegion}
         onPick={choose}
         onBack={() => setPicking(null)}

@@ -3,6 +3,7 @@ import { useI18n } from '../context/i18n-context';
 import { firstDay, useTripDays } from '../find/use-trip-days';
 import { TripResults } from '../find/trip-results';
 import { SafarScreen } from '../find/safar-screen';
+import { without } from '../places/directory';
 import { PlacePicker } from '../places/place-picker';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
@@ -44,7 +45,7 @@ function Results({ screen, now, filters, onFilters, onBack, onHome, onScreen }: 
     return (
       <PlacePicker
         title={t('places.toTitle')}
-        directory={directory}
+        directory={without(directory, route.from.id)}
         allowWholeRegion
         region={route.to}
         trips={{ total: days.days.reduce((sum, day) => sum + day.trips, 0), places: days.places }}
