@@ -32,6 +32,14 @@ describe('the paths of the people (G99)', () => {
         event('screen_open'),
         event('trip_search', { code: 'found' }),
         event('client_error', { code: 'render', error: 'TypeError' }),
+        // An error of before G99 has no stamp: no source or Telegram is made up for it.
+        event('client_error', {
+          code: 'render',
+          who: undefined,
+          entry: undefined,
+          tg: undefined,
+          platform: undefined,
+        }),
       ],
     };
     await app.request('/analytics', { method: 'POST', body: JSON.stringify(batch) }, testEnv);
@@ -42,6 +50,7 @@ describe('the paths of the people (G99)', () => {
       platforms: { platform: string }[];
     };
     expect(paths.sources.find((row) => row.kind === 'ad')).toMatchObject({ people: 1, errors: 1 });
+    expect(paths.sources.find((row) => row.kind === 'direct')).toBeUndefined();
     expect(paths.versions.find((row) => row.tg === 'old')?.people).toBe(1);
     expect(paths.platforms.map((row) => row.platform)).toContain('other');
     expect((await call(ADMIN_PATHS_PATH, 77, ADMIN)).status).toBe(403);

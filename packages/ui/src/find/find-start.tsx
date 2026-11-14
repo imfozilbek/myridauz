@@ -1,5 +1,6 @@
 import { checkRoute, type Location, type RouteError } from '@platform/contracts';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useAnalytics } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import type { PlaceDirectory } from '../places/directory';
 import { PlacePicker } from '../places/place-picker';
@@ -40,6 +41,8 @@ function FindStartForm({
   to,
 }: Props & { directory: PlaceDirectory }) {
   const { t } = useI18n();
+  const { track } = useAnalytics();
+  const mark = (step: 'from' | 'to') => track({ name: 'way_step', screen: 'market.route', step });
   const here = useHereAsked(directory).settled;
   const [chosen, setChosen] = useState<Location | null>(known ?? null);
   const from = chosen ?? here;
@@ -48,6 +51,11 @@ function FindStartForm({
   // The phone still tells where the person stands: a short wait, then the list of «Qayerdan» stays
   // open, it never changes by itself under the finger (G59).
   const waiting = from === undefined && !picking;
+  // «Qayerdan» is there, chosen or where the person stands; «Qayerga» when a place is tapped (G99, docs/234).
+  useEffect(() => {
+    if (from && !picking) mark('from');
+    // Once a «Qayerdan».
+  }, [from?.id, picking]);
   const choose = (start: Location, end: Location) => {
     const found = checkRoute(start, end, directory.find);
     setError(found);
@@ -65,7 +73,10 @@ function FindStartForm({
         onPick={(place) => {
           setChosen(place);
           setPicking(false);
-          if (to) choose(place, to);
+          if (!to) return;
+          mark('from');
+          mark('to');
+          choose(place, to);
         }}
         onBack={from ? () => setPicking(false) : onBack}
       />
@@ -79,7 +90,10 @@ function FindStartForm({
       error={error}
       onBack={onBack}
       onChangeFrom={() => setPicking(true)}
-      onPick={(end) => choose(from, end)}
+      onPick={(end) => {
+        mark('to');
+        choose(from, end);
+      }}
     />
   );
 }

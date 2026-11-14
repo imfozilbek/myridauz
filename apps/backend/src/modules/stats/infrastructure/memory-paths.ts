@@ -53,6 +53,7 @@ export function memoryPaths(
         .filter(
           (row) =>
             (row.blobs[0] === 'client_error' || row.blobs[0] === 'api_error') &&
+            who(row) !== '' &&
             !(NETWORK_CODES as readonly string[]).includes(row.blobs[5] ?? ''),
         )
         .map((row) => ({

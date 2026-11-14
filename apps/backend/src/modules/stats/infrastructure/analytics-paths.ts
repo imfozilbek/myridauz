@@ -40,7 +40,8 @@ export const analyticsPaths = (
     const network = NETWORK_CODES.map((code) => `blob6 != '${code}'`).join(' AND ');
     const sql =
       `SELECT blob13 AS entry, blob14 AS tg, blob15 AS platform, SUM(_sample_interval) AS count ` +
-      `FROM ${dataset} WHERE ${within(days)} AND blob1 IN ('client_error', 'api_error') AND ${network} ` +
+      `FROM ${dataset} WHERE ${within(days)} AND blob1 IN ('client_error', 'api_error') AND blob12 != '' ` +
+      `AND ${network} ` +
       `GROUP BY entry, tg, platform`;
     return sqlAnswerSchema(errorRow)
       .parse(await query(sql))
