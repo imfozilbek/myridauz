@@ -9,6 +9,7 @@ const place = (id: string, parentId: string | null, name: string): Location => (
   name,
   lat: 40,
   lng: 71,
+  oneCity: false,
 });
 const directory = buildDirectory([
   place('1730', null, 'Fargʻona viloyati'),
