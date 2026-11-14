@@ -42,7 +42,12 @@ function FindStartForm({
 }: Props & { directory: PlaceDirectory }) {
   const { t } = useI18n();
   const { track } = useAnalytics();
-  const mark = (step: 'from' | 'to') => track({ name: 'way_step', screen: 'market.route', step });
+  const mark = (step: 'opened' | 'from' | 'to') => track({ name: 'way_step', screen: 'market.route', step });
+  // «Ilovani ochdi» from every way in: the search and the «Qayerga» of the main screen (G96, prod 14.11).
+  useEffect(() => {
+    mark('opened');
+    // Once, when the route opens.
+  }, []);
   const here = useHereAsked(directory).settled;
   const [chosen, setChosen] = useState<Location | null>(known ?? null);
   const from = chosen ?? here;

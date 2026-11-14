@@ -16,6 +16,8 @@ const EXPLAINED: readonly string[] = [
   'trips.not_driver',
   'locations.same_place',
   'locations.inside_city',
+  // A whole region or a place without a distance (G96, docs/236).
+  'locations.not_found',
   'bookings.no_seats',
   'bookings.too_many',
   'bookings.own_trip',
