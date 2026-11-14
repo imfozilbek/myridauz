@@ -24,6 +24,9 @@ Definition of Done
     главного экрана (`find/find-start.tsx`); тест
     `find/find-start-opened.test.tsx` падает без исправления.
 [x] T7. Урок №402 (`../229`).
+[x] T7а. Снимок прода 14.11.2026 за 24 часа: `locations.not_found` 0. Новая находка:
+    «Kanallar» спрашивал заявки у неодобренного водителя (2 отказа);
+    исправлено, тест `channels/my-channels-pending.test.tsx`.
 [ ] T8. Тесты, стенд кусками, полный стенд в конце; PR, слияние,
     выкладка; снимок «Statistika» с прода: `locations.not_found` не растёт.
 [ ] T9. Статус в goals/INDEX.md, docs 56, docs/233.
