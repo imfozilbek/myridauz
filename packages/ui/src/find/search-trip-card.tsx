@@ -2,7 +2,9 @@ import { arrivalAt, tripMarks, type Trip } from '@platform/contracts';
 import { Tappable } from '@telegram-apps/telegram-ui';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
+import { usePlacesIfAny } from '../market/places-gate';
 import { freeCar } from '../market/trip-filters';
+import { useFitLine } from '../screen/fit-line';
 import { useTripTime } from '../trip/trip-time';
 import { PersonBadge } from './person-badge';
 
@@ -10,12 +12,17 @@ const BADGE = 22;
 
 type Props = { readonly trip: Trip; readonly onOpen: () => void };
 
-// A trip in «Safarlar» (journey of path 2, screen 5): the times and the price, the free seats and how
-// the driver picks up, then the driver.
+// A trip in «Safarlar» (journey of path 2, screen 5): the times and the price, where the driver goes
+// from and to (G100: a search of a whole region), the free seats and how the driver picks up, the driver.
 export function SearchTripCard({ trip, onOpen }: Props) {
   const { t, formatTime, formatMoney, formatRating } = useI18n();
   const tripTime = useTripTime();
   const { driver } = trip;
+  const places = usePlacesIfAny();
+  const from = places?.find(trip.from);
+  const to = places?.find(trip.to);
+  const way = from && to ? t('common.route', { from: from.name, to: to.name }) : '';
+  const fitted = useFitLine<HTMLParagraphElement>(way);
   const mode =
     trip.pickupMode === 'both' ? 'both' : trip.pickupMode === 'door' || !trip.pitak ? 'door' : 'pitak';
   const facts = [
@@ -49,6 +56,11 @@ export function SearchTripCard({ trip, onOpen }: Props) {
         </span>
         <span className="search-trip-price">{formatMoney(trip.price)}</span>
       </div>
+      {way ? (
+        <p ref={fitted} className="search-trip-way">
+          {way}
+        </p>
+      ) : null}
       <p className="search-trip-facts">{facts.join(' · ')}</p>
       <div className="search-trip-driver">
         <PersonBadge
@@ -58,15 +70,21 @@ export function SearchTripCard({ trip, onOpen }: Props) {
           size={BADGE}
           role="driver"
         />
-        <span>
-          {driver.rating.average === null
-            ? t('find.driverNew', { name: driver.firstName, car: driver.car.model })
-            : t('find.driver', {
-                name: driver.firstName,
-                rating: formatRating(driver.rating.average),
-                car: driver.car.model,
-              })}
-        </span>
+        {driver.rating.average === null ? (
+          // No reviews yet: «yangi», not an empty place where the stars are (G100).
+          <span>
+            {driver.firstName} <span className="search-trip-new">{t('find.newDriver')}</span>{' '}
+            {t('find.driverCar', { car: driver.car.model })}
+          </span>
+        ) : (
+          <span>
+            {t('find.driver', {
+              name: driver.firstName,
+              rating: formatRating(driver.rating.average),
+              car: driver.car.model,
+            })}
+          </span>
+        )}
       </div>
     </Tappable>
   );
