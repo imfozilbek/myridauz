@@ -31,7 +31,7 @@
   "refundAmount": "Haydovchiga {amount}",
   "refundConfirm": "Qaytarishni tasdiqlash",
   "refundReject": "Qaytarmaslik",
-  "refundWaiting": "Loyiha egasi tasdiqlashini kutmoqda.",
+  "refundWaiting": "Loyiha egasi tasdiqlashini kutyapti.",
   "refundConfirmed": "Komissiya haydovchiga qaytarildi.",
   "refundRejected": "Loyiha egasi qaytarmaslikka qaror qildi.",
   "decided": "Qaror saqlandi"

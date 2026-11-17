@@ -94,7 +94,7 @@
   "profile.admin.description": "{brand} jamoasi uchun boshqaruv paneli: arizalar, shikoyatlar, narxlar va statistika. Bu bot faqat jamoa aʼzolari uchun.",
   "profile.support.name": "{brand} | yordam",
   "profile.support.short": "{brand} yordam xizmati. Savolingizni yozing, jamoamiz javob beradi.",
-  "profile.support.description": "{brand} yordam xizmati.\n\nSafar, bron, hamyon yoki hisob boʻyicha savolingizni shu yerga yozing. Jamoamiz shu bot orqali javob beradi.",
+  "profile.support.description": "{brand} yordam xizmati.\n\nSafar, joy band qilish, hamyon yoki hisob boʻyicha savolingizni shu yerga yozing. Jamoamiz shu bot orqali javob beradi.",
   "profile.poster.name": "{brand} | poster",
   "digest.line": "{name}: murojaat {answered}/{total}, ariza {applications}",
   "digest.open": "Javobsiz murojaatlar: {count}",

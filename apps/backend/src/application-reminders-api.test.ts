@@ -58,7 +58,7 @@ describe('the team answers a driver application within the hour (G34, G68)', () 
     for (const minutes of [20, 25, 30, 40, 60]) await remindAt(minutes);
     const late = adminTexts().find((sent) => sent.text.startsWith('⏱'));
     expect([OWNER, MODERATOR]).toContain(late?.chat);
-    expect(late?.text).toBe(`⏱ Ali ${toCyrillic('arizasi 25 daqiqa kutmoqda: 5 daqiqa qoldi')}`);
+    expect(late?.text).toBe(`⏱ Ali ${toCyrillic('arizasi 25 daqiqa kutyapti: 5 daqiqa qoldi')}`);
     // The owner: a line of «Diqqat» and a ring under it (G68).
     const owner = adminTexts().filter((sent) => sent.chat === OWNER && !sent.text.startsWith('⏱'));
     expect(owner.map((sent) => sent.text)).toEqual([

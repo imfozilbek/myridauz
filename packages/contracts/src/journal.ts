@@ -37,6 +37,6 @@ export const journalSchema = z.object({
 });
 export type Journal = z.infer<typeof journalSchema>;
 
-// «Bugun qildingiz, kutmoqda, oʻrtacha, 30 daqiqadan oshgan» of a member (mockup g67/1).
+// «Bugun qildingiz, kutyapti, oʻrtacha, 30 daqiqadan oshgan» of a member (mockup g67/1).
 export const workSchema = z.object({ done: count, waiting: count, averageMinutes: count, over: count });
 export type Work = z.infer<typeof workSchema>;

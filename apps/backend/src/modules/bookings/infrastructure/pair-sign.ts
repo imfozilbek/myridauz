@@ -11,7 +11,7 @@ const { t } = createI18n(DEFAULT_LOCALE);
 type PairKind = 'pair' | 'pairCancel';
 const TEXTS = { pair: 'bot.diqqat.pair', pairCancel: 'bot.diqqat.pairCancel' } as const;
 
-// «🤝 Jasur va Dilnoza 3 marta gaplashdi, lekin bron qilmadi» in «Diqqat» of the owner: one line a pair
+// «🤝 Jasur va Dilnoza 3 marta gaplashdi, lekin joy band qilmadi» in «Diqqat» of the owner: one line a pair
 // a day. The team sees public ids, never Telegram IDs (docs/65 A3).
 export async function tellPair(
   env: Bindings,

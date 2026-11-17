@@ -48,7 +48,7 @@ describe('the refund of a no-show in the admin app', () => {
 
   it('a moderator sees that it waits for the owner, without the buttons', async () => {
     open('moderator');
-    expect(await screen.findByText(toCyrillic('Loyiha egasi tasdiqlashini kutmoqda.'))).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Loyiha egasi tasdiqlashini kutyapti.'))).toBeTruthy();
     expect(screen.queryByText(toCyrillic('Qaytarishni tasdiqlash'))).toBeNull();
   });
 

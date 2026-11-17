@@ -48,7 +48,7 @@ describe('a complaint about a member of the team', () => {
     );
     expect((await navbat(OWNER)).items.map((item) => item.id)).toContain(filed.id);
     expect((await navbat(DRIVER)).items.map((item) => item.id)).not.toContain(filed.id);
-    // «kutmoqda» of the moderator counts the same cases as his «Navbat» (G91 review of ADM-9).
+    // «kutyapti» of the moderator counts the same cases as his «Navbat» (G91 review of ADM-9).
     const work = workSchema.parse(await (await call(ADMIN_WORK_PATH, DRIVER, { app: 'admin' })).json());
     expect(work.waiting).toBe((await navbat(DRIVER)).items.length);
     // The card of the bot counts the same as the app, for each member (G91 ADM-9).

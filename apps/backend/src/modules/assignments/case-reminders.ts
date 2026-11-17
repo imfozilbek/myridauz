@@ -10,7 +10,7 @@ import { activeTeam, storeOf } from './team-of';
 const { t } = createI18n(DEFAULT_LOCALE);
 
 // The Cron job (owner decision 20.10.2026, G89 A5): complaints, photos and support questions ring as
-// applications do (G34): «⏱ … kutmoqda» under «Navbat» of its member or the whole team, then a line of
+// applications do (G34): «⏱ … kutyapti» under «Navbat» of its member or the whole team, then a line of
 // «Diqqat» with a ring for the owners.
 export function sendCaseReminders(env: Bindings) {
   const { hours, remindMinutes, ownerMinutes } = brandOf(env).moderation;

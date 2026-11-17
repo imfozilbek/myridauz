@@ -35,7 +35,7 @@ export const REGION_GROUPS = {
 } as const satisfies Record<MapGroup, readonly string[]>;
 export const WAITLIST_REGIONS: readonly string[] = MAP_GROUPS.flatMap((group) => REGION_GROUPS[group]);
 export const regionSchema = z.string().refine((id) => WAITLIST_REGIONS.includes(id));
-// The counter «N kishi kutmoqda» shows from 10 people: an empty counter scares (docs/181).
+// The counter «N kishi kutyapti» shows from 10 people: an empty counter scares (docs/181).
 export const WAITLIST_MIN_COUNT = 10;
 
 // The answers of the questionnaire. home: «Qaysi viloyatdansiz?»; region: the other end of the route,

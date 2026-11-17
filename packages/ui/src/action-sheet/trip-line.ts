@@ -35,7 +35,7 @@ export function useSheetWords(directory: PlaceDirectory) {
       const at = noonOf(request.date).getTime();
       return t('sheet.trip', { when: day(at), from: place(request.from), to: place(request.to) });
     },
-    // Where the other one waits at the meeting (mockup g68/8): «Grand yaqinida kutmoqda».
+    // Where the other one waits at the meeting (mockup g68/8): «Grand yaqinida kutyapti».
     waits: ({ pitak, pickup }: Booking) => {
       if (pitak) return t('sheet.meet.waitsIn', { place: pitak.name });
       const name = pickup?.point ? pickup.name : null;

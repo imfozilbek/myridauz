@@ -36,7 +36,7 @@ describe('the live card of the main bot (G83, docs/182)', () => {
     expect(card.text).toContain(toCyrillic('⏳ Roʻyxatdasiz'));
     expect(card.text).toContain(toCyrillic('<b>Har hafta · tez orada ochiladi</b>'));
     expect(card.text).toContain(toCyrillic('🛣 Toshkent shahri ↔ Samarqand viloyati'));
-    expect(card.text).toContain(toCyrillic('👥 124 kishi kutmoqda · 🚗 12 haydovchi'));
+    expect(card.text).toContain(toCyrillic('👥 124 kishi kutyapti · 🚗 12 haydovchi'));
     expect(card.text).toContain(toCyrillic('Siz tanlagan: 🔎 Telegram'));
     expect(card.text).toContain(toCyrillic('tartibsizlik, 🔒 shaxsiy raqam xavfsizligi'));
     expect(card.footer).toContain(toCyrillic('har dushanba yangilanadi'));
@@ -54,7 +54,7 @@ describe('the live card of the main bot (G83, docs/182)', () => {
       null,
     );
     expect(card.text).toContain(toCyrillic('⏳ Roʻyxatdasiz · haydovchi'));
-    expect(card.text).toContain(toCyrillic('👥 124 yoʻlovchi kutmoqda'));
+    expect(card.text).toContain(toCyrillic('👥 124 yoʻlovchi kutyapti'));
     expect(buttons(card.markup)).toContain(`t.me/${brand.bots.driver}?startapp=__waitlist`);
   });
 
@@ -70,7 +70,7 @@ describe('the live card of the main bot (G83, docs/182)', () => {
       view({ opened: true, record: { ...record, pains: ['empty'], role: 'driver' } }),
       places,
     );
-    expect(driver.text).toContain(toCyrillic('124 yoʻlovchi safaringizni kutmoqda. Endi qaytish safarini'));
+    expect(driver.text).toContain(toCyrillic('124 yoʻlovchi safaringizni kutyapti. Endi qaytish safarini'));
   });
 
   it('the message to a friend speaks of the first pain and the route', () => {

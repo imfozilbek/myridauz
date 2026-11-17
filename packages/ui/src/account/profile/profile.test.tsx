@@ -58,7 +58,7 @@ describe('«Profil» (G65, mockup g65/3)', () => {
     const bot = screen.getByLabelText(toCyrillic('Bot xabarlari')) as HTMLInputElement;
     expect(bot.checked).toBe(true);
     expect(bot.disabled).toBe(true);
-    expect(screen.getByText(toCyrillic('Doim yoqilgan: bron, chat, safar xabarlari'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('Doim yoqilgan: band qilish, chat, safar xabarlari'))).toBeTruthy();
   });
 
   // G97 (docs/226): the answers first, «Boshqa savolim bor» opens the support bot.
