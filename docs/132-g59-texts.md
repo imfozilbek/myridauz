@@ -7,7 +7,7 @@
 | Экран | Тексты |
 |---|---|
 | «Qayerga borasiz?» | «Qayerga borasiz?», «Chilonzordan · oʻzgartirish», «Boshqa joy: tuman yoki shahar», «Bugun 3 ta, ertaga 8 ta safar», «90 000 soʻmdan» |
-| «Safarlar» | «Bugun 3 ta», «Necha kishi?», «Mashinada ayol bor», «Boʻsh salon», «Butun salon: 360 000 soʻm», «uyingizdan yoki pitakdan» (с маленькой буквы в строке карточки), «1 joyli 2 ta safar yashirildi» |
+| «Safarlar» | «Haftada 3 ta safar» и «yangi» (G100, `237`), «Bugun 3 ta», «Necha kishi?», «Mashinada ayol bor», «Boʻsh salon», «Butun salon: 360 000 soʻm», «uyingizdan yoki pitakdan» (с маленькой буквы в строке карточки), «1 joyli 2 ta safar yashirildi» |
 | «Safar» | «Barcha izohlar (23) ›», «Necha kishi ketadi?», «Joylar», «Butun salon», «Faqat butun salon», «Men bilan ayol bor», «Jami», «2 ta joy band qilish» |
 | «Qayerdan, qayerga?» | «Olib ketish joyi», «Tushirish joyi», «Hammasi», «Soʻrov yuborish» |
 | Карта (`126`) | «Oxirgi joylar», «Joy nomini yozing», «Joylashuvim», «Uyim», «Ishxonam», «Yaqin joylar», «Shu yerdan olib ketsin», «Shu yerda tushaman», «Aniq joy band qilingandan keyin koʻrinadi» |

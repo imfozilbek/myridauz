@@ -7,7 +7,7 @@
 }
 
 .search-trip {
-  padding: 8px 14px 21px;
+  padding: 8px 14px 12px;
   border-radius: 14px;
   background: var(--reg-card);
 }
@@ -34,15 +34,35 @@
 }
 
 .search-trip-driver {
-  /* The driver sits in a soft inset row of the card (mockup screen 5). */
+  /* The driver sits in a whole soft plate of the card (G100: the line on top looked cut). */
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 3px 13px 0;
-  padding: 8px 14px;
-  border-top: 1px solid var(--reg-divider);
-  border-radius: 20px;
+  margin: 10px 0 0;
+  padding: 7px 10px;
+  border-radius: 12px;
+  background: var(--reg-bg);
   font-size: 13px;
+}
+
+/* A driver without reviews yet (G100, mockup proposal 16.11.2026). */
+.search-trip-new {
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: var(--reg-soft);
+  color: var(--reg-strong);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Where the driver goes from and to, one line never cut (docs/121). */
+.search-trip-way {
+  margin: 4px 0 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--reg-ink);
 }
 
 .results-hidden {

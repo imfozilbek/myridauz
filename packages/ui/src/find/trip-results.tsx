@@ -65,7 +65,13 @@ export function TripResults(props: Props) {
   return (
     <div className="find" style={brandVars(colors)}>
       <Screen onBack={onBack} onRefresh={refresh} />
-      <ResultsHead route={route} from={regionOf(route.from)} region={region} km={days.km} />
+      <ResultsHead
+        route={route}
+        from={regionOf(route.from)}
+        region={region}
+        km={days.km}
+        week={days.days.reduce((sum, day) => sum + day.trips, 0)}
+      />
       <WeekRow days={week} on={date} onPick={onDay} />
       <TripFiltersRow filters={filters} onFilters={onFilters} />
       <div className={stale ? 'search-trips list-stale' : 'search-trips'}>

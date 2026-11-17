@@ -35,6 +35,9 @@ export function PlacesKnown({
 }
 
 // The directory inside the gate: the names of the places of a trip (G59).
+// The places when a gate above has them: a card drawn also outside a flow of places (G100).
+export const usePlacesIfAny = (): PlaceDirectory | null => useContext(PlacesContext);
+
 export function usePlaces(): PlaceDirectory {
   const directory = useContext(PlacesContext);
   if (!directory) throw new Error('ui.places_missing');
