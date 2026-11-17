@@ -26,7 +26,7 @@
   "offer.accepted": "Taklif qabul qilindi. Joyingiz band.",
   "offer.declined": "Taklif rad etildi",
   "message.kicker": "Yangi xabar",
-  "message.trip": "{when} · {to}ga",
+  "message.trip": "{when} · {to}{end, select, k {ka} q {qa} other {ga}}",
   "message.ok": "Yaxshi",
   "message.wait": "Kutaman",
   "message.where": "Qayerdasiz?",

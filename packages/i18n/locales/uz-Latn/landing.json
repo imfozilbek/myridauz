@@ -63,7 +63,7 @@
   "directions.title": "Yoʻnalishlar",
   "directions.text": "{city}dan har bir viloyat markaziga va orqaga. Yoʻnalishni tanlang: masofa, narx va safar topish tugmasi.",
   "directions.from": "{city}dan",
-  "directions.to": "{city}ga",
+  "directions.to": "{city}{end, select, k {ka} q {qa} other {ga}}",
   "direction.meta": "{from} → {to}: birga safar, narx va haydovchilar | {brand}",
   "direction.description": "{from} → {to} yoʻnalishida birga safar: masofa, bir joy narxi, tekshirilgan haydovchilar. {brand} Telegramda ochiladi, ilova yuklab olish shart emas.",
   "direction.title": "{from} → {to}: birga safar",
