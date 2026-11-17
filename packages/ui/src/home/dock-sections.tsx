@@ -2,6 +2,7 @@ import { useI18n } from '../context/i18n-context';
 import { FindStart } from '../find/find-start';
 import { useHomeGo } from '../flow/home-context';
 import type { StartAction } from '../flow/start-action';
+import { without } from '../places/directory';
 import { PlacePicker } from '../places/place-picker';
 import { useDirectory } from '../places/use-directory';
 import { ErrorScreen } from '../states/error-screen';
@@ -20,12 +21,14 @@ function PickFrom({ onBack, cityAtOnce = false }: Props & { readonly cityAtOnce?
   const { t } = useI18n();
   const { choose } = useHomeRoute();
   const [places, retry] = useDirectory();
+  const { to } = useDockEnds(places.status === 'ready' ? places.directory : null);
   if (places.status === 'loading') return <ScreenSkeleton onBack={onBack} />;
   if (places.status === 'error') return <ErrorScreen onRetry={retry} onBack={onBack} />;
   return (
     <PlacePicker
       title={t('places.fromTitle')}
-      directory={places.directory}
+      // «Qayerga» of the block is not offered as «Qayerdan» (G96, prod 18.11.2026).
+      directory={to ? without(places.directory, to.id) : places.directory}
       allowWholeRegion
       cityAtOnce={cityAtOnce}
       onPick={(from) => {

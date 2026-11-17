@@ -13,9 +13,10 @@ Definition of Done
     метка «yangi» (`find/trip-card.css`).
 [x] T4. Тексты в `../237`, «да» 17.11.2026.
 [x] T5. Сверка Pixel Perfect экрана 5: ниже.
-[x] T6. Тесты `find/results-g100.test.tsx`; стенд кусками, полный в конце.
-[ ] T7. PR, слияние, выкладка; снимок с прода.
-[ ] T8. Статус в goals/INDEX.md, docs 74 и 132.
+[x] T6. Тесты `find/results-g100.test.tsx`; стенд кусками 227 зелёных, полный в конце.
+[x] T7. PR #368 слит (848fafe), «Deploy production» 17.11.2026 успех;
+    владелец проверил экран на проде 17.11.2026: «всё ок».
+[x] T8. Статус в goals/INDEX.md, docs 74 и 132.
 ```
 
 ## Сверка Pixel Perfect (17.11.2026)
