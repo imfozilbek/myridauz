@@ -29,7 +29,7 @@ describe('the celebration of a moment', () => {
   it('says what happened, why to tell and shows the card the passengers see, offered once', async () => {
     const { offered } = open(DRIVER);
     expect(await screen.findByText(/^Сиз энди .+ ҳайдовчисисиз! ✅$/u)).toBeTruthy();
-    expect(screen.getByText(/^Доимий йўловчиларингизга айтинг: энди сизни .+ да топади\.$/u)).toBeTruthy();
+    expect(screen.getByText(/^Доимий йўловчиларингизга айтинг: энди сизни \S+da топади\.$/u)).toBeTruthy();
     expect(screen.getByText(toCyrillic('Yoʻlovchilar sizni topadi.'))).toBeTruthy();
     expect(screen.getByText(toCyrillic('Qaysi soʻz sizniki?'))).toBeTruthy();
     expect(screen.getAllByRole('radio')).toHaveLength(3);

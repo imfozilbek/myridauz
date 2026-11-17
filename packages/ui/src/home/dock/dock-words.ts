@@ -44,7 +44,7 @@ export function useDockWords(directory: PlaceDirectory, now: number) {
       ),
     // «25 daq» to a moment ahead.
     minutesTo: (at: number) => t('home.dock.minutes', { minutes: String(minutes(at - now)) }),
-    // «3 daq kutmoqda» since a moment.
+    // «3 daq kutyapti» since a moment.
     waits: (since: number) => t('home.dock.waits', { minutes: String(minutes(now - since)) }),
     // «5 soat 20 daq» to a deadline.
     left: (at: number) => {

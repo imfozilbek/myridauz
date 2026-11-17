@@ -81,12 +81,12 @@ sentabr, oktabr, noyabr, dekabr.
 | Попутчик / пассажир | yoʻlovchi |
 | Водитель | haydovchi |
 | Место | joy |
-| Забронировать | band qilish |
+| Забронировать | band qilish (не «bron», решение владельца 17.11.2026) |
 | Цена за место | bir joy narxi |
 | Кошелёк | hamyon |
 | Пополнить | toʻldirish |
 | Жалоба | shikoyat |
-| Отзыв | fikr |
+| Отзыв | sharh (решение владельца 17.11.2026) |
 | Звонок | qoʻngʻiroq |
 | Регион / район / город | viloyat / tuman / shahar |
 | В машине есть женщина | Mashinada ayol bor |
@@ -97,9 +97,11 @@ sentabr, oktabr, noyabr, dekabr.
 | Подписка на маршрут | obuna |
 | Рейтинг | reyting |
 | Мои поездки | Mening safarlarim |
+| Ждёт (сейчас) | kutyapti (не «kutmoqda», решение владельца 17.11.2026) |
 
 - Глоссарий: единый для всех ботов и Mini App (`packages/i18n`).
   Одно понятие = одно слово везде.
+- Окончание после имени бренда слитно: «{brand}da», «{brand}ga» (решение владельца 17.11.2026).
 
 ## Проверка каждого текста (думать глубоко)
 

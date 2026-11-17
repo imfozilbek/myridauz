@@ -42,7 +42,7 @@ function TeamTrips({ onBack }: { readonly onBack: () => void }) {
   const [person, setPerson] = useState<PersonId | null>(null);
   // The card of a person is the owner's: a moderator reads the rows (G91 ADM-2).
   const onPerson = useTeamOwner() ? setPerson : undefined;
-  // «Bronni ochish» under a support question: ?open=trips&trip=<id> (G68, mockup g68/4).
+  // «Band qilingan joyni ochish» under a support question: ?open=trips&trip=<id> (G68, mockup g68/4).
   const [linked, setLinked] = useState(() => launchParam(TRIP_LINK, LINK_ID));
   useLinkOpened(linked !== null, LINK);
   if (person) return <PeopleScreen person={person} onBack={() => setPerson(null)} />;

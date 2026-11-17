@@ -18,7 +18,7 @@ describe('the text of the summary of the day', () => {
     expect(digestText('2026-10-02', rows, NUMBERS, (id) => NAMES.get(id) ?? '')).toBe(
       [
         toCyrillic('<b>📊 Kun yakuni · 2-oktabr</b>'),
-        toCyrillic('24 yangi odam · 17 safar · 41 bron'),
+        toCyrillic('24 yangi odam · 17 safar · 41 band qilingan joy'),
         '',
         toCyrillic('<b>👥 Jamoa</b>'),
         `Ali: ${toCyrillic('murojaat 5/6, ariza 3')}`,

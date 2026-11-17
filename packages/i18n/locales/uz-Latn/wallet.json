@@ -25,7 +25,7 @@
   "detail.fee": "Komissiya {percent}%",
   "detail.from": "Qaysi hisobdan",
   "detail.to": "Qaysi hisobga",
-  "detail.note": "Komissiya joyni tasdiqlaganingizda olinadi. Bron bekor boʻlsa, hamyoningizga qaytadi.",
+  "detail.note": "Komissiya joyni tasdiqlaganingizda olinadi. Band qilingan joy bekor boʻlsa, hamyoningizga qaytadi.",
   "detail.open": "Safarni ochish",
   "empty": "Hali operatsiya yoʻq",
   "kind.bonus_grant": "Boshlash bonusi",

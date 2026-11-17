@@ -40,3 +40,20 @@ describe('the ending after the name of a place', () => {
     }
   });
 });
+
+// The words of the product the owner chose on 17.11.2026 (docs/25): one notion, one word.
+describe('the words of the glossary', () => {
+  const RIVALS: readonly [RegExp, string][] = [
+    [/\bbron/iu, 'band qilish'],
+    [/\bfikr/iu, 'sharh'],
+    [/\bkutmoqda\b/iu, 'kutyapti'],
+    [/\{brand\} (?:da|ga|dan|ni|ning|gacha)\b/u, '{brand}da'],
+  ];
+
+  it('no rival word of «band qilish», «sharh», «kutyapti», «{brand}da»', () => {
+    const found = RIVALS.flatMap(([rival, word]) =>
+      catalog.filter(([, text]) => rival.test(text)).map(([key]) => `${key}: ${word}`),
+    );
+    expect(found).toEqual([]);
+  });
+});

@@ -23,7 +23,7 @@ export type DirectionCounts = {
   readonly withPain: number;
 };
 
-// «N kishi kutmoqda» only from 10 passengers: an empty counter scares, the numbers are real (docs/181).
+// «N kishi kutyapti» only from 10 passengers: an empty counter scares, the numbers are real (docs/181).
 export function waitingOf(counts: DirectionCounts): Waiting | null {
   if (counts.passengers < WAITLIST_MIN_COUNT) return null;
   const share = Math.round((counts.withPain / counts.passengers) * PERCENT);

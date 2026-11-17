@@ -17,7 +17,7 @@ describe('the cases of «Navbat»', () => {
       moderation: { facePhoto: async () => new Blob(['x']), decideFace },
     });
     expect(await screen.findByText(`Madina · ${toCyrillic('yoʻlovchi')}`)).toBeTruthy();
-    expect(screen.getByText(toCyrillic('10 daqiqa kutmoqda'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('10 daqiqa kutyapti'))).toBeTruthy();
     const face = screen.getByRole('checkbox', { name: toCyrillic('Yuz aniq koʻrinadi') });
     fireEvent.click(face);
     expect(face.getAttribute('aria-checked')).toBe('true');

@@ -88,7 +88,7 @@ describe('«Siz roʻyxatdasiz» of the waitlist (docs/181)', () => {
       channels: ['@x'],
     });
     const { tracked } = show(clients);
-    expect(await screen.findByText(toCyrillic('124 kishi kutmoqda'))).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('124 kishi kutyapti'))).toBeTruthy();
     expect(screen.getByText(/^Бу йўналишда\. 64 % ини ҳам Telegram/u)).toBeTruthy();
     expect(screen.getByText(toCyrillic('1 ta kanaldasiz'))).toBeTruthy();
     vi.spyOn(window, 'open').mockReturnValue(null);

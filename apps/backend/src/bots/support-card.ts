@@ -34,7 +34,7 @@ function since(joinedAt: number, now: number): string {
   return t('bot.supportCard.months', { count: String(Math.floor(days / MONTH_DAYS)) });
 }
 
-// «📌 Faol bron: Chilonzor → Urgut, ertaga 08:30» and the driver with the plate under it.
+// «📌 Band qilingan joy: Chilonzor → Urgut, ertaga 08:30» and the driver with the plate under it.
 function liveBlock(asker: Asker, now: number): string[] {
   const { booking } = asker;
   const live = booking?.trip ?? asker.trip;
@@ -85,7 +85,7 @@ export function supportCard(
   ].join('\n');
 }
 
-// «Javob berish», «Tarix» for a person who wrote before, «Bronni ochish» in the admin app and, for
+// «Javob berish», «Tarix» for a person who wrote before, «Band qilingan joyni ochish» in the admin app and, for
 // an owner, «Profilni ochish» of a person with an account (Q8 of docs/111: «Odamlar» is the owner's).
 export function supportButtons(brand: BrandConfig, asker: Asker, wroteBefore: boolean, owner: boolean) {
   const reply = { text: t('bot.supportCard.reply'), callback_data: REPLY_DATA };

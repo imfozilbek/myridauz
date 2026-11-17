@@ -58,7 +58,7 @@ describe('the card of a support question (G68)', () => {
     expect(card?.body).not.toHaveProperty('disable_notification');
     expect(text).toContain(toCyrillic('💬 <b>Yangi murojaat</b>'));
     expect(text).toMatch(/<b>.+ · йўловчи<\/b>/u);
-    expect(text).toContain(toCyrillic('📌 Faol bron: '));
+    expect(text).toContain(toCyrillic('📌 Band qilingan joy: '));
     expect(text).toContain(toCyrillic('ertaga 08:00'));
     expect(text).toContain('«Haydovchi telefonni olmayapti»');
     expect(text).toMatch(/<i>.+ билан 1 кун · 0 сафар<\/i>/u);
@@ -68,7 +68,9 @@ describe('the card of a support question (G68)', () => {
     const id = await pid(PASSENGER);
     expect(text).toContain(`ID <code>${id}</code>`);
     expect(buttons.map((button) => button.text)).toEqual(
-      ['✍️ Javob berish', '📋 Bronni ochish', '👤 Profilni ochish'].map((text) => toCyrillic(text)),
+      ['✍️ Javob berish', '📋 Band qilingan joyni ochish', '👤 Profilni ochish'].map((text) =>
+        toCyrillic(text),
+      ),
     );
     expect(JSON.stringify(buttons[1])).toContain(`open=trips&trip=${tripId}`);
     expect(JSON.stringify(buttons[2])).toContain(`open=people&person=${id}`);

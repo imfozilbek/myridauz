@@ -93,7 +93,7 @@ export function sendApplicationReminders(env: Bindings, waiting: () => Promise<W
     rules: { hours, remindMinutes, ownerMinutes },
     now: Date.now,
     waiting,
-    // «⏱ Jasur arizasi 25 daqiqa kutmoqda: 5 daqiqa qoldi» under the «Navbat» card (G68, docs/122).
+    // «⏱ Jasur arizasi 25 daqiqa kutyapti: 5 daqiqa qoldi» under the «Navbat» card (G68, docs/122).
     toModerator: async (moderatorId, { name, submittedAt }) => {
       const minutes = Math.floor(teamWaitMs(submittedAt, Date.now(), hours) / MINUTE_MS);
       const text = t('bot.navbat.ringLate', {

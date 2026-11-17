@@ -22,7 +22,7 @@ describe('the main screen of the team', () => {
     renderTeamHome('moderator');
     const done = await screen.findByText(toCyrillic('bugun qildingiz'));
     expect(done.parentElement?.textContent).toBe(toCyrillic('14bugun qildingiz'));
-    expect(screen.getByText(toCyrillic('kutmoqda')).parentElement?.textContent).toBe(toCyrillic('4kutmoqda'));
+    expect(screen.getByText(toCyrillic('kutyapti')).parentElement?.textContent).toBe(toCyrillic('4kutyapti'));
     expect(screen.getByText(toCyrillic('30 daqdan oshgan'))).toBeTruthy();
     expect(screen.queryByText(toCyrillic('Diqqat'))).toBeNull();
     expect(screen.queryByText(toCyrillic('Boshqaruv'))).toBeNull();
