@@ -1,4 +1,5 @@
 import { firstTimed, tripArrival, type SharedTrip } from '@platform/contracts';
+import { placeEnd } from '@platform/i18n';
 import { useI18n } from '../context/i18n-context';
 import { usePlaces } from '../market/places-gate';
 import { usePlaceNames } from '../places/place-names';
@@ -42,6 +43,7 @@ export function FollowState({ trip }: { readonly trip: SharedTrip }) {
             <span className="follow-state-eta">
               {t('share.follow.eta', {
                 place: end ? toward(end) : '',
+                end: placeEnd(end ? toward(end) : ''),
                 time: formatTime(new Date(tripArrival(trip))),
               })}
             </span>

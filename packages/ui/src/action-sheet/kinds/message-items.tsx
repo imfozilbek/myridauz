@@ -1,4 +1,5 @@
 import { CHAT_KEY } from '@platform/contracts';
+import { placeEnd } from '@platform/i18n';
 import { useEffect } from 'react';
 import { otherSide } from '../../call/other-side';
 import { useOpenChat } from '../../chat/open-chat';
@@ -45,7 +46,15 @@ export function useMessageItems(directory: PlaceDirectory): ActionItem[] {
       badge: 'write',
       kicker: t('sheet.message.kicker'),
       title: side.firstName,
-      ...(way && when ? { sub: t('sheet.message.trip', { when, to: words.place(way.to) }) } : {}),
+      ...(way && when
+        ? {
+            sub: t('sheet.message.trip', {
+              when,
+              to: words.place(way.to),
+              end: placeEnd(words.place(way.to)),
+            }),
+          }
+        : {}),
       body: <QuoteBlock text={one.text} />,
       chips: READY.map((key) => ({
         label: t(key),

@@ -34,7 +34,7 @@
   "channel.next": "🔎 Keyingi safarni topish",
   "board.title": "📋 Bugun, {date}: {count} ta safar",
   "board.from": "➡️ {region}dan",
-  "board.to": "⬅️ {region}ga",
+  "board.to": "⬅️ {region}{end, select, k {ka} q {qa} other {ga}}",
   "board.line": "{time} {route} · {seats} · {price}",
   "board.seats": "{count} joy",
   "board.lastSeat": "🔥 1 joy",

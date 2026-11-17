@@ -6,7 +6,7 @@ import {
   withVia,
   type Trip,
 } from '@platform/contracts';
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { createI18n, DEFAULT_LOCALE, placeEnd } from '@platform/i18n';
 import type { Card } from '../../notifications';
 import type { Places } from '../../../shared/places/end-names';
 import { serviceValue, withValue } from '../../../shared/share/value-lines';
@@ -57,7 +57,9 @@ function groupsOf(channel: TeamChannel, trips: readonly Trip[], places: Places, 
   for (const trip of trips) {
     const inbound = covers(channel, trip.to, places);
     const other = nameOf(regionOf(inbound ? trip.from : trip.to, places), places);
-    const title = bold(t(inbound ? 'bot.board.from' : 'bot.board.to', { region: other }));
+    const title = bold(
+      t(inbound ? 'bot.board.from' : 'bot.board.to', { region: other, end: placeEnd(other) }),
+    );
     const group = groups.get(title) ?? { title, lines: [] };
     group.lines.push(line(trip, places, now, inbound, tripBookLink(site.bot, trip.id, via)));
     groups.set(title, group);

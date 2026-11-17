@@ -1,4 +1,4 @@
-import type { I18n } from '@platform/i18n';
+import { placeEnd, type I18n } from '@platform/i18n';
 import type { Direction } from '../directions';
 import { escape } from '../html';
 
@@ -21,7 +21,7 @@ export function directionsSection(all: readonly Direction[], { t }: I18n, curren
 <p class="section-lead">${escape(t('landing.directions.text', { city: hub.name }))}</p>
 <div class="direction-groups">
 ${group(t('landing.directions.from', { city: hub.name }), 'to')}
-${group(t('landing.directions.to', { city: hub.name }), 'from')}
+${group(t('landing.directions.to', { city: hub.name, end: placeEnd(hub.name) }), 'from')}
 </div>
 </div></section>`;
 }
