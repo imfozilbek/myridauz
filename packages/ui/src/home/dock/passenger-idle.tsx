@@ -24,7 +24,7 @@ export function PassengerIdle({ go, directory }: Props) {
   const tools = useEndTools(ends, go);
   const { from, to } = ends;
   const names = usePlaceNames(directory);
-  const find = () => go('find_trip', startFind(ends));
+  const find = () => go('find_trip', startFind(ends, directory));
   const ask = () => go('leave_request', { ...(from ? { from } : {}), ...(to ? { to } : {}) });
   const counted = from && to && countable(from, to, directory);
   return (

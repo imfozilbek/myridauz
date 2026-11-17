@@ -1,4 +1,4 @@
-import type { Location } from '@platform/contracts';
+import { checkRoute, type Location } from '@platform/contracts';
 import { useState } from 'react';
 import type { Launch } from '../flow/start-action';
 import { recentRoutes, rememberRoute } from '../market/recent-routes';
@@ -52,9 +52,14 @@ export function useDockEnds(directory: PlaceDirectory | null, trip: Route | null
 }
 
 // «Safar topish» from the ends of the block (G76; G79 П20, П21): both, their trips at once and the
-// route kept; one, the other is asked and the trips come right after.
-export function startFind({ from, to }: { from: Location | null; to: Location | null }): Launch {
-  if (from && to) {
+// route kept; one, the other is asked and the trips come right after. Two ends no trip may take (one
+// place, one city) ask «Qayerga» again (prod 18.11.2026: trips/days 422 «bir xil boʻlmasin» from home).
+export function startFind(
+  { from, to }: { from: Location | null; to: Location | null },
+  directory: PlaceDirectory | null = null,
+): Launch {
+  const refused = from && to && (from.id === to.id || (directory && checkRoute(from, to, directory.find)));
+  if (from && to && !refused) {
     rememberRoute({ from, to });
     return { route: { from, to } };
   }

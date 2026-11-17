@@ -27,6 +27,9 @@ Definition of Done
 [x] T7а. Снимок прода 14.11.2026 за 24 часа: `locations.not_found` 0. Новая находка:
     «Kanallar» спрашивал заявки у неодобренного водителя (2 отказа);
     исправлено, тест `channels/my-channels-pending.test.tsx`.
+[x] T7б. Снимок прода 18.11.2026 за 24 часа: `locations.not_found` 0, «Kanallar» 0.
+    Новое: «bir xil boʻlmasin» 2 на главном экране; «Safar topish» блока
+    больше не открывает такой поиск; тест `home/start-find.test.tsx`.
 [ ] T8. Тесты, стенд кусками, полный стенд в конце; PR, слияние,
     выкладка; снимок «Statistika» с прода: `locations.not_found` не растёт.
 [ ] T9. Статус в goals/INDEX.md, docs 56, docs/233.
