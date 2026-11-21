@@ -5,7 +5,7 @@ import type { HomeGo } from '../../flow/start-action';
 import type { PlaceDirectory } from '../../places/directory';
 import { usePlaceNames } from '../../places/place-names';
 import { MainButton, SecondaryButton } from '../../telegram/bottom-button';
-import { startFind, useDockEnds } from '../dock-ends';
+import { startFind, startRequest, useDockEnds } from '../dock-ends';
 import { DOCK_FROM, DOCK_TO } from '../dock-sections';
 import { RouteDock } from '../route-dock';
 import { useHomeTap } from '../use-home-tap';
@@ -25,7 +25,7 @@ export function PassengerIdle({ go, directory }: Props) {
   const { from, to } = ends;
   const names = usePlaceNames(directory);
   const find = () => go('find_trip', startFind(ends, directory));
-  const ask = () => go('leave_request', { ...(from ? { from } : {}), ...(to ? { to } : {}) });
+  const ask = () => go('leave_request', startRequest(ends, directory));
   const counted = from && to && countable(from, to, directory);
   return (
     <>
