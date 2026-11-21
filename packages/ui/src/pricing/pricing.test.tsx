@@ -9,6 +9,9 @@ import { ManagementScreen } from '../manage/management-screen';
 
 afterEach(cleanup);
 
+const OUT_OF_BOUNDS = toCyrillic(
+  'Narx ruxsat etilgan chegarada boʻlsin. «Kamaytirish» yoki «Oshirish» bilan tanlang.',
+);
 const V: PricingVariables = { ratePerKm: 300, roundStep: 5000, minPrice: 30000, maxPrice: 600000 };
 const state: PricingState = {
   current: { version: 2, variables: V, changedBy: 'Fozil', changedAt: 1 },
@@ -89,7 +92,7 @@ describe('Narxlar: the price engine for the team (docs/23)', () => {
     await tap(/^Формула: 95/);
     fireEvent.change(screen.getByDisplayValue('95000'), { target: { value: '700000' } });
     await tap(toCyrillic('Narxni saqlash'));
-    expect(await screen.findByText(toCyrillic('Narx ruxsat etilgan chegarada boʻlsin.'))).toBeTruthy();
+    expect(await screen.findByText(OUT_OF_BOUNDS)).toBeTruthy();
     fireEvent.change(screen.getByDisplayValue('700000'), { target: { value: '100000' } });
     await tap(toCyrillic('Narxni saqlash'));
     expect(pricing.setDirection).toHaveBeenLastCalledWith({ from: '1726269', to: '1730401', price: 100000 });
@@ -104,7 +107,7 @@ describe('Narxlar: the price engine for the team (docs/23)', () => {
     await tap(/^Формула: 95/);
     await tap(toCyrillic('Narxni saqlash'));
     expect(await screen.findByText(toCyrillic('Buni faqat loyiha egasi qila oladi.'))).toBeTruthy();
-    expect(screen.queryByText(toCyrillic('Narx ruxsat etilgan chegarada boʻlsin.'))).toBeNull();
+    expect(screen.queryByText(OUT_OF_BOUNDS)).toBeNull();
   });
 
   it('Back with changes asks before the typed numbers go (docs/94 F3)', async () => {

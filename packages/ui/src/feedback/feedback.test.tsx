@@ -52,8 +52,8 @@ describe('ratings and reviews in the Mini App (docs/24)', () => {
     );
     // Each choice ticks softly, like Telegram's own lists (docs/88 L3).
     expect(select).toHaveBeenCalledTimes(2);
-    // The comment opens by «+ Izoh yozish»; a text of several lines shows all of it (docs/88 L2).
-    await tap(toCyrillic('+ Izoh yozish'));
+    // The comment opens by «+ Sharh yozish»; a text of several lines shows all of it (docs/88 L2).
+    await tap(toCyrillic('+ Sharh yozish'));
     expect(screen.getByPlaceholderText(/қисқача/u).tagName).toBe('TEXTAREA');
     fireEvent.change(screen.getByPlaceholderText(/қисқача/u), { target: { value: 'Yaxshi yoʻl' } });
     await tap(toCyrillic('Yuborish'));

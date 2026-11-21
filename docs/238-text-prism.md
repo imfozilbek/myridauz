@@ -58,3 +58,19 @@
 - «-moqda» в статусах: «tekshirilmoqda», «kutilmoqda» (11 текстов).
 - «chegaraga yetdi» в 3 ошибках лимита.
 - «@{supportBot} ga» раздельно после имени бота.
+
+## Следующий шаг в ошибках и «sharh» вместо «izoh» (согласие владельца 21.11.2026)
+
+Из 264 текстов ошибок, отказов и пустых экранов следующий шаг почти везде даёт экран (кнопка, шторка). Без него оставались 7 мест: чаще уведомление бота, где на экране блокировки видна одна строка.
+
+| Ключ | Стало |
+|---|---|
+| `bot.dwallet.empty` | 💳 Hamyoningizda komissiya uchun pul qolmadi. Toʻldiring, shunda joylarni tasdiqlaysiz. |
+| `bot.dwallet.fewSeats` | 💳 Hamyoningizdagi pul faqat {count} ta joyga yetadi. Oldindan toʻldiring. |
+| `bot.ring.missed` | 📞 {name} qoʻngʻiroq qildi, lekin gaplasha olmadingiz. Chatda yozing yoki qayta qoʻngʻiroq qiling. |
+| `bot.dapp.ringChanges` | ✏️ Haydovchi arizangizda tuzatish kerak. Ilovani oching va tuzating. |
+| `errors.trips.not_driver` | … tasdiqlangan boʻlishi kerak. Ariza holati «Profil»da. |
+| `errors.trips.price_out_of_bounds` | … chegarada boʻlsin. «Kamaytirish» yoki «Oshirish» bilan tanlang. |
+| `errors.trips.not_found` | Bu safar endi yoʻq. Boshqa safarlarni koʻring. |
+
+Отзыв: «izoh» → «sharh» в 7 текстах (`reviews.list`, `reviews.empty`, `reviews.addText`, `reviews.blind`, `find.allReviews`, `account.profile.reviewsCount`, `bot.rating.review`). «Izoh» остаётся комментарием к поездке и брони (урок №407).

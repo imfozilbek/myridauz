@@ -32,7 +32,7 @@ describe('«Profil» (G65, mockup g65/3)', () => {
     expect(screen.getByText('12')).toBeTruthy();
     expect(screen.getByText('100%')).toBeTruthy();
     expect(screen.getByText(toCyrillic('vaqtida'))).toBeTruthy();
-    expect(screen.getByText(toCyrillic('8 izoh'))).toBeTruthy();
+    expect(screen.getByText(toCyrillic('8 sharh'))).toBeTruthy();
     expect(screen.getByText(toCyrillic('+998 90 123 45 67 · faqat siz koʻrasiz'))).toBeTruthy();
     // A passenger has no car and no wallet here.
     for (const gone of ['Mashinam', 'Hamyon']) expect(screen.queryByText(toCyrillic(gone))).toBeNull();

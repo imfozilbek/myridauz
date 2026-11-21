@@ -37,9 +37,9 @@ describe('the wallet card of the driver bot (G68, docs/122)', () => {
   it('rings under the card: few seats, no money, the bonus ends', () => {
     const few = walletRing(7, wallet(36_000, 0, 4), 'fewSeats', false);
     expect(few).toMatchObject({ bot: 'driver', chatId: 7, card: 'wallet:7', quiet: false });
-    expect(few.text).toBe(toCyrillic('💳 Hamyoningizdagi pul faqat 4 ta joyga yetadi'));
+    expect(few.text).toBe(toCyrillic('💳 Hamyoningizdagi pul faqat 4 ta joyga yetadi. Oldindan toʻldiring.'));
     expect(walletRing(7, wallet(0, 0, 0), 'fewSeats', true).text).toBe(
-      toCyrillic('💳 Hamyoningizda komissiya uchun pul qolmadi'),
+      toCyrillic('💳 Hamyoningizda komissiya uchun pul qolmadi. Toʻldiring, shunda joylarni tasdiqlaysiz.'),
     );
     expect(plain(walletRing(7, wallet(45_000, 0, 5), 'bonusEnds', true).text)).toBe(
       toCyrillic('🎁 Bonusingiz 4-oktabr kuni tugaydi: 45 000 soʻm qoldi'),

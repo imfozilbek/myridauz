@@ -38,7 +38,7 @@ type Props = {
 };
 
 // «Safarni baholang» (docs/24, docs/118 path 3, mockup g60/5): the driver and the one trip card,
-// stars, tags as chips, a comment behind «+ Izoh yozish», «Sevimli haydovchi» as a switch.
+// stars, tags as chips, a comment behind «+ Sharh yozish», «Sevimli haydovchi» as a switch.
 export function ReviewForm({ bookingId, target, booking, onBack, onComplain, onSent }: Props) {
   useScreenView('reviews.form');
   useScreenBackground();

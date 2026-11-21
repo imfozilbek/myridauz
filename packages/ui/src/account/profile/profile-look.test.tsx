@@ -65,7 +65,7 @@ describe('«Profil» of a driver and how the other side sees the person (G65)', 
     reviewsOf.mockResolvedValueOnce({ rating: { average: null, count: 0 }, reviews: [], more: false });
     fireEvent.click(screen.getByText(toCyrillic('Orqaga')));
     fireEvent.click(await screen.findByText(toCyrillic('Baholarim')));
-    expect(await screen.findByText(toCyrillic('Hali izoh yoʻq'))).toBeTruthy();
+    expect(await screen.findByText(toCyrillic('Hali sharh yoʻq'))).toBeTruthy();
   });
 
   it('counts the channels the person is in with their drawings (docs/119)', async () => {

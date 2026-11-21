@@ -34,14 +34,14 @@ const open = (
 const more = () => fireEvent.click(screen.getByRole('button', { name: toCyrillic('Oshirish') }));
 
 describe('«Safar» of a passenger (G59, docs/118 path 2)', { timeout: 20_000 }, () => {
-  it('shows the driver with the plate, one review and «Barcha izohlar (N) ›»', async () => {
+  it('shows the driver with the plate, one review and «Barcha sharhlar (N) ›»', async () => {
     open(trip);
     expect(await screen.findByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
     expect(await screen.findByText('«Yaxshi haydaydi»')).toBeTruthy();
-    await tap(toCyrillic('Barcha izohlar (37) ›'));
+    await tap(toCyrillic('Barcha sharhlar (37) ›'));
     expect(await screen.findByText(/Dilnoza/u)).toBeTruthy();
     // The look of the lists of the mockup g75/2 A: a title on top, each review on its own card.
-    expect(screen.getByText(toCyrillic('Izohlar')).className).toContain('market-title');
+    expect(screen.getByText(toCyrillic('Sharhlar')).className).toContain('market-title');
     expect(document.querySelectorAll('.row-card').length).toBeGreaterThan(0);
   });
 
@@ -56,7 +56,7 @@ describe('«Safar» of a passenger (G59, docs/118 path 2)', { timeout: 20_000 },
     open(trip, 'male', tripViewed);
     expect(await screen.findByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
     await vi.waitFor(() => expect(tripViewed).toHaveBeenCalledWith('t1'));
-    await tap(toCyrillic('Barcha izohlar (37) ›'));
+    await tap(toCyrillic('Barcha sharhlar (37) ›'));
     expect(tripViewed).toHaveBeenCalledOnce();
     expect(busy).toEqual([0]);
     expect(screen.queryByRole('alert')).toBeNull();
