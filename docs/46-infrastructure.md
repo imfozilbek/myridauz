@@ -62,7 +62,7 @@
 | Токены 6 ботов своей среды (`PASSENGER_`, `DRIVER_`, `ADMIN_`, `SUPPORT_`, `POSTER_`, `MAIN_BOT_TOKEN`); по желанию `GROUP_BOT_TOKEN` бота группы (`223`) | Секреты Worker своей среды | Владелец (BotFather → панель Cloudflare); Cron сам настраивает ботов |
 | `TELEGRAM_WEBHOOK_SECRET` (свой в каждой среде), `ADMIN_TELEGRAM_IDS`, `CF_ACCOUNT_ID` | Секреты Worker | Claude (`wrangler secret`) |
 | `ANALYTICS_API_TOKEN`: токен `rida-<среда>-analytics`, только Account Analytics: Read | Секреты Worker | Владелец |
-| `REALTIME_APP_ID`, `REALTIME_APP_SECRET`, `TURN_KEY_ID`, `TURN_KEY_TOKEN` (G13, `08`): свои у каждого аккаунта | Секреты Worker | Позже, со звонками |
+| `REALTIME_APP_ID`, `REALTIME_APP_SECRET`, `TURN_KEY_ID`, `TURN_KEY_TOKEN` (G13, `08`): свои у каждого аккаунта | Секреты Worker | Есть в обеих средах; в проде с 21.11.2026 (урок №408) |
 | `CLOUDFLARE_API_TOKEN` (`rida-<среда>-deploy`), `CLOUDFLARE_ACCOUNT_ID` | GitHub Environment `internal`; `production` вернётся с продом (`179`) | Владелец |
 | `CLOUDFLARE_*`, `PROD_CLOUDFLARE_*` (`rida-<среда>-claude`) | Окружение Claude: только эти 4 переменные, без токенов ботов | Владелец |
 
