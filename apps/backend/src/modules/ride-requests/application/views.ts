@@ -2,8 +2,14 @@ import { NO_RATING, type RideRequest } from '@platform/contracts';
 import { statusAt, type RequestRecord } from '../domain/ride-request';
 import type { RequestsDeps } from './ports';
 
-// Other people see only the name and the face of the passenger (docs/07).
-export async function views(deps: RequestsDeps, requests: readonly RequestRecord[]): Promise<RideRequest[]> {
+// Other people see only the name and the face of the passenger (docs/07). The Mini App of a driver
+// shows no face of a passenger (avatar-visibility): forDriver says so, the app asks for no photo
+// (prod 21.11.2026: users.avatar_hidden 8 on «Yoʻlovchilar soʻrovlari»).
+export async function views(
+  deps: RequestsDeps,
+  requests: readonly RequestRecord[],
+  forDriver = false,
+): Promise<RideRequest[]> {
   const now = deps.now();
   const ratings = await deps.ratings([...new Set(requests.map((request) => request.passengerId))]);
   const found = await Promise.all(
@@ -13,7 +19,7 @@ export async function views(deps: RequestsDeps, requests: readonly RequestRecord
       const passenger = {
         id: person.publicId,
         firstName: person.firstName,
-        hasAvatar: person.avatarShown,
+        hasAvatar: !forDriver && person.avatarShown,
         rating: ratings.get(request.passengerId) ?? NO_RATING,
       };
       const { id, from, to, date, km, seats, price, pickupMode, wholeCar, withWoman, callsOff } = request;

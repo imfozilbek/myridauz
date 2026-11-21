@@ -82,7 +82,7 @@ export async function requestBoard(
         days,
         trip: null,
         fits: [],
-        others: await views(deps, ofDay),
+        others: await views(deps, ofDay, true),
         carSeats: car.seats,
         busy,
         notify,
@@ -99,11 +99,13 @@ export async function requestBoard(
   const fitViews = await views(
     deps,
     fitting.map((item) => item.request),
+    true,
   );
   const fits = fitViews.map((view) => ({ ...view, extraKm: extraOf.get(view.id) ?? 0 }));
   const others = await views(
     deps,
     measured.filter((item) => item.extra === null).map((item) => item.request),
+    true,
   );
   return {
     ok: true,

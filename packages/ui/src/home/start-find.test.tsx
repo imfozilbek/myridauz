@@ -1,7 +1,7 @@
 import type { Location } from '@platform/contracts';
 import { afterEach, describe, expect, it } from 'vitest';
 import { buildDirectory } from '../places/directory';
-import { startFind } from './dock-ends';
+import { startFind, startRequest } from './dock-ends';
 
 const place = (id: string, parentId: string | null, oneCity = false): Location => ({
   id,
@@ -33,5 +33,18 @@ describe('startFind: «Safar topish» of the block', () => {
     expect(startFind({ from: CHILONZOR, to: CHILONZOR }, directory)).toEqual({ from: CHILONZOR });
     expect(startFind({ from: CHILONZOR, to: YUNUSOBOD }, directory)).toEqual({ from: CHILONZOR });
     expect(localStorage.getItem('route_recent')).toBeNull();
+  });
+});
+
+// Prod 21.11.2026: «bir xil boʻlmasin» twice on «Qaysi kuni?» of a request (prices/recommendation):
+// «Soʻrov qoldirish» of the block took two places of one city (G96).
+describe('startRequest: «Soʻrov qoldirish» of the block', () => {
+  it('keeps both ends a trip may take, else asks «Qayerga» first', () => {
+    expect(startRequest({ from: CHILONZOR, to: FARGONA }, directory)).toEqual({
+      from: CHILONZOR,
+      to: FARGONA,
+    });
+    expect(startRequest({ from: CHILONZOR, to: YUNUSOBOD }, directory)).toEqual({ from: CHILONZOR });
+    expect(startRequest({ from: null, to: FARGONA }, directory)).toEqual({ to: FARGONA });
   });
 });

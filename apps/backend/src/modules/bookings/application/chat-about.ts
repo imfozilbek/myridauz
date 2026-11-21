@@ -47,10 +47,15 @@ export async function chatAbout(deps: BookingsDeps, key: string, userId: number)
   const talk = await requestAndOffer(deps, key);
   const offer: Offer | null = talk?.offer ?? null;
   const driver = talk?.driver ?? null;
+  const request = talk?.request ?? null;
   return {
     booking: booked?.booking ?? null,
     role: member.role,
-    request: talk?.request ?? null,
+    // The Mini App of a driver shows no face of a passenger (prod 21.11.2026: avatar_hidden in chat).
+    request:
+      request && member.role === 'driver'
+        ? { ...request, passenger: { ...request.passenger, hasAvatar: false } }
+        : request,
     offer,
     driver,
   };

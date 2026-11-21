@@ -54,15 +54,23 @@ export function useDockEnds(directory: PlaceDirectory | null, trip: Route | null
 // «Safar topish» from the ends of the block (G76; G79 П20, П21): both, their trips at once and the
 // route kept; one, the other is asked and the trips come right after. Two ends no trip may take (one
 // place, one city) ask «Qayerga» again (prod 18.11.2026: trips/days 422 «bir xil boʻlmasin» from home).
-export function startFind(
-  { from, to }: { from: Location | null; to: Location | null },
-  directory: PlaceDirectory | null = null,
-): Launch {
-  const refused = from && to && (from.id === to.id || (directory && checkRoute(from, to, directory.find)));
-  if (from && to && !refused) {
+type Ends = { readonly from: Location | null; readonly to: Location | null };
+const refused = ({ from, to }: Ends, directory: PlaceDirectory | null) =>
+  Boolean(from && to && (from.id === to.id || (directory && checkRoute(from, to, directory.find))));
+
+export function startFind({ from, to }: Ends, directory: PlaceDirectory | null = null): Launch {
+  if (from && to && !refused({ from, to }, directory)) {
     rememberRoute({ from, to });
     return { route: { from, to } };
   }
   if (from) return { from };
   return to ? { pick: 'from', to } : { pick: 'from' };
+}
+
+// «Soʻrov qoldirish» of the block: the ends a trip may take; else «Qayerga» is asked first (prod
+// 21.11.2026: prices/recommendation 422 «bir xil boʻlmasin» on «Qaysi kuni?», G96).
+export function startRequest(ends: Ends, directory: PlaceDirectory | null): Launch {
+  const { from, to } = ends;
+  if (refused(ends, directory)) return from ? { from } : {};
+  return { ...(from ? { from } : {}), ...(to ? { to } : {}) };
 }
