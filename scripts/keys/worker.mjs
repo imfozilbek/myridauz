@@ -36,7 +36,8 @@ async function callsSecrets(request, name) {
     ['REALTIME_APP_ID', app.uid],
     ['REALTIME_APP_SECRET', app.secret],
     ['TURN_KEY_ID', turn.uid],
-    ['TURN_KEY_TOKEN', turn.key],
+    // The token of a TURN key comes as «secret», not «key» (prod 21.11.2026, lesson 408).
+    ['TURN_KEY_TOKEN', turn.secret],
   ];
 }
 

@@ -14,7 +14,7 @@ const worker = (names, { turnFails = false } = {}) => {
     if (method === 'PUT') put.set(body.name, body.text);
     if (method === 'POST') posted.push(path);
     if (path.endsWith('/apps')) return { uid: 'app-id', secret: 'app-secret' };
-    if (path.endsWith('/turn_keys')) return { uid: 'turn-id', key: 'turn-key' };
+    if (path.endsWith('/turn_keys')) return { uid: 'turn-id', name: 'turn-name', secret: 'turn-key' };
     return null;
   };
   return { put, posted, request };
