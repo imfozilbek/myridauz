@@ -110,7 +110,7 @@ describe('the rating of a person (docs/24)', () => {
     expect((await ratingsOf(deps, [DRIVER])).get(DRIVER)?.count).toBe(10);
   });
 
-  // «Barcha izohlar» shows every review (G46, docs/24): 20 at a time, the newest first, then older.
+  // «Barcha sharhlar» shows every review (G46, docs/24): 20 at a time, the newest first, then older.
   it('gives the reviews of a person page by page, the newest first', async () => {
     const rides = Array.from({ length: 22 }, (_, n) => ride(n + 1));
     const { deps, later } = setup(rides);

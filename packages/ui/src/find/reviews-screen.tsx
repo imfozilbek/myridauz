@@ -12,7 +12,7 @@ import '../market/market.css';
 
 type Review = UserReviews['reviews'][number];
 
-// «Barcha izohlar» and «Baholarim»: every published review (docs/24), the newest first, each on its
+// «Barcha sharhlar» and «Baholarim»: every published review (docs/24), the newest first, each on its
 // own card as the lists of the mockup g75/2 A; the stars on the right, the day under the name.
 // «Yana koʻrsatish» brings the older ones (G46).
 export function ReviewsScreen({

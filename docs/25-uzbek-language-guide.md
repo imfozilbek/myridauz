@@ -86,7 +86,7 @@ sentabr, oktabr, noyabr, dekabr.
 | Кошелёк | hamyon |
 | Пополнить | toʻldirish |
 | Жалоба | shikoyat |
-| Отзыв | sharh (решение владельца 17.11.2026) |
+| Отзыв | sharh (решение владельца 17.11.2026); «izoh» только комментарий к поездке или брони |
 | Звонок | qoʻngʻiroq |
 | Регион / район / город | viloyat / tuman / shahar |
 | В машине есть женщина | Mashinada ayol bor |

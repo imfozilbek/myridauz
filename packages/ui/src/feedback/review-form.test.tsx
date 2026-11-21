@@ -42,7 +42,7 @@ describe('the review (G60, mockup g60/5): one short screen', () => {
     expect(screen.getByText(toCyrillic('Safar qanday oʻtdi?'))).toBeTruthy();
     expect(screen.getByRole('button', { name: toCyrillic('Vaqtida') })).toBeTruthy();
     expect(screen.queryByPlaceholderText(/Сафар ҳақида/u)).toBeNull();
-    await tap(toCyrillic('+ Izoh yozish'));
+    await tap(toCyrillic('+ Sharh yozish'));
     expect(screen.getByPlaceholderText(/Сафар ҳақида/u)).toBeTruthy();
     expect(screen.getByText(toCyrillic('Sevimli haydovchi'))).toBeTruthy();
   });

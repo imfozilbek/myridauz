@@ -44,7 +44,7 @@ describe('a review and a complaint keep what was written (docs/94 F3, C1, C5)', 
     await screen.findByText('Jasur');
     expect(screen.queryByText(RESTORED)).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: '4' }));
-    await tap(toCyrillic('+ Izoh yozish'));
+    await tap(toCyrillic('+ Sharh yozish'));
     typeInto(/қисқача/u, 'Yaxshi yoʻl');
     first.unmount();
     open('review', { review });

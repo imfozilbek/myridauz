@@ -59,7 +59,10 @@ test('5-2, 5-3: «Safar tugadi» and «Qaytish» (g63/4 screens 15, 16)', async 
   await expect(page.getByText(new RegExp(toCyrillic('Qoldi ≈.11 joyga yetadi'), 'u'))).toBeVisible();
   await shot(page, 'after-02');
   await page.locator('#tg-main-button').click();
-  await expect(page.getByText(new RegExp(toCyrillic('4 ta soʻrov bor'), 'u'))).toBeVisible();
+  // The requests of the way back come by their own call: slow in CI on 17.11.2026 (lesson 406).
+  await expect(page.getByText(new RegExp(toCyrillic('4 ta soʻrov bor'), 'u'))).toBeVisible({
+    timeout: 15_000,
+  });
   await shot(page, 'after-03');
 });
 

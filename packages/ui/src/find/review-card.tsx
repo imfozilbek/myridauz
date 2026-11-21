@@ -5,7 +5,7 @@ import { useLoad } from '../market/use-list';
 
 type Props = { readonly driverId: PersonId; readonly onAll: (reviews: UserReviews) => void };
 
-// One review of the driver and «Barcha izohlar (N) ›» (docs/118 path 2): the newest with words.
+// One review of the driver and «Barcha sharhlar (N) ›» (docs/118 path 2): the newest with words.
 // Nothing while loading and nothing without reviews (docs/24).
 export function ReviewCard({ driverId, onAll }: Props) {
   const { t } = useI18n();

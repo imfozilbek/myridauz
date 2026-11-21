@@ -18,7 +18,7 @@ const one = (n: number, text = '') => ({
   at: AT - n,
 });
 
-// «Barcha izohlar» (G46, docs/24): every review with its day, the newest first, older on demand.
+// «Barcha sharhlar» (G46, docs/24): every review with its day, the newest first, older on demand.
 describe('the reviews of a person', () => {
   it('shows the day of each review and brings the older ones', async () => {
     const first: UserReviews = {

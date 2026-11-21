@@ -8,7 +8,7 @@ import { ComplaintScreen } from './complaint-screen';
 import { ReviewScreen } from './review-screen';
 import { ErrorBoundary } from '../states/error-boundary';
 
-// "Izoh qoldirish" and "Shikoyat qilish" under the bot's "Safar qanday oʻtdi?" (docs/17, docs/24).
+// "Sharh qoldirish" and "Shikoyat qilish" under the bot's "Safar qanday oʻtdi?" (docs/17, docs/24).
 const REVIEW = 'review';
 const COMPLAIN = 'complain';
 const BOOKING_ID = /^[A-Za-z0-9-]{1,64}$/u;

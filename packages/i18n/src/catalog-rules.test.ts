@@ -46,6 +46,8 @@ describe('the words of the glossary', () => {
   const RIVALS: readonly [RegExp, string][] = [
     [/\bbron/iu, 'band qilish'],
     [/\bfikr/iu, 'sharh'],
+    // «Izoh» stays the comment of a trip or a seat; a review is «sharh».
+    [/\b(?:izohlar|izoh (?:yozish|qoldirish))\b/iu, 'sharh'],
     [/\bkutmoqda\b/iu, 'kutyapti'],
     [/\{brand\} (?:da|ga|dan|ni|ning|gacha)\b/u, '{brand}da'],
   ];

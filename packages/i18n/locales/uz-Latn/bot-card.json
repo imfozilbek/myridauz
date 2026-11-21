@@ -43,7 +43,7 @@
   "ring.noShow": "❌ {name} sizni uchrashuv joyida topmadi. Boshqa safar bor.",
   "ring.message": "💬 {name} sizga xabar yozdi",
   "ring.call": "📞 {name} sizga qoʻngʻiroq qilyapti",
-  "ring.missed": "📞 {name} qoʻngʻiroq qildi, lekin gaplasha olmadingiz",
+  "ring.missed": "📞 {name} qoʻngʻiroq qildi, lekin gaplasha olmadingiz. Chatda yozing yoki qayta qoʻngʻiroq qiling.",
   "ring.arrivedAsk": "🏁 Yetib keldingizmi? Javobingiz safarni yopadi.",
   "arrived.yes": "🏁 Yetib keldingiz. Yaqinlaringiz ham bilib oladi.",
   "arrived.onWay": "🚗 Oq yoʻl! Yetib borganingizda «Yetib keldim»ni bosing.",

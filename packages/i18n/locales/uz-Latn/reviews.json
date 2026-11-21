@@ -7,12 +7,12 @@
   "tag.tidy": "Ozoda",
   "textPlaceholder": "Safar haqida qisqacha yozing (ixtiyoriy)",
   "send": "Yuborish",
-  "blind": "Izohingiz ikkala tomon baholagach yoki 7 kundan keyin koʻrinadi.",
+  "blind": "Sharhingiz ikkala tomon baholagach yoki 7 kundan keyin koʻrinadi.",
   "rating": "{average} ({count})",
   "new": "Yangi",
-  "list": "Izohlar",
-  "empty": "Hali izoh yoʻq",
+  "list": "Sharhlar",
+  "empty": "Hali sharh yoʻq",
   "howWas": "Safar qanday oʻtdi?",
-  "addText": "+ Izoh yozish",
+  "addText": "+ Sharh yozish",
   "favorite": "Sevimli haydovchi"
 }
